@@ -1,0 +1,9 @@
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+<ShortName>SetSpace</ShortName>
+<Description>
+SetSpace Search - Stage
+</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<Image width="16" height="16" type="image/x-icon">your site favicon</Image>
+<Url type="text/html" method="get" template="http://stage.setspace.com/sengine.shtml?q={searchTerms}"/>
+</OpenSearchDescription>

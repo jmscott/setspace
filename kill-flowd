@@ -1,0 +1,115 @@
+#
+#  Synopsis:
+#	Kill a flowd process for a schema, possibly going nuclear
+#  Usage:
+#	kill-flowd <schema>
+#  Exit Status:
+#	0	running flowd process was killed
+#	1	flowd process was not running
+#	2	unknown error
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#  Note:
+#	Think about overriding name of SETSPACE_ROOT my consulting a variable
+#	named SETSPACE_ROOT_NAME.  Will be helpfull for non setspace
+#	schemas that wish to manage flowd process.
+#
+
+PROG=$(basename $0)
+
+#  pause after either stopping or starting flowd
+FLOWD_PAUSE=2
+
+log()
+{
+	MSG=$@
+	test -n "$SCHEMA" && MSG="$SCHEMA: $MSG"
+	echo "$(date +'%Y-%m-%d %H:%M:%S'): $PROG: $MSG"
+}
+
+WARN()
+{
+	log "WARN: $@" >&2
+}
+
+die()
+{
+	log "ERROR: $@" >&2
+	exit 2
+}
+
+leave()
+{
+	log 'good bye, cruel world'
+}
+
+test $# = 1 || die 'wrong number of arguments'
+SCHEMA=$1
+
+log 'hello, world'
+trap leave EXIT
+
+test -n "$SETSPACE_ROOT" ||
+			die "environment variable not defined: SETSPACE_ROOT"
+log "SETSPACE_ROOT=$SETSPACE_ROOT"
+
+cd "$SETSPACE_ROOT" || die "cd $SETSPACE_ROOT failed"
+. etc/profile
+
+#  goto to root of schema directory in $SETSPACE_ROOT/schema/$SCHEMA
+#  source in a local etc/profile for the schema
+
+SCHEMA_ROOT=schema/$SCHEMA
+test -d "$SCHEMA_ROOT" || die "missing schema dir: $SCHEMA_ROOT"
+cd $SCHEMA_ROOT || die "cd $SCHEMA_ROOT failed: exit status=$?"
+test -e etc/profile && . etc/profile
+
+#  create the run directory and move on.
+
+if [ ! -d run ];  then
+	WARN "creating run/ directory (ok): $(pwd)/run"
+	mkdir run || die "mkdir run failed: exit status=$?"
+	exit 1
+fi
+
+#  check for pid file for flowd process
+
+FLOWD_PID=run/flowd.pid
+if [ ! -e $FLOWD_PID ];  then
+	WARN "no pid file: $(pwd)/$FLOWD_PID"
+	exit 1
+fi
+
+#  stop a possibly running flowd process
+
+PID=$(cat $FLOWD_PID)
+STATUS=$?
+case "$PID" in
+[0-9]*)
+	log "killing flowd process: id #$PID"
+	kill $PID
+	log "pause $FLOWD_PAUSE secs while flowd process stops"
+	sleep $FLOWD_PAUSE
+
+	#  does the flowd.pid file still exist?
+	#  if so, then nuke the process
+
+	if [ -d $FLOWD_PID ];  then
+		WARN "flowd pid file still exists: $FLOWD_PID"
+		WARN "flowd may not restart"
+
+		#  forcible remove the pid file
+		rm -f $FLOWD_PID ||
+			die "rm -f $FLOWD_PID failed: exit status=$?"
+		WARN "killing $PID with signal -9"
+		kill -9 $PID
+	else
+		log 'flowd process shutdown gracefully'
+	fi
+	;;
+'')
+	die "cat $FLOWD_PID failed: exit status=$STATUS"
+	;;
+esac
+exit 0

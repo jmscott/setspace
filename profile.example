@@ -1,0 +1,27 @@
+#
+#  Synopsis:
+#	Profile for typical setspace server
+#  Usage:
+#	. $SETSPACE_ROOT/etc/profile
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#
+export SETSPACE_ROOT=${SETSPACE_ROOT:=/usr/local/setspace}
+
+export BLOBIO_ROOT=${BLOBIO_ROOT:=/usr/local/blobio}
+export BLOBIO_SERVICE=${BLOBIO_SERVICE:=localhost:1797}
+export BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=sha}
+export PATH=$PATH:$BLOBIO_ROOT/bin
+
+export PGHOST=/tmp
+export PGPORT=5432
+export PGUSER=postgres
+export PGDATABASE=setspace
+
+PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:/usr/local/bin:/usr/bin:/bin:$PATH
+
+#
+#  For the comm program used by blob2db.
+#
+export LANG=en_US.UTF-8

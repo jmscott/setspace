@@ -1,0 +1,24 @@
+#!/bin/sh
+#
+#  Synopsis:
+#	Eat a blob in $BLOBIO_SERVICE
+#  Exit Status:
+#	0	blob exists
+#	1	blob does not exist
+#	2	blobio error
+#  Usage:
+#	sbin/eat-blob sha:e27706532b5687488e7fc3f55f440dbb2161e2cf
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#  Note:
+#	Ought to change this 'eat-blob' script into a more generic script
+#	bio-front <action> args that always reads from the $BLOBIO_SERVICE.
+#	However, will also need to fix the exit code on blobio c program;
+#	see the comments at top of blobio/cli/blobio.c
+#
+blobio eat --udig $1 --service $BLOBIO_SERVICE
+STATUS=$?
+test $STATUS = 0 -o $STATUS = 1 && exit $STATUS
+echo "$0: ERROR: blobio eat failed: exit status=$STATUS" 2>&1
+exit 2

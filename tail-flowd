@@ -1,0 +1,54 @@
+#!/bin/bash
+
+#  Synopsis:
+#	Tail (gnu) all the schema/*/log/flowd-Dow.log files
+#  Usage:
+#	tail-flowd
+#	tail-flowd drblob
+#
+#	SETSPACE_SCHEMA_ROOT=/home/pdfbox/schema tail-flowd
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#  Note:
+#	Only works up until midnight of local day.
+#
+#	Think about overriding name of SETSPACE_ROOT by consulting a variable
+#	named SETSPACE_ROOT_NAME.  Will be helpfull for non setspace
+#	schemas that wish to manage flowd process.
+#
+#	tail-flowd needs to detect a missing file run/<schema>.pid
+#
+
+die()
+{
+	echo "ERROR: $@" >&2
+	exit 1
+}
+
+test -n "$SETSPACE_ROOT" || die "env var not defined: SETSPACE_ROOT"
+
+SCHEMA_ROOT=${SETSPACE_SCHEMA_ROOT:=$SETSPACE_ROOT/schema}
+
+test -e $SCHEMA_ROOT || die "directory does not exist: $SCHEMA_ROOT"
+cd $SCHEMA_ROOT || die "cd $SCHEMA_ROOT failed: exit status=$?"
+
+if [ $# = 0 ];  then
+	DIR=.
+	DEPTH=1
+else
+	DIR=$@
+	DEPTH=0
+fi
+
+SCHEMAS=$(
+	find $DIR -mindepth $DEPTH -maxdepth $DEPTH -type d -print	|
+	sort								|
+	sed 's/^\.\///'
+)
+
+LOGS=$(
+	find $(find $SCHEMAS -mindepth 1 -maxdepth 1 -type d -name log )\
+	-name flowd-$(date +'%a').log
+)
+tail -f $LOGS
