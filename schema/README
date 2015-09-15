@@ -1,0 +1,16 @@
+Synopsis:
+	Database schemas representing facts about blobs
+Schema:
+	setspace	Core tables like byte_count, byte_bitmap, is_utf8wf,
+			byte_prefix_32, is_byte_json_rootish ...
+	drblob		Tables for blob flow, query and process executable
+			detail records: fdr, qdr, xdr, brr
+See:
+	schema.sql
+Blame:
+	jmscott@setspace.com
+	setspace@gmail.com
+Note:
+	Consider random 'ent' program from
+
+		http://www.fourmilab.ch/random/

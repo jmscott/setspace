@@ -1,0 +1,38 @@
+<html>
+ <head>
+  <title>Blob Properties</title>
+  <link href="screen.css" rel="stylesheet" type="text/css" />
+  <style type="text/css">
+  /*<![CDATA[*/
+  #prop
+  {
+  	width:		80%;
+  }
+  /*]]>*/
+  </style>
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/navigation.shtml" -->
+   <div id="content">
+    <h2>Blob Properties</h2>
+    <form
+    	method="GET"
+    >
+     <span class="title">Time Interval:</span>
+     <!--#include virtual="/cgi-bin/rrd?out=select&id=start&${QUERY_STRING}" -->
+     <input
+     	type="submit"
+	value="Change Time Interval"
+     />
+    </form>
+    <!--#include
+    	virtual="/cgi-bin/property?out=table&id=prop&${QUERY_STRING}"
+    -->
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

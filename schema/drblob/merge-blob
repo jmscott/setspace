@@ -1,0 +1,71 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Merge a tuple into blob_xdr_total table.
+#  Usage:
+#	merge-blob merge-xdr_log_total <udig>
+#  Exit Status:
+#	0	merge ok
+#	1	blob does not exist
+#	2	wrong number arguments
+#	3	blobio get failed
+#	4	psql insert failed
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#
+PROG=merge-log
+TABLE=
+BLOB_TMP=${TMPDIR:=/tmp}/$PROG-$$.blob
+
+log()
+{
+	if [ -n "$TABLE" ];  then
+		MSG="$TABLE: $@"
+	else
+		MSG="$@"
+	fi
+	echo "$PROG: $MSG"
+}
+
+die()
+{
+	log "ERROR: $1" >&2
+	exit $2
+}
+
+leave()
+{
+	STATUS=$?
+	rm -f $BLOB_TMP || echo "rm -f $BLOB_TMP failed"
+	exit $STATUS
+}
+
+trap leave EXIT INT QUIT TERM
+
+test $# = 2 || die 'wrong number arguments' 1
+TABLE=$1
+BLOB=$2
+
+blobio get --udig $BLOB --output-path $BLOB_TMP --service $BLOBIO_SERVICE
+STATUS=$?
+case $STATUS in
+0)
+	;;
+1)
+	exit 1
+	;;
+*)
+	die "blobio get $BLOBIO_SERVICE failed" 3
+	;;
+esac
+
+psql 									\
+	--variable blob="'$BLOB'"					\
+	--file=lib/merge-$TABLE.sql					\
+	--no-psqlrc							\
+	--quiet <$BLOB_TMP
+
+test $? = 0 || die "psql failed: exit status=$?" 4
+
+exit 0

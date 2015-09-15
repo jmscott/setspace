@@ -1,0 +1,7 @@
+Synopsis:
+	The schema for xml blobs parsable by the well known expat2 code
+See:
+	http://expat.sourceforge.net/
+Blame:
+	jmscott@setspace.com
+	setspace@gmail.com

@@ -1,0 +1,267 @@
+#
+#  Synopsis:
+#	Populate a postgresql database with a set of facts about exiting blobs.
+#  Description:
+#	Flow fires rules to populate the postgres sql schema defined schema.sql.
+#
+#	The first set of rules to fire determine exists of the blob
+#	in the service table and the blobio service.  After existence
+#	of the blob has been established, then the rules are fired
+#	according to the following dependencies:
+#
+#		service 	-> blob_count, byte_prefix_32, byte_bitmap
+#		byte_bitmap	-> is_utf8wf
+#  Usage:
+#  	flowd server setspace.conf
+#  See:
+#  	schema.sql
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#  Note:
+#	Insure all blobs are < 2^63 bytes in size.
+#
+
+boot
+{
+	brr_capacity = 256;
+	flow_worker_count = 16;
+	os_exec_worker_count = 12;
+	os_exec_capacity = 12;
+
+	xdr_roll_duration = "24h";
+	fdr_roll_duration = "24h";
+	qdr_roll_duration = "24h";
+
+	heartbeat_duration = "10s";
+}
+
+tail biod
+{
+	#  the dir blobio/ must be symbolic link for tail to work
+	path = "spool/blobio/biod.brr";
+}
+
+sql database setspace
+{
+	driver_name = "postgres";
+	data_source_name = "sslmode=disable";
+	max_idle_conns = 1;
+	max_open_conns = 64;
+}
+
+#  START TABLE: setspace.service
+
+sql query query_service_table row
+{
+	statement = `
+
+	SELECT exists (
+	  select
+		blob
+	    from
+		setspace.service
+	    where
+		blob = $1::udig
+	);
+
+	`;
+
+	database is setspace;
+
+	result row is (
+		exists bool
+	);
+}
+
+command brr_on_network
+{
+	path = "true";
+}
+
+command brr_off_network
+{
+	path = "true";
+}
+
+sql exec merge_service_table
+{
+	database is setspace;
+
+	statement = `
+
+	INSERT into setspace.service(
+		blob
+	  ) VALUES(
+	  	$1::udig
+	  ) ON CONFLICT
+	  	do nothing
+	;
+
+	`;
+}
+
+call brr_off_network()
+  when
+	(
+		biod.chat_history == "no"
+		and
+		(
+			biod.verb == "eat"
+			or
+			biod.verb == "get"
+		)
+	)
+	or
+	(
+		biod.verb == "take"
+		and
+		biod.chat_history == "ok,ok,ok"
+	)
+;
+
+call brr_on_network()
+  when
+  (
+        (
+		biod.verb == "put"
+		or
+		biod.verb == "get"
+		or
+		biod.verb == "eat"
+		or
+		biod.verb == "wrap"
+		or
+		biod.verb == "roll"
+	)
+	and
+	biod.chat_history == "ok"
+  ) or (
+	biod.verb == "give"
+	and
+	biod.chat_history == "ok,ok"
+  )
+;
+
+query query_service_table(biod.udig);
+
+#
+#  Synopsis:
+#	Delete zombies
+#
+command is_zombie_alive
+{
+	#  typically in $SETSPACE_ROOT/sbin
+
+	path = "eat-blob";
+	exit_status is OK when in {0, 1};
+}
+
+sql exec delete_blob
+{
+	statement = `
+
+	DELETE from
+	  	setspace.service
+	  WHERE
+	  	blob = $1::udig
+	;
+	
+	`;
+
+	database is setspace;
+}
+
+call is_zombie_alive(biod.udig)
+  when
+	#
+	#  brr record says blob does not exist.
+	#
+  	brr_off_network.exit_status == 0
+	and
+
+	#
+	#  Database thinks blob does exist.
+	#
+	query_service_table.exists == true
+;
+
+query delete_blob(biod.udig)
+  when
+  	is_zombie_alive.exit_status == 1
+;
+
+query merge_service_table(biod.udig)
+  when
+  	brr_on_network.exit_status == 0
+	and
+	query_service_table.exists == false
+;
+
+#  Note: replace as proposition
+command in_service
+{
+	path = "true";
+}
+
+call in_service()
+  when
+  	query_service_table.exists == true
+	or
+	merge_service_table.rows_affected == 1
+;
+
+#  END TABLE: setspace.service
+
+#  START TABLE: setspace.byte_count
+
+sql query query_byte_count_table row
+{
+	statement = `
+	  SELECT exists (
+	    select
+	    	blob
+	      from
+	      	setspace.byte_count
+	      where
+	      	blob = $1::udig
+	  )
+	`;
+
+	result row is (
+		exists bool
+	);
+
+	database is setspace;
+}
+
+query query_byte_count_table(biod.udig)
+  when
+  	in_service.exit_status == 0
+;
+
+command merge_byte_count_table
+{
+	path = "sbin/merge-byte_count";
+}
+
+call merge_byte_count_table(biod.udig)
+  when
+  	query_byte_count_table.exists == false
+;
+
+#  Note: convert to proposition
+
+command in_byte_count
+{
+	path = "true";
+}
+
+call in_byte_count()
+  when
+  	query_byte_count_table.exists == true
+	or
+	merge_byte_count_table.exit_status == 0
+;
+
+#  END TABLE: setspace.byte_count

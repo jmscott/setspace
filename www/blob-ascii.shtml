@@ -1,0 +1,43 @@
+<html>
+ <head>
+  <title>Blob Ascii Detail - SetSpace</title>
+  <link href="screen.css" rel="stylesheet" type="text/css" />
+  <style type="text/css">
+  /*<![CDATA[*/
+  h3
+  {
+  	text-align:		center;
+  }
+  pre#ascii
+  {
+  	margin-left:		2em;
+	background-color:	black;
+	color:			lightgreen;
+	font-size:		larger;
+  }
+  pre#ascii span.count, pre#ascii span.ascii
+  {
+	background-color:	black;
+	color:			white;
+  }
+  /*]]>*/
+  </style>
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/navigation.shtml" -->
+   <div id="content">
+    <h2>Blob Ascii View</h2>
+    <h3>
+     UDIG:
+     <!--#include virtual="/cgi-bin/env?out=text&qarg=udig&${QUERY_STRING}" -->
+    </h3>
+
+    <!--#include virtual="/cgi-bin/is_ascii?out=pre&id=ascii&${QUERY_STRING}" -->
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>
