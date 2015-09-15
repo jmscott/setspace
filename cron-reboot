@@ -1,0 +1,81 @@
+#
+#  Synopsis:
+#	Cron script to reboot all setspace flow schema processes
+#  Usage:
+#	#  in crontab
+#	SETSPACE_ROOT=/usr/local/setspace
+#	@reboot $SETSPACE_ROOTsbin/cron-reboot 				\
+#		>>$SETSPACE_ROOT/log/cron-reboot.log 2>&1
+#  Exit Status:
+#	0	all flowd process rebooted
+#	1	unknown error, processes may not have rebooted
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#  Note:
+#	Ought to wait for postgres and biod servers to start.
+#	systemd might solve this problem.  Or just starting from
+#	/etc/rc.local
+#
+
+PROG=$(basename $0)
+
+log()
+{
+	MSG=$@
+	test -n "$SCHEMA" && MSG="$SCHEMA: $MSG"
+	echo "$(date +'%Y/%m/%d %H:%M:%S'): $MSG"
+}
+
+die()
+{
+	log "ERROR: $@" >&2
+	exit 1
+}
+
+leave()
+{
+	log 'good bye, cruel world'
+}
+
+log 'hello, world'
+trap leave EXIT
+
+test -n "$SETSPACE_ROOT" ||
+			die "environment variable not defined: SETSPACE_ROOT"
+log "SETSPACE_ROOT=$SETSPACE_ROOT"
+
+cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
+
+. etc/profile
+log "path to flowd executable: $(which flowd)"
+
+#  shutdown any flowd processes
+
+log 'killing all flowd processes ...'
+kill-all-flowd || die "kill-all-flowd failed: exit status=$?"
+
+#  boot up a flowd process for each flow file in
+#  schema/$SCHEMA/etc/$SCHEMA.flow
+
+log 'finding schemas for bootable flowd ...'
+while read SCHEMA;  do
+	log "schema: $SCHEMA"
+	boot-flowd $SCHEMA
+	STATUS=$?
+	case $STATUS in
+	0)
+		log 'flowd booted'
+		;;
+	1)
+		log "WARN: no profile or $SCHEMA.flow file, so no boot (ok)"
+		;;
+	*)
+		die "boot-flowd $SCHEMA failed: exit status=$STATUS"
+		;;
+	esac 
+  done <<END
+$(find-schema)
+END
+
+log 'all flowds started'

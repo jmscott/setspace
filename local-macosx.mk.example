@@ -1,0 +1,26 @@
+#
+#  Synopsis:
+#	Makefile Template for typical Mac OSX >= 10.6
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#  Note:
+#  	Need to investigate gnu versus max install programs.
+#  	In particular, the -t option.
+#
+SETSPACE_PREFIX=/usr/local/setspace
+
+#  in development, set to your user/group id
+SETSPACE_USER=setspace
+SETSPACE_GROUP=staff
+
+SETSPACE_HTTPD_PREFIX=$(SETSPACE_PREFIX)/http
+SETSPACE_HTTPD_CGI_MODE=u=rx,go=
+
+CFLAGS=-Wall -Wextra -Werror
+
+#
+#  We need gnu install.
+#  On MAC OS X may need to set to ginstall from fink package manager.
+#
+INSTALL=ginstall

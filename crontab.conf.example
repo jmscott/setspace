@@ -1,0 +1,90 @@
+#
+#  Synopsis:
+#	Typical crontab file for setspace server
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#
+SETSPACE_ROOT=/usr/local/setspace
+
+#
+#  What:
+#	Rebuild the file_mime_stat table
+#  When:
+#	46 minutes after the hours of 1,5,9,13,17,21
+#
+46 1,5,9,13,17,21 * * * $SETSPACE_ROOT/sbin/file-mime-stat2db >>$SETSPACE_ROOT/log/file-mime-stat2db.log 2>&1
+
+#
+#  What:
+#	Clear log file log/file-mime-stat2db.log
+#  When:
+#	23:58pm, every Sunday night
+#
+58 23 * * Sun echo "$(date): cleared by cron" >$SETSPACE_ROOT/log/file-mime-stat2db.log 2>&1
+
+#
+#  What:
+#	Rebuild the remember_uri_host_stat table
+#  When:
+#	Every 23 minutes
+#
+*/23 * * * * (echo "$(date): hello, world"; . etc/profile; psql -f $SETSPACE_ROOT/lib/remember_uri_host_stat.sql; echo "$(date): good bye, cruel world")  >>$SETSPACE_ROOT/log/remember_uri_host_stat.log 2>&1
+
+#
+#  What:
+#	Clear log file log/remember_uri_host.log
+#  When:
+#	23:58pm, every Sunday night
+#
+58 23 * * Sun echo "$(date): cleared by cron" >$SETSPACE_ROOT/log/remember_uri_host.log 2>&1
+
+#
+#  What:
+#	Backup mutable tables like my_*
+#  When:
+#	11:58pm, every day.
+#  Note:
+#	need to add pdf_mime_type table!!
+#
+59 23 * * * $SETSPACE_ROOT/sbin/cron-pg_dump-mutable --table blob --table my_title --table title --table remember_uri --table remember_uri_title >>$SETSPACE_ROOT/log/cron-pg_dump-mutable.log 2>&1
+
+#
+#  What:
+#	Clear out log file log/cron-pg_dump-mutable.log
+#  When:
+#	4:19am, 15 day of every month
+#
+19 4 15 * * echo "$(date): clear by cron" >$SETSPACE_ROOT/log/cron-pg_dump-mutable.log 2>&1 
+
+#
+#  What:
+#	Scrub stale *.pid files in run/
+#  When:
+#	Every 15 minutes
+#
+*/15 * * * * $SETSPACE_ROOT/sbin/scrub-run-pid >>$SETSPACE_ROOT/log/scrub-run-pid.log 2>&1
+
+#
+#  What:
+#	Clear out log file $SETSPACE_ROOT/log/scrub-run-pid.log
+#  When:
+#	1:18am on the 19 day of every month
+#
+18 1 19 * * echo "$(date): cleared by cron" >$SETSPACE_ROOT/log/scrub-run-pid.log 2>&1
+
+#
+#  What:
+#	Clear out stale pid files in directory $SETSPACE_ROOT/run
+#  When:
+#	Upon system reboot
+#
+@reboot rm -f $SETSPACE_ROOT/run/*.pid
+
+#
+#  What:
+#	Save crontab $SETSPACE_ROOT/etc/crontab.conf
+#  When:
+#	2:28am, every early morning
+#
+28 2 * * * crontab -l >$SETSPACE_ROOT/etc/crontab.conf

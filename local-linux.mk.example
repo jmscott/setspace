@@ -1,0 +1,37 @@
+#
+#  Synopsis:
+#	Example of a GNU Makefile template for typical Linux 2.6 distro.
+#  Description:
+#	Defining SETSPACE_PREFIX will install both the binaries and libraries
+#	of both the client and server subsystems into $SETSPACE_PREFIX.
+#	
+#	In particular, examine the variables:
+#	
+#		INSTALL:		Requires GNU compatible install. 
+#		SETSPACE_PREFIX:	Where to install setspace
+#		SETSPACE_USER:		User id of installed code
+#		SETSPACE_GROUP:		Group id of installed code
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#
+
+########################  BEGIN SECTION OF VARIABLES TO CHANGE
+
+#  during development change to local home directory, like $HOME/dev/setspace, 
+SETSPACE_PREFIX=/usr/local/setspace
+
+#  during development change to your user or group id
+SETSPACE_USER=setspace
+SETSPACE_GROUP=setspace
+
+#  must be gnu install
+INSTALL=install
+
+########################  END SECTION OF VARIABLES TO CHANGE
+
+SETSPACE_HTTPD_PREFIX=$(SETSPACE_PREFIX)/vhost/stage.setspace.com
+SETSPACE_HTTPD_CGI_MODE=ug=rx,o=
+
+#  assume a strict gcc'ish compiler
+CFLAGS=-Wall -Wextra -Werror

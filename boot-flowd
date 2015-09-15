@@ -1,0 +1,95 @@
+#
+#  Synopsis:
+#	Startup a flowd server against a particular schema
+#  Usage:
+#	boot-flowd <schema>
+#	boot-flowd setspace
+#  See:
+#	cron-reboot
+#  Exit Status:
+#	0	flowd appearsto have booted
+#	1	no profile or flow file in directory <schema>/etc/<schema>.flow
+#	2	unknown error, flowd may not have started
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#  Note:
+#	Think about overriding name of SETSPACE_ROOT my consulting a variable
+#	named SETSPACE_ROOT_NAME.  Will be helpfull for non setspace
+#	schemas that wish to manage flowd process.
+#
+
+PROG=$(basename $0)
+
+#  pause after either stopping or starting flowd
+FLOWD_PAUSE=2
+
+log()
+{
+	MSG=$@
+	test -n "$SCHEMA" && MSG="$SCHEMA: $MSG"
+	echo "$(date +'%Y/%m/%d %H:%M:%S'): $MSG"
+}
+
+WARN()
+{
+	log "WARN: $@" >&2
+}
+
+die()
+{
+	log "ERROR: $@" >&2
+	exit 2
+}
+
+leave()
+{
+	log 'good bye, cruel world'
+}
+
+test $# = 1 || die 'wrong number of arguments'
+SCHEMA=$1
+
+log 'hello, world'
+trap leave EXIT
+
+test -n "$SETSPACE_ROOT" ||
+			die "environment variable not defined: SETSPACE_ROOT"
+log "SETSPACE_ROOT=$SETSPACE_ROOT"
+
+cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
+
+. etc/profile
+
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/$SCHEMA
+test -d $SCHEMA_ROOT || die "schema dir does not exist: $SCHEMA_ROOT"
+
+cd $SCHEMA_ROOT || die "cd $SCHEMA_ROOT failed: exit status=$?"
+
+if [ ! -e etc/profile ];  then
+	WARN "no profile: $(pwd)/etc/profile"
+	WARN "flowd not started"
+	exit 1
+fi
+
+log "sourcing $(pwd)/etc/profile"
+. etc/profile
+
+FLOW=etc/$SCHEMA.flow
+log "flowd file: $FLOW"
+
+if [ ! -e $FLOW ];  then
+	WARN "no flow file: $FLOW"
+	WARN "tables in schema may not be populated"
+	exit 1
+fi
+
+log "starting flowd server: $FLOW"
+flowd server $FLOW &
+PID=$!
+log "flowd started in background: pid=$PID"
+log "pausing $FLOWD_PAUSE seconds while server starts ..."
+sleep $FLOWD_PAUSE
+test -e run/flowd.pid || die "no pid file: flowd boot failed: $FLOW"
+
+exit 0

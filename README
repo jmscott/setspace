@@ -1,0 +1,25 @@
+Synopsis:
+	SetSpace extracts facts from blobs and stores them in PostgreSQL
+Usage:
+	psql pdfbox
+Meme:
+	SetSpace - Harness the Flux
+Blame:
+  	jmscott@setspace.com
+  	setspace@gmail.com
+To Do:
+	--  think about a custom base32 encoding, taking ideas from these
+	    two encodings:
+
+	      http://philzimmermann.com/docs/human-oriented-base-32-encoding.txt
+	      https://en.wikipedia.org/wiki/Luhn_algorithm
+	      https://en.wikipedia.org/wiki/Base32
+	      http://www.crockford.com/wrmg/base32.html
+	      https://en.wikipedia.org/wiki/Damm_algorithm
+	      https://en.wikipedia.org/wiki/Verhoeff_algorithm
+
+	--  think about a custom hash algorithm, like 192 bit shake256.
+
+	--  Makefile template for new setspace schema
+
+	--  sengine.shtml: link to worldcat.org, icerocket.com

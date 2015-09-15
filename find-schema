@@ -1,0 +1,34 @@
+#
+#  Synopsis:
+#	find schemas in $SETSPACE_ROOT/schema directory
+#  Usage:
+#	find-schema | while read SCHEMA;  do ...
+#  See:
+#	cron-reboot
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#  Exit Status:
+#	0	schema listed
+#	1	unknown error
+#
+
+PROG=$(basename $0)
+
+die()
+{
+	echo "ERROR: $@"
+	exit 2
+}
+
+test $# = 0 || die 'wrong number of arguments'
+
+test -n "$SETSPACE_ROOT" ||
+			die "environment variable not defined: SETSPACE_ROOT"
+cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
+test -e schema || die "missing root schema directory: $(pwd)"
+
+cd schema || "cd $(pwd)/schema failed: exit status=$?"
+find . -mindepth 1 -maxdepth 1 -type d | while read SCHEMA_DIR;  do
+	basename $SCHEMA_DIR
+done

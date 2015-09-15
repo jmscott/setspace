@@ -1,0 +1,62 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Dev reboot that resets profile and schema.flow files, clears logs
+#  Usage:
+#	cd $HOME/opt/setspace
+#	. etc/profile
+#	dev-reboot
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#  Note:
+#	Need to add optional <schema> argument, to boot single schema.
+#
+PROG=$(basename $0)
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&2
+	exit 1
+}
+
+test -n "$SETSPACE_ROOT" || die "env var not defined: SETSPACE_ROOT"
+
+cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed: exit status=$?"
+
+#  reset files etc/profile and etc/<schema>.flow.  clear schema log files.
+
+cp_chmod()
+{
+	SRC=$1
+	TGT=$2
+
+	if [ -e $TGT -a ! -w $TGT ];  then
+		chmod +w $TGT || return 1
+	fi
+	cp $SRC $TGT || return 1
+	chmod +w $TGT || return 1
+	return 0
+}
+
+while read SCHEMA;  do
+
+	E=schema/$SCHEMA/etc/$SCHEMA.flow
+	L=schema/$SCHEMA/lib/$SCHEMA.flow.example
+	test -e $L || continue
+
+	cp_chmod $L $E || die "cp_chmod $L $E failed"
+
+	E=schema/$SCHEMA/etc/profile
+	L=schema/$SCHEMA/lib/profile.example
+	test -e $L || continue
+
+	cp_chmod $L $E || die "cp_chmod $L $E failed"
+
+	rm -rf schema/$SCHEMA/log/* ||
+			die "rm schema/$SCHEMA/log/* failed: exit status=$?"
+done <<END
+$(find-schema)
+END
+
+sbin/cron-reboot
