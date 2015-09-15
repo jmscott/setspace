@@ -1,0 +1,18 @@
+<html>
+ <head>
+  <title>News@SetSpace</title>
+  <link href="screen.css" rel="stylesheet" type="text/css" />
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/navigation.shtml" -->
+   <div id="content">
+    <h2>News</h2>
+    <!--#include virtual="/news-ticker.shtml" -->
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

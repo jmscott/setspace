@@ -1,0 +1,26 @@
+#
+#  Synopsis:
+#	Config to populate tables in bloblog postgres schema.
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#
+
+boot
+{
+	brr_capacity = 256;
+	flow_worker_count = 16;
+	os_exec_worker_count = 12;
+	os_exec_capacity = 12;
+
+	xdr_roll_duration = "24h";
+	fdr_roll_duration = "24h";
+	qdr_roll_duration = "24h";
+
+	heartbeat_duration = "10s";
+}
+
+tail biod
+{
+	path = "spool/setspace.brr";
+}

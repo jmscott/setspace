@@ -1,0 +1,43 @@
+<html>
+ <head>
+  <title>Blob Hexdump - SetSpace</title>
+  <link href="screen.css" rel="stylesheet" type="text/css" />
+  <style type="text/css">
+  /*<![CDATA[*/
+  h3
+  {
+  	text-align:		center;
+  }
+  pre#hex
+  {
+  	margin-left:		2em;
+	background-color:	black;
+	color:			lightgreen;
+	font-size:		larger;
+  }
+  pre#hex span.count, pre#hex span.ascii
+  {
+	background-color:	black;
+	color:			white;
+  }
+  /*]]>*/
+  </style>
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/navigation.shtml" -->
+   <div id="content">
+    <h2>Blob Hex Dump</h2>
+    <h3>
+     UDIG:
+     <!--#include virtual="/cgi-bin/env?out=text&qarg=udig&${QUERY_STRING}" -->
+    </h3>
+
+    <!--#include virtual="/cgi-bin/blob?out=pre.hex&id=hex&${QUERY_STRING}" -->
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

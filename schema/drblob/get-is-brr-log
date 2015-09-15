@@ -1,0 +1,70 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Invoke is-brr-log on a fetched blob
+#  Usage:
+#	get-is-brr-log <blob udig>
+#  Exit Status:
+#  	0	yes, blob is a well formed blob request record (brr) log 
+#	1	no, blob is not well formed blob request record (brr) log
+#	2	blob is empty
+#	3	blob does not exist
+#  	4	wrong number of command line arguments
+#	5	blobio get failed for unknown reason
+#	6	is-brr-log failed for unknown reason
+#  Environment:
+#	BLOBIO_SERVICE
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#  Note:
+#	All is-<table> can be collapsed into is-<table>, like merge-blob was
+#	collapsed.
+#
+PROG='get-is-brr-log'
+
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
+
+die()
+{
+	echo "$PROG: ERROR: $1" >&2
+	exit $2
+}
+
+leave()
+{
+	rm -f $TMP_BLOB
+	exit
+}
+
+trap leave EXIT INT TERM QUIT
+
+test $# = 1 || die 'wrong number of arguments' 4
+BLOB=$1
+
+#  fetch the blob into temp file
+
+blobio get --service $BLOBIO_SERVICE --udig $BLOB --output-path $TMP_BLOB
+STATUS=$?
+case $STATUS in
+0)
+	;;
+1)
+	blobio empty --udig $BLOB && exit 2
+	exit 3
+	;;
+*)
+	die "blobio get failed: exit status=$STATUS" 5
+	;;
+esac
+
+is-brr-log <$TMP_BLOB
+STATUS=$?
+case $STATUS in
+0|1|2)
+	;;
+*)
+	die "is-brr-log failed: exit status=$STATUS" 6
+	;;
+esac
+exit $STATUS

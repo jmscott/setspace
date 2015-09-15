@@ -1,0 +1,9 @@
+byte-bitmap
+byte-count
+is-byte-hex-40
+byte-prefix-32
+is-byte-json-rootish
+is-sha-udigish
+is-udigish
+is-utf8wf
+new-line-count

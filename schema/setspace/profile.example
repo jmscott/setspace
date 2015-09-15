@@ -1,0 +1,12 @@
+#
+#  Synopsis:
+#	Profile for typical setspace server
+#  Usage:
+#	. $SETSPACE_ROOT/etc/profile
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/setspace
+
+PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH

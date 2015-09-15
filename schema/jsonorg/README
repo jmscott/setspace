@@ -1,0 +1,8 @@
+Synopsis:
+	PostgreSQL schema for json.org parsable blobs.
+See:
+	schema.sql
+	http://www.json.org/JSON_checker/
+Blame:
+	jmscott@setspace.com
+	setspace@gmail.com

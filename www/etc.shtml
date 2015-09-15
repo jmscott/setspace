@@ -1,0 +1,65 @@
+<html>
+ <head>
+  <title>Added Bookmarklet to Web Browser</title>
+  <link href="screen.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript">
+  /*<![CDATA[*/
+  function select_text()
+  {
+  	document.getElementById("jst").select();
+	alert('Bookmarklet text selected ... you must copy to clipboard');
+	/*
+	 *  Investigate detecting existence of document.execCommand('Copy');
+	 *  in certain browsers.
+	 */
+  }
+  /*]]>*/
+  </script>
+  <style type="text/css">
+   /*<![CDATA[*/
+   #jst
+   {
+   	width:		80%;
+	display:	block;
+   }
+
+   /*]]>*/
+  </style>
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/navigation.shtml" -->
+   <div id="content">
+    <h2>Add Bookmarklet to Web Browser</h2>
+    <p>
+     To mark a web page in Desktop Google Chrome, Mozilla or Safari,
+     simply drag the following link up to the bookmarks bar in your browser:
+     <div id="link">
+     <!--#include virtual="/cgi-bin/remember-uri?out=a" -->
+     </div>
+    </p>
+
+    <p>
+      Unfortunately, certain browsers don't allow creation of bookmarkslets by
+      drag and drop.  The iPad/iOS5 tablet browser is an example.  
+      For such browsers, you must manually define a bookmarklet by selecting,
+      copying and pasting the following javascript into the location section
+      of the new bookmark.
+      <!--#include virtual="/cgi-bin/remember-uri?id=jst&out=textarea" -->
+     <input
+    	type="button"
+	value="Select Bookmarklet Text"
+	onClick='javascript:select_text();'
+     />
+    </p>
+
+    <h2>CGI Process Environment</h2>
+    Test
+    <a href="/env.shtml">here</a>
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

@@ -1,0 +1,53 @@
+<html>
+ <head>
+  <title>Search Engine</title>
+  <link href="screen.css" rel="stylesheet" type="text/css" />
+  <style type="text/css">
+  /*<![CDATA[*/
+  #q
+  {
+  	width:		40em;
+  }
+  /*]]>*/
+  </style>
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/navigation.shtml" -->
+   <div id="content">
+    <h2>Search Engine</h2>
+    <form
+    	name="sengine"
+	method="POST"
+	action="/cgi-bin/sengine"
+    >
+     <input
+	type="hidden"
+     	name="in"
+	value="rd"
+     />
+     <!--
+  	Perhaps a bit of javascript that consults the SETSPACE_SENGINE
+	cookie that tracks the number of consecutive searches to the same 
+	engine in a row.  When limit is reached, the javascript automatically
+	forwards to the selected engine.
+     -->
+     <!--#include
+          virtual="/cgi-bin/sengine?out=select&id=select-se&${QUERY_STRING}"
+     -->
+     <input
+     	type="submit"
+	class="submit"
+	value="Go"
+     />
+     <!--#include
+          virtual="/cgi-bin/sengine?out=input&id=q&${QUERY_STRING}"
+     -->
+    </form>
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

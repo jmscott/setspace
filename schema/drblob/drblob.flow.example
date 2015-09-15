@@ -1,0 +1,1108 @@
+#
+#  Synopsis:
+#	Flow blobs into setspace database schema
+#  Usage:
+#  	flowd server drblob.flow
+#  See:
+#  	schema.sql
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#  Note:
+#	Think about collapsing the in_<table>_table rules into single  "true"
+#	command. Or, think about the possible "predicate" clause that replaces
+#	the "true" command.
+#
+
+boot
+{
+	brr_capacity = 256;
+	flow_worker_count = 16;
+	os_exec_worker_count = 12;
+	os_exec_capacity = 12;
+
+	xdr_roll_duration = "24h";
+	fdr_roll_duration = "24h";
+	qdr_roll_duration = "24h";
+
+	heartbeat_duration = "10s";
+}
+
+sql database setspace
+{
+	driver_name = "postgres";
+	data_source_name = "sslmode=disable";
+	max_idle_conns = 1;
+	max_open_conns = 16;
+}
+
+tail biod
+{
+	path = "spool/setspace.brr";
+}
+
+sql query is_in_service_table row
+{
+	statement = `
+
+	  SELECT exists (
+	    select
+	    	blob
+	      from
+	      	setspace.service
+	      where
+	      	blob = $1::udig
+	  );
+
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+####  BEGIN BRR COMAND/QUERIES
+
+#
+#  Scan to determine if blob is a Blob Request Record Log
+#
+command get_is_brr_log
+{
+	path = "get-is-brr-log";
+
+	exit_status is OK when in {
+		0,			#  is a blob request log
+		1,			#  is not a blob request log
+		2			#  blob is empty
+	};
+}
+
+#
+#  Is the tuple in the table is_brr_log?
+#
+sql query in_is_brr_log_table row
+{
+	statement = `
+
+	SELECT
+	  (select exists (
+	     select
+		blob
+	       from
+	    		drblob.is_brr_log
+	       where
+			blob = $1::udig
+	     )
+	  ),
+	  (select
+	  	is_brr
+	    from
+	    	drblob.is_brr_log
+	    where
+	    	blob = $1::udig
+	  )
+	`;
+
+	result row is (
+		answer bool,
+		is_brr bool
+	);
+	database is setspace;
+}
+
+#
+#  Merge the tuple into the table is_brr_log
+#
+sql query merge_is_brr_log row
+{
+	statement = `
+
+	INSERT into drblob.is_brr_log (
+		blob,
+		is_brr
+	  ) SELECT
+		$1::udig,
+		case $2 
+	  		when '0' then true
+	  		when '1' then false
+	  		when '2' then false
+		end
+  	  ON CONFLICT
+  		do nothing
+	  RETURNING
+	  	is_brr
+	;
+
+	`;
+
+	result row is (
+		is_brr bool
+	);
+	database is setspace;
+}
+
+sql query has_brr_chars row
+{
+	statement = `
+
+	SELECT
+		--  netflow contains the tilde character
+		tilde = (bm.bitmap & tilde) and
+
+		--  chat history must contain either "no" or "ok".
+		(
+			chat_no = (bm.bitmap & chat_no)
+			or
+			chat_ok = (bm.bitmap & chat_ok)
+		) and
+
+		-- verb: get || put || give || take || eat ||wrap || roll
+		(
+			verb_eat = (bm.bitmap & verb_eat)
+			or
+			verb_get = (bm.bitmap & verb_get)
+			or
+			verb_put = (bm.bitmap & verb_put)
+			or
+			verb_give = (bm.bitmap & verb_give)
+			or
+			verb_take = (bm.bitmap & verb_take)
+			or
+			verb_wrap = (bm.bitmap & verb_wrap)
+			or
+			verb_roll = (bm.bitmap & verb_roll)
+		)
+	  FROM
+		setspace.byte_bitmap bm,
+
+		--  all zero bits
+		coalesce(
+			B'0'::bit(256)
+		) as all_zero,
+
+		--  tilde: ~
+		coalesce(
+		  (B'1'::bit(256) >> 129)
+		) as tilde,
+
+		-- chat_no: n=110 o=111
+		coalesce(
+		  (B'11'::bit(256) >> 144)
+		) as chat_no,
+
+		-- chat_ok: o=111 k=107
+		coalesce(
+		  (B'10001'::bit(256) >> 144)
+		) as chat_ok,
+
+		-- verb_eat: e=101 a=97 t=116
+		coalesce(
+		  (B'10001000000000000001'::bit(256) >> 139)
+		) as verb_eat,
+
+		-- verb_get: g=103 e=101 t=116
+		coalesce(
+		  (B'1010000000000001'::bit(256) >> 139)
+		) as verb_get,
+
+		-- verb_put: p=112 u=117 t=116
+		coalesce(
+		  (B'100011'::bit(256) >> 138)
+		) as verb_put,
+
+		-- verb_take: t=116 a=97 k=107 e=101
+		coalesce(
+		  (B'101010000000000001'::bit(256) >> 137)
+		) as verb_take,
+
+		-- verb_give: g=103 i=105 v=118 e=101
+		coalesce(
+		  (B'101010000000000001'::bit(256) >> 137)
+		) as verb_give,
+
+		-- verb_wrap: w=119 r=114 a=97 p=112
+		coalesce(
+		  (B'10000000000000010100001'::bit(256) >> 136)
+		) as verb_wrap,
+
+		-- verb_roll: r=114 o=111 l=108 l=108
+		coalesce(
+		  (B'1001001'::bit(256) >> 141)
+		) as verb_roll
+	  WHERE
+		bm.blob = $1::udig
+	;
+
+	`;
+
+	result row is (
+		answer	bool
+	);
+	database is setspace;
+}
+
+query is_in_service_table(biod.udig);
+
+query has_brr_chars(biod.udig)
+  when
+  	is_in_service_table.answer == true
+;
+
+query in_is_brr_log_table(biod.udig)
+  when
+  	has_brr_chars.answer == true
+;
+
+call get_is_brr_log(biod.udig) 
+  when
+  	in_is_brr_log_table.answer == false
+;
+
+query merge_is_brr_log(biod.udig, get_is_brr_log.exit_status);
+
+sql query in_brr_log_total_table row
+{
+	statement = `
+
+	  SELECT exists (
+	    select
+	  	blob
+	    from
+	    	drblob.brr_log_total
+	    where
+	    	blob = $1::udig
+	  );
+
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query in_brr_log_total_table(biod.udig)
+  when
+	#  just installed the brr log
+  	merge_is_brr_log.is_brr == true
+	or
+	in_is_brr_log_table.is_brr == true
+;
+
+command merge_brr_log_total
+{
+	path = "merge-blob";
+	argv = (
+		"brr_log_total"
+	);
+	exit_status is OK when in {0, 1};
+}
+
+call merge_brr_log_total(biod.udig)
+  when
+  	in_brr_log_total_table.answer == false
+;
+
+sql query in_brr_log_time_table row
+{
+	statement = `
+
+	  SELECT exists (
+	    select
+	  	blob
+	    from
+	    	drblob.brr_log_time
+	    where
+	    	blob = $1::udig
+	  );
+
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query in_brr_log_time_table(biod.udig)
+  when
+	#  just installed the brr log
+  	merge_is_brr_log.is_brr == true
+	or
+	in_is_brr_log_table.is_brr == true
+;
+
+command merge_brr_log_time
+{
+	path = "merge-blob";
+	argv = (
+		"brr_log_time"
+	);
+	exit_status is OK when in {0, 1};
+}
+
+call merge_brr_log_time(biod.udig)
+  when
+  	in_brr_log_time_table.answer == false
+;
+
+####  END BRR COMAND/QUERIES
+
+
+####  BEGIN FDR COMAND/QUERIES
+
+#
+#  Is the Blob a Log of Flow Detail Records?
+#
+command get_is_fdr_log
+{
+	path = "get-is-fdr-log";
+
+	exit_status is OK when in {
+		0,			#  is a flow detail log
+		1,			#  is not a flow detail log
+		2			#  blob is empty
+	};
+}
+
+#
+#  Is the tuple in the table is_fdr_log?
+#
+sql query in_is_fdr_log_table row
+{
+	statement = `
+
+	SELECT
+	  exists (
+	    select
+	  	blob
+	      from
+	    	drblob.is_fdr_log
+	      where
+		blob = $1::udig
+	  ),
+	  (select
+		is_fdr
+	    from
+	  	drblob.is_fdr_log
+	    where
+	  	blob = $1::udig
+	  )
+	;
+
+	`;
+
+	result row is (
+		answer bool,
+		is_fdr bool
+	);
+	database is setspace;
+}
+
+#
+#  Merge the tuple into the table is_fdr_log
+#
+sql query merge_is_fdr_log row
+{
+	statement = `
+
+	INSERT into drblob.is_fdr_log (
+		blob,
+		is_fdr
+	  ) SELECT
+		$1::udig,
+		case $2 
+	  		when '0' then true
+	  		when '1' then false
+	  		when '2' then false
+		end
+  	  ON CONFLICT
+  		do nothing
+	  RETURNING
+	  	is_fdr
+	;
+	
+	`;
+	database is setspace;
+	result row is (
+		is_fdr bool
+	);
+}
+
+query in_is_fdr_log_table(biod.udig)
+  when
+  	is_in_service_table.answer == true;
+
+call get_is_fdr_log(biod.udig) 
+  when
+  	in_is_fdr_log_table.answer == false
+;
+
+query merge_is_fdr_log(biod.udig, get_is_fdr_log.exit_status)
+  when
+  	get_is_fdr_log.exit_status == 0
+	or
+	get_is_fdr_log.exit_status == 1
+	or
+	get_is_fdr_log.exit_status == 2
+;
+
+sql query in_fdr_log_total_table row
+{
+	statement = `
+
+	  SELECT exists (
+	    select
+	  	blob
+	    from
+	    	drblob.fdr_log_total
+	    where
+	    	blob = $1::udig
+	  );
+
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query in_fdr_log_total_table(biod.udig)
+  when
+	#  just install the fdr log
+  	merge_is_fdr_log.is_fdr == true
+	or
+	in_is_fdr_log_table.is_fdr == true
+;
+
+command merge_fdr_log_total
+{
+	path = "merge-blob";
+	argv = (
+		"fdr_log_total"
+	);
+	exit_status is OK when in {0, 1};
+}
+
+call merge_fdr_log_total(biod.udig)
+  when
+  	in_fdr_log_total_table.answer == false
+;
+
+sql query in_fdr_log_time_table row
+{
+	statement = `
+
+	  SELECT exists (
+	    select
+	  	blob
+	    from
+	    	drblob.fdr_log_time
+	    where
+	    	blob = $1::udig
+	  );
+
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query in_fdr_log_time_table(biod.udig)
+  when
+	#  just installed the fdr log
+  	merge_is_fdr_log.is_fdr == true
+	or
+	in_is_fdr_log_table.is_fdr == true
+;
+
+command merge_fdr_log_time
+{
+	path = "merge-blob";
+	argv = (
+		"fdr_log_time"
+	);
+	exit_status is OK when in {0, 1};
+}
+
+call merge_fdr_log_time(biod.udig)
+  when
+  	in_fdr_log_time_table.answer == false
+;
+
+sql query in_fdr_log_sequence_table row
+{
+	statement = `
+
+	  SELECT exists (
+	    select
+	  	blob
+	    from
+	    	drblob.fdr_log_sequence
+	    where
+	    	blob = $1::udig
+	  );
+
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query in_fdr_log_sequence_table(biod.udig)
+  when
+	#  just installed the fdr log
+  	merge_is_fdr_log.is_fdr == true
+	or
+	in_is_fdr_log_table.is_fdr == true
+;
+
+command merge_fdr_log_sequence
+{
+	path = "merge-blob";
+	argv = (
+		"fdr_log_sequence"
+	);
+	exit_status is OK when in {0, 1};
+}
+
+call merge_fdr_log_sequence(biod.udig)
+  when
+  	in_fdr_log_sequence_table.answer == false
+;
+
+####  END FDR COMAND/QUERIES
+
+####  BEGIN QDR COMAND/QUERIES
+
+#
+#  Is the Blob a Log of Query Detail Records?
+#
+command get_is_qdr_log
+{
+	path = "get-is-qdr-log";
+
+	exit_status is OK when in {
+		0,			#  is a query detail log
+		1,			#  is not a query detail log
+		2			#  blob is empty
+	};
+}
+
+#
+#  Is the tuple in the table is_qdr_log?
+#
+sql query in_is_qdr_log_table row
+{
+	statement = `
+
+	SELECT
+	  exists (
+		select
+			blob
+	    	  from
+			drblob.is_qdr_log
+	    	where
+			blob = $1::udig
+	  ),
+	  (select
+		is_qdr
+	    from
+		drblob.is_qdr_log
+	    where
+		blob = $1::udig
+	  )
+	;
+
+	`;
+	result row is (
+		answer bool,
+		is_qdr bool
+	);
+	database is setspace;
+}
+
+sql query merge_is_qdr_log row
+{
+	statement = `
+
+	INSERT into drblob.is_qdr_log (
+		blob,
+		is_qdr
+	  ) SELECT
+		$1::udig,
+		case $2 
+	  		when '0' then true
+	  		when '1' then false
+	  		when '2' then false
+		end
+  	  ON CONFLICT
+  		do nothing
+	  RETURNING
+	  	is_qdr
+	;
+	
+	`;
+	database is setspace;
+	result row is (
+		is_qdr bool
+	);
+}
+
+query in_is_qdr_log_table(biod.udig)
+  when
+  	is_in_service_table.answer == true
+;
+
+call get_is_qdr_log(biod.udig) 
+  when
+  	in_is_qdr_log_table.answer == false
+;
+
+query merge_is_qdr_log(biod.udig, get_is_qdr_log.exit_status)
+  when
+  	get_is_qdr_log.exit_status == 0
+	or
+	get_is_qdr_log.exit_status == 1
+	or
+	get_is_qdr_log.exit_status == 2
+;
+
+
+sql query in_qdr_log_total_table row
+{
+	statement = `
+
+	  SELECT exists (
+	    select
+	  	blob
+	    from
+	    	drblob.qdr_log_total
+	    where
+	    	blob = $1::udig
+	  );
+
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query in_qdr_log_total_table(biod.udig)
+  when
+	#  just install the qdr log
+  	merge_is_qdr_log.is_qdr == true
+	or
+	in_is_qdr_log_table.is_qdr == true
+;
+
+command merge_qdr_log_total
+{
+	path = "merge-blob";
+	argv = (
+		"qdr_log_total"
+	);
+	exit_status is OK when in {0, 1};
+}
+
+call merge_qdr_log_total(biod.udig)
+  when
+  	in_qdr_log_total_table.answer == false
+;
+
+sql query in_qdr_log_time_table row
+{
+	statement = `
+
+	SELECT
+	  exists (
+	    select
+	  	blob
+	    from
+	    	drblob.qdr_log_time
+	    where
+	    	blob = $1::udig
+	  )
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query in_qdr_log_time_table(biod.udig)
+  when
+	#  just installed the qdr log
+  	merge_is_qdr_log.is_qdr == true
+	or
+	in_is_qdr_log_table.is_qdr == true
+;
+
+command merge_qdr_log_time
+{
+	path = "merge-blob";
+	argv = (
+		"qdr_log_time"
+	);
+	exit_status is OK when in {0, 1};
+}
+
+call merge_qdr_log_time(biod.udig)
+  when
+  	in_qdr_log_time_table.answer == false
+;
+
+sql query in_qdr_log_flow_sequence_table row
+{
+	statement = `
+
+	  SELECT exists (
+	    select
+	  	blob
+	    from
+	    	drblob.qdr_log_flow_sequence
+	    where
+	    	blob = $1::udig
+	  );
+
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query in_qdr_log_flow_sequence_table(biod.udig)
+  when
+	#  just installed the qdr log
+  	merge_is_qdr_log.is_qdr == true
+	or
+	in_is_qdr_log_table.is_qdr == true
+;
+
+command merge_qdr_log_flow_sequence
+{
+	path = "merge-blob";
+	argv = (
+		"qdr_log_flow_sequence"
+	);
+	exit_status is OK when in {0, 1};
+}
+
+call merge_qdr_log_flow_sequence(biod.udig)
+  when
+  	in_qdr_log_flow_sequence_table.answer == false
+;
+
+sql query in_qdr_log_query_table row
+{
+	statement = `
+
+	SELECT exists (
+	  select
+	  	blob
+	    from
+	    	drblob.qdr_log_query
+	    where
+	    	blob = $1::udig
+	);
+
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query in_qdr_log_query_table(biod.udig)
+  when
+	#  just installed the qdr log
+  	merge_is_qdr_log.is_qdr == true
+	or
+	in_is_qdr_log_table.is_qdr == true
+;
+
+command merge_qdr_log_query
+{
+	path = "merge-blob";
+	argv = (
+		"qdr_log_query"
+	);
+	exit_status is OK when in {0, 1};
+}
+
+call merge_qdr_log_query(biod.udig)
+  when
+  	in_qdr_log_query_table.answer == false
+;
+
+#####  END QDR COMAND/QUERIES
+
+
+####  BEGIN XDR COMAND/QUERIES
+
+#
+#  Is the Blob a Log of Execution Detail Records?
+#
+command get_is_xdr_log
+{
+	path = "get-is-xdr-log";
+
+	exit_status is OK when in {
+		0,			#  is a execution detail log
+		1,			#  is not a execution detail log
+		2			#  blob is empty
+	};
+}
+
+#
+#  Is the tuple in the table is_xdr_log?
+#
+sql query in_is_xdr_log_table row
+{
+	statement = `
+
+	SELECT
+	  exists (
+	    select
+	  	blob
+	      from
+	    	drblob.is_xdr_log
+	      where
+	    	blob = $1::udig
+	  ),
+	  (select
+	  	is_xdr
+	    from
+	    	drblob.is_xdr_log
+	    where
+	    	blob = $1::udig
+	  )
+	;
+	`;
+	result row is (
+		answer bool,
+		is_xdr bool
+	);
+	database is setspace;
+}
+
+#
+#  Merge the tuple into the table is_xdr_log
+#
+sql query merge_is_xdr_log row
+{
+	statement = `
+
+	INSERT into drblob.is_xdr_log (
+		blob,
+		is_xdr
+	  ) SELECT
+		$1::udig,
+		case $2 
+	  		when '0' then true
+	  		when '1' then false
+	  		when '2' then false
+		end
+  	  ON CONFLICT
+  		do nothing
+	  RETURNING
+	  	is_xdr
+	;
+
+	`;
+	result row is (
+		is_xdr	bool
+	);
+	database is setspace;
+}
+
+query in_is_xdr_log_table(biod.udig)
+  when
+	is_in_service_table.answer == true
+;
+
+call get_is_xdr_log(biod.udig) 
+  when
+  	in_is_xdr_log_table.answer == false
+;
+
+query merge_is_xdr_log(biod.udig, get_is_xdr_log.exit_status)
+  when
+  	get_is_xdr_log.exit_status == 0
+	or
+	get_is_xdr_log.exit_status == 1
+	or
+	get_is_xdr_log.exit_status == 2
+;
+
+sql query in_xdr_log_total_table row
+{
+	statement = `
+
+	  SELECT exists (
+	    select
+	  	blob
+	    from
+	    	drblob.xdr_log_total
+	    where
+	    	blob = $1::udig
+	  );
+
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query in_xdr_log_total_table(biod.udig)
+  when
+	#  just install the xdr log
+  	merge_is_xdr_log.is_xdr == true
+	or
+	in_is_xdr_log_table.is_xdr == true
+;
+
+command merge_xdr_log_total
+{
+	path = "merge-blob";
+	argv = (
+		"xdr_log_total"
+	);
+	exit_status is OK when in {0, 1};
+}
+
+call merge_xdr_log_total(biod.udig)
+  when
+  	in_xdr_log_total_table.answer == false
+;
+
+sql query in_xdr_log_time_table row
+{
+	statement = `
+
+	SELECT
+	  exists (
+	    select
+	  	blob
+	    from
+	    	drblob.xdr_log_time
+	    where
+	    	blob = $1::udig
+	  )
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query in_xdr_log_time_table(biod.udig)
+  when
+	#  just installed the xdr log
+  	merge_is_xdr_log.is_xdr == true
+	or
+	in_is_xdr_log_table.is_xdr == true
+;
+
+command merge_xdr_log_time
+{
+	path = "merge-blob";
+	argv = (
+		"xdr_log_time"
+	);
+	exit_status is OK when in {0, 1};
+}
+
+call merge_xdr_log_time(biod.udig)
+  when
+  	in_xdr_log_time_table.answer == false
+;
+
+sql query in_xdr_log_flow_sequence_table row
+{
+	statement = `
+
+	  SELECT exists (
+	    select
+	  	blob
+	    from
+	    	drblob.xdr_log_flow_sequence
+	    where
+	    	blob = $1::udig
+	  );
+
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query in_xdr_log_flow_sequence_table(biod.udig)
+  when
+	#  just installed the xdr log
+  	merge_is_xdr_log.is_xdr == true
+	or
+	in_is_xdr_log_table.is_xdr == true
+;
+
+command merge_xdr_log_flow_sequence
+{
+	path = "merge-blob";
+	argv = (
+		"xdr_log_flow_sequence"
+	);
+	exit_status is OK when in {0, 1};
+}
+
+call merge_xdr_log_flow_sequence(biod.udig)
+  when
+  	in_xdr_log_flow_sequence_table.answer == false
+;
+
+sql query in_xdr_log_query_table row
+{
+	statement = `
+
+	  SELECT exists (
+	    select
+	  	blob
+	    from
+	    	drblob.xdr_log_query
+	    where
+	    	blob = $1::udig
+	  );
+
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query in_xdr_log_query_table(biod.udig)
+  when
+	#  just installed the xdr log
+  	merge_is_xdr_log.is_xdr == true
+	or
+	in_is_xdr_log_table.is_xdr == true
+;
+
+command merge_xdr_log_query
+{
+	path = "merge-blob";
+	argv = (
+		"xdr_log_query"
+	);
+	exit_status is OK when in {0, 1};
+}
+
+call merge_xdr_log_query(biod.udig)
+  when
+  	in_xdr_log_query_table.answer == false
+;
+
+#####  END XDR COMAND/QUERIES

@@ -1,0 +1,183 @@
+/*
+ *  Synopsis:
+ *  	Vanilla, desktop/full-screen oriented style sheet
+ *  Description:
+ * 	Color schema calculated Color Scheme Designed
+ *
+ *		http://colorschemedesigner.com/#3v91ThhuuyiXN
+ *		http://colorschemedesigner.com/#3S91ThhuuyiXN
+ *		! http://colorschemedesigner.com/#3Se1ThhuuyiXN
+ *		http://colorschemedesigner.com/#4ae1ThhuuyiXN
+ */
+
+a
+{
+	text-decoration:	none;
+}
+
+a:hover
+{
+	background-color:	#206;
+	color:			#fff;
+}
+span.title
+{
+	font-weight:	bold;
+}
+
+span.null
+{
+	background-color:	pink;
+	color:			black;
+}
+
+span.ellipse
+{
+	color:			green;
+	background-color:	white;
+	font-weight:		bold;
+}
+
+/*
+ *  Why is font-size not inherited by child text of a element?
+ *  The big 4 browsers all i
+ */
+div.meta a.detail span
+{
+	font-weight:		bold;
+	font-size:		smaller;
+}
+
+#container
+{
+	margin: 0 30px;
+	background: #fff;
+}
+
+#header
+{
+	background:	#ccf;
+	color:		#036;
+	padding:	20px;
+}
+
+#header h1 { margin: 0; }
+
+#navigation
+{
+	float: left;
+	width: 100%;
+	background: #fff;
+	color: #306;
+}
+
+#navigation ul
+{
+	margin: 0;
+	padding: 0;
+}
+
+#ll
+{
+	float:		right;
+}
+
+#navigation ul li
+{
+	list-style-type:	none;
+	display:		inline;
+}
+
+#navigation li a
+{
+	display:		block;
+	float:			left;
+	padding:		5px 10px;
+	color:			#306;
+	text-decoration:	none;
+	border-right:		1px solid #e0e0e0;
+	border-left:		1px solid #e0e0e0;
+	border-bottom:		1px solid #e0e0e0;
+}
+
+#navigation li a:hover
+{
+	background-color:	#306;
+	color:			#fff;
+}
+
+#content
+{
+	clear:			left;
+	padding:		20px;
+}
+
+#content h2
+{
+	color:		#000;
+	font-size:	160%;
+	margin:		0 0 .5em;
+	text-align:	center;
+}
+
+#footer
+{
+	font-size:	12px;
+	background:	#e0e0e0;
+	text-align:	center;
+	padding:	20px;
+	height:		36px;
+}
+
+#footer-link
+{
+	margin-top:	6px;
+	display:	block;
+}
+
+#footer-cc
+{
+	display:	block;
+	margin-top:	6px;
+}
+
+dl.form dt
+{
+	font-weight:	bold;
+}
+
+input.submit
+{
+	font-weight:    	bold;
+	background-color:	#399;
+	color:			#fff;
+}
+
+div.err
+{
+	border:		1px solid red;
+	background:	pink;
+	color:		black;
+}
+
+div.err h1
+{
+	width:		100%;
+	font-size:	smaller;
+	text-align:	center;
+}
+
+div.err p
+{
+	color:		black;
+	background:	lightgrey;
+	text-align:	center;
+	width:		50%;
+	padding:	1em;
+	margin:		1em;
+}
+
+input.udig
+{
+	width:		40em;
+}

@@ -1,0 +1,9 @@
+Synopsis:
+	Schema based of entropy toolkit from USA National Institute of Standards
+See:
+	http://csrc.nist.gov/groups/ST/toolkit/rng/documentation_software.html
+	http://troydhanson.github.io/misc/Entropy.html
+	http://www.onlamp.com/pub/a/php/2005/01/06/entropy.html
+	http://deadhacker.com/2007/05/13/finding-entropy-in-binary-files/
+Blame:
+	jmscott@setspace.com

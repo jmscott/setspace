@@ -1,0 +1,9 @@
+Synopsis:
+	Schema for flow, query, executable and blob.io detail records
+See:
+	schema.sql
+	$BLOBIO_ROOT/log/flowd.[fqx]dr
+	$BLOBIO_ROOT/spool/biod.brr
+Blame:
+	jmscott@setspace.com
+	setspace@gmail.com

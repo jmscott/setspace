@@ -1,0 +1,90 @@
+#!/usr/bin/perl
+#
+#  Synopsis:
+#	Implements argument processing for /cgi-bin/is_ascii.
+#  Source Path:
+#	is_ascii.cgi
+#  Source SHA1 Digest:
+#	No SHA1 Calculated
+#  Note:
+#	/cgi-bin/is_ascii was generated automatically by cgi2perl5.
+#
+#	Do not make changes directly to this script.
+#
+die "SERVER_ROOT environment variable not defined"
+				unless defined $ENV{SERVER_ROOT};
+
+#
+#  Prepend the $SERVER_ROOT/lib directory
+#  to the load path.
+#
+unshift @INC, "$ENV{SERVER_ROOT}/lib";
+
+our (%CGI);
+
+require 'httpd2.d/common.pl';
+$CGI{name} = 'is_ascii';
+
+#
+#  BEGIN: /cgi/GET/out/query-args
+#
+$CGI{GET}->{out}->{'query-args'}->{arg}->{id} = {
+	perl5_re	=>	'\w[\w-]{0,32}'
+};
+$CGI{GET}->{out}->{'query-args'}->{arg}->{class} = {
+	perl5_re	=>	'\w[\w-]{0,32}'
+};
+#
+#  'out' query argument must match one of the out putter names.
+#
+$CGI{GET}->{out}->{'query-args'}->{arg}->{out} = {
+	perl5_re	=> 	'a|pre|help',
+	default		=>	'help',
+};
+#
+#  BEGIN: /cgi/GET/out/putter[@name='a']
+#
+$CGI{GET}->{out}->{putter}->{'a'}->{name} = 'a';
+$CGI{GET}->{out}->{putter}->{'a'}->{'content-type'} = 'text/html';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=a]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'a'}->{'query-args'}->{arg}->{udig} = {
+	perl5_re	=>	'[[:alnum:]]{1,15}:[[:graph:]]{1,255}',
+};
+$CGI{GET}->{out}->{putter}->{'a'}->{'query-args'}->{arg}->{text} = {
+	perl5_re	=>	'.{0,255}',
+};
+#
+#  END: /cgi/GET/out/putter[@name=a]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='a']
+#
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name='pre']
+#
+$CGI{GET}->{out}->{putter}->{'pre'}->{name} = 'pre';
+$CGI{GET}->{out}->{putter}->{'pre'}->{'content-type'} = 'text/html';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=pre]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'pre'}->{'query-args'}->{arg}->{udig} = {
+	perl5_re	=>	'[[:alnum:]]{1,15}:[[:graph:]]{1,255}',
+};
+#
+#  END: /cgi/GET/out/putter[@name=pre]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='pre']
+#
+
+$CGI{GET}->{out}->{putter}->{help}->{name} = 'help';
+$CGI{GET}->{out}->{putter}->{help}->{'content-type'} = 'text/html';
+
+require "httpd2.d/$ENV{REQUEST_METHOD}.pl";
