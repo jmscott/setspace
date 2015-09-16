@@ -1,11 +1,12 @@
 # Synopsis
 
-The core **setspace** schema records common facts about blobs.
+The core **setspace** schema records common facts about immutable blobs.
 
 # Description
 
-The **setspace** schema records common facts about blobs.  Typical facts
-are byte count, byte existence, and the 32 byte prefix of the blob.
+The **setspace** schema records common facts about immutable blobs.
+Typical facts are byte count, byte existence, and the 32 byte prefix of the
+blob.
 
 The full set of fact tables stored in PostgreSQL are as follows:
 
