@@ -8,6 +8,8 @@ The **setspace** schema records common facts about immutable blobs.
 Typical facts are byte count, byte existence, and the 32 byte prefix of the
 blob.
 
+These facts are eventually pushed to a relation database, like PostgreSQL.
+Each fact is expected to map to a particular table in the relational database.
 The full set of fact tables stored in PostgreSQL are as follows:
 
 * *byte_count*: count of bytes in the blob;  i.e., the "size".
