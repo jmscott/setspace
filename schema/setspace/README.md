@@ -9,9 +9,12 @@ are byte count, byte existence, and the 32 byte prefix of the blob.
 
 The fact tables are
 
-* *byte_count* The count of bytes in the blob;  i.e., the "size".
-* *byte_bitmap*	A 256 bit vector **(bit(256))** enumerating existence of bytes
-* *byte_prefix_32* The first 32 bytes of the blob.
+* *byte_count*
+  The count of bytes in the blob;  i.e., the "size".
+* *byte_bitmap*
+  A 256 bit vector **(bit(256))** enumerating existence of bytes
+* *byte_prefix_32*
+  The first 32 bytes of the blob.
 
 # Blame
 * jmscott@setspace.com
