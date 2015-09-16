@@ -21,7 +21,7 @@ The full set of fact tables stored in PostgreSQL are as follows:
 #See
 	The PostgreSQL schema
 
-		http://github.com/jmscott/setspace/blob/master/schema/setspace/schema.sql	
+		[http://github.com/jmscott/setspace/blob/master/schema/setspace/schema.sql]
 
 # Blame
 * jmscott@setspace.com
