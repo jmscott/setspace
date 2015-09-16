@@ -9,6 +9,9 @@
  *  Blame:
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
+ *  Note:
+ *	The newline count is byte oriented.  No assumption is made about
+ *	the structure of the stream of bytes.
  */
 
 #include <string.h>
