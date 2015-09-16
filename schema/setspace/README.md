@@ -19,7 +19,7 @@ The full set of fact tables stored in PostgreSQL are as follows:
 * *is_utf8wf*: is the blob a well formed UTF-8 sequence of bytes
 
 #See
-The PostgreSQL schema [SetSpace PG Schema] (http://github.com/jmscott/setspace/blob/master/schema/setspace/schema.sql)
+The PostgreSQL schema [SetSpace PostgreSQL Schema] (http://github.com/jmscott/setspace/blob/master/schema/setspace/schema.sql)
 
 # Blame
 * jmscott@setspace.com
