@@ -107,7 +107,7 @@ create table byte_prefix_32
 				not null
 );
 create index byte_prefix_32_prefix on byte_prefix_32(prefix);
-create index byte_prefix_32_pdf on byte_prefix_32
+create index byte_prefix_32_4 on byte_prefix_32
 		(substring(prefix from 1 for 4))
 ;
 
