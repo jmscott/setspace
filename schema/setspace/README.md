@@ -13,6 +13,8 @@ The fact tables are
 * *byte_bitmap*: a 256 bit vector **(bit(256))** enumerating existence of bytes
 * *byte_prefix_32*: the first 32 bytes of the blob.
 
+SetSpace always derives the core facts.
+
 # Blame
 * jmscott@setspace.com
 * setspace@gmail.com
