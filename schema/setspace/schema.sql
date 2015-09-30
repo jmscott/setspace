@@ -17,8 +17,6 @@ drop schema if exists setspace cascade;
 
 create schema setspace;
 
-set search_path to setspace,public;
-
 --  blobs "in service", i.e., all facts are known
 
 drop table if exists setspace.service cascade;
@@ -30,13 +28,13 @@ create table setspace.service
 				default now()
 				not null
 );
-create index service_discover_time on service(discover_time);
+create index service_discover_time on setspace.service(discover_time);
 
 drop table if exists setspace.byte_count cascade;
-create table byte_count
+create table setspace.byte_count
 (
 	blob		udig
-				references service
+				references setspace.service
 				on delete cascade
 				primary key,
 	byte_count	bigint
@@ -51,10 +49,10 @@ create table byte_count
  *  The empty blob is NOT utf8
  */
 drop table if exists setspace.is_utf8wf cascade;
-create table is_utf8wf
+create table setspace.is_utf8wf
 (
 	blob		udig
-				references service
+				references setspace.service
 				on delete cascade
 				primary key,
 	is_utf8		boolean
@@ -65,10 +63,10 @@ create table is_utf8wf
  *  256 Bitmap of existing bytes in blob.
  */
 drop table if exists setspace.byte_bitmap cascade;
-create table byte_bitmap
+create table setspace.byte_bitmap
 (
 	blob		udig
-				references service
+				references setspace.service
 				on delete cascade
 				primary key,
 
@@ -78,12 +76,12 @@ create table byte_bitmap
 
 --  Note: must exclude the empty blob
 
-drop view if exists ascii;
-create view ascii as
+drop view if exists setspace.ascii;
+create view setspace.ascii as
   select
   	blob
     from
-    	byte_bitmap
+    	setspace.byte_bitmap
     where
 	--  bits 255->127 are all 0
     	bitmap::bit(128) = B'0'::bit(128)
@@ -93,7 +91,7 @@ create view ascii as
  *  First 32 bytes of the blob.
  */
 drop table if exists setspace.byte_prefix_32 cascade;
-create table byte_prefix_32
+create table setspace.byte_prefix_32
 (
 	blob		udig
 				references setspace.service
@@ -106,8 +104,8 @@ create table byte_prefix_32
 				)
 				not null
 );
-create index byte_prefix_32_prefix on byte_prefix_32(prefix);
-create index byte_prefix_32_4 on byte_prefix_32
+create index byte_prefix_32_prefix on setspace.byte_prefix_32(prefix);
+create index byte_prefix_32_4 on setspace.byte_prefix_32
 		(substring(prefix from 1 for 4))
 ;
 
