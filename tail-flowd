@@ -47,8 +47,7 @@ SCHEMAS=$(
 	sed 's/^\.\///'
 )
 
-LOGS=$(
+tail -f $(
 	find $(find $SCHEMAS -mindepth 1 -maxdepth 1 -type d -name log )\
 	-name flowd-$(date +'%a').log
 )
-tail -f $LOGS
