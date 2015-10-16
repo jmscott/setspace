@@ -18,7 +18,7 @@
 
 ########################  BEGIN SECTION OF VARIABLES TO CHANGE
 
-#  during development change to local home directory, like $HOME/dev/setspace, 
+#  during development change to dir in $HOME, like $(HOME)/opt/setspace
 SETSPACE_PREFIX=/usr/local/setspace
 
 #  during development change to your user or group id
@@ -28,10 +28,7 @@ SETSPACE_GROUP=setspace
 #  must be gnu install
 INSTALL=install
 
-########################  END SECTION OF VARIABLES TO CHANGE
-
-SETSPACE_HTTPD_PREFIX=$(SETSPACE_PREFIX)/vhost/stage.setspace.com
-SETSPACE_HTTPD_CGI_MODE=ug=rx,o=
-
 #  assume a strict gcc'ish compiler
 CFLAGS=-Wall -Wextra -Werror
+
+########################  END SECTION OF VARIABLES TO CHANGE

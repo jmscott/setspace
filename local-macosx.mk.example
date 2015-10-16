@@ -8,6 +8,11 @@
 #  	Need to investigate gnu versus max install programs.
 #  	In particular, the -t option.
 #
+#
+
+########################  BEGIN SECTION OF VARIABLES TO CHANGE
+
+#  during development change to dir in $HOME, like $(HOME)/opt/setspace
 SETSPACE_PREFIX=/usr/local/setspace
 
 #  in development, set to your user/group id
@@ -24,3 +29,5 @@ CFLAGS=-Wall -Wextra -Werror
 #  On MAC OS X may need to set to ginstall from fink package manager.
 #
 INSTALL=ginstall
+
+########################  END SECTION OF VARIABLES TO CHANGE
