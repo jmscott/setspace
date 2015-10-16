@@ -39,8 +39,6 @@ ifdef SETSPACE_PREFIX
 	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/src
 	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-				-d $(SETSPACE_HTTPD_PREFIX)/www
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		boot-flowd						\
 		cron-pg_dump-mutable					\
 		cron-reboot						\
