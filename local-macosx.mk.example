@@ -5,9 +5,8 @@
 #  	jmscott@setspace.com
 #  	setspace@gmail.com
 #  Note:
-#  	Need to investigate gnu versus max install programs.
-#  	In particular, the -t option.
-#
+#	The execution PATH must include the PostgreSQL C precompile 'ecpg'
+#	for schema/drblob.  See schema/drblob/Makefile.
 #
 
 ########################  BEGIN SECTION OF VARIABLES TO CHANGE

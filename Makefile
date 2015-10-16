@@ -6,6 +6,9 @@
 #  Blame:
 #  	jmscott@setspace.com
 #  	setspace@gmail.com
+#  Note:
+#	The execution PATH must include the PostgreSQL C precompile 'ecpg'
+#	for schema/drblob.  See schema/drblob/Makefile.
 #
 include local.mk
 
