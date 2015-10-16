@@ -14,9 +14,9 @@
  *	blocking the writer process.  Consider two flowd processes connected
  *	over a one-way fifo.  If we stop the reader then the writer blocks until
  *	the reader restarts. In high traffic environments such blockage can be
- *	problematic.  An answer is to atomically transform the fifo into a
+ *	problematic.  flip-tail will atomically transform the fifo into a
  *	regular file, where the inbound writes will accumlate in file and not
- *	block.
+ *	block the writer.  After rebooting the reader, then flip back to fifo.
  *
  *  Arguments:
  *  	new-type	fifo or file
