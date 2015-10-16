@@ -13,6 +13,7 @@
 #	For example, PGLIB is always defined to $(PGROOT)/include.
 #
 include ../schema.mk
+include ../../local.mk
 
 JSON_PREFIX=$(SETSPACE_PREFIX)/schema/json
 JSON_GROUP=$(SETSPACE_GROUP)
@@ -23,7 +24,7 @@ COMPILED=			\
 	merge-jsonb_255
 
 PROGS=  $(COMPILED)			\
-	JSON_checker.sh		\
+	get-JSON_checker
 
 all: $(COMPILED)
 clean:
