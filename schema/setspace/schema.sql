@@ -131,6 +131,8 @@ drop table if exists setspace.is_udigish cascade;
 create table setspace.is_udigish
 (
 	blob	udig
+			references setspace.service
+			on delete cascade
 			primary key,
 	udigish	bool
 			not null
@@ -139,17 +141,17 @@ comment on table setspace.is_udigish is
 	'Blob might contain a udig'
 ;
 
-drop table if exists setspace.is_byte_json_rootish cascade;
-create table setspace.is_byte_json_rootish
+drop table if exists setspace.has_byte_json_bracket cascade;
+create table setspace.has_byte_json_bracket
 (
 	blob	udig
+			references setspace.service
+			on delete cascade
 			primary key,
-	is_root	bool
+	is_jroot	bool
 			not null
 );
-
-comment on table setspace.is_byte_json_rootish is
-	'Blob is Framed by [...] or {...} Chars the Root a JSON Document'
-;
+comment on table setspace.has_byte_json_bracket is
+	'Blob Might be Framed by [...] or {...}'
 
 commit;
