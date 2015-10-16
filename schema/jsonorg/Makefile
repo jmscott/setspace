@@ -15,16 +15,16 @@
 include ../schema.mk
 include ../../local.mk
 
-JSON_PREFIX=$(SETSPACE_PREFIX)/schema/json
-JSON_GROUP=$(SETSPACE_GROUP)
-JSON_USER=$(SETSPACE_USER)
+JSONORG_PREFIX=$(SETSPACE_PREFIX)/schema/json
+JSONORG_GROUP=$(SETSPACE_GROUP)
+JSONORG_USER=$(SETSPACE_USER)
 
 COMPILED=			\
-	JSON_checker		\
+	JSONORG_checker		\
 	merge-jsonb_255
 
 PROGS=  $(COMPILED)			\
-	get-JSON_checker
+	get-JSONORG_checker
 
 all: $(COMPILED)
 clean:
@@ -33,22 +33,23 @@ clean:
 install: all
 	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/schema
-	$(INSTALL) -g $(JSON_GROUP) -o $(JSON_USER) -m u=wrx,go=	\
-				-d $(JSON_PREFIX)/sbin
-	$(INSTALL) -g $(JSON_GROUP) -o $(JSON_USER) 			\
-				-d $(JSON_PREFIX)/lib
-	$(INSTALL) -g $(JSON_GROUP) -o $(JSON_USER) 			\
-				-d $(JSON_PREFIX)/log
-	$(INSTALL) -g $(JSON_GROUP) -o $(JSON_USER) -m u=rx,go=		\
+	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m u=wrx,go=	\
+				-d $(JSONORG_PREFIX)/sbin
+	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+				-d $(JSONORG_PREFIX)/lib
+	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+				-d $(JSONORG_PREFIX)/log
+	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m u=rx,go=	\
 		$(PROGS) 						\
-		$(JSON_PREFIX)/sbin
-	$(INSTALL) -g $(JSON_GROUP) -o $(JSON_USER) -m a=r		\
+		$(JSONORG_PREFIX)/sbin
+	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r		\
 		json.flow.example					\
+		psqlrc.example						\
 		schema.sql						\
-		$(JSON_PREFIX)/lib
+		$(JSONORG_PREFIX)/lib
 
-JSON_checker: JSON_checker.c
-	$(CC) -o JSON_checker $(CFLAGS) JSON_checker.c
+JSONORG_checker: JSONORG_checker.c
+	$(CC) -o JSONORG_checker $(CFLAGS) JSONORG_checker.c
 
 merge-jsonb_255: merge-jsonb_255.pgc
 	ecpg merge-jsonb_255.pgc
