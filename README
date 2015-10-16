@@ -26,3 +26,6 @@ To Do:
 	--  Makefile template for new setspace schema
 
 	--  sengine.shtml: link to worldcat.org, icerocket.com
+
+	--  think about pushing from backup database -> live and make live
+	    readonly!!!
