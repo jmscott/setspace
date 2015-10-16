@@ -25,10 +25,15 @@ SETSPACE_PREFIX=/usr/local/setspace
 SETSPACE_USER=setspace
 SETSPACE_GROUP=setspace
 
+#  where are postgres includes & libraries?
+PGHOME=/usr/local/pgsql
+PGINC=$(PGHOME)/include
+PGLIB=$(PGHOME)/lib
+
 #  must be gnu install
 INSTALL=install
 
-#  assume a strict gcc'ish compiler
+#  strict compilation of C code
 CFLAGS=-Wall -Wextra -Werror
 
 ########################  END SECTION OF VARIABLES TO CHANGE

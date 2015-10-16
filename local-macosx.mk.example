@@ -22,7 +22,13 @@ SETSPACE_GROUP=staff
 SETSPACE_HTTPD_PREFIX=$(SETSPACE_PREFIX)/http
 SETSPACE_HTTPD_CGI_MODE=u=rx,go=
 
+#  strict compilation of C code
 CFLAGS=-Wall -Wextra -Werror
+
+#  where are postgres includes & libraries?
+PGHOME=/usr/local/pgsql
+PGINC=$(PGHOME)/include
+PGLIB=$(PGHOME)/lib
 
 #
 #  We need gnu install.
