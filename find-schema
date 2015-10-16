@@ -4,7 +4,7 @@
 #  Usage:
 #	find-schema | while read SCHEMA;  do ...
 #  See:
-#	cron-reboot
+#	Script cron-reboot
 #  Blame:
 #  	jmscott@setspace.com
 #  	setspace@gmail.com
