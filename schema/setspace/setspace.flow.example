@@ -811,15 +811,15 @@ query merge_is_udigish(biod.udig, get_is_udigish.exit_status)
 
 #
 #  Synopsis:
-#	Is in is_byte_json_rootish table.
+#	Is in has_byte_json_bracket table.
 #
-sql query in_is_byte_json_rootish_table row
+sql query in_has_byte_json_bracket_table row
 {
 	database is setspace;
 
 	result row is (
 		answer	bool,
-		is_root	bool
+		has_bracket bool
 	);
 
 	statement = `
@@ -829,15 +829,15 @@ sql query in_is_byte_json_rootish_table row
 	    select
 		blob
 	      from
-		setspace.is_byte_json_rootish
+		setspace.has_byte_json_bracket
 	      where
 		blob = $1::udig
 	  ),
 	 (
 	    select
-	  	is_root
+	  	has_bracket
 	      from
-	    	setspace.is_byte_json_rootish
+	    	setspace.has_byte_json_bracket
 	      where
 	    	blob = $1::udig
 	 );
@@ -845,14 +845,14 @@ sql query in_is_byte_json_rootish_table row
 	  `;
 }
 
-sql exec merge_is_byte_json_rootish
+sql exec merge_has_byte_json_bracket
 {
 	#  Note: does the insert return a value upon conflict?
 	statement = `
 
-	INSERT into setspace.is_byte_json_rootish(
+	INSERT into setspace.has_byte_json_bracket(
 		blob,
-		is_root
+		has_bracket
 	  ) SELECT
 		$1::udig,
 		case $2 
@@ -869,9 +869,9 @@ sql exec merge_is_byte_json_rootish
 	database is setspace;
 }
 
-#  check that a known utf8 blob is also in is_byte_json_rootish
+#  check that a known utf8 blob is also in has_byte_json_bracket
 
-query in_is_byte_json_rootish_table(biod.udig)
+query in_has_byte_json_bracket_table(biod.udig)
   when
 	(
 		in_is_utf8wf_table.answer == true
@@ -882,11 +882,11 @@ query in_is_byte_json_rootish_table(biod.udig)
 	merge_is_utf8wf.is_utf8 == true
 ;
 
-command get_is_byte_json_rootish
+command get_has_byte_json_bracket
 {
 	path = "sbin/get-bool-command";
 	argv = (
-		"is-byte-json-rootish"
+		"has-byte-json-bracket"
 	);
 	exit_status is OK when in {
 		0,			#  command is true
@@ -896,18 +896,18 @@ command get_is_byte_json_rootish
 	};
 }
 
-call get_is_byte_json_rootish(biod.udig)
+call get_has_byte_json_bracket(biod.udig)
   when
-	in_is_byte_json_rootish_table.answer == false
+	in_has_byte_json_bracket_table.answer == false
 ;
 
-query merge_is_byte_json_rootish(
+query merge_has_byte_json_bracket(
 	biod.udig,
-	get_is_byte_json_rootish.exit_status
+	get_has_byte_json_bracket.exit_status
 ) when
-  	get_is_byte_json_rootish.exit_status == 0
+  	get_has_byte_json_bracket.exit_status == 0
 	or
-	get_is_byte_json_rootish.exit_status == 1
+	get_has_byte_json_bracket.exit_status == 1
 	or
-	get_is_byte_json_rootish.exit_status == 2	#  merge empty blob
+	get_has_byte_json_bracket.exit_status == 2	#  merge empty blob
 ;

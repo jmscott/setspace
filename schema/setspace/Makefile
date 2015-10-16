@@ -18,7 +18,7 @@ PROG=					\
 	byte-count			\
 	is-byte-hex-40			\
 	byte-prefix-32			\
-	is-byte-json-rootish		\
+	has-byte-json-bracket		\
 	is-sha-udigish			\
 	is-udigish			\
 	is-utf8wf			\
@@ -53,7 +53,7 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		byte-prefix-32						\
 		get-bool-command					\
 		get-is-utf8wf						\
-		is-byte-json-rootish					\
+		has-byte-json-bracket					\
 		is-udigish						\
 		is-utf8wf						\
 		merge-byte_bitmap					\
@@ -77,7 +77,7 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		byte-count.c						\
 		is-byte-hex-40.c					\
 		byte-prefix-32.c					\
-		is-byte-json-rootish.c					\
+		has-byte-json-bracket.c					\
 		is-sha-udigish.c					\
 		is-udigish.c						\
 		is-utf8wf.c						\

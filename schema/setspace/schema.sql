@@ -148,7 +148,7 @@ create table setspace.has_byte_json_bracket
 			references setspace.service
 			on delete cascade
 			primary key,
-	is_jroot	bool
+	has_bracket	bool
 			not null
 );
 comment on table setspace.has_byte_json_bracket is

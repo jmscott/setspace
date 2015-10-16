@@ -1,8 +1,8 @@
 byte-bitmap
 byte-count
 byte-prefix-32
+has-byte-json-bracket
 is-byte-hex-40
-is-byte-json-rootish
 is-sha-udigish
 is-udigish
 is-utf8wf
