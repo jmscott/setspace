@@ -250,18 +250,43 @@ call merge_byte_count_table(biod.udig)
   	query_byte_count_table.exists == false
 ;
 
-#  Note: convert to proposition
+#  END TABLE: setspace.byte_count
 
-command in_byte_count
+#  START TABLE: setspace.byte_bitmap
+
+sql query query_byte_bitmap_table row
 {
-	path = "true";
+	statement = `
+	  SELECT exists (
+	    select
+	    	blob
+	      from
+	      	setspace.byte_bitmap
+	      where
+	      	blob = $1::udig
+	  )
+	`;
+
+	result row is (
+		exists bool
+	);
+
+	database is setspace;
 }
 
-call in_byte_count()
+query query_byte_bitmap_table(biod.udig)
   when
-  	query_byte_count_table.exists == true
-	or
-	merge_byte_count_table.exit_status == 0
+  	in_service.exit_status == 0
 ;
 
-#  END TABLE: setspace.byte_count
+command merge_byte_bitmap_table
+{
+	path = "sbin/merge-byte_bitmap";
+}
+
+call merge_byte_bitmap_table(biod.udig)
+  when
+  	query_byte_bitmap_table.exists == false
+;
+
+#  END TABLE: setspace.byte_bitmap
