@@ -24,6 +24,3 @@ Please discover the [SetSpace PostgreSQL Schema] (http://github.com/jmscott/sets
 # Blame
 * jmscott@setspace.com
 * setspace@gmail.com
-
-# Note
-The "facts" should be unambgious before commit toa ny particular database.
