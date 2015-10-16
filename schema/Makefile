@@ -11,14 +11,18 @@ include schema.mk
 DRBLOB_ROOT=$(SETSPACE_PREFIX)/schema/drblob
 
 all:
-	cd drblob && make all
-	cd setspace && make all
+	cd setspace && $(MAKE) all
+	cd drblob && $(MAKE) all
+	cd jsonorg && $(MAKE) all
 clean:
-	cd drblob && make clean
-	cd setspace && make clean
+	cd setspace && $(MAKE) clean
+	cd drblob && $(MAKE) clean
+	cd jsonorg && $(MAKE) clean
 install:
-	cd drblob && make install
-	cd setspace && make install
+	cd setspace && $(MAKE) install
+	cd drblob && $(MAKE) install
+	cd jsonorg && $(MAKE) install
 distclean:
-	cd drblob && make distclean
-	cd setspace && make distclean
+	cd setspace && $(MAKE) distclean
+	cd drblob && $(MAKE) distclean
+	cd jsonorg && $(MAKE) distclean
