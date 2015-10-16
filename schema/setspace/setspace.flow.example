@@ -1,25 +1,17 @@
 #
 #  Synopsis:
-#	Populate a postgresql database with a set of facts about exiting blobs.
-#  Description:
-#	Flow fires rules to populate the postgres sql schema defined schema.sql.
-#
-#	The first set of rules to fire determine exists of the blob
-#	in the service table and the blobio service.  After existence
-#	of the blob has been established, then the rules are fired
-#	according to the following dependencies:
-#
-#		service 	-> blob_count, byte_prefix_32, byte_bitmap
-#		byte_bitmap	-> is_utf8wf
+#	Flow blobs into setspace database schema
 #  Usage:
 #  	flowd server setspace.conf
 #  See:
 #  	schema.sql
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
 #  Note:
 #	Insure all blobs are < 2^63 bytes in size.
+#
+#	Seen two complaints in pg_log about foreign key errors for
+#	merge-byte_bitmap and merge-byte_prefix32 references the table
+#	setspace.service.  insure the correctness of the test for existence in
+#	setspace.service
 #
 
 boot
@@ -50,10 +42,18 @@ sql database setspace
 	max_open_conns = 64;
 }
 
-#  START TABLE: setspace.service
-
-sql query query_service_table row
+#
+#  Synopsis:
+#	Is the blob in the service table
+#
+sql query in_service_table row
 {
+	database is setspace;
+
+	result row is (
+		answer bool
+	);
+
 	statement = `
 
 	SELECT exists (
@@ -66,12 +66,6 @@ sql query query_service_table row
 	);
 
 	`;
-
-	database is setspace;
-
-	result row is (
-		exists bool
-	);
 }
 
 command brr_on_network
@@ -84,7 +78,7 @@ command brr_off_network
 	path = "true";
 }
 
-sql exec merge_service_table
+sql exec merge_service
 {
 	database is setspace;
 
@@ -143,7 +137,7 @@ call brr_on_network()
   )
 ;
 
-query query_service_table(biod.udig);
+query in_service_table(biod.udig);
 
 #
 #  Synopsis:
@@ -183,7 +177,7 @@ call is_zombie_alive(biod.udig)
 	#
 	#  Database thinks blob does exist.
 	#
-	query_service_table.exists == true
+	in_service_table.answer == true
 ;
 
 query delete_blob(biod.udig)
@@ -191,102 +185,729 @@ query delete_blob(biod.udig)
   	is_zombie_alive.exit_status == 1
 ;
 
-query merge_service_table(biod.udig)
+query merge_service(biod.udig)
   when
   	brr_on_network.exit_status == 0
 	and
-	query_service_table.exists == false
+	in_service_table.answer == false
 ;
 
-#  Note: replace as proposition
-command in_service
+#
+#  Synopsis:
+#	Populate byte_count table
+#
+sql query in_byte_count_table row
 {
-	path = "true";
-}
-
-call in_service()
-  when
-  	query_service_table.exists == true
-	or
-	merge_service_table.rows_affected == 1
-;
-
-#  END TABLE: setspace.service
-
-#  START TABLE: setspace.byte_count
-
-sql query query_byte_count_table row
-{
-	statement = `
-	  SELECT exists (
-	    select
-	    	blob
-	      from
-	      	setspace.byte_count
-	      where
-	      	blob = $1::udig
-	  )
-	`;
+	database is setspace;
 
 	result row is (
-		exists bool
+		answer bool
 	);
 
-	database is setspace;
+	statement = `
+
+	SELECT exists (
+	  select
+		blob
+	    from
+		setspace.byte_count
+	    where
+		blob = $1::udig
+	);
+
+	`;
 }
 
-query query_byte_count_table(biod.udig)
-  when
-  	in_service.exit_status == 0
-;
-
-command merge_byte_count_table
+command merge_byte_count
 {
 	path = "sbin/merge-byte_count";
+	exit_status is OK when in {0, 1};
 }
 
-call merge_byte_count_table(biod.udig)
+query in_byte_count_table(biod.udig)
   when
-  	query_byte_count_table.exists == false
+  	in_service_table.answer == true
+	or
+	merge_service.rows_affected == 1
 ;
 
-#  END TABLE: setspace.byte_count
+call merge_byte_count(biod.udig)
+  when
+  	in_byte_count_table.answer == false
+;
 
-#  START TABLE: setspace.byte_bitmap
-
-sql query query_byte_bitmap_table row
+#
+#  Synopsis:
+#	Populate byte_bitmap table
+#
+sql query in_byte_bitmap_table row
 {
-	statement = `
-	  SELECT exists (
-	    select
-	    	blob
-	      from
-	      	setspace.byte_bitmap
-	      where
-	      	blob = $1::udig
-	  )
-	`;
+	database is setspace;
 
 	result row is (
-		exists bool
+		answer bool
+	);
+
+	statement = `
+
+	SELECT exists (
+	  select
+		blob
+	    from
+		setspace.byte_bitmap
+	    where
+		blob = $1::udig
+	);
+	
+	`;
+}
+
+command merge_byte_bitmap
+{
+	path = "sbin/merge-byte_bitmap";
+	exit_status is OK when in {0, 1};
+}
+
+query in_byte_bitmap_table(biod.udig)
+  when
+  	in_service_table.answer == true
+	or
+	merge_service.rows_affected == 1
+;
+
+call merge_byte_bitmap(biod.udig)
+  when
+  	in_byte_bitmap_table.answer == false
+;
+
+#
+#  Synopsis:
+#	Is in utf8 well formed table.
+#  Note:
+#	Need to first consult byte_bitmap for forbidden utf8 bytes.
+#	is 0xff the only forbidden utf8 byte (not sequence)?
+#
+sql query in_is_utf8wf_table row
+{
+	database is setspace;
+
+	result row is (
+		answer	bool,
+		is_utf8	bool
+	);
+
+	statement = `
+
+	SELECT
+	  exists (
+	    select
+		blob
+	      from
+		setspace.is_utf8wf
+	      where
+		blob = $1::udig
+	  ),
+	 (
+	    select
+	  	is_utf8
+	      from
+	    	setspace.is_utf8wf
+	      where
+	    	blob = $1::udig
+	 );
+
+	  `;
+}
+
+command get_is_utf8wf
+{
+	path = "sbin/get-is-utf8wf";
+	exit_status is OK when in {
+		0,			#  is well formed utf8
+		1,			#  not well formed utf8
+		2,			#  empty blob,
+		3			#  blob does not exist
+	};
+}
+
+sql query merge_is_utf8wf row
+{
+	#  Note: does the insert return a value upon conflict?
+	statement = `
+
+	INSERT into setspace.is_utf8wf(
+		blob,
+		is_utf8
+	  ) SELECT
+		$1::udig,
+		case $2 
+	  		when '0' then true
+	  		when '1' then false
+	  		when '2' then false
+		end
+  	  ON CONFLICT
+  		do nothing
+  	  RETURNING
+  		is_utf8
+	;
+
+	`;
+	
+	result row is (
+		is_utf8 bool
 	);
 
 	database is setspace;
 }
 
-query query_byte_bitmap_table(biod.udig)
+query in_is_utf8wf_table(biod.udig)
   when
-  	in_service.exit_status == 0
+  	in_service_table.answer == true
+	or
+	merge_service.rows_affected == 1
 ;
 
-command merge_byte_bitmap_table
-{
-	path = "sbin/merge-byte_bitmap";
+#  does the blob contain the char 0xff?
+
+sql query has_char_0xff row {
+	
+	statement = `
+	
+	SELECT
+		(bm.bitmap & char_0xff) != all_zero
+	  FROM
+	  	setspace.byte_bitmap bm,
+
+		--  all zero bits
+		coalesce(
+			B'0'::bit(256)
+		) as all_zero,
+
+		coalesce(
+			B'1'::bit(256)
+		) as char_0xff
+	  where
+	  	bm.blob = $1::udig
+	;
+	
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
 }
 
-call merge_byte_bitmap_table(biod.udig)
+command service_exists
+{
+	path = "true";
+	exit_status is OK when in {0, 1};
+}
+
+call service_exists(biod.udig)
   when
-  	query_byte_bitmap_table.exists == false
+  	merge_service.rows_affected == 1
+	or
+	in_service_table.answer == true
 ;
 
-#  END TABLE: setspace.byte_bitmap
+query has_char_0xff(biod.udig)
+  when
+	service_exists.exit_status == 0
+;
+
+call get_is_utf8wf(biod.udig)
+  when
+	has_char_0xff.answer == false
+	and
+	in_is_utf8wf_table.answer == false
+;
+
+sql exec merge_is_utf8wf_not
+{
+	statement = `
+	insert into setspace.is_utf8wf(
+		blob,
+		is_utf8
+	) values (
+		$1::udig,
+		false
+	) on conflict
+		do nothing
+	`;
+	database is setspace;
+}
+
+#  blob not utf8 when 0xff char exists
+query merge_is_utf8wf_not(biod.udig)
+  when
+  	has_char_0xff.answer == true
+	and
+	in_is_utf8wf_table.answer == false
+;
+
+query merge_is_utf8wf(biod.udig, get_is_utf8wf.exit_status)
+  when
+  	get_is_utf8wf.exit_status == 0
+	or
+	get_is_utf8wf.exit_status == 1
+	or
+	get_is_utf8wf.exit_status == 2		#  merge empty blob
+;
+
+#
+#  Synopsis:
+#	Populate byte_prefix_32 table
+#
+sql query in_byte_prefix_32_table row
+{
+	database is setspace;
+
+	result row is (
+		answer bool
+	);
+
+	statement = `
+
+	SELECT exists (
+	  select
+		blob
+	    from
+		setspace.byte_prefix_32
+	    where
+		blob = $1::udig
+	);
+	
+	`;
+}
+
+command merge_byte_prefix_32
+{
+	path = "sbin/merge-byte_prefix_32";
+	exit_status is OK when in {0, 1};
+}
+
+query in_byte_prefix_32_table(biod.udig)
+  when
+  	in_service_table.answer == true
+	or
+	merge_service.rows_affected == 1
+;
+
+call merge_byte_prefix_32(biod.udig)
+  when
+  	in_byte_prefix_32_table.answer == false
+;
+
+#  typically printable unix ascii file plus space, tab and new line characters.
+#  control-r is excluded (which would be is_printable_dos).
+#
+#  Note: perhaps a view 'is_printable_unix'
+
+sql query is_printable_unix row
+{
+	statement = `
+
+	SELECT
+		--  no non-ascii chars
+		bm.bitmap::bit(128) = B'0'::bit(128)
+
+		--  length > 0
+		and
+		bm.bitmap != all_zero
+		and
+		(forbidden_control & bm.bitmap) = all_zero
+	  FROM
+		setspace.byte_bitmap bm,
+
+		--  all zero bits
+		coalesce(
+			B'0'::bit(256)
+		) as all_zero,
+
+		--  forbidden chars in typical printable ascii unix file
+		--  notice tab and newline are not forbidden.
+
+		coalesce(
+		  --  first 9 control characters: decimal 0-8: NUL -> BS
+		  (B'1111111111'::bit(256) >> 247)		|
+
+		  --  21 control chars  - decimal 11-31: VT -> US
+		  (B'111111111111111111111'::bit(256) >> 224)	|
+
+		  --  del char - decimal 127
+		  (B'1'::bit(256) >> 128)
+		) as forbidden_control
+	  WHERE
+		bm.blob = $1::udig
+	;`;
+
+	result row is (
+		answer bool
+	);
+
+	database is setspace;
+}
+
+query is_printable_unix(biod.udig)
+  when
+	(
+		in_is_utf8wf_table.is_utf8 == true
+		or
+		merge_is_utf8wf.is_utf8 == true
+	)
+	and
+	(
+		in_byte_bitmap_table.answer == true
+		or
+		merge_byte_bitmap.exit_status == 0
+	)
+;
+
+sql query is_drblob row
+{
+	statement = `
+
+	SELECT
+		--  all required chars
+		(required_char & bm.bitmap) = required_char
+
+		--  no forbidden chars
+		and
+		(forbidden_char & bm.bitmap) = all_zero
+		and
+
+		--  and time stamp
+		escaped_prefix ~ (
+			-- century/year
+			'^[234][0-9]{3}-'			||
+
+			--  month
+			'[01][0-9]-'				||
+
+			--  day
+			'[0123][0-9]'				||
+
+			-- hour
+			'T[012][0-9]:'				||
+
+			-- minute
+			'[0-6][0-9]:'				||
+
+			-- second
+			'[0-6][0-9]'				||
+
+			-- nanosecond
+			-- is the fractional part required?
+			'[.][0-9]{1,9}'				||
+
+			--  timezone.
+			--  Note: still not sure if Z alone indicates GMT
+			--  	  or unknown
+			'[+-Z]'
+		)
+	  FROM
+		setspace.byte_prefix_32 p32
+		  natural join setspace.byte_bitmap bm,
+		  lateral encode(p32.prefix, 'escape') escaped_prefix,
+
+		  --  all of these chars must be in any drblob tuple
+		  coalesce(
+			--  new-line character - decimal 10
+			(B'1'::bit(256) >> 245)		|
+
+			--  tab character
+			(B'1'::bit(256) >> 246)
+
+		  ) as required_char,
+
+		  -- forbidden chars in drblob tuple
+		  coalesce(
+			--  space character
+			(B'1'::bit(256) >> 224)
+
+		  ) as forbidden_char,
+
+		  --  all zero bits
+		  coalesce(
+			  (B'0'::bit(256))
+		  ) as all_zero
+	  WHERE
+		 p32.blob = $1::udig
+	`;
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query is_drblob(biod.udig)
+  when
+  	is_printable_unix.answer == true
+;
+
+command append_drblob_brr
+{
+	path = "append-brr";
+	argv = (
+		"../drblob/spool/setspace.brr"
+	);
+}
+
+call append_drblob_brr(
+	biod.start_time,
+	biod.netflow,
+	biod.verb,
+	biod.udig,
+	biod.chat_history,
+	biod.blob_size,
+	biod.wall_duration
+) when
+	is_drblob.answer == true
+	and
+	(
+		in_byte_prefix_32_table.answer == true
+		or
+		merge_byte_prefix_32.exit_status == 0
+	)
+;
+
+sql query in_new_line_count_table row
+{
+	statement = `
+
+	SELECT exists (
+	  select
+	  	blob
+	    from
+	    	setspace.new_line_count
+	    where
+	    	blob = $1::udig
+	);
+
+	`;
+
+	result row is (
+		answer bool
+	);
+
+	database is setspace;
+}
+
+query in_new_line_count_table(biod.udig)
+  when
+  	in_is_utf8wf_table.is_utf8 == true
+;
+
+command merge_new_line_count
+{
+	path = "merge-new_line_count";
+}
+
+call merge_new_line_count(biod.udig)
+  when
+  	in_new_line_count_table.answer == false
+;
+
+#
+#  Synopsis:
+#	Is in is_udigish table.
+#
+sql query in_is_udigish_table row
+{
+	database is setspace;
+
+	result row is (
+		answer	bool,
+		udigish	bool
+	);
+
+	statement = `
+
+	SELECT
+	  exists (
+	    select
+		blob
+	      from
+		setspace.is_udigish
+	      where
+		blob = $1::udig
+	  ),
+	 (
+	    select
+	  	udigish
+	      from
+	    	setspace.is_udigish
+	      where
+	    	blob = $1::udig
+	 );
+
+	  `;
+}
+
+sql exec merge_is_udigish
+{
+	#  Note: does the insert return a value upon conflict?
+	statement = `
+
+	INSERT into setspace.is_udigish(
+		blob,
+		udigish
+	  ) SELECT
+		$1::udig,
+		case $2 
+	  		when '0' then true
+	  		when '1' then false
+	  		when '2' then false
+		end
+  	  ON CONFLICT
+  		do nothing
+	;
+
+	`;
+	
+	database is setspace;
+}
+
+#  check that a known utf8 blob is also in is_udigish
+
+query in_is_udigish_table(biod.udig)
+  when
+	(
+		in_is_utf8wf_table.answer == true
+		and
+		in_is_utf8wf_table.is_utf8 == true
+	)
+	or
+	merge_is_utf8wf.is_utf8 == true
+;
+
+command get_is_udigish
+{
+	path = "sbin/get-bool-command";
+	argv = (
+		"is-udigish"
+	);
+	exit_status is OK when in {
+		0,			#  command is true
+		1,			#  command is false
+		2,			#  empty blob,
+		3			#  blob does not exist
+	};
+}
+
+call get_is_udigish(biod.udig)
+  when
+	in_is_udigish_table.answer == false
+;
+
+query merge_is_udigish(biod.udig, get_is_udigish.exit_status)
+  when
+  	get_is_udigish.exit_status == 0
+	or
+	get_is_udigish.exit_status == 1
+	or
+	get_is_udigish.exit_status == 2		#  merge empty blob
+;
+
+#
+#  Synopsis:
+#	Is in is_byte_json_rootish table.
+#
+sql query in_is_byte_json_rootish_table row
+{
+	database is setspace;
+
+	result row is (
+		answer	bool,
+		is_root	bool
+	);
+
+	statement = `
+
+	SELECT
+	  exists (
+	    select
+		blob
+	      from
+		setspace.is_byte_json_rootish
+	      where
+		blob = $1::udig
+	  ),
+	 (
+	    select
+	  	is_root
+	      from
+	    	setspace.is_byte_json_rootish
+	      where
+	    	blob = $1::udig
+	 );
+
+	  `;
+}
+
+sql exec merge_is_byte_json_rootish
+{
+	#  Note: does the insert return a value upon conflict?
+	statement = `
+
+	INSERT into setspace.is_byte_json_rootish(
+		blob,
+		is_root
+	  ) SELECT
+		$1::udig,
+		case $2 
+	  		when '0' then true
+	  		when '1' then false
+	  		when '2' then false
+		end
+  	  ON CONFLICT
+  		do nothing
+	;
+
+	`;
+	
+	database is setspace;
+}
+
+#  check that a known utf8 blob is also in is_byte_json_rootish
+
+query in_is_byte_json_rootish_table(biod.udig)
+  when
+	(
+		in_is_utf8wf_table.answer == true
+		and
+		in_is_utf8wf_table.is_utf8 == true
+	)
+	or
+	merge_is_utf8wf.is_utf8 == true
+;
+
+command get_is_byte_json_rootish
+{
+	path = "sbin/get-bool-command";
+	argv = (
+		"is-byte-json-rootish"
+	);
+	exit_status is OK when in {
+		0,			#  command is true
+		1,			#  command is false
+		2,			#  empty blob,
+		3			#  blob does not exist
+	};
+}
+
+call get_is_byte_json_rootish(biod.udig)
+  when
+	in_is_byte_json_rootish_table.answer == false
+;
+
+query merge_is_byte_json_rootish(
+	biod.udig,
+	get_is_byte_json_rootish.exit_status
+) when
+  	get_is_byte_json_rootish.exit_status == 0
+	or
+	get_is_byte_json_rootish.exit_status == 1
+	or
+	get_is_byte_json_rootish.exit_status == 2	#  merge empty blob
+;
