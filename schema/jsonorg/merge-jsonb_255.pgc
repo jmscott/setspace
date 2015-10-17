@@ -1,6 +1,8 @@
 /*
  *  Synopsis:
- *  	Merge a json blob read on standard input into table json.jsonb_255.
+ *  	Merge a json blob read on standard input into table jsonorg.jsonb_255.
+ *  Usage:
+ *	merge-jsonb_255 
  *  Arguments:
  *  	1	udig of the blob
  *  	2	number of bytes to read on the standard input
@@ -132,7 +134,7 @@ EXEC SQL BEGIN DECLARE SECTION;
 EXEC SQL END DECLARE SECTION;
 
 	if (argc != 3)
-		die(EXIT_BADARGC, "wrong number of arguments, expected 3");
+		die(EXIT_BADARGC, "wrong number of arguments");
 
 	//  parse the udig as argv[1]
 	blob = argv[1];
@@ -182,23 +184,17 @@ again:
 
 	exec sql begin transaction;
 
-	exec sql lock table json.jsonb_255 in share row exclusive mode;
+	exec sql lock table jsonorg.jsonb_255 in share row exclusive mode;
 	exec sql
-	  insert into json.jsonb_255(
+	  INSERT into jsonorg.jsonb_255(
 		blob,
 		doc
-	  ) select
+	  ) values (
 		:blob::udig,
 		:doc::jsonb
-	    where
-	  	not exists (
-		  select
-			blob
-		    from
-			json.jsonb_255
-		    where
-			blob = :blob::udig
-		)
+	  )
+  	  ON CONFLICT
+  		do nothing
 	;
 
 	exec sql end transaction;
