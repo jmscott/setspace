@@ -20,11 +20,11 @@ JSONORG_GROUP=$(SETSPACE_GROUP)
 JSONORG_USER=$(SETSPACE_USER)
 
 COMPILED=			\
-	JSONORG_checker		\
+	JSON_checker		\
 	merge-jsonb_255
 
 PROGS=  $(COMPILED)			\
-	get-JSONORG_checker
+	get-JSON_checker
 
 all: $(COMPILED)
 clean:
@@ -48,8 +48,8 @@ install: all
 		schema.sql						\
 		$(JSONORG_PREFIX)/lib
 
-JSONORG_checker: JSONORG_checker.c
-	$(CC) -o JSONORG_checker $(CFLAGS) JSONORG_checker.c
+JSON_checker: JSON_checker.c
+	$(CC) -o JSON_checker $(CFLAGS) JSON_checker.c
 
 merge-jsonb_255: merge-jsonb_255.pgc
 	ecpg merge-jsonb_255.pgc
