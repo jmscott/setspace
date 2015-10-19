@@ -55,3 +55,6 @@ merge-jsonb_255: merge-jsonb_255.pgc
 	ecpg merge-jsonb_255.pgc
 	$(CC) -I$(PGINC) merge-jsonb_255.c -o merge-jsonb_255 -L$(PGLIB) -lecpg
 	rm merge-jsonb_255.c
+
+frisk ff:
+	flowd frisk jsonorg.flow.example
