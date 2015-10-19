@@ -14,9 +14,11 @@
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
  *  Note:
- *	JSON_Checker fails sample.zip in this unit test
+ *	Investigate why JSON_Checker fails sample.zip in this unit test
  *
  *		https://code.google.com/p/json-test-suite
+ *
+ *	Think about eliminating getchar().
  */
 #include <unistd.h>
 #include <stdio.h>
