@@ -457,17 +457,9 @@ int main(int argc, char ** argv)
 	int c;
 	JSON_checker jc = new_JSON_checker(255);
 
-	if (argc != 1) {
+	(void)argv;
+	if (argc != 1)
 		die(2, "wrong number of arguments");
-
-		/*
-		 *  Uggh.
-		 *
-		 *  The __unused attribute is not supported for gcc -Wall.
-		 *  Never ends.
-		 */
-		die(255, argv[0]);
-	}
 
 	for (c = getchar();  c > 0;  c = getchar())
 		if (!JSON_checker_char(jc, c))
