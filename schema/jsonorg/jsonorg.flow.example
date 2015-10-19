@@ -1,0 +1,80 @@
+#
+#  Synopsis:
+#	Populate the PostgreSQL schema definec in schema.sql
+#  See:
+#	schema.sql
+#
+
+boot
+{
+	brr_capacity = 256;
+	flow_worker_count = 16;
+	os_exec_worker_count = 12;
+	os_exec_capacity = 12;
+
+	xdr_roll_duration = "24h";
+	fdr_roll_duration = "24h";
+	qdr_roll_duration = "24h";
+
+	heartbeat_duration = "10s";
+}
+
+sql database setspace
+{
+	driver_name = "postgres";
+	data_source_name = "sslmode=disable";
+	max_idle_conns = 1;
+	max_open_conns = 8;
+}
+
+tail set_brr
+{
+	path = "spool/setspace.brr";
+}
+
+sql query is_in_checker_255_table row
+{
+	statement = `
+
+	  SELECT exists (
+	    select
+	    	blob
+	      from
+	      	jsonorg.checker_255
+	      where
+	      	blob = $1::udig
+	  ),
+	  SELECT
+	    	is_json
+	    from
+	      	jsonorg.checker_255
+	      where
+	      	blob = $1::udig
+	  );
+
+	`;
+	result row is (
+		answer bool,
+		is_json bool
+	);
+	database is setspace;
+}
+
+query is_in_checker_255_table(set_brr.udig);
+
+command get_JSON_checker
+{
+	path = "sbin/get-JSON_checker";
+	exit_status is OK when in {
+		0,	#  is valid json
+		1,	#  is not valid json
+		2,	#  blob does not exist
+		3,	#  wrong number of command line arguments
+		4	#  blobio | JSON_checker failed
+	};
+}
+
+call get_JSON_checker (set_brr.udig)
+  when
+  	is_in_checker_255_table.answer == false
+;
