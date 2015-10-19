@@ -908,6 +908,4 @@ query merge_has_byte_json_bracket(
   	get_has_byte_json_bracket.exit_status == 0
 	or
 	get_has_byte_json_bracket.exit_status == 1
-	or
-	get_has_byte_json_bracket.exit_status == 2	#  merge empty blob
 ;
