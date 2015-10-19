@@ -78,3 +78,40 @@ call get_JSON_checker (set_brr.udig)
   when
   	is_in_checker_255_table.answer == false
 ;
+
+#
+#  Merge the tuple into the table is_brr_log
+#
+sql query merge_checker_255 row
+{
+	statement = `
+
+	INSERT into jsonorg.checker_255 (
+		blob,
+		is_json
+	  ) SELECT
+		$1::udig,
+		case $2 
+	  		when '0' then true
+	  		when '1' then false
+		end
+  	  ON CONFLICT
+  		do nothing
+	  RETURNING
+	  	is_json
+	;
+
+	`;
+
+	result row is (
+		is_json bool
+	);
+	database is setspace;
+}
+
+query merge_checker_255 (set_brr.udig)
+  when
+  	get_JSON_checker.exit_status == 0
+	or
+  	get_JSON_checker.exit_status == 1
+;
