@@ -74,7 +74,7 @@ command get_JSON_checker
 	};
 }
 
-call get_JSON_checker (set_brr.udig)
+call get_JSON_checker (set_brr.udig, set_brr.blob_size)
   when
   	is_in_checker_255_table.answer == false
 ;
@@ -109,7 +109,7 @@ sql query merge_checker_255 row
 	database is setspace;
 }
 
-query merge_checker_255 (set_brr.udig)
+query merge_checker_255 (set_brr.udig, get_JSON_checker.exit_status)
   when
   	get_JSON_checker.exit_status == 0
 	or
