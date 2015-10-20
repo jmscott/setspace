@@ -909,3 +909,25 @@ query merge_has_byte_json_bracket(
 	or
 	get_has_byte_json_bracket.exit_status == 1
 ;
+
+command append_jsonorg_brr
+{
+	path = "append-brr";
+	argv = (
+		"../jsonorg/spool/setspace.brr"
+	);
+}
+
+call append_jsonorg_brr(
+	biod.start_time,
+	biod.netflow,
+	biod.verb,
+	biod.udig,
+	biod.chat_history,
+	biod.blob_size,
+	biod.wall_duration
+) when
+	in_has_byte_json_bracket_table.answer == true
+	or
+	merge_has_byte_json_bracket.rows_affected == 1
+;
