@@ -36,7 +36,8 @@ sql query is_in_checker_255_table row
 {
 	statement = `
 
-	  SELECT exists (
+	 SELECT
+	  exists (
 	    select
 	    	blob
 	      from
@@ -44,15 +45,14 @@ sql query is_in_checker_255_table row
 	      where
 	      	blob = $1::udig
 	  ),
-	  SELECT
+	  (SELECT
 	    	is_json
 	    from
 	      	jsonorg.checker_255
 	      where
 	      	blob = $1::udig
-	  );
-
-	`;
+	  )
+	;`;
 	result row is (
 		answer bool,
 		is_json bool

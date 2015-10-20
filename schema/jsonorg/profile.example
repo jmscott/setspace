@@ -1,0 +1,17 @@
+#
+#  Synopsis:
+#	Profile for typical drblob server
+#  Usage:
+#	. $SETSPACE_ROOT/etc/profile
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/jsonorg
+export TMPDIR=$SCHEMA_ROOT/tmp
+
+#  create the spool file so tail doesn't abort.
+#  Note: got to be a better way. perhaps flowd.tail ought to create the file.
+touch $SCHEMA_ROOT/spool/setspace.brr
+
+PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
