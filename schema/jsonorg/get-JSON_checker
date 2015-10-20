@@ -3,11 +3,12 @@
 #  Synopsis:
 #	Invoke JSON_checker on a blob
 #  Exit Status:
-#	0	is valid json
-#	1	is not valid json
+#	0	valid json according to the program JSON_checker
+#	1	not valid json according to the program JSON_checker
 #	2	blob does not exist
 #	3	wrong number of command line arguments
-#	4	error reading blob or invoking JSON_checker
+#	4	unknown blobio error
+#	5	unknown JSON_checker error
 #  Environment
 #	BLOBIO_SERVICE
 #  Usage:
@@ -16,7 +17,15 @@
 #  	jmscott@setspace.com
 #  	setspace@gmail.com
 #
-PROG=JSON_checker.sh
+PROG=get-JSON_checker
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
+
+leave()
+{
+	rm -r $TMP_BLOB
+}
+
+trap leave EXIT
 
 die()
 {
@@ -30,19 +39,27 @@ test $# = 2 || die "wrong number of command line arguments" 3
 UDIG=$1
 SIZE=$2
 
-blobio get --udig "$UDIG" --service $BLOBIO_SERVICE | JSON_checker
-STATUS=${PIPESTATUS[*]}
-case "$STATUS" in
-'0 0')
-	exit 0
+blobio get --udig "$UDIG" --service $BLOBIO_SERVICE --output-path $TMP_BLOB
+STATUS=$?
+case $STATUS in
+0)
 	;;
-'0 1')
-	exit 1
-	;;
-'1 '*)
+1)
 	exit 2
 	;;
 *)
-	die "blobio get | JSON_checker failed: exit status=$STATUS" 4
+	die "blobio get failed: exist status=$STATUS" 4
+	;;
+esac
+
+#  is the blob true json
+JSON_checker <$TMP_BLOB
+STATUS=$?
+case "$STATUS" in
+0|1)
+	exit $STATUS
+	;;
+*)
+	die "JSON_checker failed: exit status=$STATUS" 5
 	;;
 esac
