@@ -40,6 +40,8 @@ install: all
 		$(PROGS) 						\
 		$(EXPAT2_PREFIX)/sbin
 	$(INSTALL) -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m a=r	\
+		expat2.flow.example					\
+		profile.example						\
 		schema.sql						\
 		$(EXPAT2_PREFIX)/lib
 
