@@ -12,7 +12,7 @@ Blame:
   	setspace@gmail.com
 To Do:
 	--  think about a custom base32 encoding, taking ideas from these
-	    two encodings:
+	    souces:
 
 	      http://philzimmermann.com/docs/human-oriented-base-32-encoding.txt
 	      https://en.wikipedia.org/wiki/Luhn_algorithm
@@ -20,6 +20,7 @@ To Do:
 	      http://www.crockford.com/wrmg/base32.html
 	      https://en.wikipedia.org/wiki/Damm_algorithm
 	      https://en.wikipedia.org/wiki/Verhoeff_algorithm
+	      http://base91.sourceforge.net/
 
 	--  think about a custom hash algorithm, like 192 bit shake256.
 
