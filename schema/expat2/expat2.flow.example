@@ -1,0 +1,100 @@
+#
+#  Synopsis:
+#	Populate th expat2 postgresql database schema
+#  See:
+#	schema/expat2/schema.sql
+#
+
+boot
+{
+	brr_capacity = 256;
+	flow_worker_count = 16;
+	os_exec_worker_count = 12;
+	os_exec_capacity = 12;
+
+	xdr_roll_duration = "24h";
+	fdr_roll_duration = "24h";
+	qdr_roll_duration = "24h";
+
+	heartbeat_duration = "10s";
+}
+
+tail brr
+{
+	path = "spool/setspace.brr";
+}
+
+sql database setspace
+{
+	driver_name = "postgres";
+	data_source_name = "sslmode=disable";
+	max_idle_conns = 1;
+	max_open_conns = 16;
+}
+
+sql query in_is_xmlwf_table row
+{
+	statement = `
+
+	SELECT exists (
+	  select
+	  	blob
+	    from
+	    	is_xmlwf
+	    where
+	    	blob = $1::udig
+	),
+	(SELECT
+		is_xml
+	  from
+	    	is_xmlwf
+	  where
+	    	blob = $1::udig
+	)
+	`;
+
+	result row is (
+		answer bool,
+		is_xml bool
+	);
+	database is setspace;
+}
+
+query in_is_xmlwf_table(brr.udig);
+
+command get_is_xmlwf
+{
+	path = "sbin/get-is_xmlwf";
+}
+
+call get_is_xmlwf(brr.udig)
+  when
+  	in_is_xmlwf_table.answer == false
+;
+
+sql exec merge_is_xmlwf
+{
+	statement = `
+
+	INSERT into is_xmlwf(
+		blob,
+		is_xml
+	) SELECT
+		$1::udig,
+		case $2 
+	  		when '0' then true
+	  		when '1' then false
+		end
+	  ON CONFLICT
+		do nothing
+	`;
+
+	database is setspace;
+}
+
+query merge_is_xmlwf(brr.udig, get_is_xmlwf.exit_status)
+  when
+  	get_is_xmlwf.exit_status == 0
+	or
+	get_is_xmlwf.exit_status == 1
+;
