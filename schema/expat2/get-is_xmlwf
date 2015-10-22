@@ -18,9 +18,14 @@
 PROG='get-is_xmlwf'
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
 
+#  bonedheaded xmlwf does NOT set exit code.
+#  we must test for size of error output file.
+#  ughh.
+TMP_XMLWF=${TMPDIR:=/tmp}/$PROG-$$.wf
+
 leave()
 {
-	rm -f $TMP_BLOB
+	rm -f $TMP_BLOB $TMP_XMLWF
 }
 trap leave EXIT
 
@@ -32,6 +37,7 @@ die()
 }
 
 test $# = 1 || die 'wrong number of arguments' 3
+
 UDIG=$1
 blobio get --output-path $TMP_BLOB --udig $UDIG --service $BLOBIO_SERVICE
 STATUS=$?
@@ -47,8 +53,8 @@ case $STATUS in
 	;;
 esac
 
-xmlwf $TMP_BLOB
-
-STATUS=$?
-test $STATUS = 0 -o $STATUS = 1 && exit $STATUS
-die "xmlwf $UDIG failed: exit status=$STATUS" 5
+#  non zero exit code means wierdness, not xml validity  
+xmlwf $TMP_BLOB >$TMP_XMLWF
+test $? = 0 || die "xmlwf failed >$TMP_XMLWF: exit status = $?" 5
+test -s $TMP_XMLWF || exit 0
+exit 1
