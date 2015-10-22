@@ -285,7 +285,7 @@ call merge_byte_bitmap(biod.udig)
 #	Is in utf8 well formed table.
 #  Note:
 #	Need to first consult byte_bitmap for forbidden utf8 bytes.
-#	is 0xff the only forbidden utf8 byte (not sequence)?
+#	is 0xff the only forbidden utf8 byte?
 #
 sql query in_is_utf8wf_table row
 {
