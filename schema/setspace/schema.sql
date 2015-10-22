@@ -153,5 +153,6 @@ create table setspace.has_byte_json_bracket
 );
 comment on table setspace.has_byte_json_bracket is
 	'Blob Might be Framed by [...] or {...}'
+;
 
 commit;
