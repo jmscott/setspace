@@ -3,6 +3,13 @@
 #	Populate the PostgreSQL schema definec in schema.sql
 #  See:
 #	schema.sql
+#  Note:
+#	Investigate if the first two characters of a json document are
+#	always ascii:
+#
+#		http://www.ietf.org/rfc/rfc4627.txt
+#
+#	Is the same true for the last two chars?
 #
 
 boot
