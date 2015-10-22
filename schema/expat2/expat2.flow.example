@@ -40,14 +40,14 @@ sql query in_is_xmlwf_table row
 	  select
 	  	blob
 	    from
-	    	is_xmlwf
+	    	expat2.is_xmlwf
 	    where
 	    	blob = $1::udig
 	),
 	(SELECT
 		is_xml
 	  from
-	    	is_xmlwf
+	    	expat2.is_xmlwf
 	  where
 	    	blob = $1::udig
 	)
@@ -76,7 +76,7 @@ sql exec merge_is_xmlwf
 {
 	statement = `
 
-	INSERT into is_xmlwf(
+	INSERT into expat2.is_xmlwf(
 		blob,
 		is_xml
 	) SELECT
