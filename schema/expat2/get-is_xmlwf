@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 #  Synopsis:
 #	Is a blob well formed xml, according to the expat2 is_xmlwf program?
