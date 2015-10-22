@@ -16,7 +16,8 @@ create schema expat2;
 set search_path to expat2,setspace,public;
 
 /*
- *  Is the blob well formed xml according to xmlwf program, version 2
+ *  Is the blob well formed xml according to xmlwf program, version 2,
+ *  in the expat library.
  */
 create table expat2.is_xmlwf
 (
