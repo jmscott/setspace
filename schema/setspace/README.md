@@ -24,3 +24,7 @@ Please discover the [SetSpace PostgreSQL Schema] (http://github.com/jmscott/sets
 # Blame
 * jmscott@setspace.com
 * setspace@gmail.com
+
+# Note:
+
+* Think about renaming "byte" to more rfc'ish "octet".
