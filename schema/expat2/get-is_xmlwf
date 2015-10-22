@@ -1,0 +1,54 @@
+#
+#  Synopsis:
+#	Is a blob well formed xml, according to the expat2 is_xmlwf program?
+#  Usage:
+#	get-is_xmlwf <blob udig>
+#  Exit Status:
+#	0	yes, is valid xml
+#	1	no, is not valid xml
+#	2	blob does not exist from $BLOBIO_SERVICE
+#	3	wrong number of arguments
+#	4	unexpected 'blobio get' error
+#	5	unexpected xmlwf error
+#  Environment:
+#	BLOBIO_SERVICE
+#  Blame:
+#	jmscott@setspace.com
+#
+PROG='get-is_xmlwf'
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
+
+leave()
+{
+	rm -f $TMP_BLOB
+}
+trap leave EXIT
+
+die()
+{
+	STATUS=$2
+	echo "$PROG: ERROR: $1" >&2
+	exit $STATUS
+}
+
+test $# = 1 || die 'wrong number of arguments' 3
+UDIG=$1
+blobio get --output-path $TMP_BLOB --udig $UDIG --service $BLOBIO_SERVICE
+STATUS=$?
+
+case $STATUS in
+0)
+	;;
+1)
+	exit 2
+	;;
+*)
+	die "blobio get $UDIG $TMP_BLOB failed: exit status=$STATUS" 4
+	;;
+esac
+
+xmlwf $TMP_BLOB
+
+STATUS=$?
+test $STATUS = 0 -o $STATUS = 1 && exit $STATUS
+die "xmlwf $UDIG failed: exit status=$STATUS" 5
