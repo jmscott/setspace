@@ -1,5 +1,8 @@
 Synopsis:
-	Schema for set-oriented facts about udig sets.
+	Schema for set-oriented facts about ascii sets of udigs.
 Blame:
 	jmscott@setspace.com
 	setspace@gmail.com
+See:
+	schema.sql
+	blobio/README for definition of a uniform digest (udig).
