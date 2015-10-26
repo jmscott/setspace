@@ -5,13 +5,6 @@
 #  	flowd server setspace.conf
 #  See:
 #  	schema.sql
-#  Note:
-#	Insure all blobs are < 2^63 bytes in size.
-#
-#	Seen two complaints in pg_log about foreign key errors for
-#	merge-byte_bitmap and merge-byte_prefix32 references the table
-#	setspace.service.  insure the correctness of the test for existence in
-#	setspace.service
 #
 
 boot
