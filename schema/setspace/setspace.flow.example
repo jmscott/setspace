@@ -5,6 +5,17 @@
 #  	flowd server setspace.conf
 #  See:
 #  	schema.sql
+#  Note:
+#	Add jsonorg test for first four bytes matching, where xx is ascii
+#	(and probably a limited ascii set)
+#
+#		00 00 00 xx  UTF-32BE
+#		00 xx 00 xx  UTF-16BE
+#		xx 00 00 00  UTF-32LE
+#		xx 00 xx 00  UTF-16LE
+#		xx xx xx xx  UTF-8
+#
+#	taken from rfc4627, section 3
 #
 
 boot
