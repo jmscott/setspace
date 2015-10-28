@@ -502,6 +502,18 @@ call merge_byte_prefix_32(biod.udig)
   	in_byte_prefix_32_table.answer == false
 ;
 
+command byte_prefix_32_exists
+{
+	path = "true";
+}
+
+call byte_prefix_32_exists(biod.udig)
+  when
+  	in_byte_prefix_32_table.answer == true
+	or
+	merge_byte_prefix_32.exit_status == 0
+;
+
 #  typically printable unix ascii file plus space, tab and new line characters.
 #  control-r is excluded (which would be is_printable_dos).
 #
@@ -668,11 +680,7 @@ call append_drblob_brr(
 ) when
 	is_drblob.answer == true
 	and
-	(
-		in_byte_prefix_32_table.answer == true
-		or
-		merge_byte_prefix_32.exit_status == 0
-	)
+	byte_prefix_32_exists.exit_status == 0
 ;
 
 sql query in_new_line_count_table row
@@ -934,4 +942,48 @@ call append_jsonorg_brr(
 	in_has_byte_json_bracket_table.answer == true
 	or
 	merge_has_byte_json_bracket.rows_affected == 1
+;
+
+command append_pdfbox_brr
+{
+	path = "append-brr";
+	argv = (
+		"spool/pdfbox.brr"
+	);
+}
+
+sql query prefix_is_percentPDF row
+{
+	statement = `
+
+	SELECT
+		substring(prefix, 1, 4) = '\x25504446'
+	  from
+	  	setspace.byte_prefix_32
+	  where
+	  	blob = $1::udig
+	`;
+
+	result row is (
+		answer bool
+	);
+
+	database is setspace;
+}
+
+query prefix_is_percentPDF(biod.udig)
+  when
+  	byte_prefix_32_exists.exit_status == 0
+;
+
+call append_pdfbox_brr(
+	biod.start_time,
+	biod.netflow,
+	biod.verb,
+	biod.udig,
+	biod.chat_history,
+	biod.blob_size,
+	biod.wall_duration
+) when
+	prefix_is_percentPDF.answer == true
 ;
