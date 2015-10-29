@@ -67,7 +67,7 @@ _strcat(char *tgt, int tgtsize, char *src)
 static void
 die(int status, char *msg)
 {
-	static char ERROR[] = "is-udigish: ERROR: ";
+	static char ERROR[] = "has-byte-json-bracket: ERROR: ";
 	char buf[256] = {0};
 
 	_strcat(buf, sizeof buf, ERROR);
