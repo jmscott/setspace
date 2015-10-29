@@ -2,7 +2,7 @@
  *  Synopsis:
  *	Byte stream matches perl pattern: /^\s*(\[.*?\])/m or /^\s*({.*?})/m
  *  Usage:
- *  	is-byte-json-rootudigish <BLOB
+ *  	has-byte-json-bracket.c <BLOB; echo $?
  *  Exit Status:
  *	0	matches
  *	1	does not match
