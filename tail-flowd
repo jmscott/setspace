@@ -19,6 +19,8 @@
 #
 #	tail-flowd needs to detect a missing file run/<schema>.pid
 #
+#	Better error message for non-existent schema. 
+#
 
 die()
 {
