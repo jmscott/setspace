@@ -897,11 +897,7 @@ sql exec merge_has_byte_json_bracket
 
 query in_has_byte_json_bracket_table(biod.udig)
   when
-	(
-		in_is_utf8wf_table.answer == true
-		and
-		in_is_utf8wf_table.is_utf8 == true
-	)
+	in_is_utf8wf_table.is_utf8 == true
 	or
 	merge_is_utf8wf.is_utf8 == true
 ;
