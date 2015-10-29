@@ -141,6 +141,9 @@ comment on table setspace.is_udigish is
 	'Blob might contain a udig'
 ;
 
+/*
+ *  Does blob contain json leading object or arrary bracket chars?
+ */
 drop table if exists setspace.has_byte_json_bracket cascade;
 create table setspace.has_byte_json_bracket
 (
@@ -153,6 +156,23 @@ create table setspace.has_byte_json_bracket
 );
 comment on table setspace.has_byte_json_bracket is
 	'Blob Might be Framed by [...] or {...}'
+;
+
+/*
+ *  Does blob contain xml leading angle brackets?
+ */
+drop table if exists setspace.has_byte_xml_bracket cascade;
+create table setspace.has_byte_xml_bracket
+(
+	blob	udig
+			references setspace.service
+			on delete cascade
+			primary key,
+	has_bracket	bool
+			not null
+);
+comment on table setspace.has_byte_xml_bracket is
+	'Blob Might be Framed by <.*>'
 ;
 
 commit;

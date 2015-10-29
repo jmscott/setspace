@@ -836,6 +836,8 @@ query merge_is_udigish(biod.udig, get_is_udigish.exit_status)
 #
 #  Synopsis:
 #	Is in has_byte_json_bracket table.
+#  Note:
+#	Need to first test byte_bitmap for existence {} or [] anywhere!
 #
 sql query in_has_byte_json_bracket_table row
 {
@@ -869,7 +871,7 @@ sql query in_has_byte_json_bracket_table row
 	  `;
 }
 
-sql exec merge_has_byte_json_bracket
+sql query merge_has_byte_json_bracket row
 {
 	#  Note: does the insert return a value upon conflict?
 	statement = `
@@ -886,9 +888,14 @@ sql exec merge_has_byte_json_bracket
 		end
   	  ON CONFLICT
   		do nothing
+	  RETURNING
+	  	has_bracket
 	;
 
 	`;
+	result row is (
+		has_bracket bool
+	);
 	
 	database is setspace;
 }
@@ -949,7 +956,7 @@ call append_jsonorg_brr(
 ) when
 	in_has_byte_json_bracket_table.answer == true
 	or
-	merge_has_byte_json_bracket.rows_affected == 1
+	merge_has_byte_json_bracket.has_bracket == true
 ;
 
 command append_pdfbox_brr
@@ -994,4 +1001,130 @@ call append_pdfbox_brr(
 	biod.wall_duration
 ) when
 	prefix_is_percentPDF.answer == true
+;
+
+#
+#  Synopsis:
+#	Is in has_byte_xml_bracket table.
+#  Note:
+#	Need to first test byte_bitmap for existence <> anywhere!
+#
+sql query in_has_byte_xml_bracket_table row
+{
+	database is setspace;
+
+	result row is (
+		answer	bool,
+		has_bracket bool
+	);
+
+	statement = `
+
+	SELECT
+	  exists (
+	    select
+		blob
+	      from
+		setspace.has_byte_xml_bracket
+	      where
+		blob = $1::udig
+	  ),
+	 (
+	    select
+	  	has_bracket
+	      from
+	    	setspace.has_byte_xml_bracket
+	      where
+	    	blob = $1::udig
+	 );
+
+	  `;
+}
+
+sql query merge_has_byte_xml_bracket row
+{
+	#  Note: does the insert return a value upon conflict?
+	statement = `
+
+	INSERT into setspace.has_byte_xml_bracket(
+		blob,
+		has_bracket
+	  ) SELECT
+		$1::udig,
+		case $2 
+	  		when '0' then true
+	  		when '1' then false
+	  		when '2' then false
+		end
+  	  ON CONFLICT
+  		do nothing
+  	  RETURNING
+  		has_bracket
+	;
+
+	`;
+	result row is (
+		has_bracket bool
+	);
+	
+	database is setspace;
+}
+
+#  check that a known utf8 blob is also in has_byte_xml_bracket
+
+query in_has_byte_xml_bracket_table(biod.udig)
+  when
+	in_is_utf8wf_table.is_utf8 == true
+	or
+	merge_is_utf8wf.is_utf8 == true
+;
+
+command get_has_byte_xml_bracket
+{
+	path = "sbin/get-bool-command";
+	argv = (
+		"has-byte-xml-bracket"
+	);
+	exit_status is OK when in {
+		0,			#  command is true
+		1,			#  command is false
+		2,			#  empty blob,
+		3			#  blob does not exist
+	};
+}
+
+call get_has_byte_xml_bracket(biod.udig)
+  when
+	in_has_byte_xml_bracket_table.answer == false
+;
+
+query merge_has_byte_xml_bracket(
+	biod.udig,
+	get_has_byte_xml_bracket.exit_status
+) when
+  	get_has_byte_xml_bracket.exit_status == 0
+	or
+	get_has_byte_xml_bracket.exit_status == 1
+;
+
+command append_expat2_brr
+{
+	path = "append-brr";
+	argv = (
+		"../expat2/spool/setspace.brr"
+	);
+}
+
+call append_expat2_brr(
+	biod.start_time,
+	biod.netflow,
+	biod.verb,
+	biod.udig,
+	biod.chat_history,
+	biod.blob_size,
+	biod.wall_duration
+) when
+	in_has_byte_xml_bracket_table.has_bracket == true
+	or
+	merge_has_byte_xml_bracket.has_bracket == true
 ;

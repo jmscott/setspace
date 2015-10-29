@@ -16,9 +16,10 @@ SETSPACE_SCHEMA_PREFIX=$(SETSPACE_PREFIX)/schema/setspace
 PROG=					\
 	byte-bitmap			\
 	byte-count			\
-	is-byte-hex-40			\
 	byte-prefix-32			\
 	has-byte-json-bracket		\
+	has-byte-xml-bracket	\
+	is-byte-hex-40			\
 	is-sha-udigish			\
 	is-udigish			\
 	is-utf8wf			\
@@ -54,6 +55,7 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		get-bool-command					\
 		get-is-utf8wf						\
 		has-byte-json-bracket					\
+		has-byte-xml-bracket				\
 		is-udigish						\
 		is-utf8wf						\
 		merge-byte_bitmap					\
@@ -78,6 +80,7 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		is-byte-hex-40.c					\
 		byte-prefix-32.c					\
 		has-byte-json-bracket.c					\
+		has-byte-xml-bracket.c					\
 		is-sha-udigish.c					\
 		is-udigish.c						\
 		is-utf8wf.c						\

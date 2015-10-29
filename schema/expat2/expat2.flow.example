@@ -65,6 +65,10 @@ query in_is_xmlwf_table(brr.udig);
 command get_is_xmlwf
 {
 	path = "sbin/get-is_xmlwf";
+	exit_status is OK when in {
+		0,			#  command is true
+		1			#  command is false
+	};
 }
 
 call get_is_xmlwf(brr.udig)
