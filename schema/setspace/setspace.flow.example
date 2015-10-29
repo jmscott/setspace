@@ -17,6 +17,9 @@
 #
 #	taken from rfc4627, section 3
 #
+#	Note: in_has_byte_json_bracket_table is testing non-utf8 blobs.
+#	      should only utf8 blobs be presented?
+#
 
 boot
 {
@@ -282,6 +285,18 @@ query in_byte_bitmap_table(biod.udig)
 call merge_byte_bitmap(biod.udig)
   when
   	in_byte_bitmap_table.answer == false
+;
+
+command byte_bitmap_exists
+{
+	path = "true";
+}
+
+call byte_bitmap_exists()
+  when
+  	merge_byte_bitmap.exit_status == 0
+	or
+	in_byte_bitmap_table.answer == true
 ;
 
 #
@@ -566,17 +581,14 @@ sql query is_printable_unix row
 
 query is_printable_unix(biod.udig)
   when
+  	#  Note: replace with is_utf8wf_exists
 	(
 		in_is_utf8wf_table.is_utf8 == true
 		or
 		merge_is_utf8wf.is_utf8 == true
 	)
 	and
-	(
-		in_byte_bitmap_table.answer == true
-		or
-		merge_byte_bitmap.exit_status == 0
-	)
+	byte_bitmap_exists.exit_status == 0
 ;
 
 sql query is_drblob row
