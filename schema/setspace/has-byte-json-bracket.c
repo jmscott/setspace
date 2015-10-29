@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Byte stream matches perl pattern: /^\s*(\[.*?\])/m or /^\s*({.*?})/m
+ *	Byte stream matches perl pattern: /^\s*\[.*?\]/m or /^\s*{.*?}/m
  *  Usage:
  *  	has-byte-json-bracket.c <BLOB; echo $?
  *  Exit Status:
