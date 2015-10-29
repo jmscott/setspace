@@ -1,14 +1,14 @@
 /*
  *  Synopsis:
- *	Byte stream matches perl pattern: /^\s*[.*]\s$/s or /^\s{.*\s*$/s
+ *	Byte stream matches perl pattern: /^\s*(\[.*?\])/m or /^\s*({.*?})/m
  *  Usage:
  *  	is-byte-json-rootudigish <BLOB
  *  Exit Status:
- *	0	matches at least one udig in input stream.
- *	1	does not match udig in input stream.
+ *	0	matches
+ *	1	does not match
  *	2	bad argument count on command line
  *	3	bad read(0)
- *	4	impossible error
+ *	4	unknown error
  *  Blame:
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
@@ -22,7 +22,6 @@
 
 #define ST_BEFORE_OPEN	0
 #define ST_BEFORE_CLOSE	1
-#define ST_AFTER_CLOSE	2
 
 #define SLURP		4096
 
@@ -132,8 +131,10 @@ main(int argc, char **argv)
 			case ST_BEFORE_OPEN:
 				if (IS_WHITE(c))
 					continue;
+
+				//  typical case, quick case for non-json
 				if (!IS_OPEN(c))
-					_exit(1);
+					_exit(EXIT_NO_MATCH);
 				if (c == '[')
 					c_close = ']';
 				else
@@ -142,17 +143,12 @@ main(int argc, char **argv)
 				break;
 			case ST_BEFORE_CLOSE:
 				if (c == c_close)
-					state = ST_AFTER_CLOSE;
-				break;
-			case ST_AFTER_CLOSE:
-				if (IS_WHITE(c) || c == c_close)
-					continue;
-				state = ST_BEFORE_CLOSE;
+					_exit(EXIT_MATCH);
 				break;
 			default:
 				die(EXIT_WTF, "impossible scan state");
 			}
 		}
 	}
-	_exit(state == ST_AFTER_CLOSE ? 0 : 1);
+	_exit(EXIT_NO_MATCH);
 }
