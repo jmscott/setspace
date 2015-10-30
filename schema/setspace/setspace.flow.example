@@ -20,6 +20,7 @@
 #	Note: in_has_byte_json_bracket_table is testing non-utf8 blobs.
 #	      should only utf8 blobs be presented?
 #
+#       Create schema for routing based upon prefix_32.  Schema name would be prefixio
 
 boot
 {
