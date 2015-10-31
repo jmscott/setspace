@@ -955,7 +955,7 @@ call append_jsonorg_brr(
 	biod.blob_size,
 	biod.wall_duration
 ) when
-	in_has_byte_json_bracket_table.answer == true
+	in_has_byte_json_bracket_table.has_bracket == true
 	or
 	merge_has_byte_json_bracket.has_bracket == true
 ;
