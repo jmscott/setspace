@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Development/Install Makefile
 #  Usage:
-#	make distclean clean all install
+#	make distclean install
 #  See:
 #	../schema.mk
 #  Blame:
@@ -16,10 +16,7 @@ include ../../local.mk
 
 PROGS=  get-is_xmlwf
 
-all:
-clean:
-
-install: all
+install:
 	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(EXPAT2_PREFIX)
 	$(INSTALL) -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 		\
