@@ -3,9 +3,12 @@
  *	Routines shared by most simple c programs, many in schema/...*.c
  *  Usage:
  *	char *progname = "append-brr";
+ *	#include "../../common.c"
  *
+ *	#define COMMON_NEED_DIE3
  *	#include "../../common.c"
  *  See:
+ *	flip-tail.c
  *	schema/...*.c
  */
 #include <unistd.h>
@@ -18,14 +21,13 @@ static char	colon[] = ": ";
 
 /*
  * Synopsis:
- *  	Safe & simple string concatenator
+ *  	Fast, safe and simple string concatenator
  *  Usage:
  *  	buf[0] = 0
  *  	_strcat(buf, sizeof buf, "hello, world");
  *  	_strcat(buf, sizeof buf, ": ");
  *  	_strcat(buf, sizeof buf, "good bye, cruel world");
  */
-
 static void
 _strcat(char *tgt, int tgtsize, char *src)
 {
