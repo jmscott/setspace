@@ -17,8 +17,6 @@
  *  Blame:
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
- *  Note:
- *	Rewrite insert() as upsert. 
  */
 
 #define EXIT_OK	0
