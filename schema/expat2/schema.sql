@@ -8,18 +8,19 @@
 \set ON_ERROR_STOP on
 \timing
 
-begin;
-drop schema if exists expat2 cascade;
+BEGIN;
+DROP SCHEMA IF EXISTS expat2 CASCADE;
 
-create schema expat2;
+CREATE SCHEMA expat2;
 
-set search_path to expat2,setspace,public;
+SET search_path TO expat2,setspace,public;
 
 /*
  *  Is the blob well formed xml according to xmlwf program, version 2,
  *  in the expat library.
  */
-create table expat2.is_xmlwf
+DROP TABLE IF EXISTS expat2.is_xmlwf;
+CREATE TABLE expat2.is_xmlwf
 (
 	blob	udig
 			references setspace.service
@@ -29,4 +30,4 @@ create table expat2.is_xmlwf
 			not null
 );
 
-commit;
+COMMIT;
