@@ -73,10 +73,10 @@ ifdef SETSPACE_PREFIX
 	cd schema && make install
 endif
 
-append-brr: append-brr.c
+append-brr: append-brr.c common.c
 	cc $(CFLAGS) -o append-brr append-brr.c
 
-flip-tail: flip-tail.c
+flip-tail: flip-tail.c common.c
 	cc -o flip-tail $(CFLAGS) flip-tail.c
 
 dec2pgbit: dec2pgbit.c

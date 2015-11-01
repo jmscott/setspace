@@ -47,9 +47,12 @@
 #include <fcntl.h>
 
 #include <errno.h>
-#include <unistd.h>
 #include <string.h>
 #include <stdio.h>
+
+static char	progname[] = "append-brr";
+
+#include "common.c"
 
 #define X_SUCCESS	0
 #define X_NEW_EXIST	1
@@ -62,58 +65,6 @@
 #define X_BAD_MKFIFO	8
 #define X_BAD_FSTAT	9
 #define X_BAD_CLOSE	10
-
-#ifndef PIPE_MAX
-#define PIPE_MAX	512
-#endif
-
-/*
- * Synopsis:
- *  	Safe & simple string concatenator
- * Returns:
- * 	Number of non-null bytes consumed by buffer.
- *  Usage:
- *  	buf[0] = 0
- *  	_strcat(buf, sizeof buf, "hello, world");
- *  	_strcat(buf, sizeof buf, ": ");
- *  	_strcat(buf, sizeof buf, "good bye, cruel world");
- *  	write(2, buf, _strcat(buf, sizeof buf, "\n"));
- */
-
-static int
-_strcat(char *tgt, int tgtsize, char *src)
-{
-	char *tp = tgt;
-
-	//  find null terminated end of target buffer
-	while (*tp++)
-		--tgtsize;
-	--tp;
-
-	//  copy non-null src bytes, leaving room for trailing null
-	while (--tgtsize > 0 && *src)
-		*tp++ = *src++;
-
-	// target always null terminated
-	*tp = 0;
-
-	return tp - tgt;
-}
-
-static void
-die2(int status, char *msg1, char *msg2)
-{
-	static char ERROR[] = "flip-tail: ERROR: ";
-	char msg[PIPE_MAX] = {0};
-
-	_strcat(msg, sizeof msg, ERROR);
-	_strcat(msg, sizeof msg, msg1);
-	_strcat(msg, sizeof msg, ": ");
-	_strcat(msg, sizeof msg, msg2);
-	write(2, msg, _strcat(msg, sizeof msg, "\n"));
-
-	_exit(status);
-}
 
 int
 main(int argc, char **argv)

@@ -42,7 +42,6 @@
 #include <fcntl.h>
 
 #include <string.h>
-#include <unistd.h>
 #include <errno.h>
 
 #define EXIT_BAD_ARGC	1
@@ -54,69 +53,9 @@
 
 #define MAX_BRR		365
 
-#ifndef PIPE_MAX
-#define PIPE_MAX	512
-#endif
+static char	progname[] = "append-brr";
 
-/*
- * Synopsis:
- *  	Safe & simple string concatenator
- *  Usage:
- *  	buf[0] = 0
- *  	_strcat(buf, sizeof buf, "hello, world");
- *  	_strcat(buf, sizeof buf, ": ");
- *  	_strcat(buf, sizeof buf, "good bye, cruel world");
- */
-
-static void
-_strcat(char *tgt, int tgtsize, char *src)
-{
-	//  find null terminated end of target buffer
-	while (*tgt++)
-		--tgtsize;
-	--tgt;
-
-	//  copy non-null src bytes, leaving room for trailing null
-	while (--tgtsize > 0 && *src)
-		*tgt++ = *src++;
-
-	// target always null terminated
-	*tgt = 0;
-}
-
-/*
- *  Write error message to standard error and exit process.
- */
-static void
-die(int status, char *msg1)
-{
-	char msg[PIPE_MAX];
-	static char ERROR[] = "append-brr: ERROR: ";
-	static char nl[] = "\n";
-
-	msg[0] = 0;
-	_strcat(msg, sizeof msg, ERROR);
-	_strcat(msg, sizeof msg, msg1);
-	_strcat(msg, sizeof msg, nl);
-
-	write(2, msg, strlen(msg));
-
-	_exit(status);
-}
-
-static void
-die2(int status, char *msg1, char *msg2)
-{
-	static char colon[] = ": ";
-	char msg[PIPE_MAX];
-
-	msg[0] = 0;
-	_strcat(msg, sizeof msg, msg1);
-	_strcat(msg, sizeof msg, colon);
-	_strcat(msg, sizeof msg, msg2);
-
-	die(status, msg);
-}
+#include "common.c"
 
 /*
  *  Build the brr record from a command line argument.
