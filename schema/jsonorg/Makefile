@@ -18,14 +18,15 @@ include ../../local.mk
 
 COMPILED=			\
 	JSON_checker		\
-	merge-jsonb_255
+	merge-stdin-jsonb_255
 
-PROGS=  $(COMPILED)			\
-	get-JSON_checker
+PROGS=  $(COMPILED)							\
+	get-JSON_checker						\
+	merge-jsonb_255
 
 all: $(COMPILED)
 clean:
-	rm -f $(COMPILED) merge-jsonb_255.c
+	rm -f $(COMPILED) merge-stdin-jsonb_255.c
 
 install: all
 	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
@@ -57,16 +58,16 @@ install: all
 		$(JSONORG_PREFIX)/lib
 	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r	\
 		JSON_checker.c						\
-		merge-jsonb_255.pgc					\
+		merge-stdin-jsonb_255.pgc				\
 		$(JSONORG_PREFIX)/src
 
 JSON_checker: JSON_checker.c
 	$(CC) -o JSON_checker $(CFLAGS) JSON_checker.c
 
-merge-jsonb_255: merge-jsonb_255.pgc
-	ecpg merge-jsonb_255.pgc
-	$(CC) -I$(PGINC) merge-jsonb_255.c -o merge-jsonb_255 -L$(PGLIB) -lecpg
-	rm merge-jsonb_255.c
+merge-stdin-jsonb_255: merge-stdin-jsonb_255.pgc
+	ecpg merge-stdin-jsonb_255.pgc
+	$(CC) -I$(PGINC) merge-stdin-jsonb_255.c -o merge-stdin-jsonb_255 -L$(PGLIB) -lecpg
+	rm merge-stdin-jsonb_255.c
 
 frisk ff:
 	flowd frisk jsonorg.flow.example

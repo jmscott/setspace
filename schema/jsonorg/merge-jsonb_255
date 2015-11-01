@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+#   Synopsis:
+#   	Merge a json blob read on standard input into table jsonorg.jsonb_255.
+#   Usage:
+# 	 merge-jsonb_255 <udig> <blob_size>
+#   Arguments:
+#   	1	udig of the blob
+#   	2	size of the blob in bytes
+#   Exit Status:
+#   	0	ok, tuple was merged
+#	1	blob does not exist
+#   	2	wrong number of arguments
+#	3	unexpected blobio error
+#	4	unexpected merge error
+#   Blame:
+#   	jmscott@setspace.com
+#   	setspace@gmail.com
+#  
+PROG=merge-blob-jsonb_255
+TMP_BLOB=${TMP_DIR:=/tmp}/$PROG.$$
+
+die()
+{
+	STATUS=$2
+	echo "$PROG: ERROR: $1" >&2
+	exit $STATUS
+}
+
+leave()
+{
+	rm -f $TMP_BLOB
+}
+
+trap leave EXIT
+
+test $# = 2 || die 'wrong number of arguments' 2
+
+UDIG=$1
+SIZE=$2
+
+blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_SERVICE
+STATUS=$?
+
+case $STATUS in
+0)
+	;;
+1)
+	exit 1
+	;;
+*)
+	die "blobio get failed: exit status=$STATUS" 3
+	;;
+esac
+merge-stdin-jsonb_255 $UDIG $SIZE <$TMP_BLOB
+test $? = 0 || die "merge-stdin-jsonb_255 failed: exit status=$?"
