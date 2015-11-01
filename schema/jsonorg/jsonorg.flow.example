@@ -34,7 +34,7 @@ sql database setspace
 	max_open_conns = 8;
 }
 
-tail set_brr
+tail brr
 {
 	path = "spool/setspace.brr";
 }
@@ -67,7 +67,31 @@ sql query is_in_checker_255_table row
 	database is setspace;
 }
 
-query is_in_checker_255_table(set_brr.udig);
+command brr_has_size
+{
+	path = "true";
+}
+
+call brr_has_size()
+ when
+ 	(
+		(
+			brr.verb == "get"
+			or
+			brr.verb == "put"
+		)
+		and
+		brr.chat_history == "ok"
+	)
+	or
+	(
+		brr.verb == "give"
+		and
+		brr.chat_history == "ok,ok"
+	)
+;
+
+query is_in_checker_255_table(brr.udig);
 
 command get_JSON_checker
 {
@@ -81,13 +105,13 @@ command get_JSON_checker
 	};
 }
 
-call get_JSON_checker (set_brr.udig, set_brr.blob_size)
+call get_JSON_checker (brr.udig, brr.blob_size)
   when
   	is_in_checker_255_table.answer == false
 ;
 
 #
-#  Merge the tuple into the table is_brr_log
+#  Merge the tuple into the table jsonorg.checker_255
 #
 sql query merge_checker_255 row
 {
@@ -116,9 +140,45 @@ sql query merge_checker_255 row
 	database is setspace;
 }
 
-query merge_checker_255 (set_brr.udig, get_JSON_checker.exit_status)
+query merge_checker_255 (brr.udig, get_JSON_checker.exit_status)
   when
   	get_JSON_checker.exit_status == 0
 	or
   	get_JSON_checker.exit_status == 1
+;
+
+sql query in_jsonb_255_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	jsonorg.jsonb_255
+	    WHERE
+	    	blob = $1::udig
+	);`;
+
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query in_jsonb_255_table(brr.udig)
+  when
+  	is_in_checker_255_table.is_json == true
+	or
+	merge_checker_255.is_json == true
+;
+
+command merge_jsonb_255
+{
+	path = "sbin/merge-jsonb_255";
+}
+
+call merge_jsonb_255(brr.udig, brr.blob_size)
+  when
+  	in_jsonb_255_table.answer == false
 ;
