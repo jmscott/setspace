@@ -12,7 +12,6 @@
 
 BEGIN;
 DROP SCHEMA IF EXISTS jsonorg cascade;
-
 CREATE SCHEMA JSONORG;
 
 ALTER DEFAULT PRIVILEGES FOR ROLE jmscott IN SCHEMA
@@ -25,6 +24,7 @@ ALTER DEFAULT PRIVILEGES FOR ROLE jmscott IN SCHEMA
  *
  *	http://www.json.org/JSON_checker/
  */
+DROP TABLE IF EXISTS jsonorg.checker_255 CASCADE;
 CREATE TABLE jsonorg.checker_255
 (
 	blob	udig
@@ -44,6 +44,7 @@ COMMENT ON TABLE jsonorg.checker_255 IS
  *  If you want the exact text of the json document
  *  then just fetch the immutable blob.
  */
+DROP TABLE IF EXISTS jsonorg.jsonb_255 CASCADE;
 CREATE TABLE jsonorg.jsonb_255
 (
 	blob	udig
@@ -93,12 +94,14 @@ COMMENT ON TABLE jsonorg.jsonb_255 IS
 	'Binary encoding of valid json document from table checker_255'
 ;
 
+DROP INDEX IF EXISTS idx_jsonb_255_gin CASCADE;
 CREATE INDEX idx_jsonb_255_gin
   ON
   	jsonorg.jsonb_255 USING gin(doc)
 ;
 
 --  indexing the @> operator
+DROP INDEX IF EXISTS idx_jsonb_255_pgin CASCADE;
 CREATE INDEX idx_jsonb_255_pgin
   ON
   	jsonorg.jsonb_255 USING gin (doc jsonb_path_ops)
