@@ -181,4 +181,6 @@ command merge_jsonb_255
 call merge_jsonb_255(brr.udig, brr.blob_size)
   when
   	in_jsonb_255_table.answer == false
+	and
+	brr_has_size.exit_status == 0
 ;
