@@ -46,13 +46,13 @@
 #define EXIT_BAD_BRR	2
 #define EXIT_BAD_OPEN	3
 #define EXIT_BAD_WRITE	4
-#define EXIT_NO_ATOMIC	5
-#define EXIT_BAD_CLOSE	6
+#define EXIT_BAD_CLOSE	5
 
 static char	progname[] = "append-brr";
 
+#define COMMON_NEED_OPEN
 #define COMMON_NEED_WRITE
-#define COMMON_NEED_DIE2
+#define COMMON_NEED_CLOSE
 #include "common.c"
 
 #define MAX_BRR		365
@@ -82,39 +82,6 @@ arg2brr(char *name, char *arg, int size, char **brr)
 	*brr = tgt;
 }
 
-static void
-_close(int fd)
-{
-	int status;
-again:
-	status = close(fd);
-	if (status == 0)
-		return;
-	if (errno == EINTR)
-		goto again;
-	die2(EXIT_BAD_CLOSE, "close() failed", strerror(errno));
-}
-
-static int
-_open(char *path)
-{
-	int fd;
-again:
-	/*
-	 *  Open the file append only, possibly creating the file.
-	 */
-	fd = open(path,
-			O_WRONLY | O_APPEND | O_CREAT,
-			S_IRUSR | S_IWUSR | S_IRGRP
-	);
-	if (fd < 0) {
-		if (errno == EINTR)
-			goto again;
-		die2(EXIT_BAD_OPEN, "open() failed", strerror(errno));
-	}
-	return fd;
-}
-
 int
 main(int argc, char **argv)
 {
@@ -141,7 +108,10 @@ main(int argc, char **argv)
 
 	b[-1] = '\n';		//  zap trailing tab
 
-	fd = _open(path);
+	fd = _open(path,
+		   O_WRONLY | O_APPEND | O_CREAT,
+		   S_IRUSR | S_IWUSR | S_IRGRP
+	);
 
 	// atomically write exactly the number bytes in the blob request record
 	_write(fd, brr, b - brr);
