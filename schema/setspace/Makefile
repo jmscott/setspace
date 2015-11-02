@@ -13,22 +13,22 @@ include ../schema.mk
 #  setspace schema code always in setspace install directory
 SETSPACE_SCHEMA_PREFIX=$(SETSPACE_PREFIX)/schema/setspace
 
-PROG=					\
-	byte-bitmap			\
-	byte-count			\
-	byte-prefix-32			\
-	has-byte-json-bracket		\
-	has-byte-xml-bracket	\
-	is-byte-hex-40			\
-	is-sha-udigish			\
-	is-udigish			\
-	is-utf8wf			\
+COMPILED=								\
+	byte-bitmap							\
+	byte-count							\
+	byte-prefix-32							\
+	has-byte-json-bracket						\
+	has-byte-xml-bracket						\
+	is-byte-hex-40							\
+	is-sha-udigish							\
+	is-udigish							\
+	is-utf8wf							\
 	new-line-count
 
-all: $(PROG)
+all: $(COMPILED)
 
 clean:
-	rm -f $(PROG)
+	rm -f $(COMPILED)
 
 install: all
 ifdef SETSPACE_SCHEMA_PREFIX
@@ -98,3 +98,33 @@ distclean:
 
 frisk ff:
 	flowd frisk setspace.flow.example
+
+byte-bitmap: byte-bitmap.c ../../common.c
+	cc -o byte-bitmap $(CFLAGS) byte-bitmap.c
+
+byte-count: byte-count.c ../../common.c
+	cc -o byte-count $(CFLAGS) byte-count.c
+
+byte-prefix-32: byte-prefix-32.c ../../common.c
+	cc -o byte-prefix-32 $(CFLAGS) byte-prefix-32.c
+
+is-utf8wf: is-utf8wf.c ../../common.c
+	cc -o is-utf8wf $(CFLAGS) is-utf8wf.c
+
+is-udigish: is-udigish.c ../../common.c
+	cc -o is-udigish $(CFLAGS) is-udigish.c
+
+newline-count: newline-count.c ../../common.c
+	cc -o newline-count $(CFLAGS) newline-count.c
+
+has-byte-json-bracket: has-byte-json-bracket.c ../../common.c
+	cc -o has-byte-json-bracket $(CFLAGS) has-byte-json-bracket.c
+
+has-byte-xml-bracket: has-byte-xml-bracket.c ../../common.c
+	cc -o has-byte-xml-bracket $(CFLAGS) has-byte-xml-bracket.c
+
+is-byte-hex-40: is-byte-hex-40.c ../../common.c
+	cc -o is-byte-hex-40 $(CFLAGS) is-byte-hex-40.c
+
+is-sha-udigish: is-sha-udigish.c ../../common.c
+	cc -o is-sha-udigish $(CFLAGS) is-sha-udigish.c

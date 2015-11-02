@@ -34,11 +34,15 @@
  */
 
 #include <ctype.h>
-#include <unistd.h>
 #include <errno.h>
 #include <string.h>
 
-#define SLURP	4096
+static char progname[] = "is-utf8wf";
+
+#define COMMON_NEED_READ
+#define EXIT_BAD_READ	2
+
+#include "../../common.c"
 
 /*
  *  States of scanner.
@@ -64,41 +68,16 @@
 #define B11110000	0xF0
 #define B11111000	0xF8
 
-static int
-_read(void *p, ssize_t nbytes)
-{
-	ssize_t nb;
-	char *err;
-	static char ERROR[] = "is-utf8wf: ERROR: read(0) failed: ";
-	static char nl[] = "\n";
-
-	again:
-
-	nb = read(0, p, nbytes);
-	if (nb >= 0)
-		return nb;
-	if (errno == EINTR)		//  try read()
-		goto again;
-
-	write(2, ERROR, sizeof ERROR - 1);
-	err = strerror(errno);
-	write(2, err, strlen(err));
-	write(2, nl, sizeof nl - 1);
-	_exit(3);
-	/*NOTREACHED*/
-	return -1;
-}
-
 int
 main()
 {
-	unsigned char buf[SLURP + 3];
+	unsigned char buf[4096];
 	int nread;
 	unsigned char *p_end = 0;
 	int state = STATE_START;
 	unsigned int code_point = 0;
 
-	while ((nread = _read(buf, sizeof buf)) > 0) {
+	while ((nread = _read(0, buf, sizeof buf)) > 0) {
 		unsigned char *p;
 
 		p = buf;

@@ -16,95 +16,23 @@
  */
 #include <string.h>
 #include <errno.h>
-#include <unistd.h>
 
-#define IS_HEX(c) (('0' <= c&&c <= '9') || ('a' <= (c)&&(c) <= 'f'))
-
-#define SLURP		4096
+static char progname[] = "is-byte-hex-40";
 
 #define EXIT_MATCH	0
 #define EXIT_NO_MATCH	1
 #define EXIT_BAD_ARGC	2
 #define EXIT_BAD_READ	3
 
-/*
- * Synopsis:
- *  	Safe & simple string concatenator
- * Returns:
- * 	Number of non-null bytes consumed by buffer.
- *  Usage:
- *  	buf[0] = 0
- *  	_strcat(buf, sizeof buf, "hello, world");
- *  	_strcat(buf, sizeof buf, ": ");
- *  	_strcat(buf, sizeof buf, "good bye, cruel world");
- *  	write(2, buf, _strcat(buf, sizeof buf, "\n"));
- */
+#define COMMON_NEED_READ
+#include "../../common.c"
 
-static int
-_strcat(char *tgt, int tgtsize, char *src)
-{
-	char *tp = tgt;
-
-	//  find null terminated end of target buffer
-	while (*tp++)
-		--tgtsize;
-	--tp;
-
-	//  copy non-null src bytes, leaving room for trailing null
-	while (--tgtsize > 0 && *src)
-		*tp++ = *src++;
-
-	// target always null terminated
-	*tp = 0;
-
-	return tp - tgt;
-}
-
-static void
-die(int status, char *msg)
-{
-	static char ERROR[] = "is-udigish: ERROR: ";
-	char buf[256] = {0};
-
-	_strcat(buf, sizeof buf, ERROR);
-	_strcat(buf, sizeof buf, msg);
-
-	write(2, buf, _strcat(buf, sizeof buf, "\n"));
-	_exit(status);
-}
-
-static void
-die2(int status, char *msg1, char *msg2)
-{
-	char msg[256] = {0};
-
-	_strcat(msg, sizeof msg, msg1);
-	_strcat(msg, sizeof msg, ": ");
-	_strcat(msg, sizeof msg, msg2);
-
-	die(status, msg);
-}
-
-static int
-_read(char *buf, ssize_t nbytes)
-{
-	int nread;
-again:
-	nread = read(0, buf, nbytes);
-	if (nread >= 0)
-		return nread;
-	if (errno == EINTR)
-		goto again;
-	die2(EXIT_BAD_READ, "read(0) failed", strerror(errno));
-
-	//*NOTREACHED*/
-	return 0;
-}
+#define IS_HEX(c) (('0' <= c&&c <= '9') || ('a' <= (c)&&(c) <= 'f'))
 
 int
 main(int argc, char **argv)
 {
-	char buf[SLURP];
+	unsigned char buf[4096];
 	int nread;
 	int hex_count = 0;
 
@@ -112,9 +40,9 @@ main(int argc, char **argv)
 		die(EXIT_BAD_ARGC, "wrong number of arguments");
 	(void)argv;
 
-	while ((nread = _read(buf, sizeof SLURP)) > 0) {
+	while ((nread = _read(0, buf, sizeof buf)) > 0) {
 
-		char *p, *p_end;
+		unsigned char *p, *p_end;
 
 		p = buf;
 		p_end = p + nread;

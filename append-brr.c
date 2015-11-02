@@ -17,8 +17,7 @@
  *	2	a brr field is too big in the argument list
  *	3	the open() failed
  *	4	the write() failed
- *	5	the write() succeeded but was not atomic
- *	6	the close() failed
+ *	5	the close() failed
  *  Blame:
  *	jmscott@setspace.com
  *	setspace@gmail.com
@@ -40,7 +39,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
 #include <string.h>
 #include <errno.h>
 
@@ -51,11 +49,13 @@
 #define EXIT_NO_ATOMIC	5
 #define EXIT_BAD_CLOSE	6
 
-#define MAX_BRR		365
-
 static char	progname[] = "append-brr";
 
+#define COMMON_NEED_WRITE
+#define COMMON_NEED_DIE2
 #include "common.c"
+
+#define MAX_BRR		365
 
 /*
  *  Build the brr record from a command line argument.
@@ -120,7 +120,6 @@ main(int argc, char **argv)
 {
 	// room for brr + newline + null
 	char brr[MAX_BRR + 1 + 1], *b;
-	int nwrite;
 	char *path;
 	int fd;
 
@@ -145,15 +144,7 @@ main(int argc, char **argv)
 	fd = _open(path);
 
 	// atomically write exactly the number bytes in the blob request record
-again:
-	nwrite = write(fd, brr, b - brr);
-	if (nwrite < 0) {
-		if (errno == EINTR)
-			goto again;
-		die2(EXIT_BAD_WRITE, "write() failed", strerror(errno));
-	}
-	if (nwrite != b - brr)
-		die(EXIT_NO_ATOMIC, "write() not atomic");
+	_write(fd, brr, b - brr);
 	_close(fd);
 	_exit(0);
 }

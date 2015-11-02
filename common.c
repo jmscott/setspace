@@ -1,15 +1,20 @@
 /*
  *  Synopsis:
- *	Routines shared by most simple c programs, many in schema/...*.c
+ *	Common, interruptable system calls, die[123]() and _strcat().
  *  Usage:
  *	char *progname = "append-brr";
- *	#include "../../common.c"
  *
+ *	#define COMMON_NEED_READ
  *	#define COMMON_NEED_DIE3
  *	#include "../../common.c"
+ *
+ *	#define COMMON_NEED_READ
+ *	#define EXIT_BAD_READ 4
+ *	#include "../../common.c"
  *  See:
- *	flip-tail.c
- *	schema/...*.c
+ *	flip-tail and c programs in schema directories.
+ *  Note:
+ *	Rename common.c to unistd.c?
  */
 #include <unistd.h>
 
@@ -17,7 +22,14 @@
 #define PIPE_MAX	512
 #endif
 
-static char	colon[] = ": ";
+#if defined(COMMON_NEED_READ) || defined(COMMON_NEED_WRITE) ||		\
+    defined(COMMON_NEED_CLOSE)
+#define COMMON_NEED_DIE2
+#endif
+
+#if defined(COMMON_NEED_OPEN)
+#define COMMON_NEED_DIE3
+#endif
 
 /*
  * Synopsis:
@@ -52,6 +64,7 @@ die(int status, char *msg1)
 {
 	char msg[PIPE_MAX];
 	static char ERROR[] = "ERROR: ";
+	static char	colon[] = ": ";
 	static char nl[] = "\n";
 
 	msg[0] = 0;
@@ -66,7 +79,7 @@ die(int status, char *msg1)
 	_exit(status);
 }
 
-#ifndef COMMON_NO_NEED_DIE2
+#ifdef COMMON_NEED_DIE2
 static void
 die2(int status, char *msg1, char *msg2)
 {
@@ -98,4 +111,125 @@ die3(int status, char *msg1, char *msg2, char *msg3)
 
 	die(status, msg);
 }
+#endif
+
+/*
+ *  To include _read() add the following to source which includes
+ *  this file:
+ *
+ *	#define COMMON_NEED_READ
+ *	#define EXIT_BAD_READ 3		//  any code is ok
+ */
+#ifdef COMMON_NEED_READ
+
+/*
+ *  read() bytes from  file fd, restarting on interrupt and dieing on error.
+ */
+static int
+_read(int fd, void *p, ssize_t nbytes)
+{
+	ssize_t nb;
+
+	again:
+
+	nb = read(fd, p, nbytes);
+	if (nb >= 0)
+		return nb;
+	if (errno == EINTR)		//  try read()
+		goto again;
+
+	die2(EXIT_BAD_READ, "read() failed", strerror(errno));
+
+	/*NOTREACHED*/
+	return -1;
+}
+#endif
+
+/*
+ *  To include _write() add the following to source which includes
+ *  this file:
+ *
+ *	#define COMMON_NEED_WRITE
+ *	#define EXIT_BAD_WRITE 4		//  any code is ok
+ */
+#ifdef COMMON_NEED_WRITE
+
+/*
+ *  write() exactly nbytes bytes from stdin input,
+ *  restarting on interrupt and dieing on error.
+ */
+static void
+_write(int fd, void *p, ssize_t nbytes)
+{
+	int nb = 0;
+
+	again:
+
+	nb = write(fd, p + nb, nbytes);
+	if (nb < 0) {
+		if (errno == EINTR)
+			goto again;
+		die2(EXIT_BAD_WRITE, "write() failed", strerror(errno));
+	}
+	nbytes -= nb;
+	if (nbytes > 0)
+		goto again;
+}
+
+#endif
+
+/*
+ *  To include _open() add the following to source which includes
+ *  this file:
+ *
+ *	#define COMMON_NEED_OPEN
+ *	#define EXIT_BAD_OPEN 4		//  any code is ok
+ */
+#ifdef COMMON_NEED_OPEN
+
+/*
+ *  open() a file.
+ */
+static int
+_open(char *path, int oflag, int mode)
+{
+	int fd;
+
+	again:
+
+	fd = open(path, oflag, mode);
+	if (fd < 0) {
+		if (errno == EINTR)
+			goto again;
+		die3(EXIT_BAD_OPEN, "open() failed", strerror(errno), path);
+	}
+	return fd;
+}
+
+#endif
+
+/*
+ *  To include _close() add the following to source which includes
+ *  this file:
+ *
+ *	#define COMMON_NEED_OPEN
+ *	#define EXIT_BAD_OPEN 4		//  any code is ok
+ */
+#ifdef COMMON_NEED_CLOSE
+
+/*
+ *  close() a file descriptor.
+ */
+static void
+_close(int fd)
+{
+	again:
+
+	if (close(fd) < 0) {
+		if (errno == EINTR)
+			goto again;
+		die2(EXIT_BAD_CLOSE, "close() failed", strerror(errno));
+	}
+}
+
 #endif

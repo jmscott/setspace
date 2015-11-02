@@ -14,10 +14,12 @@ all:
 	cd setspace && $(MAKE) all
 	cd drblob && $(MAKE) all
 	cd jsonorg && $(MAKE) all
+	cd expat2 && $(MAKE) all
 clean:
 	cd setspace && $(MAKE) clean
 	cd drblob && $(MAKE) clean
 	cd jsonorg && $(MAKE) clean
+	cd expat2 && $(MAKE) clean
 install:
 	cd setspace && $(MAKE) install
 	cd drblob && $(MAKE) install

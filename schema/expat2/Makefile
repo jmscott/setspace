@@ -14,7 +14,17 @@
 include ../schema.mk
 include ../../local.mk
 
+COMPILED=
 PROGS=  get-is_xmlwf
+
+all: $(COMPILED)
+	true
+
+clean:
+	rm -f $(COMPILED)
+
+flatx: flatx.c
+	$(CC) -o flatx $(CFLAGS) flatx.c -lexpat
 
 install:
 	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\

@@ -50,37 +50,41 @@
 #include <string.h>
 #include <stdio.h>
 
-static char	progname[] = "append-brr";
+static char	progname[] = "flip-tail";
+
+#define EXIT_SUCCESS	0
+#define EXIT_NEW_EXIST	1
+#define EXIT_NEW_DIFF	2
+#define EXIT_BAD_ARGC	3
+#define EXIT_BAD_FILETYPE	4
+#define EXIT_BAD_OPEN	5
+#define EXIT_BAD_RENAME	6
+#define EXIT_BAD_CREAT	7
+#define EXIT_BAD_MKFIFO	8
+#define EXIT_BAD_FSTAT	9
+#define EXIT_BAD_CLOSE	10
+
+#define COMMON_NEED_DIE2
+#define COMMON_NEED_OPEN
+#define COMMON_NEED_CLOSE
 
 #include "common.c"
-
-#define X_SUCCESS	0
-#define X_NEW_EXIST	1
-#define X_NEW_DIFF	2
-#define X_BAD_ARGC	3
-#define X_BAD_FILETYPE	4
-#define X_BAD_OPEN	5
-#define X_BAD_RENAME	6
-#define X_BAD_CREAT	7
-#define X_BAD_MKFIFO	8
-#define X_BAD_FSTAT	9
-#define X_BAD_CLOSE	10
 
 int
 main(int argc, char **argv)
 {
 	char *path, *rename_path;
 	int fd_old, fd_new;
-	int exit_status = X_SUCCESS;
+	int exit_status = EXIT_SUCCESS;
 	char *type;
 	struct stat st;
 
 	if (argc != 4)
-		die2(X_BAD_ARGC, "wrong number of arguments", "expected 3");
+		die2(EXIT_BAD_ARGC, "wrong number of arguments", "expected 3");
 
 	type = argv[1];
 	if (strcmp(type, "file") != 0 && strcmp(type, "fifo") != 0)
-		die2(X_BAD_FILETYPE, "unknown file type", type);
+		die2(EXIT_BAD_FILETYPE, "unknown file type", type);
 
 	path = argv[2];
 	rename_path = argv[3];
@@ -89,9 +93,7 @@ main(int argc, char **argv)
 	 *  Open an existing, active file, preventing deletion of the underlying
 	 *  inode.
 	 */
-	fd_old = open(path, O_WRONLY, 0);		//  could block !!!
-	if (fd_old < 0)
-		die2(X_BAD_OPEN, "open(old) failed", strerror(errno));
+	fd_old = _open(path, O_WRONLY, 0);
 
 	/*
 	 *  Rename the old path, effectively hiding the inode (not the path)
@@ -100,7 +102,8 @@ main(int argc, char **argv)
 	 *  path - changes.
 	 */
 	if (rename(path, rename_path) < 0)
-		die2(X_BAD_RENAME, "rename(old, new) failed", strerror(errno));
+		die2(EXIT_BAD_RENAME, "rename(old, new) failed",
+					strerror(errno));
 
 	/*
 	 *  Recreate a new, tailable file that is either a regular file or
@@ -110,21 +113,21 @@ main(int argc, char **argv)
 		fd_new = creat(path, S_IRUSR | S_IWUSR | S_IRGRP);
 		if (fd_new < 0) {
 			if (errno != EEXIST)
-				die2(X_BAD_CREAT,
+				die2(EXIT_BAD_CREAT,
 					"creat(new) failed",
 					strerror(errno)
 				);
-			exit_status = X_NEW_EXIST;
+			exit_status = EXIT_NEW_EXIST;
 		}
 	} else {
 		fd_new = mkfifo(path, S_IRUSR | S_IWUSR | S_IRGRP);
 		if (fd_new < 0) {
 			if (errno != EEXIST)
-				die2(X_BAD_MKFIFO,
+				die2(EXIT_BAD_MKFIFO,
 					"mkfifo(new) failed",
 					strerror(errno)
 				);
-			exit_status = X_NEW_EXIST;
+			exit_status = EXIT_NEW_EXIST;
 		}
 	}
 
@@ -133,7 +136,7 @@ main(int argc, char **argv)
 	 *  process, like append-brr, also opens with O_CREAT, creating a race
 	 *  condition.
 	 */
-	if (exit_status == X_NEW_EXIST) {
+	if (exit_status == EXIT_NEW_EXIST) {
 		/*
 		 *   Is the new file not the same type as the old
 		 */
@@ -144,23 +147,23 @@ main(int argc, char **argv)
 			 *  A panicy situation the caller needs to know about.
 			 */
 			if (!S_ISREG(m) && !S_ISFIFO(m))
-				die2(X_BAD_FILETYPE,
+				die2(EXIT_BAD_FILETYPE,
 					"new file is neither fifo nor regular",
 					path);
 
 			if ((type[2] == 'l' && !S_ISREG(m)) ||
 			    (type[2] == 'f' && !S_ISREG(m)))
-				exit_status = X_NEW_DIFF;
+				exit_status = EXIT_NEW_DIFF;
 		} else
-			die2(X_BAD_FSTAT, "fstat(new) failed", strerror(errno));
+			die2(EXIT_BAD_FSTAT, "fstat(new) failed",
+						strerror(errno));
 	}
 	/*
 	 *  Close files
 	 */
-	if (fd_old > -1 && close(fd_old) < 0)
-		die2(X_BAD_CLOSE, "close(old) failed", strerror(errno));
-	if (fd_new > -1 && close(fd_new) < 0)
-		die2(X_BAD_CLOSE, "close(new) failed", strerror(errno));
-
+	if (fd_old > -1)
+		_close(fd_old);
+	if (fd_new > -1)
+		_close(fd_new);
 	_exit(exit_status);
 }
