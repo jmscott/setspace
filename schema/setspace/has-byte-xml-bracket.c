@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Byte stream matches perl pattern: /^\s*<.*?\/>/m, i.e,  <.../>
+ *	Byte stream matches perl pattern: /^\s*<.*[/].*>\s*$/m
  *  Usage:
  *  	has-byte-xml-bracket <BLOB;  echo $?
  *  Exit Status:
@@ -34,15 +34,16 @@ static char progname[] = "has-byte-xml-bracket";
 
 #define IS_WHITE(c) ((c) == ' ' || (c) == '\n' || (c) == '\t' || (c) == '\r')
 
-#define STATE_BEFORE_OPEN	0
-#define STATE_BEFORE_SLASH 1
-#define STATE_BEFORE_CLOSE	2
+#define STATE_BEFORE_LEFT_BRACKET	0
+#define STATE_BEFORE_SLASH		1
+#define STATE_BEFORE_RIGHT_BRACKET	2
+#define STATE_AFTER_RIGHT_BRACKET	3
 
 int
 main(int argc, char **argv)
 {
 	unsigned char buf[4096];
-	int state = STATE_BEFORE_OPEN;
+	int state = STATE_BEFORE_LEFT_BRACKET;
 	int nread;
 
 	if (argc != 1)
@@ -62,7 +63,8 @@ main(int argc, char **argv)
 			c = *p++;
 
 			switch (state) {
-			case STATE_BEFORE_OPEN:
+
+			case STATE_BEFORE_LEFT_BRACKET:
 				if (IS_WHITE(c))
 					continue;
 
@@ -71,20 +73,25 @@ main(int argc, char **argv)
 					_exit(EXIT_NO_MATCH);
 				state = STATE_BEFORE_SLASH;
 				break;
+
 			case STATE_BEFORE_SLASH:
 				if (c == '/')
-					state = STATE_BEFORE_CLOSE;
+					state = STATE_BEFORE_RIGHT_BRACKET;
 				break;
-			case STATE_BEFORE_CLOSE:
-				if (c == '>')
-					_exit(EXIT_MATCH);
 
-				//  no need to check for / again.
-				//  //> is not valid xml.
-				state = STATE_BEFORE_SLASH;
+			case STATE_BEFORE_RIGHT_BRACKET:
+				if (c == '>')
+					state = STATE_AFTER_RIGHT_BRACKET;
+				break;
+
+			case STATE_AFTER_RIGHT_BRACKET:
+				if (IS_WHITE(c))
+					continue;
+				if (c != '>')
+					state = STATE_BEFORE_RIGHT_BRACKET;
 				break;
 			}
 		}
 	}
-	_exit(EXIT_NO_MATCH);
+	_exit(state == STATE_AFTER_RIGHT_BRACKET ? EXIT_MATCH : EXIT_NO_MATCH);
 }
