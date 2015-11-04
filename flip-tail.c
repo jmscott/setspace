@@ -35,11 +35,9 @@
  *	8	file mkfifo() failed
  *	9	file fstat() failed
  *	10	file close() failed
+ *	11	file fchmod(new) failed
  *  Blame:
  *  	jmscott@setspace.com
- *  	setspace@gmail.com
- *  Note:
- *  	Various systems calls do not handle the signal EINTR.
  */
 
 #include <sys/types.h>
@@ -63,10 +61,12 @@ static char	progname[] = "flip-tail";
 #define EXIT_BAD_MKFIFO	8
 #define EXIT_BAD_FSTAT	9
 #define EXIT_BAD_CLOSE	10
+#define EXIT_BAD_FCHMOD	11
 
 #define COMMON_NEED_DIE2
 #define COMMON_NEED_OPEN
 #define COMMON_NEED_CLOSE
+#define COMMON_NEED_FCHMOD
 
 #include "common.c"
 
@@ -104,23 +104,27 @@ main(int argc, char **argv)
 	if (rename(path, rename_path) < 0)
 		die2(EXIT_BAD_RENAME, "rename(old, new) failed",
 					strerror(errno));
+	/*
+	 *  Get the mode of old file to set for the new file.
+	 */
+	if (fstat(fd_old, &st) < 0)
+		die2(EXIT_BAD_FSTAT, "fstat(old) failed", strerror(errno));
 
 	/*
 	 *  Recreate a new, tailable file that is either a regular file or
 	 *  a fifo.  type[2] == 'l' => type=="file";  otherwise type == "fifo".
 	 */
 	if (type[2] == 'l') {
-		fd_new = creat(path, S_IRUSR | S_IWUSR | S_IRGRP);
+		fd_new = creat(path, st.st_mode);
 		if (fd_new < 0) {
 			if (errno != EEXIST)
-				die2(EXIT_BAD_CREAT,
-					"creat(new) failed",
-					strerror(errno)
+				die2(EXIT_BAD_CREAT, "creat(new) failed",
+								strerror(errno)
 				);
 			exit_status = EXIT_NEW_EXIST;
 		}
 	} else {
-		fd_new = mkfifo(path, S_IRUSR | S_IWUSR | S_IRGRP);
+		fd_new = mkfifo(path, st.st_mode);
 		if (fd_new < 0) {
 			if (errno != EEXIST)
 				die2(EXIT_BAD_MKFIFO,
@@ -130,6 +134,7 @@ main(int argc, char **argv)
 			exit_status = EXIT_NEW_EXIST;
 		}
 	}
+	_fchmod(fd_new, st.st_mode);
 
 	/*
 	 *  Insure that the new file is of the requested type, since another
@@ -149,14 +154,16 @@ main(int argc, char **argv)
 			if (!S_ISREG(m) && !S_ISFIFO(m))
 				die2(EXIT_BAD_FILETYPE,
 					"new file is neither fifo nor regular",
-					path);
+					path
+				);
 
 			if ((type[2] == 'l' && !S_ISREG(m)) ||
 			    (type[2] == 'f' && !S_ISREG(m)))
 				exit_status = EXIT_NEW_DIFF;
 		} else
 			die2(EXIT_BAD_FSTAT, "fstat(new) failed",
-						strerror(errno));
+						strerror(errno)
+			);
 	}
 	/*
 	 *  Close files
