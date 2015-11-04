@@ -23,8 +23,10 @@
 #endif
 
 #if defined(COMMON_NEED_READ) || defined(COMMON_NEED_WRITE) ||		\
-    defined(COMMON_NEED_CLOSE)
+    defined(COMMON_NEED_CLOSE) || defined(COMMON_NEED_FCHMOD)
+
 #define COMMON_NEED_DIE2
+
 #endif
 
 #if defined(COMMON_NEED_OPEN)
@@ -123,7 +125,7 @@ die3(int status, char *msg1, char *msg2, char *msg3)
 #ifdef COMMON_NEED_READ
 
 /*
- *  read() bytes from  file fd, restarting on interrupt and dieing on error.
+ *  read() bytes from file fd, restarting on interrupt and dieing on error.
  */
 static int
 _read(int fd, void *p, ssize_t nbytes)
@@ -155,8 +157,7 @@ _read(int fd, void *p, ssize_t nbytes)
 #ifdef COMMON_NEED_WRITE
 
 /*
- *  write() exactly nbytes bytes from stdin input,
- *  restarting on interrupt and dieing on error.
+ *  write() exactly nbytes bytes, restarting on interrupt and dieing on error.
  */
 static void
 _write(int fd, void *p, ssize_t nbytes)
@@ -229,6 +230,29 @@ _close(int fd)
 		if (errno == EINTR)
 			goto again;
 		die2(EXIT_BAD_CLOSE, "close() failed", strerror(errno));
+	}
+}
+
+#endif
+
+/*
+ *  To include _fchmod() add the following to source which includes
+ *  this file:
+ *
+ *	#define COMMON_NEED_FCHMOD
+ *	#define EXIT_BAD_FCHMOD 11		//  any code is ok
+ */
+#ifdef COMMON_NEED_FCHMOD
+
+static void
+_fchmod(int fd, int mode)
+{
+	again:
+
+	if (fchmod(fd, mode) < 0) {
+		if (errno == EINTR)
+			goto again;
+		die2(EXIT_BAD_FCHMOD, "fchmod() failed", strerror(errno));
 	}
 }
 
