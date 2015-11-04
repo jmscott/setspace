@@ -38,8 +38,7 @@ boot
 
 tail biod
 {
-	#  the dir blobio/ must be symbolic link for tail to work
-	path = "spool/blobio/biod.brr";
+	path = "spool/biod.brr";
 }
 
 sql database setspace
