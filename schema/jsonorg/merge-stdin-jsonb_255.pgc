@@ -131,7 +131,7 @@ again:
 	exec sql connect to default;
 
 	/*
-	 *  Merge blob into json table.
+	 *  Merge blob into jsonorg.jsonb_255 table.
 	 */
 
 	exec sql begin transaction;
