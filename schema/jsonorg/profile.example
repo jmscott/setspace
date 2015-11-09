@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Profile for typical drblob server
+#	Profile for typical jsonorg server
 #  Usage:
 #	. $SETSPACE_ROOT/etc/profile
 #  Blame:
