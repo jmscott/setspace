@@ -2,7 +2,7 @@
  *  Synopsis:
  *  	Merge a json blob read on standard input into table jsonorg.jsonb_255.
  *  Usage:
- *	merge-jsonb_255 
+ *	merge-stdin-jsonb_255 
  *  Arguments:
  *  	1	udig of the blob
  *  	2	number of bytes to read on the standard input
