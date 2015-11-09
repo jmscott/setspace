@@ -18,6 +18,8 @@
  *  Blame:
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
+ *  Note:
+ *	Need to check _read() bytes == sizeof blob.
  */
 
 static char progname[] = "merge-stdin-jsonb_255";
