@@ -137,6 +137,7 @@ again:
 	 *  Merge blob into jsonorg.jsonb_255 table.
 	 */
 
+	exec sql begin transaction;
 	exec sql
 	  INSERT into jsonorg.jsonb_255(
 		blob,
@@ -148,6 +149,7 @@ again:
   	  ON CONFLICT
   		do nothing
 	;
+	exec sql end transaction;
 
 	_exit(EXIT_OK);
 }
