@@ -134,9 +134,6 @@ again:
 	 *  Merge blob into jsonorg.jsonb_255 table.
 	 */
 
-	exec sql begin transaction;
-
-	exec sql lock table jsonorg.jsonb_255 in share row exclusive mode;
 	exec sql
 	  INSERT into jsonorg.jsonb_255(
 		blob,
@@ -148,8 +145,6 @@ again:
   	  ON CONFLICT
   		do nothing
 	;
-
-	exec sql end transaction;
 
 	_exit(EXIT_OK);
 }
