@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Populate the PostgreSQL schema definec in schema.sql
+#	Populate the PostgreSQL schema defined in schema.sql
 #  See:
 #	schema.sql
 #  Note:
