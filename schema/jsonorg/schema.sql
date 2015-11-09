@@ -6,8 +6,6 @@
  *  Note:
  *	Having problems revoking update privileges for owner.
  *	alter default seems to fail, as well.
- *
- *	Verify that idx_jsonb* and trigger are in the jsonorg schema.
  */
 \set ON_ERROR_STOP on
 \timing
