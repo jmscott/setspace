@@ -22,7 +22,8 @@
 PROG=$(basename $0)
 
 #  pause after either stopping or starting flowd
-FLOWD_PAUSE=2
+#  need a better way.  perhaps a lightweight launchd thingy, written in go.
+FLOWD_PAUSE=4
 
 log()
 {
