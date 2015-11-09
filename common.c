@@ -17,6 +17,7 @@
  *	Rename common.c to unistd.c?
  */
 #include <unistd.h>
+#include <strings.h>
 
 #ifndef PIPE_MAX
 #define PIPE_MAX	512
