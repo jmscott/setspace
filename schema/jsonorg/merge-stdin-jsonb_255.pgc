@@ -92,6 +92,7 @@ EXEC SQL END DECLARE SECTION;
 
 	if (argc != 3)
 		die(EXIT_BAD_ARGC, "wrong number of arguments");
+	close(1);
 
 	//  parse the udig as argv[1]
 	blob = argv[1];
