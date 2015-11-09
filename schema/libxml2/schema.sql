@@ -18,8 +18,8 @@ SET search_path TO libxml2,setspace,public;
 /*
  *  Results of parsing xmllint --nonet --noout on the blob.
  */
-DROP TABLE IF EXISTS libxml2.xmllint_status;
-CREATE TABLE libxml2.xmllint_status
+DROP TABLE IF EXISTS libxml2.xmllint;
+CREATE TABLE libxml2.xmllint
 (
 	blob	udig
 			references setspace.service
@@ -39,7 +39,7 @@ CREATE OR REPLACE FUNCTION libxml2.check_lintablity() RETURNS TRIGGER
 	SELECT
 		blob into my_blob
 	  FROM
-	  	libxml2.xmllint_status
+	  	libxml2.xmllint
 	  WHERE
 	  	blob = new.blob
 		and
@@ -65,7 +65,7 @@ DROP TABLE IF EXISTS libxml2.xml_doc;
 CREATE TABLE libxml2.xml_doc
 (
 	blob		udig
-				references libxml2.xmllint_status
+				references libxml2.xmllint
 				on delete cascade
 				primary key,
 	doc		xml
