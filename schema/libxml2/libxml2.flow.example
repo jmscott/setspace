@@ -1,0 +1,300 @@
+#
+#  Synopsis:
+#	Populate the PostgreSQL schema defined in schema.sql
+#  See:
+#	schema.sql
+#  Note:
+#	xmllint version 2.9.2 is quite ambiguous about exit codes.
+#	need to replace with a custom written well-formedness checker.
+#
+
+boot
+{
+	brr_capacity = 256;
+	flow_worker_count = 16;
+	os_exec_worker_count = 12;
+	os_exec_capacity = 12;
+
+	xdr_roll_duration = "24h";
+	fdr_roll_duration = "24h";
+	qdr_roll_duration = "24h";
+
+	heartbeat_duration = "10s";
+}
+
+sql database setspace
+{
+	driver_name = "postgres";
+	data_source_name = "sslmode=disable";
+	max_idle_conns = 1;
+	max_open_conns = 8;
+}
+
+tail brr
+{
+	path = "spool/expat2.brr";
+}
+
+sql query is_in_xmllint_table row
+{
+	statement = `
+
+	 SELECT
+	  exists (
+	    select
+	    	blob
+	      from
+	      	libxml2.xmllint
+	      where
+	      	blob = $1::udig
+	  ),
+	  (SELECT
+	    	exit_status = 0
+	    from
+	      	libxml2.xmllint
+	      where
+	      	blob = $1::udig
+	  )
+	;`;
+	result row is (
+		answer bool,
+		is_xml bool
+	);
+	database is setspace;
+}
+
+sql query is_in_is_pg_well_formed_table row
+{
+	statement = `
+
+	 SELECT
+	  exists (
+	    select
+	    	blob
+	      from
+	      	libxml2.is_pg_well_formed
+	      where
+	      	blob = $1::udig
+	  ),
+	  (SELECT
+	    	is_xml
+	    from
+	      	libxml2.is_pg_well_formed
+	      where
+	      	blob = $1::udig
+	  )
+	;`;
+	result row is (
+		answer bool,
+		is_xml bool
+	);
+	database is setspace;
+}
+
+command brr_has_size
+{
+	path = "true";
+}
+
+call brr_has_size()
+ when
+ 	(
+		(
+			brr.verb == "get"
+			or
+			brr.verb == "put"
+		)
+		and
+		brr.chat_history == "ok"
+	)
+	or
+	(
+		brr.verb == "give"
+		and
+		brr.chat_history == "ok,ok"
+	)
+;
+
+query is_in_xmllint_table(brr.udig)
+  when
+  	brr_has_size.exit_status == 0
+;
+
+command get_xmllint
+{
+	path = "sbin/get-xmllint";
+	exit_status is OK when in {
+
+		#  well formed xml
+		0,
+
+		#  codes 1-9 are from xmllint manual page
+		1, 2, 3, 4, 5, 6, 7, 8, 9,
+
+		10	#  blob does not exist
+	};
+}
+
+call get_xmllint (brr.udig)
+  when
+  	is_in_xmllint_table.answer == false
+;
+
+#
+#  Merge the tuple into the table libxml2.xmllint
+#
+sql query merge_xmllint row
+{
+	statement = `
+
+	INSERT into libxml2.xmllint (
+		blob,
+		exit_status
+	  ) SELECT
+		$1::udig,
+		$2 
+  	  ON CONFLICT
+  		DO NOTHING
+	  RETURNING
+	  	$2 = 0
+	;
+
+	`;
+
+	result row is (
+		is_xml bool
+	);
+	database is setspace;
+}
+
+query merge_xmllint (brr.udig, get_xmllint.exit_status)
+  when
+	#  Note:  need "<=" operator!
+
+  	get_xmllint.exit_status == 0
+	or
+  	get_xmllint.exit_status == 1
+	or
+  	get_xmllint.exit_status == 2
+	or
+  	get_xmllint.exit_status == 3
+	or
+  	get_xmllint.exit_status == 4
+	or
+  	get_xmllint.exit_status == 5
+	or
+  	get_xmllint.exit_status == 6
+	or
+  	get_xmllint.exit_status == 7
+	or
+  	get_xmllint.exit_status == 8
+	or
+  	get_xmllint.exit_status == 9
+	or
+  	get_xmllint.exit_status == 10
+;
+query is_in_is_pg_well_formed_table(brr.udig)
+  when
+  	brr_has_size.exit_status == 0
+;
+
+command get_is_pg_well_formed
+{
+	path = "sbin/get-is-pg-well-formed";
+	exit_status is OK when in {0, 1};
+}
+
+call get_is_pg_well_formed (brr.udig, brr.blob_size)
+  when
+  	is_in_is_pg_well_formed_table.answer == false
+;
+
+#
+#  Merge the tuple into the table libxml2.is_pg_well_formed
+#
+sql query merge_is_pg_well_formed row
+{
+	statement = `
+
+	INSERT into libxml2.is_pg_well_formed (
+		blob,
+		is_xml
+	  ) SELECT
+		$1::udig,
+		case $2 
+	  		when '0' then true
+	  		when '1' then false
+		end
+  	  ON CONFLICT
+  		DO NOTHING
+	  RETURNING
+	  	is_xml
+	;
+
+	`;
+
+	result row is (
+		is_xml bool
+	);
+	database is setspace;
+}
+
+query merge_is_pg_well_formed (brr.udig, get_is_pg_well_formed.exit_status)
+  when
+	#  Note:  need "<=" operator!
+
+  	get_is_pg_well_formed.exit_status == 0
+	or
+  	get_is_pg_well_formed.exit_status == 1
+;
+
+sql query is_in_xml_doc_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	libxml2.xml_doc
+	    WHERE
+	    	blob = $1::udig
+	);`;
+
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query is_in_xml_doc_table(brr.udig)
+  when
+	(
+		is_in_xmllint_table.is_xml == true
+		or
+		merge_xmllint.is_xml == true
+	)
+	#  unfortunatley we must also test postgresql9.5 notion
+	#  of well formed.  for example, blob
+	#
+	#	sha:45a9c52bf1520d117d7a9a23be7ee03d85990b9b
+	#
+	#  passes both xmlwf and xmllint but fails the pg cast to xml.
+	#
+	and
+	(
+		is_in_is_pg_well_formed_table.is_xml == true
+		or
+		merge_is_pg_well_formed.is_xml == true
+	)
+;
+
+command merge_xml_doc
+{
+	path = "sbin/merge-xml_doc";
+}
+
+call merge_xml_doc(brr.udig, brr.blob_size)
+  when
+  	is_in_xml_doc_table.answer == false
+;

@@ -79,4 +79,17 @@ CREATE TRIGGER check_lintablity AFTER INSERT
   	libxml2.check_lintablity()
 ;
 
+/*
+ *  Unfortunatly PG9.5 won't accept all blobs which pass both
+ *  xmlwf and xmllint.  Not sure why.  We track those blobs here.
+ */
+DROP TABLE IF EXISTS libxml2.is_pg_well_formed;
+CREATE TABLE libxml2.is_pg_well_formed
+(
+	blob	udig
+			primary key,
+	is_xml	bool
+			not null
+);
+
 COMMIT;

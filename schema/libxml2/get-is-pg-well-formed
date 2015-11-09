@@ -3,17 +3,18 @@
 #  Synopsis:
 #	Get the exit status of invoking xmllint on blob.
 #  Usage:
-#	get-xmllint_status <blob udig>
+#	get-xmllint_status <blob udig> <size>
 #  Exit Status:
-#	0-9	xmllint exit status, see xmllint (pathetic) manual page
-#	10	blob does not exist
-#	11	wrong number of arguments
-#	12	unknown blobio error
-#	13	unknown xmllint error
+#	0	blob is well formed according to postgres
+#	1	blob is not well formed according to postgres
+#	2	blob does not exist
+#	3	wrong number of arguments
+#	4	unknown blobio error
+#	5	unknown database error
 #  Usage:
-#	get-xmllint <udig>
+#	get-is <udig>
 #
-PROG=get-xmllint_status
+PROG=get-is-pg-well-formed
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
 
 leave()
@@ -29,8 +30,9 @@ die()
 	exit $STATUS
 }
 
-test $# = 1 || die 'wrong number of arguments' 11
+test $# = 2 || die 'wrong number of arguments' 3
 UDIG=$1
+SIZE=$2
 
 blobio get --output-path $TMP_BLOB --udig $UDIG --service $BLOBIO_SERVICE
 STATUS=$?
@@ -39,14 +41,14 @@ case $STATUS in
 0)
 	;;
 1)
-	exit 10
+	exit 2
 	;;
 *)
 	die "blobio get $UDIG $TMP_BLOB failed: exit status=$STATUS" 12
 	;;
 esac
 
-xmllint --stream --nonet --noout $TMP_BLOB 2>/dev/null
+is-pg-well-formed <$TMP_BLOB $SIZE
 STATUS=$?
 test $STATUS -le 9 && exit $STATUS
 die "xmllint --stream --nonet --noout failed: exit status=$STATUS" 13

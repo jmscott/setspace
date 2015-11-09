@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+#   Synopsis:
+#   	Merge an xml blob read on standard input into table libxml2.xml_doc.
+#   Usage:
+# 	 merge-xml_doc <udig> <blob_size>
+#   Arguments:
+#   	1	udig of the blob
+#   	2	size of the blob in bytes
+#   Exit Status:
+#   	0	ok, tuple was merged
+#	1	blob does not exist
+#   	2	wrong number of arguments
+#	3	unexpected blobio error
+#	4	unexpected merge error
+#   Blame:
+#   	jmscott@setspace.com
+#   	setspace@gmail.com
+#  
+PROG=merge-blob-xml_doc
+TMP_BLOB=${TMP_DIR:=/tmp}/$PROG.$$
+
+die()
+{
+	STATUS=$2
+	echo "$PROG: ERROR: $1" >&2
+	exit $STATUS
+}
+
+leave()
+{
+	rm -f $TMP_BLOB
+}
+
+trap leave EXIT
+
+test $# = 2 || die 'wrong number of arguments' 2
+
+UDIG=$1
+SIZE=$2
+
+blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_SERVICE
+STATUS=$?
+
+case $STATUS in
+0)
+	;;
+1)
+	exit 1
+	;;
+*)
+	die "blobio get failed: exit status=$STATUS" 3
+	;;
+esac
+merge-stdin-xml_doc $UDIG $SIZE <$TMP_BLOB
+test $? = 0 || die "merge-stdin-xml_doc failed: exit status=$?"
