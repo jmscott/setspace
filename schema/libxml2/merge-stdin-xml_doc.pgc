@@ -1,0 +1,161 @@
+/*
+ *  Synopsis:
+ *  	Merge an xml blob read on standard input into table libxml2.xml_doc
+ *  Usage:
+ *	merge-stdin-xml_doc 
+ *  Arguments:
+ *  	1	udig of the blob
+ *  	2	number of bytes to read on the standard input
+ *  Exit Status:
+ *  	0	ok, tuple was merged
+ *  	1	Wrong number of arguments
+ *  	2	Incorrect blob size
+ *  	3	malloc() of xml buffer failed
+ *	4	read() of standard input failed
+ *	5	syntax error on udig
+ *	6	sql error
+ *	7	sql warning
+ *	8	blob too small
+ *	9	blob too large
+ *  Blame:
+ *  	jmscott@setspace.com
+ *  	setspace@gmail.com
+ */
+
+static char progname[] = "merge-stdin-xml_doc";
+
+#define EXIT_OK		0
+#define EXIT_BAD_ARGC	1
+#define EXIT_BAD_SIZE	2
+#define EXIT_BAD_MALLOC 3
+#define EXIT_BAD_READ	4
+#define EXIT_BAD_UDIG	5
+#define EXIT_SQLERROR	6
+#define EXIT_SQLWARN	7
+#define EXIT_BLOB_SMALL 8
+#define EXIT_BLOB_BIG	9
+
+#define COMMON_NEED_READ
+#include "../../common.c"
+
+#include <stdlib.h>
+
+static void
+sql_fault()
+{
+	char msg[1024];
+	char state[6];
+	int status = EXIT_SQLERROR;
+
+	if (sqlca.sqlcode == 0)
+		die(EXIT_SQLERROR, "unexpected sqlca.sqlcode == 0"); 
+	_strcat(msg, sizeof msg, "sql");
+
+	//  what is a WARNING ... pg9.4docs not too clear
+
+	if (sqlca.sqlwarn[2] == 'W' || sqlca.sqlwarn[0] == 'W') {
+		_strcat(msg, sizeof msg, ": WARN");
+		status = EXIT_SQLWARN;
+	}
+
+	//  add the sql state code to error message
+
+	if (sqlca.sqlstate[0] != 0) {
+		char state[6];
+
+		_strcat(msg, sizeof msg, ": ");
+		memmove(state, sqlca.sqlstate, 5);
+		state[5] = 0;
+		_strcat(msg, sizeof msg, state);
+	}
+
+	//  add the sql error message
+
+	if (sqlca.sqlerrm.sqlerrml > 0) {
+		char err[SQLERRMC_LEN + 1];
+
+		_strcat(msg, sizeof msg, ": ");
+		memmove(err, sqlca.sqlerrm.sqlerrmc, sqlca.sqlerrm.sqlerrml);
+		err[sqlca.sqlerrm.sqlerrml] = 0;
+		_strcat(msg, sizeof msg, err);
+	}
+	die(status, msg);
+}
+
+
+int
+main(int argc, char **argv)
+{
+	int size, nread = 0, nr;
+	size_t len;
+	char *sz;
+
+EXEC SQL BEGIN DECLARE SECTION;
+	char *blob;
+	char *doc;
+EXEC SQL END DECLARE SECTION;
+
+	if (argc != 3)
+		die(EXIT_BAD_ARGC, "wrong number of arguments");
+
+	close(1);
+
+	//  parse the udig as argv[1]
+	blob = argv[1];
+	len = strlen(blob);
+	if (len < 3 || len > 255 || strchr(blob, ':') == NULL)
+		die2(EXIT_BAD_UDIG, "syntax error in xml udig", blob);
+
+	//  parse the blob size as argv[2]
+	sz = argv[2];
+	len = strlen(sz);
+	if (len < 1 || len > 19)
+		die2(EXIT_BAD_SIZE, "blob size not > 0 and < 20 chars", sz);
+
+	//  need to validate that all chars are decimal digits
+	size = atoi(sz);
+	if (size <= 0)
+		die2(EXIT_BAD_SIZE, "atoi(blob size) <= 0", sz);
+
+	//  allocate the xml buffer plus null byte
+	doc = malloc(size + 1);
+	if (doc == NULL)
+		die2(EXIT_BAD_MALLOC, "malloc() failed", sz);
+	doc[size] = 0;
+
+	//  read the xml blob from standard input
+	nread = 0;
+again:
+	nr = _read(0, doc + nread, size - nread);
+	if (nr > 0) {
+		nread += nr;
+		if (nread < size)
+			goto again;
+	}
+	if (nread < size)
+		die(EXIT_BLOB_SMALL, "blob too small");
+
+	if (_read(0, doc, size) != 0)
+		die(EXIT_BLOB_BIG, "blob too big");
+
+	exec sql whenever sqlerror call sql_fault();
+	exec sql whenever sqlwarning call sql_fault();
+	exec sql connect to default;
+
+	/*
+	 *  Merge blob into libxml2.xml_doc table.
+	 */
+	exec sql
+	  INSERT into jsonorg.jsonb_255(
+		blob,
+		doc
+	  ) values (
+		:blob::udig,
+		:doc::jsonb
+	  )
+  	  ON CONFLICT
+  		do nothing
+	;
+
+	_exit(EXIT_OK);
+}

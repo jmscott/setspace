@@ -1,0 +1,52 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Get the exit status of invoking xmllint on blob.
+#  Usage:
+#	get-xmllint_status <blob udig>
+#  Exit Status:
+#	0-9	xmllint exit status, see xmllint (pathetic) manual page
+#	10	blob does not exist
+#	11	wrong number of arguments
+#	12	unknown blobio error
+#	13	unknown xmllint error
+#  Usage:
+#	get-xmllint_status
+#
+PROG='get-xmllint_status'
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
+
+leave()
+{
+	rm -f $TMP_BLOB
+}
+trap leave EXIT
+
+die()
+{
+	STATUS=$2
+	echo "$PROG: ERROR: $1" >&2
+	exit $STATUS
+}
+
+test $# = 1 || die 'wrong number of arguments' 11
+
+UDIG=$1
+blobio get --output-path $TMP_BLOB --udig $UDIG --service $BLOBIO_SERVICE
+STATUS=$?
+
+case $STATUS in
+0)
+	;;
+1)
+	exit 10
+	;;
+*)
+	die "blobio get $UDIG $TMP_BLOB failed: exit status=$STATUS" 12
+	;;
+esac
+
+xmllint --stream --nonet --noout $TMP_BLOB 2>/dev/null
+STATUS=$?
+test $STATUS -le 9 && exit $STATUS
+die "xmllint -nonet -noout failed: exit status=$STATUS" 13
