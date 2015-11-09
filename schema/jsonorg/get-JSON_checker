@@ -12,7 +12,7 @@
 #  Environment
 #	BLOBIO_SERVICE
 #  Usage:
-#	JSON_checker.sh <blob> <byte count>
+#	get-JSON_checker <blob> <byte count>
 #  Blame:
 #  	jmscott@setspace.com
 #  	setspace@gmail.com
@@ -35,9 +35,8 @@ die()
 	exit $STATUS
 }
 
-test $# = 2 || die "wrong number of command line arguments" 3
+test $# = 1 || die "wrong number of command line arguments" 3
 UDIG=$1
-SIZE=$2
 
 blobio get --udig "$UDIG" --service $BLOBIO_SERVICE --output-path $TMP_BLOB
 STATUS=$?

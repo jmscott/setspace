@@ -105,7 +105,7 @@ command get_JSON_checker
 	};
 }
 
-call get_JSON_checker (brr.udig, brr.blob_size)
+call get_JSON_checker (brr.udig)
   when
   	is_in_checker_255_table.answer == false
 ;
