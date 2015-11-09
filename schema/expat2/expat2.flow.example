@@ -76,7 +76,7 @@ call get_is_xmlwf(brr.udig)
   	in_is_xmlwf_table.answer == false
 ;
 
-sql exec merge_is_xmlwf
+sql query merge_is_xmlwf row
 {
 	statement = `
 
@@ -88,10 +88,17 @@ sql exec merge_is_xmlwf
 		case $2 
 	  		when '0' then true
 	  		when '1' then false
-		end
+		end as "is_xml"
 	  ON CONFLICT
 		do nothing
+  	  RETURNING
+  		"is_xml"
 	`;
+
+	result row is (
+		answer bool,
+		is_xml bool
+	);
 
 	database is setspace;
 }
@@ -101,4 +108,26 @@ query merge_is_xmlwf(brr.udig, get_is_xmlwf.exit_status)
   	get_is_xmlwf.exit_status == 0
 	or
 	get_is_xmlwf.exit_status == 1
+;
+
+command append_libxml2_brr
+{
+	path = "append-brr";
+	argv = (
+		"../libxml2/spool/expat2.brr"
+	);
+}
+
+call append_libxml2_brr(
+	brr.start_time,
+	brr.netflow,
+	brr.verb,
+	brr.udig,
+	brr.chat_history,
+	brr.blob_size,
+	brr.wall_duration
+) when
+	in_is_xmlwf_table.is_xml == true
+	or
+	merge_is_xmlwf.is_xml == true
 ;
