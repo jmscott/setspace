@@ -9,4 +9,6 @@
 #
 SCHEMA_ROOT=$SETSPACE_ROOT/schema/setspace
 
+touch $SCHEMA_ROOT/spool/biod.brr
+
 PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
