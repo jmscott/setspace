@@ -1,0 +1,7 @@
+Synopsis:
+	Build xml schema using wellknown GNOME libxml2 library.
+Note:
+	Certain documents will pass xmllint (and xmlwf) tests for
+	"well formness" but also still not be castable into the PostgreSQL 9.5
+	xml datatype.  See the blob wtf-45a9c52bf1.xml for an example.  The
+	error is probably due to the "xmloption" global configuation option.
