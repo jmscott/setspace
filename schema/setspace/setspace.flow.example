@@ -36,9 +36,9 @@ boot
 	heartbeat_duration = "10s";
 }
 
-tail biod
+tail brr
 {
-	path = "spool/biod.brr";
+	path = "spool/brr.brr";
 }
 
 sql database setspace
@@ -105,19 +105,19 @@ sql exec merge_service
 call brr_off_network()
   when
 	(
-		biod.chat_history == "no"
+		brr.chat_history == "no"
 		and
 		(
-			biod.verb == "eat"
+			brr.verb == "eat"
 			or
-			biod.verb == "get"
+			brr.verb == "get"
 		)
 	)
 	or
 	(
-		biod.verb == "take"
+		brr.verb == "take"
 		and
-		biod.chat_history == "ok,ok,ok"
+		brr.chat_history == "ok,ok,ok"
 	)
 ;
 
@@ -125,26 +125,26 @@ call brr_on_network()
   when
   (
         (
-		biod.verb == "put"
+		brr.verb == "put"
 		or
-		biod.verb == "get"
+		brr.verb == "get"
 		or
-		biod.verb == "eat"
+		brr.verb == "eat"
 		or
-		biod.verb == "wrap"
+		brr.verb == "wrap"
 		or
-		biod.verb == "roll"
+		brr.verb == "roll"
 	)
 	and
-	biod.chat_history == "ok"
+	brr.chat_history == "ok"
   ) or (
-	biod.verb == "give"
+	brr.verb == "give"
 	and
-	biod.chat_history == "ok,ok"
+	brr.chat_history == "ok,ok"
   )
 ;
 
-query in_service_table(biod.udig);
+query in_service_table(brr.udig);
 
 #
 #  Synopsis:
@@ -173,7 +173,7 @@ sql exec delete_blob
 	database is setspace;
 }
 
-call is_zombie_alive(biod.udig)
+call is_zombie_alive(brr.udig)
   when
 	#
 	#  brr record says blob does not exist.
@@ -187,12 +187,12 @@ call is_zombie_alive(biod.udig)
 	in_service_table.answer == true
 ;
 
-query delete_blob(biod.udig)
+query delete_blob(brr.udig)
   when
   	is_zombie_alive.exit_status == 1
 ;
 
-query merge_service(biod.udig)
+query merge_service(brr.udig)
   when
   	brr_on_network.exit_status == 0
 	and
@@ -231,14 +231,14 @@ command merge_byte_count
 	exit_status is OK when in {0, 1};
 }
 
-query in_byte_count_table(biod.udig)
+query in_byte_count_table(brr.udig)
   when
   	in_service_table.answer == true
 	or
 	merge_service.rows_affected == 1
 ;
 
-call merge_byte_count(biod.udig)
+call merge_byte_count(brr.udig)
   when
   	in_byte_count_table.answer == false
 ;
@@ -275,14 +275,14 @@ command merge_byte_bitmap
 	exit_status is OK when in {0, 1};
 }
 
-query in_byte_bitmap_table(biod.udig)
+query in_byte_bitmap_table(brr.udig)
   when
   	in_service_table.answer == true
 	or
 	merge_service.rows_affected == 1
 ;
 
-call merge_byte_bitmap(biod.udig)
+call merge_byte_bitmap(brr.udig)
   when
   	in_byte_bitmap_table.answer == false
 ;
@@ -379,7 +379,7 @@ sql query merge_is_utf8wf row
 	database is setspace;
 }
 
-query in_is_utf8wf_table(biod.udig)
+query in_is_utf8wf_table(brr.udig)
   when
   	in_service_table.answer == true
 	or
@@ -422,19 +422,19 @@ command service_exists
 	exit_status is OK when in {0, 1};
 }
 
-call service_exists(biod.udig)
+call service_exists(brr.udig)
   when
   	merge_service.rows_affected == 1
 	or
 	in_service_table.answer == true
 ;
 
-query has_char_0xff(biod.udig)
+query has_char_0xff(brr.udig)
   when
 	service_exists.exit_status == 0
 ;
 
-call get_is_utf8wf(biod.udig)
+call get_is_utf8wf(brr.udig)
   when
 	has_char_0xff.answer == false
 	and
@@ -457,14 +457,14 @@ sql exec merge_is_utf8wf_not
 }
 
 #  blob not utf8 when 0xff char exists
-query merge_is_utf8wf_not(biod.udig)
+query merge_is_utf8wf_not(brr.udig)
   when
   	has_char_0xff.answer == true
 	and
 	in_is_utf8wf_table.answer == false
 ;
 
-query merge_is_utf8wf(biod.udig, get_is_utf8wf.exit_status)
+query merge_is_utf8wf(brr.udig, get_is_utf8wf.exit_status)
   when
   	get_is_utf8wf.exit_status == 0
 	or
@@ -505,14 +505,14 @@ command merge_byte_prefix_32
 	exit_status is OK when in {0, 1};
 }
 
-query in_byte_prefix_32_table(biod.udig)
+query in_byte_prefix_32_table(brr.udig)
   when
   	in_service_table.answer == true
 	or
 	merge_service.rows_affected == 1
 ;
 
-call merge_byte_prefix_32(biod.udig)
+call merge_byte_prefix_32(brr.udig)
   when
   	in_byte_prefix_32_table.answer == false
 ;
@@ -522,7 +522,7 @@ command byte_prefix_32_exists
 	path = "true";
 }
 
-call byte_prefix_32_exists(biod.udig)
+call byte_prefix_32_exists(brr.udig)
   when
   	in_byte_prefix_32_table.answer == true
 	or
@@ -579,7 +579,7 @@ sql query is_printable_unix row
 	database is setspace;
 }
 
-query is_printable_unix(biod.udig)
+query is_printable_unix(brr.udig)
   when
   	#  Note: replace with is_utf8wf_exists
 	(
@@ -668,7 +668,7 @@ sql query is_drblob row
 	database is setspace;
 }
 
-query is_drblob(biod.udig)
+query is_drblob(brr.udig)
   when
   	is_printable_unix.answer == true
 ;
@@ -682,13 +682,13 @@ command append_drblob_brr
 }
 
 call append_drblob_brr(
-	biod.start_time,
-	biod.netflow,
-	biod.verb,
-	biod.udig,
-	biod.chat_history,
-	biod.blob_size,
-	biod.wall_duration
+	brr.start_time,
+	brr.netflow,
+	brr.verb,
+	brr.udig,
+	brr.chat_history,
+	brr.blob_size,
+	brr.wall_duration
 ) when
 	is_drblob.answer == true
 	and
@@ -717,7 +717,7 @@ sql query in_new_line_count_table row
 	database is setspace;
 }
 
-query in_new_line_count_table(biod.udig)
+query in_new_line_count_table(brr.udig)
   when
   	in_is_utf8wf_table.is_utf8 == true
 ;
@@ -727,7 +727,7 @@ command merge_new_line_count
 	path = "merge-new_line_count";
 }
 
-call merge_new_line_count(biod.udig)
+call merge_new_line_count(brr.udig)
   when
   	in_new_line_count_table.answer == false
 ;
@@ -794,7 +794,7 @@ sql exec merge_is_udigish
 
 #  check that a known utf8 blob is also in is_udigish
 
-query in_is_udigish_table(biod.udig)
+query in_is_udigish_table(brr.udig)
   when
 	(
 		in_is_utf8wf_table.answer == true
@@ -819,12 +819,12 @@ command get_is_udigish
 	};
 }
 
-call get_is_udigish(biod.udig)
+call get_is_udigish(brr.udig)
   when
 	in_is_udigish_table.answer == false
 ;
 
-query merge_is_udigish(biod.udig, get_is_udigish.exit_status)
+query merge_is_udigish(brr.udig, get_is_udigish.exit_status)
   when
   	get_is_udigish.exit_status == 0
 	or
@@ -902,7 +902,7 @@ sql query merge_has_byte_json_bracket row
 
 #  check that a known utf8 blob is also in has_byte_json_bracket
 
-query in_has_byte_json_bracket_table(biod.udig)
+query in_has_byte_json_bracket_table(brr.udig)
   when
 	in_is_utf8wf_table.is_utf8 == true
 	or
@@ -923,13 +923,13 @@ command get_has_byte_json_bracket
 	};
 }
 
-call get_has_byte_json_bracket(biod.udig)
+call get_has_byte_json_bracket(brr.udig)
   when
 	in_has_byte_json_bracket_table.answer == false
 ;
 
 query merge_has_byte_json_bracket(
-	biod.udig,
+	brr.udig,
 	get_has_byte_json_bracket.exit_status
 ) when
   	get_has_byte_json_bracket.exit_status == 0
@@ -946,13 +946,13 @@ command append_jsonorg_brr
 }
 
 call append_jsonorg_brr(
-	biod.start_time,
-	biod.netflow,
-	biod.verb,
-	biod.udig,
-	biod.chat_history,
-	biod.blob_size,
-	biod.wall_duration
+	brr.start_time,
+	brr.netflow,
+	brr.verb,
+	brr.udig,
+	brr.chat_history,
+	brr.blob_size,
+	brr.wall_duration
 ) when
 	in_has_byte_json_bracket_table.has_bracket == true
 	or
@@ -986,19 +986,19 @@ sql query prefix_is_percentPDF row
 	database is setspace;
 }
 
-query prefix_is_percentPDF(biod.udig)
+query prefix_is_percentPDF(brr.udig)
   when
   	byte_prefix_32_exists.exit_status == 0
 ;
 
 call append_pdfbox_brr(
-	biod.start_time,
-	biod.netflow,
-	biod.verb,
-	biod.udig,
-	biod.chat_history,
-	biod.blob_size,
-	biod.wall_duration
+	brr.start_time,
+	brr.netflow,
+	brr.verb,
+	brr.udig,
+	brr.chat_history,
+	brr.blob_size,
+	brr.wall_duration
 ) when
 	prefix_is_percentPDF.answer == true
 ;
@@ -1072,7 +1072,7 @@ sql query merge_has_byte_xml_bracket row
 
 #  check that a known utf8 blob is also in has_byte_xml_bracket
 
-query in_has_byte_xml_bracket_table(biod.udig)
+query in_has_byte_xml_bracket_table(brr.udig)
   when
 	in_is_utf8wf_table.is_utf8 == true
 	or
@@ -1093,13 +1093,13 @@ command get_has_byte_xml_bracket
 	};
 }
 
-call get_has_byte_xml_bracket(biod.udig)
+call get_has_byte_xml_bracket(brr.udig)
   when
 	in_has_byte_xml_bracket_table.answer == false
 ;
 
 query merge_has_byte_xml_bracket(
-	biod.udig,
+	brr.udig,
 	get_has_byte_xml_bracket.exit_status
 ) when
   	get_has_byte_xml_bracket.exit_status == 0
@@ -1116,13 +1116,13 @@ command append_expat2_brr
 }
 
 call append_expat2_brr(
-	biod.start_time,
-	biod.netflow,
-	biod.verb,
-	biod.udig,
-	biod.chat_history,
-	biod.blob_size,
-	biod.wall_duration
+	brr.start_time,
+	brr.netflow,
+	brr.verb,
+	brr.udig,
+	brr.chat_history,
+	brr.blob_size,
+	brr.wall_duration
 ) when
 	in_has_byte_xml_bracket_table.has_bracket == true
 	or
