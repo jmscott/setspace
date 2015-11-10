@@ -30,6 +30,7 @@ install:
 	cd jsonorg && $(MAKE) install
 	cd expat2 && $(MAKE) install
 	cd libxml2 && $(MAKE) install
+	cd prefixio && $(MAKE) install
 
 distclean:
 	cd setspace && $(MAKE) distclean
@@ -37,3 +38,4 @@ distclean:
 	cd jsonorg && $(MAKE) distclean
 	cd expat2 && $(MAKE) distclean
 	cd libxml2 && $(MAKE) distclean
+	cd prefixio && $(MAKE) distclean
