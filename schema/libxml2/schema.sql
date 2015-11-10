@@ -4,6 +4,10 @@
  *  Blame:
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
+ *  Note:
+ *	foreign key xml_doc.blob must point to is_pg_well_formed.blob,
+ *	not xmllint.blob!
+ *  
  */
 \set ON_ERROR_STOP on
 \timing
