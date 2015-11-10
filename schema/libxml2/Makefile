@@ -1,3 +1,7 @@
+#
+#  Synopsis:
+#	Development Makefile for code to populate libxml2 schema.
+#
 include ../schema.mk
 include ../../local.mk
 
