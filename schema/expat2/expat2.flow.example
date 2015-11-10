@@ -96,7 +96,6 @@ sql query merge_is_xmlwf row
 	`;
 
 	result row is (
-		answer bool,
 		is_xml bool
 	);
 
