@@ -1,5 +1,5 @@
 Synopsis:
-	Build xml schema using wellknown GNOME libxml2 library.
+	Build xml schema using well known GNOME libxml2 library.
 Note:
 	Certain documents will pass xmllint (and xmlwf) tests for
 	"well formness" but also still not be castable into the PostgreSQL 9.5
