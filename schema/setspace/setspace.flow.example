@@ -579,14 +579,22 @@ sql query is_printable_unix row
 	database is setspace;
 }
 
+command is_utf8wf_exists
+{
+	path = "true";
+}
+
+#  Note:  incorrect.  should only test for existence, not xmlness!!
+call is_utf8wf_exists()
+  when
+	in_is_utf8wf_table.is_utf8 == true
+	or
+	merge_is_utf8wf.is_utf8 == true
+;
+  	
 query is_printable_unix(brr.udig)
   when
-  	#  Note: replace with is_utf8wf_exists
-	(
-		in_is_utf8wf_table.is_utf8 == true
-		or
-		merge_is_utf8wf.is_utf8 == true
-	)
+  	is_utf8wf_exists.exit_status == 0
 	and
 	byte_bitmap_exists.exit_status == 0
 ;
@@ -959,39 +967,17 @@ call append_jsonorg_brr(
 	merge_has_byte_json_bracket.has_bracket == true
 ;
 
-command append_pdfbox_brr
+command append_prefixio_brr
 {
 	path = "append-brr";
 	argv = (
-		"spool/pdfbox.brr"
+		"../prefixio/spool/setspace.brr"
 	);
 }
 
-sql query prefix_is_percentPDF row
-{
-	statement = `
+#  Note: need to add byte_count_exists!
 
-	SELECT
-		substring(prefix, 1, 4) = '\x25504446'
-	  from
-	  	setspace.byte_prefix_32
-	  where
-	  	blob = $1::udig
-	`;
-
-	result row is (
-		answer bool
-	);
-
-	database is setspace;
-}
-
-query prefix_is_percentPDF(brr.udig)
-  when
-  	byte_prefix_32_exists.exit_status == 0
-;
-
-call append_pdfbox_brr(
+call append_prefixio_brr(
 	brr.start_time,
 	brr.netflow,
 	brr.verb,
@@ -1000,7 +986,14 @@ call append_pdfbox_brr(
 	brr.blob_size,
 	brr.wall_duration
 ) when
-	prefix_is_percentPDF.answer == true
+  	byte_prefix_32_exists.exit_status == 0
+	and
+	byte_bitmap_exists.exit_status == 0
+	
+	#  Note:  missing test for existence of utf8 test!
+	#	  see not above.
+	#and
+	#is_utf8wf_exists.exit_status == 0
 ;
 
 #
