@@ -1,5 +1,5 @@
 Synopsis:
-	Route blobs into other schemas based upon patterns in the byte prefix.
+	Route blobs to schemas based upon patterns in the 32 byte prefix.
 Description:
 	Blob may be routed to other schemas based upon values in the the
 	first 32 bytes of of the blob.  See the table setspace.byte_prefix_32.
