@@ -11,8 +11,8 @@
 DROP SCHEMA IF EXISTS pdfbox CASCADE;
 CREATE SCHEMA pdfbox;
 
-DROP TABLE IF EXISTS pdfbox.pddocument_load;
-CREATE TABLE pdfbox.pddocument_load
+DROP TABLE IF EXISTS pdfbox.pdf_text_stripper;
+CREATE TABLE pdfbox.pdf_text_stripper
 (
 	blob		udig
 				references setspace.service(blob)

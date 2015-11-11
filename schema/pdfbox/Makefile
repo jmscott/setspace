@@ -9,7 +9,7 @@ CLASSPATH=.:/usr/local/lib/pdfbox-app-1.8.10.jar
 COMPILED=								\
 	ExtractTitle.class						\
 	ExtractNumberOfPages.class					\
-	PDDocumentLoad.class
+	pdf_text_stripper.class
 all: $(COMPILED)
 
 clean:
@@ -28,8 +28,8 @@ ExtractTitle.class:  ExtractTitle.java
 ExtractNumberOfPages.class:  ExtractNumberOfPages.java
 	javac -cp $(CLASSPATH) ExtractNumberOfPages.java
 
-PDDocumentLoad.class:  PDDocumentLoad.java
-	javac -cp $(CLASSPATH) PDDocumentLoad.java
+pdf_text_stripper.class:  pdf_text_stripper.java
+	javac -cp $(CLASSPATH) pdf_text_stripper.java
 
 install: all
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER)			\
@@ -57,6 +57,6 @@ install: all
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m ugo=rx		\
 		ExtractNumberOfPages.java				\
 		ExtractTitle.java					\
-		PDDocumentLoad.java					\
+		pdf_text_stripper.java					\
 		Makefile						\
 		$(PDFBOX_PREFIX)/src

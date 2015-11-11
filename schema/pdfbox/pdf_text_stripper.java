@@ -17,7 +17,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 
-public class PDDocumentLoad
+public class pdf_text_stripper
 {
 	public static void main(String[] args) throws Exception
 	{
@@ -35,6 +35,7 @@ public class PDDocumentLoad
 			 *	speed, as tested on a few pdfs.
 			 */
 			doc = PDDocument.load(System.in);
+
 			PDFTextStripper stripper = new PDFTextStripper();
 			stripper.getText(doc);
 
