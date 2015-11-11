@@ -1,10 +1,10 @@
 #
 #  Synopsis:
-#	Flow blobs into setspace database schema
+#	Flow blobs into setspace schema defined in PostgreSQL database
 #  Usage:
 #  	flowd server setspace.conf
 #  See:
-#  	schema.sql
+#  	schema/setspace/schema.sql
 #  Note:
 #	Add jsonorg test for first four bytes matching, where xx is ascii
 #	(and probably a limited ascii set)
@@ -19,8 +19,6 @@
 #
 #	Note: in_has_byte_json_bracket_table is testing non-utf8 blobs.
 #	      should only utf8 blobs be presented?
-#
-#       Create schema for routing based upon prefix_32.  Schema name would be prefixio
 
 boot
 {
@@ -144,6 +142,8 @@ call brr_on_network()
   )
 ;
 
+#  is the blob already in the service table?
+#
 query in_service_table(brr.udig);
 
 #
@@ -199,9 +199,21 @@ query merge_service(brr.udig)
 	in_service_table.answer == false
 ;
 
+command service_exists
+{
+	path = "true";
+	exit_status is OK when in {0, 1};
+}
+
+call service_exists(brr.udig)
+  when
+  	merge_service.rows_affected == 1
+	or
+	in_service_table.answer == true
+;
+
 #
-#  Synopsis:
-#	Populate byte_count table
+#  Is the blob in the byte_count table?
 #
 sql query in_byte_count_table row
 {
@@ -231,22 +243,19 @@ command merge_byte_count
 	exit_status is OK when in {0, 1};
 }
 
-query in_byte_count_table(brr.udig)
-  when
-  	in_service_table.answer == true
-	or
-	merge_service.rows_affected == 1
-;
+query in_byte_count_table(brr.udig);
+
+#  merge an in service blob not in the byte count table
 
 call merge_byte_count(brr.udig)
   when
   	in_byte_count_table.answer == false
+	and
+	service_exists.exit_status == 0
 ;
 
-#
-#  Synopsis:
-#	Populate byte_bitmap table
-#
+#  Is the blob in the byte_bitmap_table?
+
 sql query in_byte_bitmap_table row
 {
 	database is setspace;
@@ -275,16 +284,13 @@ command merge_byte_bitmap
 	exit_status is OK when in {0, 1};
 }
 
-query in_byte_bitmap_table(brr.udig)
-  when
-  	in_service_table.answer == true
-	or
-	merge_service.rows_affected == 1
-;
+query in_byte_bitmap_table(brr.udig);
 
 call merge_byte_bitmap(brr.udig)
   when
   	in_byte_bitmap_table.answer == false
+	and
+	service_exists.exit_status == 0
 ;
 
 command byte_bitmap_exists
@@ -379,12 +385,7 @@ sql query merge_is_utf8wf row
 	database is setspace;
 }
 
-query in_is_utf8wf_table(brr.udig)
-  when
-  	in_service_table.answer == true
-	or
-	merge_service.rows_affected == 1
-;
+query in_is_utf8wf_table(brr.udig);
 
 #  does the blob contain the char 0xff?
 
@@ -416,19 +417,6 @@ sql query has_char_0xff row {
 	database is setspace;
 }
 
-command service_exists
-{
-	path = "true";
-	exit_status is OK when in {0, 1};
-}
-
-call service_exists(brr.udig)
-  when
-  	merge_service.rows_affected == 1
-	or
-	in_service_table.answer == true
-;
-
 query has_char_0xff(brr.udig)
   when
 	service_exists.exit_status == 0
@@ -444,15 +432,17 @@ call get_is_utf8wf(brr.udig)
 sql exec merge_is_utf8wf_not
 {
 	statement = `
-	insert into setspace.is_utf8wf(
+
+	INSERT INTO setspace.is_utf8wf(
 		blob,
 		is_utf8
-	) values (
+	) VALUES (
 		$1::udig,
 		false
-	) on conflict
-		do nothing
+	) ON CONFLICT
+		DO NOTHING
 	`;
+
 	database is setspace;
 }
 
@@ -462,15 +452,21 @@ query merge_is_utf8wf_not(brr.udig)
   	has_char_0xff.answer == true
 	and
 	in_is_utf8wf_table.answer == false
+	and
+	service_exists.exit_status == 0
 ;
 
 query merge_is_utf8wf(brr.udig, get_is_utf8wf.exit_status)
   when
-  	get_is_utf8wf.exit_status == 0
-	or
-	get_is_utf8wf.exit_status == 1
-	or
-	get_is_utf8wf.exit_status == 2		#  merge empty blob
+	(
+		get_is_utf8wf.exit_status == 0
+		or
+		get_is_utf8wf.exit_status == 1
+		or
+		get_is_utf8wf.exit_status == 2		#  merge empty blob
+	)
+	and
+	service_exists.exit_status == 0
 ;
 
 #
@@ -505,28 +501,62 @@ command merge_byte_prefix_32
 	exit_status is OK when in {0, 1};
 }
 
-query in_byte_prefix_32_table(brr.udig)
-  when
-  	in_service_table.answer == true
-	or
-	merge_service.rows_affected == 1
-;
+query in_byte_prefix_32_table(brr.udig);
 
 call merge_byte_prefix_32(brr.udig)
   when
   	in_byte_prefix_32_table.answer == false
+	and
+	service_exists.exit_status == 0
 ;
 
-command byte_prefix_32_exists
+command core_exists
 {
 	path = "true";
 }
 
-call byte_prefix_32_exists(brr.udig)
+#
+#  Do the core tuples exist in the tables
+#
+#	setspace.{byte_bitmap, byte_count, byte_prefix, is_utf8wf}
+#
+call core_exists()
   when
-  	in_byte_prefix_32_table.answer == true
-	or
-	merge_byte_prefix_32.exit_status == 0
+	# 
+  	#  tuple in table byte_prefix_32 does indeed exist
+	#
+
+  	(
+		in_byte_prefix_32_table.answer == true
+		or
+		merge_byte_prefix_32.exit_status == 0
+	)
+	and
+	byte_bitmap_exists.exit_status == 0
+
+	# 
+  	#  tuple in table byte_count does indeed exist
+	#
+	and
+	(
+		in_byte_count_table.answer == true
+		or
+		merge_byte_count.exit_status == 0
+	)
+
+	# 
+  	#  tuple in table is_utf8wf does indeed exist
+	#
+	and
+	(
+		(
+			in_is_utf8wf_table.answer == true
+			or
+			merge_is_utf8wf.rows_affected == 1
+		)
+		or
+		merge_is_utf8wf_not.rows_affected == 1
+	)
 ;
 
 #  typically printable unix ascii file plus space, tab and new line characters.
@@ -579,22 +609,23 @@ sql query is_printable_unix row
 	database is setspace;
 }
 
-command is_utf8wf_exists
+#  Note: unfortunatly attributes and global names share a name space! 
+#
+command is_utf8_
 {
 	path = "true";
 }
 
-#  Note:  incorrect.  should only test for existence, not xmlness!!
-call is_utf8wf_exists()
+call is_utf8_()
   when
-	in_is_utf8wf_table.is_utf8 == true
+  	in_is_utf8wf_table.is_utf8 == true
 	or
 	merge_is_utf8wf.is_utf8 == true
 ;
-  	
+
 query is_printable_unix(brr.udig)
   when
-  	is_utf8wf_exists.exit_status == 0
+  	is_utf8_.exit_status == 0
 	and
 	byte_bitmap_exists.exit_status == 0
 ;
@@ -612,7 +643,7 @@ sql query is_drblob row
 		(forbidden_char & bm.bitmap) = all_zero
 		and
 
-		--  and time stamp
+		--  and prefix matches time stamp ^YYYY-MM-DDThh:mm:ss.nsec
 		escaped_prefix ~ (
 			-- century/year
 			'^[234][0-9]{3}-'			||
@@ -700,7 +731,7 @@ call append_drblob_brr(
 ) when
 	is_drblob.answer == true
 	and
-	byte_prefix_32_exists.exit_status == 0
+	core_exists.exit_status == 0
 ;
 
 sql query in_new_line_count_table row
@@ -834,11 +865,15 @@ call get_is_udigish(brr.udig)
 
 query merge_is_udigish(brr.udig, get_is_udigish.exit_status)
   when
-  	get_is_udigish.exit_status == 0
-	or
-	get_is_udigish.exit_status == 1
-	or
-	get_is_udigish.exit_status == 2		#  merge empty blob
+  	(
+		get_is_udigish.exit_status == 0
+		or
+		get_is_udigish.exit_status == 1
+		or
+		get_is_udigish.exit_status == 2		#  merge empty blob
+	)
+	and
+	service_exists.exit_status == 0
 ;
 
 #
@@ -962,9 +997,13 @@ call append_jsonorg_brr(
 	brr.blob_size,
 	brr.wall_duration
 ) when
-	in_has_byte_json_bracket_table.has_bracket == true
-	or
-	merge_has_byte_json_bracket.has_bracket == true
+	(
+		in_has_byte_json_bracket_table.has_bracket == true
+		or
+		merge_has_byte_json_bracket.has_bracket == true
+	)
+	and
+	core_exists.exit_status == 0
 ;
 
 command append_prefixio_brr
@@ -975,8 +1014,6 @@ command append_prefixio_brr
 	);
 }
 
-#  Note: need to add byte_count_exists!
-
 call append_prefixio_brr(
 	brr.start_time,
 	brr.netflow,
@@ -986,14 +1023,7 @@ call append_prefixio_brr(
 	brr.blob_size,
 	brr.wall_duration
 ) when
-  	byte_prefix_32_exists.exit_status == 0
-	and
-	byte_bitmap_exists.exit_status == 0
-	
-	#  Note:  missing test for existence of utf8 test!
-	#	  see not above.
-	#and
-	#is_utf8wf_exists.exit_status == 0
+  	core_exists.exit_status == 0
 ;
 
 #
@@ -1117,7 +1147,11 @@ call append_expat2_brr(
 	brr.blob_size,
 	brr.wall_duration
 ) when
-	in_has_byte_xml_bracket_table.has_bracket == true
-	or
-	merge_has_byte_xml_bracket.has_bracket == true
+	(
+		in_has_byte_xml_bracket_table.has_bracket == true
+		or
+		merge_has_byte_xml_bracket.has_bracket == true
+	)
+	and
+	core_exists.exit_status == 0
 ;
