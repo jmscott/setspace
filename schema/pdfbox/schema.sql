@@ -11,13 +11,15 @@
 DROP SCHEMA IF EXISTS pdfbox CASCADE;
 CREATE SCHEMA pdfbox;
 
-DROP TABLE IF EXISTS pdfbox.pdf_text_stripper;
-CREATE TABLE pdfbox.pdf_text_stripper
+DROP TABLE IF EXISTS pdfbox.extract_utf8;
+CREATE TABLE pdfbox.extract_utf8
 (
 	blob		udig
 				references setspace.service(blob)
 				on delete cascade
 				primary key,
-	is_pdf		bool
-				not null
+	exit_status	smallint,
+
+	text_blob	udig,
+	stderr_blob	udig
 );
