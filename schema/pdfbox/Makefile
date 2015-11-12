@@ -4,7 +4,8 @@
 #
 include local.mk
 
-CLASSPATH=.:/usr/local/lib/pdfbox-app-1.8.10.jar
+#CLASSPATH=.:/usr/local/lib/pdfbox-app-1.8.10.jar
+CLASSPATH=.:pdfbox-app-2.0.0-RC1.jar
 
 COMPILED=								\
 	ExtractTitle.class						\
@@ -27,9 +28,6 @@ ExtractTitle.class:  ExtractTitle.java
 
 ExtractNumberOfPages.class:  ExtractNumberOfPages.java
 	javac -cp $(CLASSPATH) ExtractNumberOfPages.java
-
-pdf_text_stripper.class:  pdf_text_stripper.java
-	javac -cp $(CLASSPATH) pdf_text_stripper.java
 
 install: all
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER)			\
