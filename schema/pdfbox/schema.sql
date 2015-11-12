@@ -18,8 +18,21 @@ CREATE TABLE pdfbox.extract_utf8
 				references setspace.service(blob)
 				on delete cascade
 				primary key,
-	exit_status	smallint,
 
-	text_blob	udig,
-	stderr_blob	udig
+	exit_status	smallint check (
+				exit_status >= 0
+				and
+				exit_status <= 255
+			),
+
+	utf8_blob	udig,
+	stderr_blob	udig,
+
+	constraint utf8_not_blob check (
+		blob != utf8_blob
+	),
+
+	constraint stderr_not_blob check (
+		blob != stderr_blob
+	)
 );
