@@ -23,7 +23,8 @@ PROG=$(basename $0)
 
 #  pause after either stopping or starting flowd
 #  need a better way.  perhaps a lightweight launchd thingy, written in go.
-FLOWD_PAUSE=4
+FLOWD_PAUSE=3
+FLOWD_PAUSE_LIMIT=12
 
 log()
 {
@@ -89,8 +90,21 @@ log "starting flowd server: $FLOW"
 flowd server $FLOW &
 PID=$!
 log "flowd started in background: pid=$PID"
-log "pausing $FLOWD_PAUSE seconds while server starts ..."
-sleep $FLOWD_PAUSE
-test -e run/flowd.pid || die "no pid file: flowd boot failed: $FLOW"
 
+#  wait for flowd to start an generate pid file
+#  restart up toe
+
+PAUSE=$FLOWD_PAUSE
+PID_FILE=run/flowd.pid
+while [ ! -e $PID_FILE -a $PAUSE -le $FLOWD_PAUSE_LIMIT ];  do
+	if [ $PAUSE -gt $FLOWD_PAUSE ];  then
+		WARN "pid file $PID_FILE has not appeared"
+	fi
+	log "pausing $PAUSE seconds while server starts ..."
+	sleep $PAUSE
+	PAUSE=$(expr $PAUSE '*' 2)
+done
+
+test -e $PID_FILE ||
+	die "flowd boot failed: $FLOW: no pid file $(pwd)/$PID_FILE"
 exit 0
