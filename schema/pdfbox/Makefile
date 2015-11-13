@@ -8,9 +8,7 @@ include local.mk
 CLASSPATH=.:pdfbox-app-2.0.0-RC1.jar
 
 COMPILED=								\
-	ExtractTitle.class						\
-	ExtractNumberOfPages.class					\
-	pdf_text_stripper.class
+	putPDDocument.class
 all: $(COMPILED)
 
 clean:
@@ -23,11 +21,8 @@ dev-links:
 	test -e etc || ln -s . etc
 	test -e run || ln -s . run
 
-ExtractTitle.class:  ExtractTitle.java
-	javac -cp $(CLASSPATH) ExtractTitle.java
-
-ExtractNumberOfPages.class:  ExtractNumberOfPages.java
-	javac -cp $(CLASSPATH) ExtractNumberOfPages.java
+putPDDocument.class:  putPDDocument.java
+	javac -cp $(CLASSPATH) putPDDocument.java
 
 install: all
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER)			\
@@ -53,8 +48,6 @@ install: all
 		$(PDFBOX_PREFIX)/lib
 
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m ugo=rx		\
-		ExtractNumberOfPages.java				\
-		ExtractTitle.java					\
-		pdf_text_stripper.java					\
+		PrintDocumentMetaData.java					\
 		Makefile						\
 		$(PDFBOX_PREFIX)/src
