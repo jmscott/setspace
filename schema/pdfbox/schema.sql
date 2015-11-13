@@ -11,6 +11,36 @@
 DROP SCHEMA IF EXISTS pdfbox CASCADE;
 CREATE SCHEMA pdfbox;
 
+/*
+ *  PDDocument scalar fields.
+ */
+DROP TABLE IF EXISTS pdfbox.pddocument;
+CREATE TABLE pdfbox.pddocument
+(
+	blob		udig
+				references setspace.service(blob)
+				on delete cascade
+				primary key,
+
+	number_of_pages int check (
+				/*
+				 *  Have not verified against the spec for PDF.
+				 */
+				number_of_pages >= 0
+			),
+
+	document_id	bigint,
+	version		float
+				not null,
+
+	is_all_security_to_be_removed
+			bool
+				not null,
+
+	is_encrypted	bool
+				not null
+);
+
 DROP TABLE IF EXISTS pdfbox.extract_utf8;
 CREATE TABLE pdfbox.extract_utf8
 (
