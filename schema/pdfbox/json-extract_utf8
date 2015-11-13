@@ -88,7 +88,7 @@ java -jar $PDFBOX_JAR ExtractText $TMP_BLOB $TMP_UTF8 2>$TMP_ERR
 EXIT_STATUS=$?
 test $EXIT_STATUS = 0 && rm $TMP_ERR
 
-cat >$TMP_JSON <<END || die "cat  >json failed: exit status: $?" 7
+cat >$TMP_JSON <<END || die "cat >json failed: exit status: $?" 7
 {
 	"pdfbox2.setspace.com": {
 		"extract_utf8": {
