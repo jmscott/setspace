@@ -7,7 +7,7 @@
 #  Usage:
 #	json-extract_utf8 <udig>
 #  Exit Status:
-#	0	has utf8 utf8 text 
+#	0	extracted utf8 text and stored json blob
 #	1	text not extracted
 #	2	blob does not exist
 #	3	wrong number of arguments
@@ -25,6 +25,7 @@
 #
 
 PROG=json-extract_utf8
+
 TMP_BLOB=${TMP_DIR:=/tmp}/$PROG-$$.pdf
 TMP_ERR=${TMP_DIR:=/tmp}/$PROG-$$.err
 TMP_UTF8=${TMP_DIR:=/tmp}/$PROG-$$.utf8
@@ -43,7 +44,6 @@ die()
 	exit $STATUS
 }
 
-PROG=json-extract-utf8
 test $# = 1 || die 'wrong number of arguments' 2
 UDIG=$1
 
@@ -90,7 +90,7 @@ test $EXIT_STATUS = 0 && rm $TMP_ERR
 
 cat >>$TMP_JSON <<END || die "cat  >json failed: exit status: $?" 7
 {
-	"pdfbox.setspace.com": {
+	"pdfbox2.setspace.com": {
 		"extract_utf8": {
 			"blob":		"$UDIG",
 			"exit_status":	$STATUS,
