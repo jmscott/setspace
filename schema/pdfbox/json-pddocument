@@ -1,0 +1,102 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Extract the PDDocument info from PDF and store results in json blob.
+#  Usage:
+#	json-pddocument <udig>
+#  Exit Status:
+#	0	ok, extracted pddocument info and stored json blob
+#	1	blob does not exist
+#	2	wrong number of arguments
+#	3	blobio get error
+#	4	java putPDDocument failed
+#	5	blobio eat error
+#	6	blobio put error
+#  Java Environment:
+#	The jar of pdfbox, version 2, must be in the CLASSPATH.
+#  Environment:
+#	BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=sha}
+#	BLOBIO_SERVICE=${BLOBIO_SERVICE:=localhost:1797}
+#	PDFBOX_JAR
+#
+
+PROG=json-pddocument
+TMP_BLOB=${TMP_DIR:=/tmp}/$PROG-$$.pdf
+TMP_ERR=${TMP_DIR:=/tmp}/$PROG-$$.err
+TMP_ROW=${TMP_DIR:=/tmp}/$PROG-$$.row
+TMP_JSON=${TMP_DIR:=/tmp}/$PROG-$$.json
+
+leave()
+{
+	rm -f $TMP_BLOB $TMP_ERR $TMP_UTF8 $TMP_JSON
+}
+trap leave EXIT
+
+die()
+{
+	STATUS=$2
+	echo "$PROG: ERROR: $@" >&2
+	exit $STATUS
+}
+
+test $# = 1 || die 'wrong number of arguments' 2
+UDIG=$1
+
+#  fetch the pdf blob
+
+blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_SERVICE
+STATUS=$?
+case $STATUS in
+0)
+	;;
+1)
+	exit 1
+	;;
+*)
+	die 'blobio get failed' 3
+	;;
+esac
+
+#  execute the java extract.  we expect only 0 and no stderr.
+
+java -jar $PDFBOX_JAR putPDDocument <$TMP_BLOB >$TMP_ROW 2>$TMP_ERR
+EXIT_STATUS=$?
+if [ $EXIT_STATUS != 0 -o -s $TMP_ERR ];  then
+	test -s $TMP_ERR && log "$PROG: ERROR: java stderr: $(cat $TMP_ERR)" >&2
+	test $EXIT_STATUS = 0 && WTF=' (wtf)'
+	die "java putPDDocument: exit status=$EXIT_STATUS$WTF" 4
+fi
+
+read 									\
+	NUMBER_OF_PAGES							\
+	DOCUMENT_ID							\
+	VERSION								\
+	IS_ALL_SECURITY_TO_BE_REMOVED					\
+	IS_ENCRYPTED							\
+	<$TMP_ROW
+
+cat >$TMP_JSON <<END || die "cat >json failed: exit status: $?" 7
+{
+	"pdfbox2.setspace.com": {
+		"putPDDocument": {
+			"blob":			"$UDIG",
+			"number_of_pages":	$NUMBER_OF_PAGES,
+			"version":		$VERSION,
+			"is_all_security_to_be_removed":
+						$IS_ALL_SECURITY_TO_BE_REMOVED,
+			"is_encrypted":		$IS_ENCRYPTED
+		},
+		"date":		"$(date)",
+		"hostname":	"$(hostname)",
+		"USER":		"$USER"
+	}
+}
+END
+
+D=$(blobio eat --algorithm $BLOBIO_ALGORITHM --input-path $TMP_JSON)
+test $? = 0 || die "blobio eat failed: exit status=$?" 5
+blobio put 								\
+	--udig $BLOBIO_ALGORITHM:$D					\
+	--input-path $TMP_JSON						\
+	--service $BLOBIO_SERVICE
+test $? = 0 || die "blobio put failed: exit status=$?" 6
