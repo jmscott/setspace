@@ -93,7 +93,7 @@ cat >$TMP_JSON <<END || die "cat >json failed: exit status: $?" 7
 	"pdfbox2.setspace.com": {
 		"extract_utf8": {
 			"blob":		"$UDIG",
-			"exit_status":	$STATUS,
+			"exit_status":	$EXIT_STATUS,
 			"utf8_blob": 	$(put_file $TMP_UTF8),
 			"stderr_blob":	$(put_file $TMP_ERR)
 		},
