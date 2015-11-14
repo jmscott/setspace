@@ -25,7 +25,7 @@ TMP_JSON=${TMP_DIR:=/tmp}/$PROG-$$.json
 
 leave()
 {
-	rm -f $TMP_BLOB $TMP_ERR $TMP_UTF8 $TMP_JSON
+	rm -f $TMP_BLOB $TMP_ERR $TMP_ROW $TMP_JSON
 }
 trap leave EXIT
 
