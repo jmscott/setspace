@@ -16,8 +16,8 @@
  *	java putPDDocument <file.pdf
  *  Exit Status:
  *	0	extracted the scalar data and wrote to stdout
- *	1	wrong number of command line arguments
- *	2	document load failed.
+ *	1	load of pdf failed
+ *	2	wrong number of command line arguments
  *	3	unexpected error.
  */
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -28,9 +28,9 @@ public class putPDDocument
 	{
 		if (args.length != 0) {
 			System.err.println("ERROR: " +
-					ExtractNumberOfPages.class.getName() +
+						putPDDocument.class.getName() +
 				   ": wrong number of arguments");
-			System.exit(1);
+			System.exit(2);
 		}
 
 		PDDocument doc = null;
@@ -46,8 +46,8 @@ public class putPDDocument
 			} catch (Exception el) {
 				System.err.println("ERROR: " +
 					putPDDocument.class.getName() +
-							": " + el);
-				System.exit(2);
+								": " + el);
+				System.exit(1);
 			}
 
 			Long did = doc.getDocumentId();
@@ -75,7 +75,7 @@ public class putPDDocument
 			System.err.println("ERROR: " +
 					putPDDocument.class.getName() +
 				   	": " + e);
-			System.exit(2);
+			System.exit(3);
 
 		} finally {
 			if (doc != null)
