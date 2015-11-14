@@ -17,8 +17,6 @@
 #	BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=sha}
 #	BLOBIO_SERVICE=${BLOBIO_SERVICE:=localhost:1797}
 #	PDFBOX2_JAR
-#  Note:
-#	Why can't "-jar $PDFBOX2_JAR" be replaced with CLASSPATH?
 #
 
 PROG=json-extract_utf8
@@ -44,8 +42,9 @@ die()
 test $# = 1 || die 'wrong number of arguments' 2
 UDIG=$1
 
+#  Note: ought to be in CLASSPATH!
 test -n "$PDFBOX2_JAR" || die "environment not defined: PDFBOX2_JAR" 3
-test -e $PDFBOX2_JAR || die "jar file does not exist: $PDFBOX2_JAR"
+test -e $PDFBOX2_JAR || die "jar file does not exist: $PDFBOX2_JAR" 3
 
 #  fetch the pdf blob
 
@@ -82,11 +81,10 @@ put_file()
 	echo '"'$FILE_UDIG'"'
 }
 
-#  execute the java extract.  we expect only 0 or 1 as an exit status
+#  execute the java extract.
 
 java -jar $PDFBOX2_JAR ExtractText $TMP_BLOB $TMP_UTF8 2>$TMP_ERR
 EXIT_STATUS=$?
-test $EXIT_STATUS = 0 && rm $TMP_ERR
 
 cat >$TMP_JSON <<END || die "cat >json failed: exit status: $?" 5
 {
