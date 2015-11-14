@@ -35,7 +35,7 @@ trap leave EXIT
 die()
 {
 	STATUS=$2
-	echo "$PROG: ERROR: $@" >&2
+	echo "$PROG: ERROR: $1" >&2
 	exit $STATUS
 }
 
