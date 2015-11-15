@@ -79,7 +79,7 @@ case $EXIT_STATUS in
 	IS_ENCRYPTED=null
 	;;
 *)
-	test -s $TMP_ERR && log "$PROG: ERROR: java stderr: $(cat $TMP_ERR)" >&2
+	test -s $TMP_ERR && echo "$PROG: ERROR: java stderr: $(cat $TMP_ERR)">&2
 	die "java putPDDocument failed: exit status=$EXIT_STATUS" 5
 	;;
 esac
