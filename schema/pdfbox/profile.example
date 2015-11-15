@@ -1,0 +1,22 @@
+#
+#  Synopsis:
+#	Profile for typical jsonorg server
+#  Usage:
+#	. $SETSPACE_ROOT/etc/profile
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/pdfbox2
+export TMPDIR=$SCHEMA_ROOT/tmp
+
+#  create the spool file so tail doesn't abort.
+#  Note: got to be a better way. perhaps flowd.tail ought to create the file.
+touch $SCHEMA_ROOT/spool/prefixio.brr
+
+PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
+
+export PDFBOX2_JAR=lib/pdfbox-app-2.0.0-RC1.jar
+export CLASSPATH=lib:$PDFBOX2_JAR
+export BLOBIO_SERVICE=localhost:1797
+export BLOBIO_ALGORITHM=sha
