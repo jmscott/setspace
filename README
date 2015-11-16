@@ -1,5 +1,5 @@
 Synopsis:
-	SetSpace extracts facts from blobs and stores them in PostgreSQL
+	SetSpace extracts facts from immutable blobs and stores those facts into PostgreSQL
 Meme:
 	SetSpace - Harness the Flux
 
