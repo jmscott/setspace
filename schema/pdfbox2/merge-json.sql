@@ -1,8 +1,15 @@
 /*
  *  Synopsis:
- *	Bulk merge of jsonorg "extract_utf8" records into pdfbox2.extract_utf8
+ *	merge jsonorg pdfbox2.setspace.com objects into pdfbox2.* tables
+ *  Note:
+ *	Unfortunatly, we have stale pdfbox.setspace.com json objects laying
+ *	around.
  */
 
+/*
+ *  Merge jsonorg.jsonb_255{pdfbox.setspace.com->extract_utf8} into the table
+ *  pdfbox2.extract_utf8.
+ */
 with find_utf8 as (
   select
   	doc->'pdfbox.setspace.com'->'extract_utf8' as doc
@@ -42,14 +49,14 @@ with find_utf8 as (
 	  from
 		find_utf8,
 		jsonb_to_record(doc) as x(
-			blob text,
+			blob udig,
 			utf8_blob text,
 			exit_status smallint,
 			stderr_blob text
 		)
 )
 select
-	*
+	blob
   from
   	x_utf8
   order by
