@@ -1,0 +1,33 @@
+#
+#  Synopsis:
+#	Populate a PostgreSQL schema with the facts extracted by Apache pdfbox2 
+#  See:
+#	schema.sql
+#
+
+boot
+{
+	brr_capacity = 16;
+	flow_worker_count = 8;
+	os_exec_worker_count = 4;
+	os_exec_capacity = 4;
+
+	xdr_roll_duration = "24h";
+	fdr_roll_duration = "24h";
+	qdr_roll_duration = "24h";
+
+	heartbeat_duration = "10s";
+}
+
+sql database setspace
+{
+	driver_name = "postgres";
+	data_source_name = "sslmode=disable";
+	max_idle_conns = 1;
+	max_open_conns = 8;
+}
+
+tail brr
+{
+	path = "spool/prefixio.brr";
+}
