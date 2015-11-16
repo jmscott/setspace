@@ -1,7 +1,5 @@
 Synopsis:
 	SetSpace extracts facts from blobs and stores them in PostgreSQL
-Usage:
-	psql pdfbox
 Meme:
 	SetSpace - Harness the Flux
 
