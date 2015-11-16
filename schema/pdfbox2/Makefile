@@ -40,6 +40,8 @@ install: all
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ugo=rx	\
 		$(COMPILED)						\
+		merge-json.sql						\
+		pdfbox2.flow.example					\
 		profile.example						\
 		schema.sql						\
 		$(PDFBOX2_PREFIX)/lib
