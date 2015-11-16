@@ -2,9 +2,8 @@
 #  Synopsis:
 #	Makefile suitable for single machine development.
 #
-include local.mk
-
-CLASSPATH=.:/usr/local/lib/pdfbox-app-2.jar
+include ../schema.mk
+include ../../local.mk
 
 COMPILED=								\
 	putPDDocument.class
