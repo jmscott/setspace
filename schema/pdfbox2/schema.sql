@@ -18,11 +18,11 @@ DROP TABLE IF EXISTS pdfbox2.pddocument;
 CREATE TABLE pdfbox2.pddocument
 (
 	blob		udig
-				references setspace.service(blob)
-				on delete cascade
-				primary key,
+				REFERENCES setspace.service(blob)
+				ON DELETE CASCADE
+				PRIMARY KEY,
 
-	number_of_pages int check (
+	number_of_pages int CHECK (
 				/*
 				 *  Have not verified against the spec for PDF.
 				 */
@@ -45,13 +45,13 @@ DROP TABLE IF EXISTS pdfbox2.extract_utf8;
 CREATE TABLE pdfbox2.extract_utf8
 (
 	blob		udig
-				references pdfbox2.pddocument(blob)
-				on delete cascade
-				primary key,
+				REFERENCES pdfbox2.pddocument(blob)
+				ON DELETE CASCADE
+				PRIMARY KEY,
 
-	exit_status	smallint check (
+	exit_status	smallint CHECK (
 				exit_status >= 0
-				and
+				AND
 				exit_status <= 255
 			),
 
@@ -59,12 +59,12 @@ CREATE TABLE pdfbox2.extract_utf8
 	stderr_blob	udig,
 
 	--  no quines
-	constraint utf8_not_blob check (
+	CONSTRAINT utf8_not_blob CHECK (
 		blob != utf8_blob
 	),
 
 	--  no quines
-	constraint stderr_not_blob check (
+	CONSTRAINT stderr_not_blob CHECK (
 		blob != stderr_blob
 	)
 );
