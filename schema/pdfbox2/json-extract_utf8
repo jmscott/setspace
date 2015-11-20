@@ -97,7 +97,8 @@ cat >$TMP_JSON <<END || die "cat >json failed: exit status: $?" 5
 		},
 		"date":		"$(date)",
 		"hostname":	"$(hostname)",
-		"USER":		"$USER"
+		"USER":		"$USER",
+		"process_id":	$$
 	}
 }
 END
