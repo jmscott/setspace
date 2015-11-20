@@ -20,8 +20,8 @@ CREATE TEMP TABLE merge_utf8 AS
  */
 WITH find_utf8 AS (
   SELECT
-  	blob as jblob,
-  	doc->'pdfbox.setspace.com'->'extract_utf8' as doc
+  	blob AS jblob,
+  	doc->'pdfbox.setspace.com'->'extract_utf8' AS doc
   FROM
   	jsonb_255
 	  NATURAL JOIN setspace.service s
@@ -62,7 +62,7 @@ WITH find_utf8 AS (
 		  	null::udig
 		  ELSE
 		  	stderr_blob::udig
-		END as "stderr_blob"
+		END AS "stderr_blob"
 	  from
 		find_utf8,
 		jsonb_to_record(doc) AS x(
@@ -74,7 +74,7 @@ WITH find_utf8 AS (
 )
 SELECT
 	*,
-	'New Tuple'::text as "syncability"
+	'New Tuple'::text AS "syncability"
   FROM
   	x_utf8
 ;
