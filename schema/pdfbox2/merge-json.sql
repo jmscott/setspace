@@ -13,107 +13,153 @@
 \timing on
 \set ON_ERROR_STOP on
 
-create temp table merge_utf8 as
+CREATE TEMP TABLE merge_utf8 AS
 /*
  *  Merge jsonorg.jsonb_255{pdfbox.setspace.com->extract_utf8} into the table
  *  pdfbox2.extract_utf8.
  */
-with find_utf8 as (
-  select
+WITH find_utf8 AS (
+  SELECT
   	blob as jblob,
   	doc->'pdfbox.setspace.com'->'extract_utf8' as doc
-  from
+  FROM
   	jsonb_255
-	  natural join setspace.service s
-  where
+	  NATURAL JOIN setspace.service s
+  WHERE
   	doc @> '{
 	    "pdfbox.setspace.com": {
 	      "extract_utf8": {}
 	    }
 	}'
-	and
+	AND
 	s.discover_time > now() + :since
 ),
   /*
    *  Extract UTF8 from json.
    */
-  x_utf8 as (
-	select
+  x_utf8 AS (
+	SELECT
 		jblob,
 		blob,
-		case
-		  when
+		CASE
+		  WHEN
 		  	utf8_blob = 'null'
-		  then
+		  THEN
 		  	null::udig
-		  else
+		  ELSE
 		  	utf8_blob::udig
-		end as "utf8_blob",
+		END AS "utf8_blob",
 		exit_status,
 
 		/*
 		 *  stderr_blob appears to be treated both as a string 'null'
 		 *  or as a true null, depending upon the context.
 		 */
-		case
-		  when
+		CASE
+		  WHEN
 		  	stderr_blob = 'null'
-		  then
+		  THEN
 		  	null::udig
-		  else
+		  ELSE
 		  	stderr_blob::udig
-		end as "stderr_blob"
+		END as "stderr_blob"
 	  from
 		find_utf8,
-		jsonb_to_record(doc) as x(
+		jsonb_to_record(doc) AS x(
 			blob udig,
 			utf8_blob text,
 			exit_status smallint,
 			stderr_blob text
 		)
 )
-select
+SELECT
 	*,
-	'Unknown'::text as "syncability"
-  from
+	'New Tuple'::text as "syncability"
+  FROM
   	x_utf8
 ;
 
+\echo indexing merge_utf8(blob)
+CREATE index merge_utf8_idx_utf8 on merge_utf8(blob);
+
+\echo indexing merge_utf8(blob)
+CREATE unique index merge_utf8_idx_json on merge_utf8(jblob);
+
+\echo indexing merge_utf8(syncability)
+CREATE index merge_utf8_idx_sync on merge_utf8(syncability);
+
 \echo analyze merge_utf8
-analyze merge_utf8;
-
-\echo indexing merge_utf8(blob)
-create index merge_utf8_idx_u on merge_utf8(blob);
-
-\echo indexing merge_utf8(blob)
-create unique index merge_utf8_idx_j on merge_utf8(jblob);
+ANALYZE merge_utf8;
 
 \echo tagging blobs already merged
-
-\echo tagging duplicate blobs in different json runs not yet merged
-update merge_utf8 m1
-  set
-  	syncability = 'Duplicate'
-  where
-  	exists (
-	  select
+UPDATE merge_utf8 m1
+  SET
+  	syncability = 'UTF8 Tuple Exists'
+  WHERE
+  	EXISTS (
+	  SELECT
 	  	m2.blob
-	  from
+	  FROM
 	  	merge_utf8 m2
-	  where
+	  WHERE
 	  	m2.blob = m1.blob
-		and
+		AND
 		m2.jblob != m1.jblob
 	)
+	AND
+	m1.syncability = 'New Tuple'
 ;
 
-select
+\echo reanalyze merge_utf8 after UTF8 Tuple Exists
+VACUUM ANALYZE merge_utf8;
+
+\echo tagging blobs with no primary key reference in pdfbox2.pddocument
+UPDATE merge_utf8 m
+  set
+  	syncability = 'No Primary Key in pdfbox2.pddocument'
+  where
+  	NOT EXISTS (
+	  SELECT
+	  	p.blob
+	    FROM
+	    	pdfbox2.pddocument p
+	    WHERE
+	    	p.blob = m.blob
+	)
+;
+\echo reanalyze merge_utf8 after No Primary Key in pdfbox2.pddocument
+VACUUM ANALYZE merge_utf8;
+
+\echo tagging duplicate blobs in different json runs not yet merged
+UPDATE merge_utf8 m1
+  SET
+  	syncability = 'Duplicate'
+  WHERE
+  	EXISTS (
+	  SELECT
+	  	m2.blob
+	  FROM
+	  	merge_utf8 m2
+	  WHERE
+	  	m2.blob = m1.blob
+		AND
+		m2.jblob != m1.jblob
+	)
+	AND
+	m1.syncability = 'New Tuple'
+;
+\echo reanalyze merge_utf8 after Duplcate
+VACUUM ANALYZE merge_utf8;
+
+\echo summarizing merge set
+SELECT
 	syncability,
-	count(*) as "UTF8 Blob Count"
-  from
+	count(*) AS "JSON Tuple Count"
+  FROM
   	merge_utf8
-  group by
+  GROUP BY
   	1
-  order by
-  	"UTF8 Blob Count" desc
+  ORDER BY
+  	syncability = 'New Tuple' desc,
+	"JSON Tuple Count" desc
 ;
