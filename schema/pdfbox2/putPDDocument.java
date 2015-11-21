@@ -1,11 +1,12 @@
 /*
  *  Synopsis:
  *	Put a record of the pdfmodel.PDDocument scalar data of PDF from stdin.
- *  Output:
- *	Out put is a tab separated record terminated by a new line.  The fields
- *	from the PDDocument object are:
+ *  Description:
+ *	putPDDocument extracts PDDocument metadata from a pdf document read on
+ *	standard input and then writes that metadata as a tab-separated,
+ *	new-terminated line.  The fields are as follows:
  *
- *		number_of_pages
+ *		number_of_pages		
  *		document_id
  *		version
  *		is_all_security_to_be_removed
@@ -18,7 +19,7 @@
  *	0	extracted the scalar data and wrote to stdout
  *	1	load of pdf failed
  *	2	wrong number of command line arguments
- *	3	unexpected error.
+ *	3	unexpected java exception.
  */
 import org.apache.pdfbox.pdmodel.PDDocument;
 
