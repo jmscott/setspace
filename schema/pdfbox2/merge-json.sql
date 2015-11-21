@@ -3,9 +3,6 @@
  *	merge jsonorg pdfbox2.setspace.com objects into pdfbox2.* tables
  *  Usage:
  *	psql -f merge-json.sql --variable=since="'-1 day'"
- *  Note:
- *	Unfortunatly, we have stale pdfbox.setspace.com json objects laying
- *	around.
  */
 
 \echo merging all blobs since :since
