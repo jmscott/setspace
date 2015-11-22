@@ -33,7 +33,7 @@ CREATE TABLE pdfbox2.pddocument
 				/*
 				 *  Can a PDF have 0 pages?
 				 */
-				number_of_pages > 0
+				number_of_pages >= 0
 			),
 
 	document_id	bigint,		-- is document_id always > 0
