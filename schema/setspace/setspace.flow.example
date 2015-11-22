@@ -764,6 +764,10 @@ query in_new_line_count_table(brr.udig)
 command merge_new_line_count
 {
 	path = "merge-new_line_count";
+	exit_status is OK when in {
+		0,			#  merged ok
+		1			#  blob does not exist
+	};
 }
 
 call merge_new_line_count(brr.udig)
