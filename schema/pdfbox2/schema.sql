@@ -12,7 +12,7 @@ DROP SCHEMA IF EXISTS pdfbox2 CASCADE;
 CREATE SCHEMA pdfbox2;
 
 /*
- *  PDDocument scalar fields.
+ *  PDDocument scalar fields from Java Object
  */
 DROP TABLE IF EXISTS pdfbox2.pddocument;
 CREATE TABLE pdfbox2.pddocument
@@ -22,23 +22,61 @@ CREATE TABLE pdfbox2.pddocument
 				ON DELETE CASCADE
 				PRIMARY KEY,
 
+	exit_status	smallint check (
+				exit_status >= 0
+				and
+				exit_status <= 255
+			)
+			not null,
+
 	number_of_pages int CHECK (
 				/*
-				 *  Have not verified against the spec for PDF.
+				 *  Can a PDF have 0 pages?
 				 */
-				number_of_pages >= 0
+				number_of_pages > 0
 			),
 
-	document_id	bigint,
-	version		float
-				not null,
+	document_id	bigint,		-- is document_id always > 0
 
-	is_all_security_to_be_removed
-			bool
-				not null,
+	version		float check (
+				version > 0
+			),
 
-	is_encrypted	bool
-				not null
+	is_all_security_to_be_removed	bool,
+	is_encrypted			bool,
+
+	--  Track both successful and failed putPDDocument invocations
+	--  number_of_pages is not null implies valid pdf;  otherwise
+	--  pdf is not loadable.
+
+	CONSTRAINT exec_status CHECK ((
+
+		--  putPDDocument succeeded, all fields null
+
+		exit_status = 0
+		AND
+		number_of_pages IS NOT NULL
+		AND
+		version IS NOT NULL	--  do all pdf's have a version?
+		AND
+		is_all_security_to_be_removed IS NOT NULL
+		AND
+		is_encrypted IS NOT NULL
+	) OR (
+		--  putPDDocument failed, all fields null
+
+		exit_status != 0
+		AND
+		number_of_pages IS NULL
+		AND
+		version IS NULL	--  do all pdf's have a version?
+		AND
+		document_id IS NULL
+		AND
+		is_all_security_to_be_removed IS NULL
+		AND
+		is_encrypted IS NULL
+	))
 );
 
 DROP TABLE IF EXISTS pdfbox2.extract_utf8;
