@@ -90,6 +90,7 @@ die(int status, char *msg1)
 }
 
 #ifdef COMMON_NEED_DIE2
+
 static void
 die2(int status, char *msg1, char *msg2)
 {
