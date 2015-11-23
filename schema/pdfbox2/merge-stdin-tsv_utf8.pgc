@@ -5,12 +5,13 @@
  *	merge-stdin-tsv_utf8 
  *  Arguments:
  *  	1	udig of the blob
- *  	2	number of bytes to read on the standard input
+ *	2	name of text search configuration
+ *  	3	number of bytes to read on the standard input
  *  Exit Status:
  *  	0	ok, tuple was merged
  *  	1	Wrong number of arguments
  *  	2	Incorrect blob size
- *  	3	malloc() of xml buffer failed
+ *  	3	malloc() of utf8 buffer failed
  *	4	read() of standard input failed
  *	5	syntax error on udig
  *	6	sql error
@@ -39,7 +40,7 @@ static char progname[] = "merge-stdin-tsv_utf8";
 #define EXIT_BLOB_SMALL 8
 #define EXIT_BLOB_BIG	9
 
-#define COMMON_NEED_READ
+#define COMMON_NEED_READ_BLOB
 #include "../../common.c"
 
 #include <stdlib.h>
@@ -101,9 +102,10 @@ main(int argc, char **argv)
 EXEC SQL BEGIN DECLARE SECTION;
 	char *blob;
 	char *doc;
+	char *ts_conf;
 EXEC SQL END DECLARE SECTION;
 
-	if (argc != 3)
+	if (argc != 4)
 		die(EXIT_BAD_ARGC, "wrong number of arguments");
 
 	close(1);
@@ -112,10 +114,13 @@ EXEC SQL END DECLARE SECTION;
 	blob = argv[1];
 	len = strlen(blob);
 	if (len < 3 || len > 255 || strchr(blob, ':') == NULL)
-		die2(EXIT_BAD_UDIG, "syntax error in xml udig", blob);
+		die2(EXIT_BAD_UDIG, "syntax error in utf8 udig", blob);
 
-	//  parse the blob size as argv[2]
-	sz = argv[2];
+	// the text search configuration
+	ts_conf = argv[2];
+
+	//  parse the blob size as argv[3]
+	sz = argv[3];
 	len = strlen(sz);
 	if (len < 1 || len > 19)
 		die2(EXIT_BAD_SIZE, "blob size not > 0 and < 20 chars", sz);
@@ -125,26 +130,13 @@ EXEC SQL END DECLARE SECTION;
 	if (size <= 0)
 		die2(EXIT_BAD_SIZE, "atoi(blob size) <= 0", sz);
 
-	//  allocate the xml buffer plus null byte
+	//  allocate the utf8 buffer plus null byte
 	doc = malloc(size + 1);
 	if (doc == NULL)
 		die2(EXIT_BAD_MALLOC, "malloc() failed", sz);
 	doc[size] = 0;
 
-	//  read the xml blob from standard input
-	nread = 0;
-again:
-	nr = _read(0, doc + nread, size - nread);
-	if (nr > 0) {
-		nread += nr;
-		if (nread < size)
-			goto again;
-	}
-	if (nread < size)
-		die(EXIT_BLOB_SMALL, "blob too small");
-
-	if (_read(0, doc, size) != 0)
-		die(EXIT_BLOB_BIG, "blob too big");
+	_read_blob(0, doc, size);
 
 	exec sql whenever sqlerror call sql_fault();
 	exec sql whenever sqlwarning call sql_fault();
@@ -152,20 +144,25 @@ again:
 
 	/*
 	 *  Merge blob into pdfbox2.tsv_doc table.
+	 *
+	 *  Note:
+	 *	Why the BEGIN/END TRANSACTION?
 	 */
-	exec sql begin transaction;
+	exec sql BEGIN TRANSACTION;
 	exec sql
 	  INSERT INTO pdfbox2.tsv_utf8(
 		blob,
+		ts_conf,
 		doc
 	  ) VALUES (
 		:blob::udig,
-		to_tsvector(:doc)
+		:ts_conf::regconfig,
+		to_tsvector(:ts_conf::regconfig, :doc)
 	  )
   	  ON CONFLICT
-  		do nothing
+  		DO NOTHING
 	;
-	exec sql end transaction;
+	exec sql END TRANSACTION;
 
 	_exit(EXIT_OK);
 }

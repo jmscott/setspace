@@ -3,10 +3,11 @@
 #   Synopsis:
 #   	Merge an xml blob read on standard input into table libxml2.tsv_utf8.
 #   Usage:
-# 	 merge-tsv_utf8 <udig> <blob_size>
+# 	 merge-tsv_utf8 <udig> <ts_config> <blob_size>
 #   Arguments:
 #   	1	udig of the blob
-#   	2	size of the blob in bytes
+#	2	text search configuration name
+#   	3	size of the blob in bytes
 #   Exit Status:
 #   	0	ok, tuple was merged
 #	1	blob does not exist
@@ -34,10 +35,11 @@ leave()
 
 trap leave EXIT
 
-test $# = 2 || die 'wrong number of arguments' 2
+test $# = 3 || die 'wrong number of arguments' 2
 
 UDIG=$1
-SIZE=$2
+TS_CONF=$2
+SIZE=$3
 
 blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_SERVICE
 STATUS=$?
@@ -52,5 +54,5 @@ case $STATUS in
 	die "blobio get failed: exit status=$STATUS" 3
 	;;
 esac
-merge-stdin-tsv_utf8 $UDIG $SIZE <$TMP_BLOB ||
+merge-stdin-tsv_utf8 $UDIG $TS_CONF $SIZE <$TMP_BLOB ||
 			die "merge-stdin-tsv_utf8 failed: exit status=$?" 4
