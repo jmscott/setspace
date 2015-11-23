@@ -9,6 +9,11 @@
  *  Synopsis:
  *	Generic sql fault handler for PostgreSQL ecpg generated code
  *  Usage:
+ *	#define COMMON_ECPG_NEED_SQL_FAULT
+ *	#include "../../common-ecpg.c"
+ *
+ *	...
+ *	
  *	exec sql whenever sqlerror call _ecpg_sql_fault();
  *	exec sql whenever sqlwarning call _ecpg_sql_fault();
  */
