@@ -17,7 +17,7 @@
 #   	jmscott@setspace.com
 #   	setspace@gmail.com
 #  
-PROG=merge-blob-xml_doc
+PROG=merge-xml_doc
 TMP_BLOB=${TMP_DIR:=/tmp}/$PROG.$$
 
 die()
@@ -52,5 +52,5 @@ case $STATUS in
 	die "blobio get failed: exit status=$STATUS" 3
 	;;
 esac
-merge-stdin-xml_doc $UDIG $SIZE <$TMP_BLOB
-test $? = 0 || die "merge-stdin-xml_doc failed: exit status=$?"
+merge-stdin-xml_doc $UDIG $SIZE <$TMP_BLOB ||
+			die "merge-stdin-xml_doc failed: exit status=$?" 4
