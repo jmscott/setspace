@@ -18,7 +18,7 @@ PROGS=									\
 all: $(COMPILED)
 
 clean:
-	rm -f $(COMPILED)
+	rm -f $(COMPILED) merge-stdin-xml_doc.c
 
 merge-stdin-xml_doc: merge-stdin-xml_doc.pgc ../../common.c
 	ecpg merge-stdin-xml_doc.pgc
