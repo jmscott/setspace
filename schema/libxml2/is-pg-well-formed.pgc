@@ -43,7 +43,7 @@ static char progname[] = "merge-stdin-pg_well_formed";
 
 /*
  *  Note:
- *	THink about moving into ../../common.c
+ *	Think about moving sql_fault() into ../../common.c
  */
 static void
 sql_fault()
