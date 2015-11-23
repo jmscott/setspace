@@ -23,8 +23,11 @@
 #define PIPE_MAX	512
 #endif
 
-#if defined(COMMON_NEED_READ) || defined(COMMON_NEED_WRITE) ||		\
-    defined(COMMON_NEED_CLOSE) || defined(COMMON_NEED_FCHMOD)
+#if defined(COMMON_NEED_READ)					||	\
+    defined(COMMON_NEED_READ_BLOB)				||	\
+    defined(COMMON_NEED_WRITE) 					||	\
+    defined(COMMON_NEED_CLOSE)					||	\
+    defined(COMMON_NEED_FCHMOD)
 
 #define COMMON_NEED_DIE2
 
@@ -32,6 +35,10 @@
 
 #if defined(COMMON_NEED_OPEN)
 #define COMMON_NEED_DIE3
+#endif
+
+#if defined(COMMON_NEED_READ_BLOB)
+#define COMMON_NEED_READ
 #endif
 
 /*
@@ -146,6 +153,46 @@ _read(int fd, void *p, ssize_t nbytes)
 	/*NOTREACHED*/
 	return -1;
 }
+#endif
+
+/*
+ *  To include _read() add the following to source which includes
+ *  this file:
+ *
+ *	#define COMMON_NEED_READ_BLOB
+ *	#define EXIT_BLOB_SMALL 4		//  any code is ok
+ *	#define EXIT_BLOB_BIG 5			//  any code is ok
+ */
+#ifdef COMMON_NEED_READ_BLOB
+
+/*
+ *  _read() exactly n bytes from fd, die() if too few or too many bytes exist.
+ *
+ *  Note:
+ *	the name "_read_blob" implies we ought to also verify the blob.
+ *	maybe something like _read_exact() would be a better name?
+ */
+static void
+_read_blob(int fd, void *blob, ssize_t size)
+{
+	int nread = 0, nr;
+
+again:
+	nr = _read(fd, blob + nread, size - nread);
+	if (nr > 0) {
+		nread += nr;
+		if (nread < size)
+			goto again;
+	}
+	if (nread < size)
+		die(EXIT_BLOB_SMALL, "blob too small");
+	/*
+	 * Verify no bytes remain
+	 */
+	if (_read(fd, blob, 1) != 0)
+		die(EXIT_BLOB_BIG, "blob too big");
+}
+
 #endif
 
 /*
