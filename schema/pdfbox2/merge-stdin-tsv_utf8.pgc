@@ -21,6 +21,8 @@
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
  *  Note:
+ *	Should tsvector config be passed as an argument oncommand line?
+ *
  *	Think about refactoring common routines in ../../sql-common.h
  */
 
