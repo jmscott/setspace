@@ -20,6 +20,8 @@
  *  Blame:
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
+ *  Note:
+ *	Rename is-pg-well-formed.pgc to merge-stdin-is_pg_well_formed.pgc
  */
 
 static char progname[] = "merge-stdin-pg_well_formed";
