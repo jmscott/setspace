@@ -18,18 +18,18 @@ PROGS=									\
 all: $(COMPILED)
 
 clean:
-	rm -f $(COMPILED) merge-stdin-xml_doc.c
+	rm -f $(COMPILED) merge-stdin-xml_doc.c is-pg-well-formed.c
 
 merge-stdin-xml_doc: merge-stdin-xml_doc.pgc ../../common.c
 	ecpg merge-stdin-xml_doc.pgc
-	$(CC) -I$(PGINC) merge-stdin-xml_doc.c -o merge-stdin-xml_doc	\
-						-L$(PGLIB) -lecpg
+	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-xml_doc.c 		\
+		-o merge-stdin-xml_doc -L$(PGLIB) -lecpg
 	rm merge-stdin-xml_doc.c
 
 is-pg-well-formed: is-pg-well-formed.pgc ../../common.c
 	ecpg is-pg-well-formed.pgc
-	$(CC) -I$(PGINC) is-pg-well-formed.c -o is-pg-well-formed	\
-						-L$(PGLIB) -lecpg
+	$(CC) $(CFLAGS) -I$(PGINC) is-pg-well-formed.c 			\
+		-o is-pg-well-formed -L$(PGLIB) -lecpg
 	rm is-pg-well-formed.c
 
 install: all

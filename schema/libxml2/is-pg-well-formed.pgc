@@ -38,7 +38,7 @@ static char progname[] = "merge-stdin-pg_well_formed";
 #define EXIT_BLOB_SMALL 9
 #define EXIT_BLOB_BIG	10
 
-#define COMMON_NEED_READ
+#define COMMON_NEED_READ_BLOB
 #include "../../common.c"
 
 #include <stdlib.h>
@@ -51,7 +51,6 @@ static void
 sql_fault()
 {
 	char msg[1024];
-	char state[6];
 	int status = EXIT_SQLERROR;
 
 	if (sqlca.sqlcode == 0)
@@ -93,7 +92,7 @@ sql_fault()
 int
 main(int argc, char **argv)
 {
-	int size, nread = 0, nr;
+	int size;
 	size_t len;
 	char *sz;
 
@@ -124,20 +123,7 @@ EXEC SQL END DECLARE SECTION;
 		die2(EXIT_BAD_MALLOC, "malloc() failed", sz);
 	doc[size] = 0;
 
-	//  read the xml blob from standard input
-	nread = 0;
-again:
-	nr = _read(0, doc + nread, size - nread);
-	if (nr > 0) {
-		nread += nr;
-		if (nread < size)
-			goto again;
-	}
-	if (nread < size)
-		die(EXIT_BLOB_SMALL, "blob too small");
-
-	if (_read(0, doc, size) != 0)
-		die(EXIT_BLOB_BIG, "blob too big");
+	_read_blob(0, doc, size);
 
 	exec sql whenever sqlerror call sql_fault();
 	exec sql whenever sqlwarning call sql_fault();
@@ -147,7 +133,6 @@ again:
 	 *  Merge blob into libxml2.xml_doc table.
 	 */
 	exec sql SELECT xml_is_well_formed(:doc) into :is_xml;
-	exec sql end transaction;
 
 	_exit(is_xml ? EXIT_WF : EXIT_NOWF);
 }
