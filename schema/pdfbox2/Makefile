@@ -1,16 +1,19 @@
 #
 #  Synopsis:
 #	Makefile suitable for single machine development.
+#  Note:
+#	Need to define CLASSPATH elswhere
 #
 include ../schema.mk
 include ../../local.mk
 
-COMPILED=								\
+CLASSPATH:=.:/usr/local/lib/pdfbox-app-2.jar
+JCOMPILED=								\
 	putPDDocument.class
-all: $(COMPILED)
+all: $(JCOMPILED)
 
 clean:
-	rm -f $(COMPILED)
+	rm -f $(JCOMPILED)
 
 dev-links:
 	test -e lib || ln -s . lib
@@ -34,18 +37,33 @@ install: all
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\
 		-d $(PDFBOX2_PREFIX)/log
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\
+		-d $(PDFBOX2_PREFIX)/spool
+	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\
 		-d $(PDFBOX2_PREFIX)/run
+	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\
+		-d $(PDFBOX2_PREFIX)/tmp
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\
 		-d $(PDFBOX2_PREFIX)/etc
 
-	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ugo=rx	\
-		$(COMPILED)						\
+	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=rx		\
+		$(JCOMPILED)						\
 		merge-json.sql						\
 		pdfbox2.flow.example					\
 		profile.example						\
 		schema.sql						\
 		$(PDFBOX2_PREFIX)/lib
 
-	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ugo=rx	\
+	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m u=rx		\
+		cron-merge-json						\
+		json-extract_utf8					\
+		json-pddocument						\
+		$(PDFBOX2_PREFIX)/sbin
+
+	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=rx		\
+		putPDDocument.java					\
 		Makefile						\
 		$(PDFBOX2_PREFIX)/src
+distclean:
+	rm -rf $(PDFBOX2_PREFIX)/lib
+	rm -rf $(PDFBOX2_PREFIX)/src
+	rm -rf $(PDFBOX2_PREFIX)/sbin

@@ -3,6 +3,8 @@
  *	merge jsonorg pdfbox2.setspace.com objects into pdfbox2.* tables
  *  Usage:
  *	psql -f merge-json.sql --variable=since="'-1 day'"
+ *  Note:
+ *	Change :since to be a full blown postgres timestamp.
  */
 
 \echo merging all blobs since :since
@@ -167,19 +169,19 @@ INSERT INTO pdfbox2.pddocument(
 
 CREATE TEMP TABLE merge_extract_utf8 AS
 /*
- *  Merge jsonorg.jsonb_255{pdfbox.setspace.com->extract_utf8} into the table
+ *  Merge jsonorg.jsonb_255{pdfbox2.setspace.com->extract_utf8} into the table
  *  pdfbox2.extract_utf8.
  */
 WITH find_utf8 AS (
   SELECT
   	blob AS jblob,
-  	doc->'pdfbox.setspace.com'->'extract_utf8' AS doc
+  	doc->'pdfbox2.setspace.com'->'extract_utf8' AS doc
   FROM
   	jsonb_255
 	  NATURAL JOIN setspace.service s
   WHERE
   	doc @> '{
-	    "pdfbox.setspace.com": {
+	    "pdfbox2.setspace.com": {
 	      "extract_utf8": {}
 	    }
 	}'
@@ -284,7 +286,7 @@ UPDATE merge_extract_utf8 m1
 \echo reanalyze merge_extract_utf8 after Duplicate
 VACUUM ANALYZE merge_extract_utf8;
 
-\echo summarizing merge extract_utg8 set since :since
+\echo summarizing merge extract_utf8 set since :since
 SELECT
 	syncability,
 	count(*) AS "JSON Tuple Count"

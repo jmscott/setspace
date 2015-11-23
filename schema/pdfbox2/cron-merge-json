@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Merge any stale json pdfbox2 tuples into pdfbox2 tables
+#  Usage:
+#	PDFBOX2_ROOT=/
+#	* * * * * sbin/cron-merge-json >>cron-merge-json.log '-1 Hour' 2>&1
+#
+
+PROG=cron-merge-json
+
+log()
+{
+	echo "$(date +'%Y/%m/%d %H:%M:%S' ): $PROG: $@"
+}
+
+die()
+{
+	log "ERROR: $@" >&2
+	exit 1
+}
+
+trap 'log good bye, cruel world' EXIT
+log 'hello, world'
+
+test $# = 1 || die 'wrong number of arguments'
+SINCE=$1
+log "syncing since $SINCE"
+
+test -n "$EXPAT2_ROOT" || die 'environment variable not defined EXPAT2_ROOT'
+log "EXPAT2_ROOT=$EXPAT2_ROOT"
+cd $EXPAT2_ROOT || die "cd $EXPAT2_ROOT failed"
+test -e etc/profile || die "missing expected profile: $(pwd)/etc/profile"
+log 'sourcing etc/profile ...'
+. etc/profile
+
+log 'dumping PG variables ...'
+env | grep '^PG' | while read E;  do
+	log $E
+done
+
+SQL=lib/merge-json.sql
+log "invoking sql merge script: $SQL"
+psql -f $SQL --variable=since="'$SINCE'" ||
+			die "psql -f $SQL $SINCE failed: exit status=$?"

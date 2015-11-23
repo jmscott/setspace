@@ -31,3 +31,123 @@ tail brr
 {
 	path = "spool/prefixio.brr";
 }
+
+command brr_on_network
+{
+	path = "true";
+}
+
+call brr_on_network()
+  when
+  (
+        (
+		brr.verb == "put"
+		or
+		brr.verb == "get"
+		or
+		brr.verb == "eat"
+		or
+		brr.verb == "wrap"
+		or
+		brr.verb == "roll"
+	)
+	and
+	brr.chat_history == "ok"
+  ) or (
+	brr.verb == "give"
+	and
+	brr.chat_history == "ok,ok"
+  )
+;
+
+sql query in_pddocument_table row
+{
+	statement = `
+
+	SELECT
+		EXISTS (
+		  SELECT
+		  	blob
+		    FROM
+		    	pdfbox2.pddocument
+		    WHERE
+		    	blob = $1::udig
+		),
+		(
+		  SELECT
+		  	exit_status = 0
+		    FROM
+		    	pdfbox2.pddocument
+		    WHERE
+		    	blob = $1::udig
+		)
+	;
+	`;
+
+	result row is (
+		answer bool,
+		is_pdf bool
+	);
+
+	database is setspace;
+}
+
+query in_pddocument_table(brr.udig)
+  when
+  	brr_on_network.exit_status == 0
+;
+
+command json_pddocument
+{
+	path = "sbin/json-pddocument";
+	exit_status is OK when in {0, 1};
+}
+
+call json_pddocument(brr.udig)
+  when
+  	in_pddocument_table.answer == false
+;
+
+sql query in_extract_utf8_table row
+{
+	statement = `
+
+	SELECT
+		EXISTS (
+		  SELECT
+		  	blob
+		    FROM
+		    	pdfbox2.extract_utf8
+		    WHERE
+		    	blob = $1::udig
+		)
+	;
+	`;
+
+	result row is (
+		answer bool
+	);
+
+	database is setspace;
+}
+
+query in_extract_utf8_table(brr.udig)
+  when
+	#  is a pdf file in table pddocument
+  	in_pddocument_table.is_pdf == true
+
+	or
+
+	#  or just created json pddocument
+	json_pddocument.exit_status == 0
+;
+
+command json_extract_utf8
+{
+	path = "sbin/json-extract_utf8";
+}
+
+call json_extract_utf8(brr.udig)
+  when
+  	in_extract_utf8_table.answer == false
+;

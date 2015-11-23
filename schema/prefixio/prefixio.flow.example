@@ -56,7 +56,7 @@ command append_pdfbox_brr
 {
 	path = "append-brr";
 	argv = (
-		"spool/pdfbox.brr"
+		"../pdfbox2/spool/prefixio.brr"
 	);
 }
 

@@ -6,10 +6,13 @@
 #  Blame:
 #  	jmscott@setspace.com
 #  	setspace@gmail.com
+#  Note:
+#	Contemplate replacing env variable SCHEMA_ROOT with SETSPACE_SCHEMA
 #
 SCHEMA_ROOT=$SETSPACE_ROOT/schema/pdfbox2
 export TMPDIR=$SCHEMA_ROOT/tmp
-mkdir -p $TMPDIR || exit 1
+
+export PDFBOX2_ROOT=${PDFBOX2_ROOT:=$SCHEMA_ROOT}
 
 #  create the spool file so tail doesn't abort.
 #  Note: got to be a better way. perhaps flowd.tail ought to create the file.
@@ -18,7 +21,7 @@ chmod u=rw,g=w,o= $SCHEMA_ROOT/spool/prefixio.brr
 
 PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
 
-export PDFBOX2_JAR=/usr/local/lib/pdfbox-app-2.jar
-export CLASSPATH=lib:$PDFBOX2_JAR
-export BLOBIO_SERVICE=localhost:1797
-export BLOBIO_ALGORITHM=sha
+export PDFBOX2_JAR=${PDFBOX2_JAR:=/usr/local/lib/pdfbox-app-2.jar}
+export CLASSPATH=${CLASSPATH:=lib:$PDFBOX2_JAR}
+export BLOBIO_SERVICE=${BLOBIO_SERVICE:=localhost:1797}
+export BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=sha}
