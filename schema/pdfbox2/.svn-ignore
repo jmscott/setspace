@@ -1,8 +1,10 @@
 etc
 lib
 log
+merge-stdin-tsv_utf8
 profile
 putPDDocument.class
 run
 sbin
 schema
+tmp

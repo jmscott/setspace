@@ -7,13 +7,23 @@
 include ../schema.mk
 include ../../local.mk
 
+COMPILED=merge-stdin-tsv_utf8
+PROGS=merge-stdin-tsv_utf8
+
 CLASSPATH:=.:/usr/local/lib/pdfbox-app-2.jar
 JCOMPILED=								\
 	putPDDocument.class
-all: $(JCOMPILED)
+
+all: $(JCOMPILED) $(COMPILED)
 
 clean:
 	rm -f $(JCOMPILED)
+
+merge-stdin-tsv_utf8: merge-stdin-tsv_utf8.pgc ../../common.c
+	ecpg merge-stdin-tsv_utf8.pgc
+	$(CC) -I$(PGINC) merge-stdin-tsv_utf8.c -o merge-stdin-tsv_utf8	\
+						-L$(PGLIB) -lecpg
+	rm merge-stdin-tsv_utf8.c
 
 dev-links:
 	test -e lib || ln -s . lib
@@ -54,14 +64,16 @@ install: all
 		$(PDFBOX2_PREFIX)/lib
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m u=rx		\
+		$(PROGS)						\
 		cron-merge-json						\
 		json-extract_utf8					\
 		json-pddocument						\
 		$(PDFBOX2_PREFIX)/sbin
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=rx		\
-		putPDDocument.java					\
 		Makefile						\
+		merge-stdin-tsv_utf8.pgc				\
+		putPDDocument.java					\
 		$(PDFBOX2_PREFIX)/src
 distclean:
 	rm -rf $(PDFBOX2_PREFIX)/lib

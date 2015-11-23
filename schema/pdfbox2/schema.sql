@@ -4,6 +4,9 @@
  *  See:
  *	https://pdfbox.apache.org
  *	http://semver.org/	
+ *  Note:
+ *	Need to add integrity triggers that verify exit_status == 0 in foreign
+ *	keys for {extract_utf8,tsv_utf8}.blob.
  */
 
 \set ON_ERROR_STOP on
@@ -78,7 +81,13 @@ CREATE TABLE pdfbox2.pddocument
 		is_encrypted IS NULL
 	))
 );
+COMMENT ON TABLE pdfbox2.pddocument IS
+  'PDDocument scalar fields from Java Object'
+;
 
+/*
+ *  Blob of UTF8 Text extracted from pdf
+ */
 DROP TABLE IF EXISTS pdfbox2.extract_utf8;
 CREATE TABLE pdfbox2.extract_utf8
 (
@@ -106,3 +115,20 @@ CREATE TABLE pdfbox2.extract_utf8
 		blob != stderr_blob
 	)
 );
+COMMENT ON TABLE pdfbox2.extract_utf8 IS
+  'Blob of UTF8 Text extracted from pdf'
+;
+
+DROP TABLE IF EXISTS pdfbox2.tsv_utf8;
+CREATE TABLE pdfbox2.tsv_utf8
+(
+	blob		udig
+				REFERENCES pdfbox2.extract_utf8(blob)
+				ON DELETE CASCADE
+				PRIMARY KEY,
+	doc		tsvector
+				not null
+);
+COMMENT ON TABLE pdfbox2.tsv_utf8 IS
+  'Text Vector of Extracted UTF8 Text'
+;
