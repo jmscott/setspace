@@ -17,7 +17,7 @@ JCOMPILED=								\
 all: $(JCOMPILED) $(COMPILED)
 
 clean:
-	rm -f $(JCOMPILED)
+	rm -f $(JCOMPILED) $(COMPILED) merge-stdin-tsv_utf8.c
 
 merge-stdin-tsv_utf8: merge-stdin-tsv_utf8.pgc ../../common.c
 	ecpg merge-stdin-tsv_utf8.pgc
