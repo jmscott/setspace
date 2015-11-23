@@ -113,7 +113,9 @@ CREATE TABLE pdfbox2.extract_utf8
 	--  no quines
 	CONSTRAINT stderr_not_blob CHECK (
 		blob != stderr_blob
-	)
+	),
+
+	UNIQUE (blob, utf8_blob)
 );
 COMMENT ON TABLE pdfbox2.extract_utf8 IS
   'Blob of UTF8 Text extracted from pdf'
@@ -123,11 +125,13 @@ DROP TABLE IF EXISTS pdfbox2.tsv_utf8;
 CREATE TABLE pdfbox2.tsv_utf8
 (
 	blob		udig
-				REFERENCES pdfbox2.extract_utf8(blob)
-				ON DELETE CASCADE
 				PRIMARY KEY,
+	utf8_blob	udig,
 	doc		tsvector
-				not null
+				not null,
+	FOREIGN KEY (blob, utf8_blob)
+				REFERENCES pdfbox2.extract_utf8(blob, utf8_blob)
+				ON DELETE CASCADE
 );
 COMMENT ON TABLE pdfbox2.tsv_utf8 IS
   'Text Vector of Extracted UTF8 Text'
