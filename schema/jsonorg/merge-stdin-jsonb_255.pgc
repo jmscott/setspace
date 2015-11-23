@@ -38,48 +38,10 @@ static char progname[] = "merge-stdin-jsonb_255";
 #define COMMON_NEED_READ_BLOB
 #include "../../common.c"
 
+#define COMMON_ECPG_NEED_SQL_FAULT
+#include "../../common-ecpg.c"
+
 #include <stdlib.h>
-
-static void
-sql_fault()
-{
-	char msg[1024];
-	int status = EXIT_SQLERROR;
-
-	if (sqlca.sqlcode == 0)
-		die(EXIT_SQLERROR, "unexpected sqlca.sqlcode == 0"); 
-	_strcat(msg, sizeof msg, "sql");
-
-	//  what is a WARNING ... pg9.4docs not too clear
-
-	if (sqlca.sqlwarn[2] == 'W' || sqlca.sqlwarn[0] == 'W') {
-		_strcat(msg, sizeof msg, ": WARN");
-		status = EXIT_SQLWARN;
-	}
-
-	//  add the sql state code to error message
-
-	if (sqlca.sqlstate[0] != 0) {
-		char state[6];
-
-		_strcat(msg, sizeof msg, ": ");
-		memmove(state, sqlca.sqlstate, 5);
-		state[5] = 0;
-		_strcat(msg, sizeof msg, state);
-	}
-
-	//  add the sql error message
-
-	if (sqlca.sqlerrm.sqlerrml > 0) {
-		char err[SQLERRMC_LEN + 1];
-
-		_strcat(msg, sizeof msg, ": ");
-		memmove(err, sqlca.sqlerrm.sqlerrmc, sqlca.sqlerrm.sqlerrml);
-		err[sqlca.sqlerrm.sqlerrml] = 0;
-		_strcat(msg, sizeof msg, err);
-	}
-	die(status, msg);
-}
 
 int
 main(int argc, char **argv)
@@ -122,14 +84,13 @@ EXEC SQL END DECLARE SECTION;
 
 	_read_blob(0, doc, size);
 
-	exec sql whenever sqlerror call sql_fault();
-	exec sql whenever sqlwarning call sql_fault();
+	exec sql whenever sqlerror call _ecpg_sql_fault();
+	exec sql whenever sqlwarning call _ecpg_sql_fault();
 	exec sql connect to default;
 
 	/*
 	 *  Merge blob into jsonorg.jsonb_255 table.
 	 */
-
 	exec sql
 	  INSERT INTO jsonorg.jsonb_255(
 		blob,
