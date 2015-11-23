@@ -66,7 +66,8 @@ JSON_checker: JSON_checker.c
 
 merge-stdin-jsonb_255: merge-stdin-jsonb_255.pgc
 	ecpg merge-stdin-jsonb_255.pgc
-	$(CC) -I$(PGINC) merge-stdin-jsonb_255.c -o merge-stdin-jsonb_255 -L$(PGLIB) -lecpg
+	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-jsonb_255.c		\
+		-o merge-stdin-jsonb_255 -L$(PGLIB) -lecpg
 	rm merge-stdin-jsonb_255.c
 
 frisk ff:

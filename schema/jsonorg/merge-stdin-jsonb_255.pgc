@@ -9,31 +9,33 @@
  *  Exit Status:
  *  	0	ok, tuple was merged
  *  	1	Wrong number of arguments
- *  	2	incorrect blob size
- *  	3	malloc() of json buffer failed
+ *  	2	Incorrect blob size
+ *  	3	malloc() of utf8 buffer failed
  *	4	read() of standard input failed
  *	5	syntax error on udig
  *	6	sql error
- *	7 	sql warning
+ *	7	sql warning
+ *	8	blob too small
+ *	9	blob too large
  *  Blame:
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
- *  Note:
- *	Need to check _read() bytes == sizeof blob.
  */
 
 static char progname[] = "merge-stdin-jsonb_255";
 
-#define EXIT_OK	0
-#define EXIT_BAD_ARGC 1
-#define EXIT_BAD_SIZE 2
+#define EXIT_OK		0
+#define EXIT_BAD_ARGC	1
+#define EXIT_BAD_SIZE	2
 #define EXIT_BAD_MALLOC 3
-#define EXIT_BAD_READ 4
-#define EXIT_BAD_UDIG 5
-#define EXIT_SQLERROR 6
-#define EXIT_SQLWARN 7
+#define EXIT_BAD_READ	4
+#define EXIT_BAD_UDIG	5
+#define EXIT_SQLERROR	6
+#define EXIT_SQLWARN	7
+#define EXIT_BLOB_SMALL 8
+#define EXIT_BLOB_BIG	9
 
-#define COMMON_NEED_READ
+#define COMMON_NEED_READ_BLOB
 #include "../../common.c"
 
 #include <stdlib.h>
@@ -42,7 +44,6 @@ static void
 sql_fault()
 {
 	char msg[1024];
-	char state[6];
 	int status = EXIT_SQLERROR;
 
 	if (sqlca.sqlcode == 0)
@@ -83,7 +84,7 @@ sql_fault()
 int
 main(int argc, char **argv)
 {
-	int size, nread = 0, nr;
+	int size;
 	size_t len;
 	char *sz;
 
@@ -119,15 +120,7 @@ EXEC SQL END DECLARE SECTION;
 		die2(EXIT_BAD_MALLOC, "malloc() failed", sz);
 	doc[size] = 0;
 
-	//  read the json blob from standard input
-	nread = 0;
-again:
-	nr = _read(0, doc + nread, size - nread);
-	if (nr > 0) {
-		nread += nr;
-		if (nread < size)
-			goto again;
-	}
+	_read_blob(0, doc, size);
 
 	exec sql whenever sqlerror call sql_fault();
 	exec sql whenever sqlwarning call sql_fault();
@@ -137,19 +130,17 @@ again:
 	 *  Merge blob into jsonorg.jsonb_255 table.
 	 */
 
-	exec sql begin transaction;
 	exec sql
-	  INSERT into jsonorg.jsonb_255(
+	  INSERT INTO jsonorg.jsonb_255(
 		blob,
 		doc
-	  ) values (
+	  ) VALUES (
 		:blob::udig,
 		:doc::jsonb
 	  )
   	  ON CONFLICT
-  		do nothing
+  		DO NOTHING
 	;
-	exec sql end transaction;
 
 	_exit(EXIT_OK);
 }
