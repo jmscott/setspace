@@ -149,19 +149,18 @@ again:
 	/*
 	 *  Merge blob into libxml2.xml_doc table.
 	 */
-	exec sql begin transaction;
-	exec sql
-	  INSERT into libxml2.xml_doc(
+	exec sql BEGIN TRANSACTION;
+	exec sql INSERT INTO libxml2.xml_doc(
 		blob,
 		doc
-	  ) values (
+	  ) VALUES (
 		:blob::udig,
 		:doc::xml
 	  )
   	  ON CONFLICT
-  		do nothing
+  		DO NOTHING
 	;
-	exec sql end transaction;
+	exec sql END TRANSACTION;
 
 	_exit(EXIT_OK);
 }
