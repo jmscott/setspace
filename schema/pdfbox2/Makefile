@@ -21,8 +21,8 @@ clean:
 
 merge-stdin-tsv_utf8: merge-stdin-tsv_utf8.pgc ../../common.c
 	ecpg merge-stdin-tsv_utf8.pgc
-	$(CC) -I$(PGINC) merge-stdin-tsv_utf8.c -o merge-stdin-tsv_utf8	\
-						-L$(PGLIB) -lecpg
+	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-tsv_utf8.c 		\
+		-o merge-stdin-tsv_utf8 -L$(PGLIB) -lecpg
 	rm merge-stdin-tsv_utf8.c
 
 dev-links:
