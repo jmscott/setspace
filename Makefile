@@ -48,8 +48,10 @@ ifdef SETSPACE_PREFIX
 		dec2pgbit						\
 		dev-reboot						\
 		find-schema						\
-		kill-flowd						\
+		flip-all-brr-file					\
+		flip-brr-file						\
 		kill-all-flowd						\
+		kill-flowd						\
 		tail-flowd						\
 		$(SETSPACE_PREFIX)/sbin
 

@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Flip all schema/*/spool/<inbound>.brr files
+#  Exit Status:
+#	0	ok
+#	1	unexpected failure
+#
+
+PROG=$(basename $0)
+SCHEMA=
+
+log()
+{
+	MSG=$@
+	test -n "$SCHEMA" && MSG="$SCHEMA: $MSG"
+	echo "$(date +'%Y/%m/%d %H:%M:%S'): $PROG: $MSG"
+}
+
+die()
+{
+	log "ERROR: $@" >&2
+	exit 1
+}
+
+leave()
+{
+	log 'good bye, cruel world'
+}
+
+log 'hello, world'
+trap leave EXIT
+
+test -n "$SETSPACE_ROOT" ||
+			die "environment variable not defined: SETSPACE_ROOT"
+log "SETSPACE_ROOT=$SETSPACE_ROOT"
+
+cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
+
+. etc/profile
+
+find-schema | while read SCHEMA;  do
+	log "schema: $SCHEMA"
+	flip-brr-file $SCHEMA ||
+			die "flip-brr-file $SCHEMA failed: exit status=$?"
+done
+exit 0

@@ -1,0 +1,79 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Flip a tailable schema's <schema>/spool/<inbound>.brr file
+#  Usage:
+#	flip-brr-file <schema>
+#	flip-brr-file setspace
+#  See:
+#	flip-tail.c
+#  Exit Status:
+#	0	all inbound brr files have been flipped
+#	1	unknown error, flowd may not have started
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#  Note:
+#	Think about overriding name of SETSPACE_ROOT my consulting a variable
+#	named SETSPACE_ROOT_NAME.  Will be helpfull for non setspace
+#	schemas that wish to manage flowd process.
+#
+
+PROG=$(basename $0)
+SCHEMA=
+
+log()
+{
+	MSG=$@
+	test -n "$SCHEMA" && MSG="$SCHEMA: $MSG"
+	echo "$(date +'%Y/%m/%d %H:%M:%S'): $PROG: $MSG"
+}
+
+WARN()
+{
+	log "WARN: $@" >&2
+}
+
+die()
+{
+	log "ERROR: $@" >&2
+	exit 2
+}
+
+leave()
+{
+	log 'good bye, cruel world'
+}
+
+test $# = 1 || die 'wrong number of arguments'
+SCHEMA=$1
+
+log 'hello, world'
+trap leave EXIT
+
+test -n "$SETSPACE_ROOT" ||
+			die "environment variable not defined: SETSPACE_ROOT"
+log "SETSPACE_ROOT=$SETSPACE_ROOT"
+
+cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
+
+. etc/profile
+
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/$SCHEMA
+test -d $SCHEMA_ROOT || die "schema dir does not exist: $SCHEMA_ROOT"
+SPOOL=$SCHEMA_ROOT/spool
+if [ ! -e $SPOOL ];  then
+	WARN "no spool directory: $SPOOL"
+	WARN 'doing nothing'
+	exit 0
+fi
+
+cd $SPOOL || die "cd $SPOOL failed: exit status=$?"
+
+log 'finding <inbound>.brr files ...'
+ls *.brr | grep -v '[0-9].brr$' | while read BRR;  do
+	NEW_BRR=$(basename $BRR .brr)-$(date +%s).brr
+	log "flip $BRR -> $NEW_BRR"
+	flip-tail file $BRR $NEW_BRR ||
+		die "flip-tail file $BRR $NEW_BRR failed: exit status=$?"
+done
