@@ -7,7 +7,7 @@
 #  See:
 #	cron-reboot
 #  Exit Status:
-#	0	flowd appearsto have booted
+#	0	flowd appears to have booted
 #	1	no profile or flow file in directory <schema>/etc/<schema>.flow
 #	2	unknown error, flowd may not have started
 #  Blame:
