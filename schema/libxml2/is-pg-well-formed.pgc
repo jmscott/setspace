@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *  	Merge well formedness of blob read on stdin into table is_pg_well_formed
+ *  	Test postgresql notion of a well formed document.
  *  Usage:
  *	is-pg-well-formed <size> 
  *  Arguments:
@@ -86,9 +86,7 @@ EXEC SQL END DECLARE SECTION;
 	exec sql whenever sqlwarning call _ecpg_sql_fault();
 	exec sql connect to default;
 
-	/*
-	 *  Merge blob into libxml2.xml_doc table.
-	 */
+	//  test postgresql's notion of a well formed document
 	exec sql SELECT xml_is_well_formed(:doc) into :is_xml;
 
 	_exit(is_xml ? EXIT_WF : EXIT_NOWF);

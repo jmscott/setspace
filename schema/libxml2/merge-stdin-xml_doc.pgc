@@ -89,6 +89,7 @@ EXEC SQL END DECLARE SECTION;
 	exec sql whenever sqlwarning call _ecpg_sql_fault();
 	exec sql connect to default;
 
+	exec sql BEGIN TRANSACTION;
 	/*
 	 *  Merge blob into libxml2.xml_doc table.
 	 */
@@ -102,6 +103,7 @@ EXEC SQL END DECLARE SECTION;
   	  ON CONFLICT
   		DO NOTHING
 	;
+	exec sql END TRANSACTION;
 
 	_exit(EXIT_OK);
 }

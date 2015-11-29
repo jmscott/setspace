@@ -91,6 +91,7 @@ EXEC SQL END DECLARE SECTION;
 	/*
 	 *  Merge blob into jsonorg.jsonb_255 table.
 	 */
+	exec sql BEGIN TRANSACTION;
 	exec sql
 	  INSERT INTO jsonorg.jsonb_255(
 		blob,
@@ -102,6 +103,7 @@ EXEC SQL END DECLARE SECTION;
   	  ON CONFLICT
   		DO NOTHING
 	;
+	exec sql END TRANSACTION;
 
 	_exit(EXIT_OK);
 }

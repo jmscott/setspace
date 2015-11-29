@@ -101,6 +101,7 @@ EXEC SQL END DECLARE SECTION;
 	/*
 	 *  Merge blob into pdfbox2.tsv_doc table.
 	 */
+	exec sql BEGIN TRANSACTION;
 	exec sql
 	  INSERT INTO pdfbox2.tsv_utf8(
 		blob,
@@ -114,6 +115,7 @@ EXEC SQL END DECLARE SECTION;
   	  ON CONFLICT
   		DO NOTHING
 	;
+	exec sql END TRANSACTION;
 
 	_exit(EXIT_OK);
 }
