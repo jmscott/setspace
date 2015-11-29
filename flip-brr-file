@@ -71,7 +71,7 @@ fi
 cd $SPOOL || die "cd $SPOOL failed: exit status=$?"
 
 log 'finding <inbound>.brr files ...'
-ls *.brr | grep -v '[0-9].brr$' | while read BRR;  do
+ls *.brr | grep -v '[-][0-9][0-9]*.*[.]brr$' | while read BRR;  do
 	NEW_BRR=$(basename $BRR .brr)-$(date +%s).brr
 	log "flip $BRR -> $NEW_BRR"
 	flip-tail file $BRR $NEW_BRR ||
