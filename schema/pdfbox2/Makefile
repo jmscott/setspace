@@ -81,4 +81,4 @@ distclean:
 	rm -rf $(PDFBOX2_PREFIX)/sbin
 
 frisk ff:
-	flowd frisk libxml2.flow.example
+	flowd frisk pdfbox2.flow.example
