@@ -25,6 +25,7 @@ PROG=$(basename $0)
 #  need a better way.  perhaps a lightweight launchd thingy, written in go.
 FLOWD_PAUSE=3
 FLOWD_PAUSE_LIMIT=12
+SCHEMA=
 
 log()
 {
