@@ -52,7 +52,7 @@ tail brr
 	path = "spool/setspace.brr";
 }
 
-command append_pdfbox_brr
+command append_pdfbox2_brr
 {
 	path = "append-brr";
 	argv = (
@@ -84,7 +84,7 @@ sql query prefix_is_percentPDF row
 
 query prefix_is_percentPDF(brr.udig);
 
-call append_pdfbox_brr(
+call append_pdfbox2_brr(
 	brr.start_time,
 	brr.netflow,
 	brr.verb,
