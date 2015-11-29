@@ -14,9 +14,8 @@
 #  	jmscott@setspace.com
 #  	setspace@gmail.com
 #  Note:
-#	Think about overriding name of SETSPACE_ROOT my consulting a variable
-#	named SETSPACE_ROOT_NAME.  Will be helpfull for non setspace
-#	schemas that wish to manage flowd process.
+#	Might be nice to wait until the reader of the brr file closes,
+#	via fuser.
 #
 
 PROG=$(basename $0)
@@ -72,9 +71,9 @@ cd $SPOOL || die "cd $SPOOL failed: exit status=$?"
 
 log 'finding <inbound>.brr files ...'
 ls *.brr | grep -v '[-][0-9][0-9]*.*[.]brr$' | while read BRR;  do
-	log "$BRR: $(wc -l $BRR | awk '{print $1}') records"
 	NEW_BRR=$(basename $BRR .brr)-$(date +%s).brr
 	log "flip $BRR -> $NEW_BRR"
 	flip-tail file $BRR $NEW_BRR ||
 		die "flip-tail file $BRR $NEW_BRR failed: exit status=$?"
+	log "$NEW_BRR: $(wc -l $NEW_BRR | awk '{print $1}') records"
 done
