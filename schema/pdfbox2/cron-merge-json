@@ -8,6 +8,7 @@
 #
 
 PROG=cron-merge-json
+JOB_UDIG=${TMPDIR:=/tmp}/$PROG-job-$$.udig
 
 log()
 {
@@ -20,16 +21,22 @@ die()
 	exit 1
 }
 
-trap 'log good bye, cruel world' EXIT
+leave()
+{
+	rm -f $JOB_UDIG
+	log 'good bye, cruel world'
+}
+
+trap leave EXIT
 log 'hello, world'
 
 test $# = 1 || die 'wrong number of arguments'
 SINCE=$1
 log "syncing since $SINCE"
 
-test -n "$EXPAT2_ROOT" || die 'environment variable not defined EXPAT2_ROOT'
-log "EXPAT2_ROOT=$EXPAT2_ROOT"
-cd $EXPAT2_ROOT || die "cd $EXPAT2_ROOT failed"
+test -n "$PDFBOX2_ROOT" || die 'environment variable not defined PDFBOX2_ROOT'
+log "PDFBOX2_ROOT=$PDFBOX2_ROOT"
+cd $PDFBOX2_ROOT || die "cd $PDFBOX2_ROOT failed"
 test -e etc/profile || die "missing expected profile: $(pwd)/etc/profile"
 log 'sourcing etc/profile ...'
 . etc/profile
@@ -39,7 +46,21 @@ env | grep '^PG' | while read E;  do
 	log $E
 done
 
-SQL=lib/merge-json.sql
+log 'extracting blobs in pdfbox2.pddocument_active_job'
+psql --var OUT=JOB_UDIG.out --quiet --tuples-only --no-align --no-psqlrc <<END
+\\o :OUT
+select
+	blob
+  from 
+  	pdfbox2.pddocument_active_job
+END
+
+SQL=lib/merge-json-pddocument.sql
+log "invoking sql merge script: $SQL"
+psql -f $SQL --variable=since="'$SINCE'" ||
+			die "psql -f $SQL $SINCE failed: exit status=$?"
+
+SQL=lib/merge-json-extract_utf8.sql
 log "invoking sql merge script: $SQL"
 psql -f $SQL --variable=since="'$SINCE'" ||
 			die "psql -f $SQL $SINCE failed: exit status=$?"
