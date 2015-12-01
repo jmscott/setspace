@@ -23,7 +23,7 @@ sql database setspace
 {
 	driver_name = "postgres";
 	data_source_name = "sslmode=disable";
-	max_idle_conns = 1;
+	max_idle_conns = 0;
 	max_open_conns = 8;
 }
 
@@ -97,30 +97,18 @@ query in_pddocument_table(brr.udig)
   	brr_on_network.exit_status == 0
 ;
 
-command json_pddocument
-{
-	path = "sbin/json-pddocument";
-	exit_status is OK when in {0, 1};
-}
-
-call json_pddocument(brr.udig)
-  when
-  	in_pddocument_table.answer == false
-;
-
-sql query in_extract_utf8_table row
+sql query in_pddocument_pending_table row
 {
 	statement = `
 
-	SELECT
-		EXISTS (
-		  SELECT
-		  	blob
-		    FROM
-		    	pdfbox2.extract_utf8
-		    WHERE
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	pdfbox2.pddocument_pending
+	    WHERE
 		    	blob = $1::udig
-		)
+	  )
 	;
 	`;
 
@@ -131,23 +119,45 @@ sql query in_extract_utf8_table row
 	database is setspace;
 }
 
-query in_extract_utf8_table(brr.udig)
+query in_pddocument_pending_table(brr.udig)
   when
-	#  is a pdf file in table pddocument
-  	in_pddocument_table.is_pdf == true
-
-	or
-
-	#  or just created json pddocument
-	json_pddocument.exit_status == 0
+  	in_pddocument_table.answer == false
 ;
 
-command json_extract_utf8
+sql query merge_pddocument_pending row
 {
-	path = "sbin/json-extract_utf8";
+	statement = `
+
+	INSERT INTO
+	  pdfbox2.pddocument_pending(
+		blob
+	  ) VALUES(
+	  	$1::udig
+ 	  )  ON CONFLICT
+	  	DO NOTHING
+	  RETURNING
+	  	true
+	`;
+
+	result row is (
+		inserted bool
+	);
+
+	database is setspace;
 }
 
-call json_extract_utf8(brr.udig)
+query merge_pddocument_pending(brr.udig)
   when
-  	in_extract_utf8_table.answer == false
+  	in_pddocument_pending_table.answer == false
+;
+
+command pddocument2pg
+{
+	path = "sbin/pddocument2pg";
+	exit_status is OK when in {0, 1};
+}
+
+call pddocument2pg(brr.udig)
+  when
+  	merge_pddocument_pending.inserted == true
 ;

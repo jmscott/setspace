@@ -21,33 +21,13 @@ COMMENT ON SCHEMA pdfbox2 IS
 DROP TABLE IF EXISTS pdfbox2.pddocument_active cascade;
 
 /*
- *  Active pddocument jobs.
- *
- *  Note:
- *	Notice no fk reference to setspace.service(blob).
- *	Sudden termination may leave stale entries.
- */
-CREATE TABLE pdfbox2.pddocument_active
-(
-	blob		udig
-				PRIMARY KEY,
-	insert_time	timestamptz
-				DEFAULT now()
-				NOT NULL
-);
-COMMENT ON TABLE pdfbox2.pddocument_active IS
-  'Actively running putPDDocument java processes'
-;
-DROP TABLE IF EXISTS pdfbox2.pddocument_active cascade;
-
-/*
  *  Done pddocument jobs.
  *
  *  Note:
  *	Notice no fk reference to setspace.service(blob).
  *	Sudden termination may leave stale entries.
  */
-CREATE TABLE pdfbox2.pddocument_finished
+CREATE TABLE pdfbox2.pddocument_pending
 (
 	blob		udig
 				PRIMARY KEY,
@@ -55,8 +35,8 @@ CREATE TABLE pdfbox2.pddocument_finished
 				DEFAULT now()
 				NOT NULL
 );
-COMMENT ON TABLE pdfbox2.pddocument_finished IS
-  'Finished putPDDocument java processes'
+COMMENT ON TABLE pdfbox2.pddocument_pending IS
+  'Pending putPDDocument java processes'
 ;
 
 /*
@@ -194,13 +174,13 @@ COMMENT ON TABLE pdfbox2.tsv_utf8 IS
 ;
 
 /*
- *  Active extract_utf8 jobs.
+ *  Pending extract_utf8 jobs.
  *
  *  Note:
  *	Notice no fk reference to setspace.service(blob).
  *	Sudden termination may leave stale entries.
  */
-CREATE TABLE pdfbox2.extract_utf8_active
+CREATE TABLE pdfbox2.extract_utf8_pending
 (
 	blob		udig
 				PRIMARY KEY,
@@ -208,25 +188,6 @@ CREATE TABLE pdfbox2.extract_utf8_active
 				DEFAULT now()
 				NOT NULL
 );
-COMMENT ON TABLE pdfbox2.extract_utf8_active IS
-  'Actively running extract_utf8 java processes'
-;
-
-/*
- *  FInished extract_utf8 jobs.
- *
- *  Note:
- *	Notice no fk reference to setspace.service(blob).
- *	Sudden termination may leave stale entries.
- */
-CREATE TABLE pdfbox2.extract_utf8_finished
-(
-	blob		udig
-				PRIMARY KEY,
-	insert_time	timestamptz
-				DEFAULT now()
-				NOT NULL
-);
-COMMENT ON TABLE pdfbox2.extract_utf8_active IS
+COMMENT ON TABLE pdfbox2.extract_utf8_pending IS
   'Actively running extract_utf8 java processes'
 ;

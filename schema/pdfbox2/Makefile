@@ -57,7 +57,8 @@ install: all
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=rx		\
 		$(JCOMPILED)						\
-		merge-json.sql						\
+		merge-json-extract_utf8.sql				\
+		merge-json-pddocument.sql				\
 		pdfbox2.flow.example					\
 		profile.example						\
 		schema.sql						\
@@ -67,7 +68,7 @@ install: all
 		$(PROGS)						\
 		cron-merge-json						\
 		json-extract_utf8					\
-		json-pddocument						\
+		pddocument2pg						\
 		$(PDFBOX2_PREFIX)/sbin
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=rx		\
