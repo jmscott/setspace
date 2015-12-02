@@ -187,3 +187,15 @@ call pddocument2pg(brr.udig)
   when
   	merge_pddocument_pending.inserted == true
 ;
+
+command pddocument_exists
+{
+	path = "true";
+}
+
+call pddocument_exists(brr.udig)
+  when
+  	in_pddocument_table.is_pdf == true
+  	or
+  	pddocument2pg.exit_status == 0
+;
