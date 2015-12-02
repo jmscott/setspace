@@ -6,11 +6,14 @@
 #	json-extract_utf8 <udig>
 #  Exit Status:
 #	0	extracted utf8 text and stored json blob
-#	1	blob does not exist
-#	2	wrong number of arguments
-#	3	PDFBOX2_JAR not defined or file does not exist
-#	4	blobio error
-#	5	json error
+#	1	pdf failed to load
+#	2	blob does not exist
+#	3	wrong number of arguments
+#	4	PDFBOX2_JAR not defined or file does not exist
+#	5	blobio error
+#	6	json error
+#	7	java ExtractText unexpected exit status
+#	8	pg database error
 #  Java Environment:
 #	The jar of pdfbox, version 2, must be in the CLASSPATH.
 #  Environment:
@@ -19,7 +22,7 @@
 #	PDFBOX2_JAR
 #
 
-PROG=json-extract_utf8
+PROG=extract_utf82pg
 
 TMP_BLOB=${TMP_DIR:=/tmp}/$PROG-$$.pdf
 TMP_ERR=${TMP_DIR:=/tmp}/$PROG-$$.err
@@ -39,12 +42,12 @@ die()
 	exit $STATUS
 }
 
-test $# = 1 || die 'wrong number of arguments' 2
+test $# = 1 || die 'wrong number of arguments' 3
 UDIG=$1
 
 #  Note: ought to be in CLASSPATH!
-test -n "$PDFBOX2_JAR" || die "environment not defined: PDFBOX2_JAR" 3
-test -e $PDFBOX2_JAR || die "jar file does not exist: $PDFBOX2_JAR" 3
+test -n "$PDFBOX2_JAR" || die "environment not defined: PDFBOX2_JAR" 4
+test -e $PDFBOX2_JAR || die "jar file does not exist: $PDFBOX2_JAR" 4
 
 #  fetch the pdf blob
 
@@ -54,10 +57,10 @@ case $STATUS in
 0)
 	;;
 1)
-	exit 1
+	exit 2
 	;;
 *)
-	die 'blobio get failed' 4
+	die 'blobio get failed' 5
 	;;
 esac
 
@@ -74,10 +77,10 @@ put_file()
 			--input-path $FP			\
 			--algorithm $BLOBIO_ALGORITHM		\
 	)
-	test $? = 0 ||  die "blobio eat failed: exit status=$?" 4
+	test $? = 0 ||  die "blobio eat failed: exit status=$?" 5
 	FILE_UDIG=$BLOBIO_ALGORITHM:$DIG
 	blobio put --udig $FILE_UDIG --input-path $FP --service $BLOBIO_SERVICE
-	test $? = 0 || die "blobio put failed: exit status=$?" 4
+	test $? = 0 || die "blobio put failed: exit status=$?" 5
 	echo '"'$FILE_UDIG'"'
 }
 
@@ -85,15 +88,23 @@ put_file()
 
 java -jar $PDFBOX2_JAR ExtractText $TMP_BLOB $TMP_UTF8 2>$TMP_ERR
 EXIT_STATUS=$?
+test $EXIT_STATUS = 0 -o $EXIT_STATUS = 1 ||
+		die "java ExtractText failed: exit status=$EXIT_STATUS" 7
 
-cat >$TMP_JSON <<END || die "cat >json failed: exit status: $?" 5
+UTF8_BLOB=$(put_file $TMP_UTF8)
+test $? = 0 || exit 5
+
+STDERR_BLOB=$(put_file $TMP_ERR)
+test $? = 0 || exit 5
+
+cat >$TMP_JSON <<END || die "cat >json failed: exit status: $?" 6
 {
 	"pdfbox2.setspace.com": {
 		"extract_utf8": {
 			"blob":		"$UDIG",
 			"exit_status":	$EXIT_STATUS,
-			"utf8_blob": 	$(put_file $TMP_UTF8),
-			"stderr_blob":	$(put_file $TMP_ERR)
+			"utf8_blob": 	$UTF8_BLOB,
+			"stderr_blob":	$STDERR_BLOB
 		},
 		"date":		"$(date)",
 		"hostname":	"$(hostname)",
@@ -104,4 +115,32 @@ cat >$TMP_JSON <<END || die "cat >json failed: exit status: $?" 5
 END
 
 put_file $TMP_JSON >/dev/null 
-exit 0
+test $? = 0 || exit 5
+
+#  put the extract_utf8 record to the database
+psql --no-psqlrc --quiet <<END || die "psql insert failed: exit status=$?" 8
+
+\\set ON_ERROR_STOP on
+
+INSERT INTO
+  pdfbox2.extract_utf8(
+  	blob,
+	exit_status,
+	utf8_blob,
+	stderr_blob
+    ) VALUES (
+    	'$UDIG',
+	$EXIT_STATUS,
+	$(echo $UTF8_BLOB | tr '"' "'"),
+	$(echo $STDERR_BLOB | tr '"' "'")
+
+    ) ON CONFLICT
+    	DO NOTHING
+;
+DELETE FROM pdfbox2.extract_utf8_pending
+  WHERE
+  	blob = '$UDIG'
+;
+END
+
+exit $EXIT_STATUS

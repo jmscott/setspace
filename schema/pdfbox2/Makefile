@@ -67,7 +67,7 @@ install: all
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m u=rx		\
 		$(PROGS)						\
 		cron-merge-json						\
-		json-extract_utf8					\
+		extract_utf82pg						\
 		pddocument2pg						\
 		$(PDFBOX2_PREFIX)/sbin
 

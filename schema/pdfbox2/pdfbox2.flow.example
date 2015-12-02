@@ -60,6 +60,32 @@ call brr_on_network()
   )
 ;
 
+sql query in_service_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	setspace.service
+	    WHERE
+	    	blob = $1::udig
+	);
+	`;
+
+	result row is (
+		answer bool
+	);
+
+	database is setspace;
+}
+
+query in_service_table(brr.udig)
+  when
+  	brr_on_network.exit_status == 0
+;
+
 sql query in_pddocument_table row
 {
 	statement = `
@@ -94,7 +120,7 @@ sql query in_pddocument_table row
 
 query in_pddocument_table(brr.udig)
   when
-  	brr_on_network.exit_status == 0
+  	in_service_table.answer == true
 ;
 
 sql query in_pddocument_pending_table row
