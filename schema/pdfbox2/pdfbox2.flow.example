@@ -199,3 +199,28 @@ call pddocument_exists(brr.udig)
   	or
   	pddocument2pg.exit_status == 0
 ;
+
+sql query in_extract_utf8_table row
+{
+	statement = `
+	
+	SELECT EXISTS (
+	  SELECT
+		blob
+	          FROM
+	    	pdfbox2.extract_utf8
+	         WHERE
+	    	blob = $1::udig
+	)
+	`;
+
+	result row is (
+		answer bool
+	);
+	database is setspace;
+}
+
+query in_extract_utf8_table(brr.udig)
+  when
+  	pddocument_exists.exit_status == 0
+;
