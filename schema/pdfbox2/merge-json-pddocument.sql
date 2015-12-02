@@ -165,8 +165,8 @@ INSERT INTO pdfbox2.pddocument(
 	DO NOTHING
 ;
 
-\echo clearing finished active jobs from pddocument_active_job
-DELETE FROM pdfbox2.pddocument_active_job paj
+\echo clearing finished active jobs from pddocument_pending
+DELETE FROM pdfbox2.pddocument_pending paj
   USING
   	merge_pddocument mp
   WHERE
