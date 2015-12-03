@@ -35,24 +35,24 @@ tail brr
 	path = "spool/expat2.brr";
 }
 
-sql query is_in_xmllint_table row
+sql query in_xmllint_table row
 {
 	statement = `
 
 	 SELECT
 	  exists (
-	    select
+	    SELECT
 	    	blob
-	      from
+	      FROM
 	      	libxml2.xmllint
-	      where
+	      WHERE
 	      	blob = $1::udig
 	  ),
 	  (SELECT
 	    	exit_status = 0
-	    from
+	    FROM
 	      	libxml2.xmllint
-	      where
+	      WHERE
 	      	blob = $1::udig
 	  )
 	;`;
@@ -63,24 +63,24 @@ sql query is_in_xmllint_table row
 	database is setspace;
 }
 
-sql query is_in_is_pg_well_formed_table row
+sql query in_is_pg_well_formed_table row
 {
 	statement = `
 
 	 SELECT
 	  exists (
-	    select
+	    SELECT
 	    	blob
-	      from
+	      FROM
 	      	libxml2.is_pg_well_formed
-	      where
+	      WHERE
 	      	blob = $1::udig
 	  ),
 	  (SELECT
 	    	is_xml
-	    from
+	    FROM
 	      	libxml2.is_pg_well_formed
-	      where
+	      WHERE
 	      	blob = $1::udig
 	  )
 	;`;
@@ -115,9 +115,35 @@ call brr_has_size()
 	)
 ;
 
-query is_in_xmllint_table(brr.udig)
+sql query in_service_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	setspace.service
+	    WHERE
+	    	blob = $1::udig
+	);
+	`;
+
+	result row is (
+		answer bool
+	);
+
+	database is setspace;
+}
+
+query in_service_table(brr.udig)
   when
   	brr_has_size.exit_status == 0
+;
+
+query in_xmllint_table(brr.udig)
+  when
+	in_service_table.answer == true
 ;
 
 command get_xmllint
@@ -137,7 +163,7 @@ command get_xmllint
 
 call get_xmllint (brr.udig)
   when
-  	is_in_xmllint_table.answer == false
+  	in_xmllint_table.answer == false
 ;
 
 #
@@ -193,7 +219,7 @@ query merge_xmllint (brr.udig, get_xmllint.exit_status)
 	or
   	get_xmllint.exit_status == 10
 ;
-query is_in_is_pg_well_formed_table(brr.udig)
+query in_is_pg_well_formed_table(brr.udig)
   when
   	brr_has_size.exit_status == 0
 ;
@@ -206,7 +232,7 @@ command get_is_pg_well_formed
 
 call get_is_pg_well_formed (brr.udig, brr.blob_size)
   when
-  	is_in_is_pg_well_formed_table.answer == false
+  	in_is_pg_well_formed_table.answer == false
 ;
 
 #
@@ -248,7 +274,7 @@ query merge_is_pg_well_formed (brr.udig, get_is_pg_well_formed.exit_status)
   	get_is_pg_well_formed.exit_status == 1
 ;
 
-sql query is_in_xml_doc_table row
+sql query in_xml_doc_table row
 {
 	statement = `
 
@@ -267,10 +293,10 @@ sql query is_in_xml_doc_table row
 	database is setspace;
 }
 
-query is_in_xml_doc_table(brr.udig)
+query in_xml_doc_table(brr.udig)
   when
 	(
-		is_in_xmllint_table.is_xml == true
+		in_xmllint_table.is_xml == true
 		or
 		merge_xmllint.is_xml == true
 	)
@@ -283,7 +309,7 @@ query is_in_xml_doc_table(brr.udig)
 	#
 	and
 	(
-		is_in_is_pg_well_formed_table.is_xml == true
+		in_is_pg_well_formed_table.is_xml == true
 		or
 		merge_is_pg_well_formed.is_xml == true
 	)
@@ -296,5 +322,5 @@ command merge_xml_doc
 
 call merge_xml_doc(brr.udig, brr.blob_size)
   when
-  	is_in_xml_doc_table.answer == false
+  	in_xml_doc_table.answer == false
 ;
