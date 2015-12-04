@@ -6,7 +6,7 @@
  *	http://semver.org/	
  *  Note:
  *	Need to add integrity triggers that verify exit_status == 0 in foreign
- *	keys for {extract_utf8,tsv_utf8}.blob.
+ *	keys for extract_utf8.blob.
  *
  *	Does the the ts_conf column need to reference a foreign key?
  */
@@ -144,33 +144,6 @@ CREATE TABLE pdfbox2.extract_utf8
 );
 COMMENT ON TABLE pdfbox2.extract_utf8 IS
   'Blob of UTF8 Text extracted from pdf'
-;
-
-/*
- *  Note:
- *	Is the ts_config bound to the tsvector data item?
- *	In other words, is a ts_conf field needed in table?
- */
-DROP TABLE IF EXISTS pdfbox2.tsv_utf8;
-CREATE TABLE pdfbox2.tsv_utf8
-(
-	ts_conf		regconfig,
-	blob		udig,
-
-	utf8_blob	udig,
-	doc		tsvector
-				not null,
-
-	PRIMARY KEY	(ts_conf, blob),
-	FOREIGN KEY	(blob, utf8_blob)
-				REFERENCES pdfbox2.extract_utf8(blob, utf8_blob)
-				ON DELETE CASCADE
-);
-
-CREATE UNIQUE INDEX tsv_utf8_ts_blob ON pdfbox2.tsv_utf8(blob, ts_conf);
-
-COMMENT ON TABLE pdfbox2.tsv_utf8 IS
-  'Text Vector of Extracted UTF8 Text'
 ;
 
 /*
