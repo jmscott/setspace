@@ -225,7 +225,6 @@ query in_extract_utf8_table(brr.udig)
   	pddocument_exists.exit_status == 0
 ;
 
-
 sql query merge_extract_utf8_pending row
 {
 	statement = `
@@ -251,4 +250,14 @@ sql query merge_extract_utf8_pending row
 query merge_extract_utf8_pending(brr.udig)
   when
   	in_extract_utf8_table.answer == false
+;
+
+command extract_utf82pg
+{
+	path = "sbin/extract_utf82pg";
+}
+
+call extract_utf82pg(brr.udig)
+  when
+  	merge_extract_utf8_pending.inserted == true
 ;
