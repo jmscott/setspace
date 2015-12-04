@@ -224,3 +224,31 @@ query in_extract_utf8_table(brr.udig)
   when
   	pddocument_exists.exit_status == 0
 ;
+
+
+sql query merge_extract_utf8_pending row
+{
+	statement = `
+
+	INSERT INTO
+	  pdfbox2.extract_utf8_pending(
+		blob
+	  ) VALUES(
+	  	$1::udig
+ 	  )  ON CONFLICT
+	  	DO NOTHING
+	  RETURNING
+	  	true
+	`;
+
+	result row is (
+		inserted bool
+	);
+
+	database is setspace;
+}
+
+query merge_extract_utf8_pending(brr.udig)
+  when
+  	in_extract_utf8_table.answer == false
+;
