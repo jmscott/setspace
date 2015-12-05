@@ -42,6 +42,8 @@ install: all
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\
 		-d $(PDFBOX2_PREFIX)/run
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\
+		-d $(PDFBOX2_PREFIX)/log
+	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\
 		-d $(PDFBOX2_PREFIX)/tmp
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\
 		-d $(PDFBOX2_PREFIX)/etc
