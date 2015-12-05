@@ -1,0 +1,58 @@
+#!/bin/bash
+#
+#   Synopsis:
+#   	Merge an xml blob read on standard input into table libxml2.tsv_utf8.
+#   Usage:
+# 	 merge-tsv_utf8 <udig> <ts_config> <blob_size>
+#   Arguments:
+#   	1	udig of the blob
+#	2	text search configuration name
+#   	3	size of the blob in bytes
+#   Exit Status:
+#   	0	ok, tuple was merged
+#	1	blob does not exist
+#   	2	wrong number of arguments
+#	3	unexpected blobio error
+#	4	unexpected merge error
+#   Blame:
+#   	jmscott@setspace.com
+#   	setspace@gmail.com
+#  
+PROG=merge-tsv_utf8
+TMP_BLOB=${TMP_DIR:=/tmp}/$PROG.$$
+
+die()
+{
+	STATUS=$2
+	echo "$PROG: ERROR: $1" >&2
+	exit $STATUS
+}
+
+leave()
+{
+	rm -f $TMP_BLOB
+}
+
+trap leave EXIT
+
+test $# = 3 || die 'wrong number of arguments' 2
+
+UDIG=$1
+TS_CONF=$2
+SIZE=$3
+
+blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_SERVICE
+STATUS=$?
+
+case $STATUS in
+0)
+	;;
+1)
+	exit 1
+	;;
+*)
+	die "blobio get failed: exit status=$STATUS" 3
+	;;
+esac
+merge-stdin-tsv_utf8 $UDIG $TS_CONF $SIZE <$TMP_BLOB ||
+			die "merge-stdin-tsv_utf8 failed: exit status=$?" 4
