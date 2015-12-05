@@ -1,0 +1,24 @@
+#
+#  Synopsis:
+#	Profile for typical jsonorg server
+#  Usage:
+#	. $SETSPACE_ROOT/etc/profile
+#  Blame:
+#  	jmscott@setspace.com
+#  	setspace@gmail.com
+#  Note:
+#	Contemplate replacing env variable SCHEMA_ROOT with SETSPACE_SCHEMA
+#
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/pgtexts
+export TMPDIR=$SCHEMA_ROOT/tmp
+
+export PGTEXTS_ROOT=${PGTEXTS_ROOT:=$SCHEMA_ROOT}
+
+#  create the spool file so tail doesn't abort.
+touch $SCHEMA_ROOT/spool/pdfbox2.brr
+chmod u=rw,g=w,o= $SCHEMA_ROOT/spool/pdfbox2.brr
+
+PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
+
+export BLOBIO_SERVICE=${BLOBIO_SERVICE:=localhost:1797}
+export BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=sha}
