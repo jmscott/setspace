@@ -1,0 +1,167 @@
+#
+#  Synopsis:
+#	Populate a PostgreSQL schema with utf8 text searchable blobs
+#  See:
+#	schema.sql
+#
+
+boot
+{
+	brr_capacity = 16;
+	flow_worker_count = 8;
+	os_exec_worker_count = 4;
+	os_exec_capacity = 4;
+
+	xdr_roll_duration = "24h";
+	fdr_roll_duration = "24h";
+	qdr_roll_duration = "24h";
+
+	heartbeat_duration = "10s";
+}
+
+sql database setspace
+{
+	driver_name = "postgres";
+	data_source_name = "sslmode=disable";
+	max_idle_conns = 0;
+	max_open_conns = 8;
+}
+
+tail brr
+{
+	path = "spool/pdfbox2.brr";
+}
+
+command brr_on_network
+{
+	path = "true";
+}
+
+call brr_on_network()
+  when
+  (
+        (
+		brr.verb == "put"
+		or
+		brr.verb == "get"
+		or
+		brr.verb == "eat"
+		or
+		brr.verb == "wrap"
+		or
+		brr.verb == "roll"
+	)
+	and
+	brr.chat_history == "ok"
+  ) or (
+	brr.verb == "give"
+	and
+	brr.chat_history == "ok,ok"
+  )
+;
+
+sql query in_service_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	setspace.service
+	    WHERE
+	    	blob = $1::udig
+	);
+	`;
+
+	result row is (
+		answer bool
+	);
+
+	database is setspace;
+}
+
+query in_service_table(brr.udig)
+  when
+  	brr_on_network.exit_status == 0
+;
+
+sql query in_tsv_utf8_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	pgtexts.tsv_utf8
+	    WHERE
+	    	blob = $1::udig
+	);
+	`;
+
+	result row is (
+		answer bool
+	);
+
+	database is setspace;
+}
+
+query in_tsv_utf8_table(brr.udig)
+  when
+  	in_service_table.answer == true
+;
+
+sql query in_merge_tsv_utf8_pending_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	pgtexts.merge_tsv_utf8_pending
+	    WHERE
+		blob = $1::udig
+	  )
+	;
+	`;
+
+	result row is (
+		answer bool
+	);
+
+	database is setspace;
+}
+
+query in_merge_tsv_utf8_pending_table(brr.udig)
+  when
+  	in_tsv_utf8_table.answer == false
+;
+
+sql query merge_tsv_utf8_pending row
+{
+	statement = `
+
+	INSERT INTO
+	  pgtexts.merge_tsv_utf8_pending(
+		blob
+	  ) VALUES(
+	  	$1::udig
+ 	  )  ON CONFLICT
+	  	DO NOTHING
+	  RETURNING
+	  	true
+	`;
+
+	result row is (
+		inserted bool
+	);
+
+	database is setspace;
+}
+
+query merge_tsv_utf8_pending(brr.udig)
+  when
+  	in_merge_tsv_utf8_pending_table.answer == false
+;

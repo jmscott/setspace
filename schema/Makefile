@@ -17,6 +17,7 @@ all:
 	cd expat2 && $(MAKE) all
 	cd libxml2 && $(MAKE) all
 	cd pdfbox2 && $(MAKE) all
+	cd pgtexts && $(MAKE) all
 
 clean:
 	cd setspace && $(MAKE) clean
@@ -25,6 +26,7 @@ clean:
 	cd expat2 && $(MAKE) clean
 	cd libxml2 && $(MAKE) clean
 	cd pdfbox2 && $(MAKE) clean
+	cd pgtexts && $(MAKE) clean
 
 install:
 	cd setspace && $(MAKE) install
@@ -34,6 +36,7 @@ install:
 	cd libxml2 && $(MAKE) install
 	cd prefixio && $(MAKE) install
 	cd pdfbox2 && $(MAKE) install
+	cd pgtexts && $(MAKE) install
 
 distclean:
 	cd setspace && $(MAKE) distclean
@@ -43,3 +46,4 @@ distclean:
 	cd libxml2 && $(MAKE) distclean
 	cd prefixio && $(MAKE) distclean
 	cd pdfbox2 && $(MAKE) distclean
+	cd pgtexts && $(MAKE) distclean

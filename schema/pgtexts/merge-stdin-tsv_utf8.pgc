@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *  	Merge an UTF8 blob read on standard input into table pdfbox2.tsv_utf8
+ *  	Merge an UTF8 blob read on standard input into table pgtext2.tsv_utf8
  *  Usage:
  *	merge-stdin-tsv_utf8 
  *  Arguments:
@@ -99,11 +99,11 @@ EXEC SQL END DECLARE SECTION;
 	exec sql connect to default;
 
 	/*
-	 *  Merge blob into pdfbox2.tsv_doc table.
+	 *  Merge blob into pgtexts.tsv_utf8 table.
 	 */
 	exec sql BEGIN TRANSACTION;
 	exec sql
-	  INSERT INTO pdfbox2.tsv_utf8(
+	  INSERT INTO pgtexts.tsv_utf8(
 		blob,
 		ts_conf,
 		doc
