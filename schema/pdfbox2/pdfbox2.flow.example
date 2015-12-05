@@ -133,7 +133,7 @@ sql query in_pddocument_pending_table row
 	    FROM
 	    	pdfbox2.pddocument_pending
 	    WHERE
-		    	blob = $1::udig
+		blob = $1::udig
 	  )
 	;
 	`;
