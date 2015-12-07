@@ -46,13 +46,13 @@ env | grep '^PG' | while read E;  do
 	log $E
 done
 
-log 'extracting blobs in pdfbox2.pddocument_active_job'
+log 'extracting blobs in pdfbox2.pddocument_pending'
 psql --var OUT=JOB_UDIG.out --quiet --tuples-only --no-align --no-psqlrc <<END
 \\o :OUT
 select
 	blob
   from 
-  	pdfbox2.pddocument_active_job
+  	pdfbox2.pddocument_pending
 END
 
 SQL=lib/merge-json-pddocument.sql
