@@ -78,7 +78,6 @@ sql query in_service_table row
 		answer bool
 	);
 
-	database is setspace;
 }
 
 query in_service_table(brr.udig)
@@ -104,7 +103,6 @@ sql query in_tsv_utf8_table row
 		answer bool
 	);
 
-	database is setspace;
 }
 
 query in_tsv_utf8_table(brr.udig)
@@ -131,7 +129,6 @@ sql query in_merge_tsv_utf8_pending_table row
 		answer bool
 	);
 
-	database is setspace;
 }
 
 query in_merge_tsv_utf8_pending_table(brr.udig)
@@ -157,8 +154,6 @@ sql query merge_tsv_utf8_pending row
 	result row is (
 		inserted bool
 	);
-
-	database is setspace;
 }
 
 query merge_tsv_utf8_pending(brr.udig)

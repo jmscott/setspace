@@ -60,7 +60,6 @@ sql query in_xmllint_table row
 		answer bool,
 		is_xml bool
 	);
-	database is setspace;
 }
 
 sql query in_is_pg_well_formed_table row
@@ -88,7 +87,6 @@ sql query in_is_pg_well_formed_table row
 		answer bool,
 		is_xml bool
 	);
-	database is setspace;
 }
 
 command brr_has_size
@@ -133,7 +131,6 @@ sql query in_service_table row
 		answer bool
 	);
 
-	database is setspace;
 }
 
 query in_service_table(brr.udig)
@@ -190,7 +187,6 @@ sql query merge_xmllint row
 	result row is (
 		is_xml bool
 	);
-	database is setspace;
 }
 
 query merge_xmllint (brr.udig, get_xmllint.exit_status)
@@ -262,7 +258,6 @@ sql query merge_is_pg_well_formed row
 	result row is (
 		is_xml bool
 	);
-	database is setspace;
 }
 
 query merge_is_pg_well_formed (brr.udig, get_is_pg_well_formed.exit_status)
@@ -290,7 +285,6 @@ sql query in_xml_doc_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_xml_doc_table(brr.udig)

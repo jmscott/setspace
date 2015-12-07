@@ -58,7 +58,6 @@ sql query is_in_service_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 ####  BEGIN BRR COMAND/QUERIES
@@ -107,7 +106,6 @@ sql query in_is_brr_log_table row
 		answer bool,
 		is_brr bool
 	);
-	database is setspace;
 }
 
 #
@@ -138,7 +136,6 @@ sql query merge_is_brr_log row
 	result row is (
 		is_brr bool
 	);
-	database is setspace;
 }
 
 sql query has_brr_chars row
@@ -238,7 +235,6 @@ sql query has_brr_chars row
 	result row is (
 		answer	bool
 	);
-	database is setspace;
 }
 
 query is_in_service_table(biod.udig);
@@ -277,7 +273,6 @@ sql query in_brr_log_total_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_brr_log_total_table(biod.udig)
@@ -319,7 +314,6 @@ sql query in_brr_log_time_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_brr_log_time_table(biod.udig)
@@ -394,7 +388,6 @@ sql query in_is_fdr_log_table row
 		answer bool,
 		is_fdr bool
 	);
-	database is setspace;
 }
 
 #
@@ -421,7 +414,6 @@ sql query merge_is_fdr_log row
 	;
 	
 	`;
-	database is setspace;
 	result row is (
 		is_fdr bool
 	);
@@ -462,7 +454,6 @@ sql query in_fdr_log_total_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_fdr_log_total_table(biod.udig)
@@ -504,7 +495,6 @@ sql query in_fdr_log_time_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_fdr_log_time_table(biod.udig)
@@ -546,7 +536,6 @@ sql query in_fdr_log_sequence_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_fdr_log_sequence_table(biod.udig)
@@ -619,7 +608,6 @@ sql query in_is_qdr_log_table row
 		answer bool,
 		is_qdr bool
 	);
-	database is setspace;
 }
 
 sql query merge_is_qdr_log row
@@ -643,7 +631,6 @@ sql query merge_is_qdr_log row
 	;
 	
 	`;
-	database is setspace;
 	result row is (
 		is_qdr bool
 	);
@@ -686,7 +673,6 @@ sql query in_qdr_log_total_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_qdr_log_total_table(biod.udig)
@@ -728,7 +714,6 @@ sql query in_qdr_log_time_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_qdr_log_time_table(biod.udig)
@@ -770,7 +755,6 @@ sql query in_qdr_log_flow_sequence_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_qdr_log_flow_sequence_table(biod.udig)
@@ -812,7 +796,6 @@ sql query in_qdr_log_query_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_qdr_log_query_table(biod.udig)
@@ -885,7 +868,6 @@ sql query in_is_xdr_log_table row
 		answer bool,
 		is_xdr bool
 	);
-	database is setspace;
 }
 
 #
@@ -915,7 +897,6 @@ sql query merge_is_xdr_log row
 	result row is (
 		is_xdr	bool
 	);
-	database is setspace;
 }
 
 query in_is_xdr_log_table(biod.udig)
@@ -954,7 +935,6 @@ sql query in_xdr_log_total_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_xdr_log_total_table(biod.udig)
@@ -996,7 +976,6 @@ sql query in_xdr_log_time_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_xdr_log_time_table(biod.udig)
@@ -1038,7 +1017,6 @@ sql query in_xdr_log_flow_sequence_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_xdr_log_flow_sequence_table(biod.udig)
@@ -1080,7 +1058,6 @@ sql query in_xdr_log_query_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_xdr_log_query_table(biod.udig)

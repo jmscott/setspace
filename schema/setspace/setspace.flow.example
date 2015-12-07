@@ -53,7 +53,6 @@ sql database setspace
 #
 sql query in_service_table row
 {
-	database is setspace;
 
 	result row is (
 		answer bool
@@ -85,7 +84,6 @@ command brr_off_network
 
 sql exec merge_service
 {
-	database is setspace;
 
 	statement = `
 
@@ -170,7 +168,6 @@ sql exec delete_blob
 	
 	`;
 
-	database is setspace;
 }
 
 call is_zombie_alive(brr.udig)
@@ -217,7 +214,6 @@ call service_exists(brr.udig)
 #
 sql query in_byte_count_table row
 {
-	database is setspace;
 
 	result row is (
 		answer bool
@@ -258,7 +254,6 @@ call merge_byte_count(brr.udig)
 
 sql query in_byte_bitmap_table row
 {
-	database is setspace;
 
 	result row is (
 		answer bool
@@ -314,7 +309,6 @@ call byte_bitmap_exists()
 #
 sql query in_is_utf8wf_table row
 {
-	database is setspace;
 
 	result row is (
 		answer	bool,
@@ -382,7 +376,6 @@ sql query merge_is_utf8wf row
 		is_utf8 bool
 	);
 
-	database is setspace;
 }
 
 query in_is_utf8wf_table(brr.udig);
@@ -414,7 +407,6 @@ sql query has_char_0xff row {
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query has_char_0xff(brr.udig)
@@ -443,7 +435,6 @@ sql exec merge_is_utf8wf_not
 		DO NOTHING
 	`;
 
-	database is setspace;
 }
 
 #  blob not utf8 when 0xff char exists
@@ -475,7 +466,6 @@ query merge_is_utf8wf(brr.udig, get_is_utf8wf.exit_status)
 #
 sql query in_byte_prefix_32_table row
 {
-	database is setspace;
 
 	result row is (
 		answer bool
@@ -606,7 +596,6 @@ sql query is_printable_unix row
 		answer bool
 	);
 
-	database is setspace;
 }
 
 #  Note: unfortunatly attributes and global names share a name space! 
@@ -704,7 +693,6 @@ sql query is_drblob row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query is_drblob(brr.udig)
@@ -752,8 +740,6 @@ sql query in_new_line_count_table row
 	result row is (
 		answer bool
 	);
-
-	database is setspace;
 }
 
 query in_new_line_count_table(brr.udig)
@@ -781,8 +767,6 @@ call merge_new_line_count(brr.udig)
 #
 sql query in_is_udigish_table row
 {
-	database is setspace;
-
 	result row is (
 		answer	bool,
 		udigish	bool
@@ -832,7 +816,6 @@ sql exec merge_is_udigish
 
 	`;
 	
-	database is setspace;
 }
 
 #  check that a known utf8 blob is also in is_udigish
@@ -888,7 +871,6 @@ query merge_is_udigish(brr.udig, get_is_udigish.exit_status)
 #
 sql query in_has_byte_json_bracket_table row
 {
-	database is setspace;
 
 	result row is (
 		answer	bool,
@@ -944,7 +926,6 @@ sql query merge_has_byte_json_bracket row
 		has_bracket bool
 	);
 	
-	database is setspace;
 }
 
 #  check that a known utf8 blob is also in has_byte_json_bracket
@@ -1038,7 +1019,6 @@ call append_prefixio_brr(
 #
 sql query in_has_byte_xml_bracket_table row
 {
-	database is setspace;
 
 	result row is (
 		answer	bool,
@@ -1093,8 +1073,6 @@ sql query merge_has_byte_xml_bracket row
 	result row is (
 		has_bracket bool
 	);
-	
-	database is setspace;
 }
 
 #  check that a known utf8 blob is also in has_byte_xml_bracket

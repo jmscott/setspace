@@ -78,8 +78,6 @@ sql query prefix_is_percentPDF row
 	result row is (
 		answer bool
 	);
-
-	database is setspace;
 }
 
 query prefix_is_percentPDF(brr.udig);

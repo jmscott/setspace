@@ -64,7 +64,6 @@ sql query is_in_checker_255_table row
 		answer bool,
 		is_json bool
 	);
-	database is setspace;
 }
 
 command brr_has_size
@@ -137,7 +136,6 @@ sql query merge_checker_255 row
 	result row is (
 		is_json bool
 	);
-	database is setspace;
 }
 
 query merge_checker_255 (brr.udig, get_JSON_checker.exit_status)
@@ -163,7 +161,6 @@ sql query in_jsonb_255_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_jsonb_255_table(brr.udig)

@@ -77,8 +77,6 @@ sql query in_service_table row
 	result row is (
 		answer bool
 	);
-
-	database is setspace;
 }
 
 query in_service_table(brr.udig)
@@ -115,7 +113,6 @@ sql query in_pddocument_table row
 		is_pdf bool
 	);
 
-	database is setspace;
 }
 
 query in_pddocument_table(brr.udig)
@@ -142,7 +139,6 @@ sql query in_pddocument_pending_table row
 		answer bool
 	);
 
-	database is setspace;
 }
 
 query in_pddocument_pending_table(brr.udig)
@@ -169,7 +165,6 @@ sql query merge_pddocument_pending row
 		inserted bool
 	);
 
-	database is setspace;
 }
 
 query merge_pddocument_pending(brr.udig)
@@ -217,7 +212,6 @@ sql query in_extract_utf8_table row
 	result row is (
 		answer bool
 	);
-	database is setspace;
 }
 
 query in_extract_utf8_table(brr.udig)
@@ -243,8 +237,6 @@ sql query merge_extract_utf8_pending row
 	result row is (
 		inserted bool
 	);
-
-	database is setspace;
 }
 
 query merge_extract_utf8_pending(brr.udig)

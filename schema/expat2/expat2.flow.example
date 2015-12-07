@@ -57,7 +57,6 @@ sql query in_is_xmlwf_table row
 		answer bool,
 		is_xml bool
 	);
-	database is setspace;
 }
 
 query in_is_xmlwf_table(brr.udig);
@@ -98,8 +97,6 @@ sql query merge_is_xmlwf row
 	result row is (
 		is_xml bool
 	);
-
-	database is setspace;
 }
 
 query merge_is_xmlwf(brr.udig, get_is_xmlwf.exit_status)
