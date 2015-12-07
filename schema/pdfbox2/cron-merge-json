@@ -47,7 +47,7 @@ env | grep '^PG' | while read E;  do
 done
 
 log 'extracting blobs in pdfbox2.pddocument_pending'
-psql --var OUT=JOB_UDIG.out --quiet --tuples-only --no-align --no-psqlrc <<END
+psql --var OUT=$JOB_UDIG --quiet --tuples-only --no-align --no-psqlrc <<END
 \\o :OUT
 select
 	blob
