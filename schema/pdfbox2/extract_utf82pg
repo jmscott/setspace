@@ -3,7 +3,7 @@
 #  Synopsis:
 #	Extract UTF8 text from proven PDF and store results in json blob.
 #  Usage:
-#	json-extract_utf8 <udig>
+#	extract_utf82pg <udig>
 #  Exit Status:
 #	0	extracted utf8 text and stored json blob
 #	1	pdf failed to load
