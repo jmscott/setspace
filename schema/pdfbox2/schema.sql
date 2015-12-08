@@ -138,13 +138,13 @@ CREATE TABLE pdfbox2.extract_utf8
 	--  no quines
 	CONSTRAINT stderr_not_blob CHECK (
 		blob != stderr_blob
-	),
-
-	UNIQUE (blob, utf8_blob)
+	)
 );
 COMMENT ON TABLE pdfbox2.extract_utf8 IS
   'Blob of UTF8 Text extracted from pdf'
 ;
+
+CREATE INDEX extract_utf8_blob on extract_utf8(utf8_blob);
 
 /*
  *  Pending extract_utf8 jobs.
