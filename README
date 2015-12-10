@@ -14,8 +14,11 @@ Blame:
   	jmscott@setspace.com
   	setspace@gmail.com
 To Do:
+	--  Requiring PostgreSQL logical replication implies we may not be
+	    able to populate other databases.
+
 	--  think about a custom base32 encoding, taking ideas from these
-	    souces:
+	    sources:
 
 	      http://philzimmermann.com/docs/human-oriented-base-32-encoding.txt
 	      https://en.wikipedia.org/wiki/Luhn_algorithm
