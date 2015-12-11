@@ -84,6 +84,34 @@ query in_service_table(brr.udig)
   	brr_on_network.exit_status == 0
 ;
 
+#
+#  Note:
+#	We need to differentiate possible PDF blobs from json blobs,
+#	hence this query.  Eventually having two tail{} in same flow
+#	file will elminate need for these redundant queries.
+#
+sql query prefix_is_percentPDF row
+{
+	statement = `
+
+	SELECT
+		substring(prefix, 1, 4) = '\x25504446'	-- %PDF
+	  from
+	  	setspace.byte_prefix_32
+	  where
+	  	blob = $1::udig
+	`;
+
+	result row is (
+		answer bool
+	);
+}
+
+query prefix_is_percentPDF(brr.udig)
+  when
+  	in_service_table.answer == true
+;
+
 sql query in_pddocument_table row
 {
 	statement = `
@@ -117,7 +145,7 @@ sql query in_pddocument_table row
 
 query in_pddocument_table(brr.udig)
   when
-  	in_service_table.answer == true
+  	prefix_is_percentPDF.answer == true
 ;
 
 sql query in_pddocument_pending_table row
