@@ -20,6 +20,9 @@
 #	BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=sha}
 #	BLOBIO_SERVICE=${BLOBIO_SERVICE:=localhost:1797}
 #	PDFBOX2_JAR
+#  Note:
+#	I have seen extract_utg8_pending inserted but not cleared.
+#	May have a race condition.
 #
 
 PROG=extract_utf82pg

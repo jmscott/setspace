@@ -38,6 +38,11 @@ die()
 	exit $STATUS
 }
 
+ERROR()
+{
+	echo "$PROG: ERROR: $@" >&2
+}
+
 test $# = 1 || die 'wrong number of arguments' 3
 UDIG=$1
 
@@ -73,7 +78,6 @@ case $EXIT_STATUS in
 	;;
 1)
 	#  pdf load failed.
-
 	NUMBER_OF_PAGES=null
 	DOCUMENT_ID=null
 	VERSION=null
@@ -81,12 +85,39 @@ case $EXIT_STATUS in
 	IS_ENCRYPTED=null
 	;;
 *)
-	test -s $TMP_ERR && echo "$PROG: ERROR: java stderr: $(cat $TMP_ERR)">&2
+	#  unexpected java fault
+	if [ -s $TMP_ERR ];  then
+		ERROR "java stderr follows"
+		cat $TMP_ERR
+	else
+		ERROR "missing expected stderr from java"
+	fi
 	die "java putPDDocument failed: exit status=$EXIT_STATUS" 5
 	;;
 esac
 
-#  creatw a json record the results of running pddocument
+#  handle reasonable error parsing pdf
+if [ -s $TMP_ERR ];  then
+	ERROR 'java pdf load failed (ok), stderr follows'
+	cat $TMP_ERR
+	D=$(
+		blobio eat						\
+			--algorithm $BLOBIO_ALGORITHM			\
+			--input-path $TMP_ERR
+	)
+	test $? = 0 || die "blobio eat stderr failed: exit status=$?" 4
+	UD=$BLOBIO_ALGORITHM:$D
+	blobio put --udig $UD --input-path $TMP_ERR --service $BLOBIO_SERVICE
+	test $? = 0 || die "blobio put stder failed: exit status=$?" 4
+	STDERR_BLOB="\"$UD\""
+	ERROR "stderr blob: $UD"
+	SQL_STDERR_BLOB="'$UD'"
+else
+	STDERR_BLOB=null
+	SQL_STDERR_BLOB=null
+fi
+
+#  create a json record for the results of running pddocument
 cat >$TMP_JSON <<END || die "cat >json failed: exit status: $?" 6
 {
 	"pdfbox2.setspace.com": {
@@ -97,7 +128,8 @@ cat >$TMP_JSON <<END || die "cat >json failed: exit status: $?" 6
 			"version":		$VERSION,
 			"is_all_security_to_be_removed":
 						$IS_ALL_SECURITY_TO_BE_REMOVED,
-			"is_encrypted":		$IS_ENCRYPTED
+			"is_encrypted":		$IS_ENCRYPTED,
+			"stderr_blob":		$STDERR_BLOB
 		},
 		"date":		"$(date)",
 		"hostname":	"$(hostname)",
@@ -128,15 +160,16 @@ INSERT INTO
 	number_of_pages,
 	version,
 	is_all_security_to_be_removed,
-	is_encrypted
+	is_encrypted,
+	stderr_blob
     ) VALUES (
     	'$UDIG',
 	$EXIT_STATUS,
 	$NUMBER_OF_PAGES,
 	$VERSION,
 	$IS_ALL_SECURITY_TO_BE_REMOVED,
-	$IS_ENCRYPTED
-
+	$IS_ENCRYPTED,
+	$SQL_STDERR_BLOB
     ) ON CONFLICT
     	DO NOTHING
 ;

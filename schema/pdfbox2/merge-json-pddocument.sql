@@ -35,7 +35,8 @@ WITH find_pddocument AS (
 	document_id,
 	version,
 	is_all_security_to_be_removed,
-	is_encrypted
+	is_encrypted,
+	stderr_blob
     FROM
 	find_pddocument,
 	  LATERAL jsonb_to_record(doc) AS j2r(
@@ -45,7 +46,8 @@ WITH find_pddocument AS (
 		document_id bigint,
 		version float,
 		is_all_security_to_be_removed bool,
-		is_encrypted bool
+		is_encrypted bool,
+		stderr_blob udig
 	  )
 )
 SELECT

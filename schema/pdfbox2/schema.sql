@@ -70,6 +70,11 @@ CREATE TABLE pdfbox2.pddocument
 				version > 0
 			),
 
+	--  Record any unexpected stderr produced by blob.
+	--  Helpful for debugging the many quirks in pdfbox2.
+
+	stderr_blob	udig,
+
 	is_all_security_to_be_removed	bool,
 	is_encrypted			bool,
 
