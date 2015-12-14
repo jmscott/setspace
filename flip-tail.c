@@ -36,6 +36,7 @@
  *	9	file fstat() failed
  *	10	file close() failed
  *	11	file fchmod(new) failed
+ *
  *  Blame:
  *  	jmscott@setspace.com
  */
