@@ -12,6 +12,11 @@
 #
 include local.mk
 
+#  Note: need to set UNAME elsewhere, as blobio does.
+ifeq "$(shell uname)" "Linux"
+        RT_LINK=-lrt
+endif
+
 PROG=					\
 	append-brr			\
 	brr-timestamp			\
@@ -81,7 +86,8 @@ endif
 append-brr: append-brr.c common.c
 	cc $(CFLAGS) -o append-brr append-brr.c
 brr-timestamp: brr-timestamp.c common.c macosx.c macosx.h
-	cc $(CFLAGS) -o brr-timestamp brr-timestamp.c macosx.c
+	echo $(UNAME)
+	cc $(CFLAGS) -o brr-timestamp brr-timestamp.c macosx.c $(RT_LINK)
 
 flip-tail: flip-tail.c common.c
 	cc -o flip-tail $(CFLAGS) flip-tail.c
