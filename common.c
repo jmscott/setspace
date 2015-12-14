@@ -17,6 +17,7 @@
  *	Rename common.c to unistd.c?
  */
 #include <unistd.h>
+#include <errno.h>
 #include <strings.h>
 
 #ifndef PIPE_MAX
