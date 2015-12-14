@@ -18,6 +18,7 @@
  */
 #include <unistd.h>
 #include <errno.h>
+#include <string.h>
 #include <strings.h>
 
 #ifndef PIPE_MAX
