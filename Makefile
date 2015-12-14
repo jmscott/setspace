@@ -14,6 +14,7 @@ include local.mk
 
 PROG=					\
 	append-brr			\
+	brr-timestamp			\
 	dec2pgbit			\
 	flip-tail
 
@@ -57,6 +58,7 @@ ifdef SETSPACE_PREFIX
 
 	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		append-brr						\
+		brr-timestamp						\
 		eat-blob						\
 		flip-tail						\
 		$(SETSPACE_PREFIX)/bin
@@ -69,6 +71,7 @@ ifdef SETSPACE_PREFIX
 	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
 		Makefile						\
 		append-brr.c						\
+		brr-timestamp.c						\
 		local-linux.mk.example					\
 		local-macosx.mk.example					\
 		$(SETSPACE_PREFIX)/src
@@ -77,6 +80,8 @@ endif
 
 append-brr: append-brr.c common.c
 	cc $(CFLAGS) -o append-brr append-brr.c
+brr-timestamp: brr-timestamp.c common.c macosx.c macosx.h
+	cc $(CFLAGS) -o brr-timestamp brr-timestamp.c macosx.c
 
 flip-tail: flip-tail.c common.c
 	cc -o flip-tail $(CFLAGS) flip-tail.c
