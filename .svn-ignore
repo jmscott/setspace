@@ -1,5 +1,5 @@
+RFC3339Nano
 append-brr
-brr-timestamp
 dec2pgbit
 flip-tail
 local.mk

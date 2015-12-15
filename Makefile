@@ -19,7 +19,7 @@ endif
 
 PROG=					\
 	append-brr			\
-	brr-timestamp			\
+	RFC3339Nano			\
 	dec2pgbit			\
 	flip-tail
 
@@ -63,7 +63,7 @@ ifdef SETSPACE_PREFIX
 
 	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		append-brr						\
-		brr-timestamp						\
+		RFC3339Nano						\
 		eat-blob						\
 		flip-tail						\
 		$(SETSPACE_PREFIX)/bin
@@ -76,7 +76,7 @@ ifdef SETSPACE_PREFIX
 	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
 		Makefile						\
 		append-brr.c						\
-		brr-timestamp.c						\
+		RFC3339Nano.c						\
 		local-linux.mk.example					\
 		local-macosx.mk.example					\
 		$(SETSPACE_PREFIX)/src
@@ -85,9 +85,9 @@ endif
 
 append-brr: append-brr.c common.c
 	cc $(CFLAGS) -o append-brr append-brr.c
-brr-timestamp: brr-timestamp.c common.c macosx.c macosx.h
+RFC3339Nano: RFC3339Nano.c common.c macosx.c macosx.h
 	echo $(UNAME)
-	cc $(CFLAGS) -o brr-timestamp brr-timestamp.c macosx.c $(RT_LINK)
+	cc $(CFLAGS) -o RFC3339Nano RFC3339Nano.c macosx.c $(RT_LINK)
 
 flip-tail: flip-tail.c common.c
 	cc -o flip-tail $(CFLAGS) flip-tail.c

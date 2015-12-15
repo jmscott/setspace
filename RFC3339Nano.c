@@ -2,9 +2,9 @@
  *  Synopsis:
  *	Write the current time as YYYY-MM-DDThh:mm:ss.ns+00:00 to stdout.
  *  Usage:
- *	NOW=$(brr-timestamp)
+ *	NOW=$(RFC3339Nano)
  *  Exit Status:
- *	0	time
+ *	0	time written
  *	1	bad argument count
  *	2	write to stdout failed
  *	3	failed to aquire current time
@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include "macosx.h"
 
-static char 	*progname = "brr-timestamp";
+static char 	*progname = "RFC3339Nano";
 static char	*RFC3339Nano = "%04d-%02d-%02dT%02d:%02d:%02d.%09ld+00:00\n";
 
 #define EXIT_BAD_ARGC	1
