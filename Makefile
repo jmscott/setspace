@@ -86,7 +86,6 @@ endif
 append-brr: append-brr.c common.c
 	cc $(CFLAGS) -o append-brr append-brr.c
 RFC3339Nano: RFC3339Nano.c common.c macosx.c macosx.h
-	echo $(UNAME)
 	cc $(CFLAGS) -o RFC3339Nano RFC3339Nano.c macosx.c $(RT_LINK)
 
 flip-tail: flip-tail.c common.c
