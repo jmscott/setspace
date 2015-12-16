@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 #  Synopsis:
 #	Append to the pgtexts schema the utf8 blob of a pdf blob
