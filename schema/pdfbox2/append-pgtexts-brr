@@ -1,0 +1,49 @@
+#
+#  Synopsis:
+#	Append to the pgtexts schema the utf8 blob of a pdf blob
+#  Usage:
+#	append-pgtexts-brr <path-to-brr-file> <pdf-udig> 
+#  Exit Status
+#	0	append utf8 text brr record to <path-to-brr-file>
+#	1	no pdf or utf8 tuple in pdfbox2.extract_utf8
+#	2	wrong number of arguments
+#	3	unexpected sql error
+#
+
+PROG=append-pgtexts-brr
+
+die()
+{
+	STATUS=$2
+	echo "$PROG: ERROR: $1" >&2
+	exit $STATUS
+}
+
+test $# = 2 || die 'wrong number of arguments' 2
+BRR_PATH=$1
+PDF_UDIG=$2
+
+TUPLE=$(psql --no-psqlrc --quiet --tuples-only <<END
+\\set ON_ERROR_STOP on
+\\pset tuples_only on
+\\pset format unaligned
+\\pset fieldsep '\\t'
+
+select
+	u8.utf8_blob,
+	bc.byte_count
+  from
+  	pdfbox2.extract_utf8 u8
+	  inner join setspace.byte_count bc on (bc.blob = u8.blob)
+  where
+  	u8.blob = '$PDF_UDIG'
+	and
+	u8.exit_status = 0
+	and
+	u8.utf8_blob is not null
+END
+)
+test $? = 0 || die "psql failed: exit status=$?" 3
+
+read UTF8_UDIG BYTE_COUNT <<<$TUPLE
+test -n "$UTF8_UDIG" || exit 1
