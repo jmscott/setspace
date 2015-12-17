@@ -59,6 +59,7 @@ install: all
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m u=rx		\
 		$(PROGS)						\
+		append-pgtexts-brr					\
 		cron-merge-json						\
 		extract_utf82pg						\
 		pddocument2pg						\
