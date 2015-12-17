@@ -3,12 +3,12 @@
 #  Synopsis:
 #	Merge any stale json pdfbox2 tuples into pdfbox2 tables
 #  Usage:
-#	PDFBOX2_ROOT=/
-#	* * * * * sbin/cron-merge-json >>cron-merge-json.log '-1 Hour' 2>&1
+#	PDFBOX2_ROOT=/usr/local/setspace/schema/pdfbox2
+#
+#	* * * * * sbin/cron-merge-json '-1 Hour' >>log/cron-merge-json.log 2>&1
 #
 
 PROG=cron-merge-json
-JOB_UDIG=${TMPDIR:=/tmp}/$PROG-job-$$.udig
 
 log()
 {
@@ -23,7 +23,6 @@ die()
 
 leave()
 {
-	rm -f $JOB_UDIG
 	log 'good bye, cruel world'
 }
 
@@ -32,7 +31,7 @@ log 'hello, world'
 
 test $# = 1 || die 'wrong number of arguments'
 SINCE=$1
-log "syncing since $SINCE"
+log "since: $SINCE"
 
 test -n "$PDFBOX2_ROOT" || die 'environment variable not defined PDFBOX2_ROOT'
 log "PDFBOX2_ROOT=$PDFBOX2_ROOT"
@@ -45,15 +44,6 @@ log 'dumping PG variables ...'
 env | grep '^PG' | while read E;  do
 	log $E
 done
-
-log 'extracting blobs in pdfbox2.pddocument_pending'
-psql --var OUT=$JOB_UDIG --quiet --tuples-only --no-align --no-psqlrc <<END
-\\o :OUT
-select
-	blob
-  from 
-  	pdfbox2.pddocument_pending
-END
 
 SQL=lib/merge-json-pddocument.sql
 log "invoking sql merge script: $SQL"
