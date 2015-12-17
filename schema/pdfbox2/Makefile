@@ -55,12 +55,14 @@ install: all
 		pdfbox2.flow.example					\
 		profile.example						\
 		schema.sql						\
+		unmerged-tsv-utf8.sql					\
 		$(PDFBOX2_PREFIX)/lib
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m u=rx		\
 		$(PROGS)						\
 		append-pgtexts-brr					\
 		cron-merge-json						\
+		cron-append-pgtexts-brr					\
 		extract_utf82pg						\
 		pddocument2pg						\
 		$(PDFBOX2_PREFIX)/sbin

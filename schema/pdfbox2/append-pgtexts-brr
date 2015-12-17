@@ -52,7 +52,6 @@ test $? = 0 || die "psql failed: exit status=$?" 3
 read UTF8_UDIG BYTE_COUNT <<<$TUPLE
 test -n "$UTF8_UDIG" -a -n "$BYTE_COUNT" || exit 1
 
-set -x
 append-brr $BRR_PATH							\
 	$(RFC3339Nano)							\
 	'fs~schema=pdfbox2'						\
@@ -61,4 +60,4 @@ append-brr $BRR_PATH							\
 	ok								\
 	$BYTE_COUNT							\
 	0.000000000
-test $? = 0 || die "append-brr failed: exit code=$?" 4
+test $? = 0 || die "append-brr failed: exit status=$?" 4
