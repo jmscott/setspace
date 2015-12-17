@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Extract UTF8 text from proven PDF and store results in json blob.
+#	Extract UTF8 text from PDF, store results in json blob and pg database.
 #  Usage:
 #	extract_utf82pg <udig>
 #  Exit Status:
@@ -87,7 +87,7 @@ put_file()
 	echo '"'$FILE_UDIG'"'
 }
 
-#  execute the java extract.
+#  execute the java extract, faulting if exit_code > 1
 
 java -jar $PDFBOX2_JAR ExtractText $TMP_BLOB $TMP_UTF8 2>$TMP_ERR
 EXIT_STATUS=$?
@@ -97,6 +97,7 @@ test $EXIT_STATUS = 0 -o $EXIT_STATUS = 1 ||
 UTF8_BLOB=$(put_file $TMP_UTF8)
 test $? = 0 || exit 5
 
+# Note: a fault here orphans the TMP_UTF8 blob.
 STDERR_BLOB=$(put_file $TMP_ERR)
 test $? = 0 || exit 5
 
