@@ -10,7 +10,6 @@
  *	3	failed to aquire current time
  */
 #include <time.h>
-#include <unistd.h>
 #include <stdio.h>
 #include "macosx.h"
 
@@ -30,6 +29,7 @@ main(int argc, char **argv)
 	char tstamp[512];
 	struct timespec	now;
 	struct tm *t;
+	int nwrite;
 
 	if (argc != 1)
 		die(EXIT_BAD_ARGC, "wrong number arguments");
@@ -43,7 +43,7 @@ main(int argc, char **argv)
 	/*
 	 *  Format the record buffer.
 	 */
-	snprintf(tstamp, sizeof tstamp, RFC3339Nano,
+	nwrite = snprintf(tstamp, sizeof tstamp, RFC3339Nano,
 		t->tm_year + 1900,
 		t->tm_mon + 1,
 		t->tm_mday,
@@ -52,6 +52,6 @@ main(int argc, char **argv)
 		t->tm_sec,
 		now.tv_nsec
 	);
-	_write(1, tstamp, strlen(tstamp));
+	_write(1, tstamp, nwrite);
 	_exit(0);
 }
