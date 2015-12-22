@@ -55,7 +55,7 @@ install: all
 		pdfbox2.flow.example					\
 		profile.example						\
 		schema.sql						\
-		unmerged-tsv-utf8.sql					\
+		unmerged-tsv_utf8.sql					\
 		$(PDFBOX2_PREFIX)/lib
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m u=rx		\
