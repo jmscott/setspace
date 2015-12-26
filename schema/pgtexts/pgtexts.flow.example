@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Populate a PostgreSQL schema with utf8 text searchable blobs
+#	Populate a PostgreSQL schema with text searchable blobs
 #  See:
 #	schema.sql
 #
