@@ -10,7 +10,7 @@
 DROP SCHEMA IF EXISTS pgtexts CASCADE;
 CREATE SCHEMA pgtexts;
 COMMENT ON SCHEMA pgtexts IS
-  'Text Search indexes for utf8 blobs'
+  'Text Search on utf8 blobs'
 ;
 
 /*
