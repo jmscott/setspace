@@ -281,3 +281,13 @@ call extract_utf82pg(brr.udig)
   when
   	merge_extract_utf8_pending.inserted == true
 ;
+
+command append_pgtexts_brr
+{
+	path = "sbin/append-pgtexts-brr";
+}
+
+call append_pgtexts_brr(brr.udig)
+  when
+  	extract_utf82pg.exit_status == 0
+;
