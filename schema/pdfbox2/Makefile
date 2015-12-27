@@ -7,7 +7,7 @@
 include ../schema.mk
 include ../../local.mk
 
-CLASSPATH:=.:/usr/local/lib/pdfbox-app-2.jar
+CLASSPATH:=$(PDFBOX2_ROOT)/lib/pdfbox-app-2.jar
 JCOMPILED=								\
 	putPDDocument.class
 
