@@ -20,3 +20,7 @@ export PGUSER=postgres
 export PGDATABASE=setspace
 
 PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:/usr/local/bin:/usr/bin:/bin:$PATH
+
+#  mostly for development environments rooted in $HOME/opt/setspace
+export HISTFILE=$SETSPACE_ROOT/.bash_history
+export HISTSIZE=5000
