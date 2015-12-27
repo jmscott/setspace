@@ -20,8 +20,3 @@ export PGUSER=postgres
 export PGDATABASE=setspace
 
 PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:/usr/local/bin:/usr/bin:/bin:$PATH
-
-#
-#  For the comm program used by blob2db.
-#
-export LANG=en_US.UTF-8
