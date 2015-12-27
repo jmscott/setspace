@@ -31,23 +31,21 @@ clean:
 	cd schema;  $(MAKE) clean
 
 install: all
-
-ifdef SETSPACE_PREFIX
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/bin
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/spool
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/sbin
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/schema
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/lib
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/etc
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/src
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		boot-flowd						\
 		cron-pg_dump-mutable					\
 		cron-reboot						\
@@ -61,19 +59,19 @@ ifdef SETSPACE_PREFIX
 		tail-flowd						\
 		$(SETSPACE_PREFIX)/sbin
 
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		append-brr						\
 		RFC3339Nano						\
 		eat-blob						\
 		flip-tail						\
 		$(SETSPACE_PREFIX)/bin
 
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		profile.example						\
 		crontab.conf.example					\
 		$(SETSPACE_PREFIX)/lib
 
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
 		Makefile						\
 		append-brr.c						\
 		RFC3339Nano.c						\
@@ -81,10 +79,10 @@ ifdef SETSPACE_PREFIX
 		local-macosx.mk.example					\
 		$(SETSPACE_PREFIX)/src
 	cd schema && make install
-endif
 
 append-brr: append-brr.c common.c
 	cc $(CFLAGS) -o append-brr append-brr.c
+
 RFC3339Nano: RFC3339Nano.c common.c macosx.c macosx.h
 	cc $(CFLAGS) -o RFC3339Nano RFC3339Nano.c macosx.c $(RT_LINK)
 
@@ -98,7 +96,7 @@ distclean:
 #ifdef SETSPACE_PREFIX
 	cd schema && make distclean
 	rm -rf $(SETSPACE_PREFIX)/bin
-	rm -rf $(SETSPACE_PREFIX)/lib
+	rm -rf $(SETSPACE_PREFIX)/sbin
 	rm -rf $(SETSPACE_PREFIX)/lib
 	rm -rf $(SETSPACE_PREFIX)/src
 	rm -rf $(SETSPACE_PREFIX)/sbin

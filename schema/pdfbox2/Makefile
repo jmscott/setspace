@@ -7,7 +7,6 @@
 include ../schema.mk
 include ../../local.mk
 
-CLASSPATH:=$(PDFBOX2_ROOT)/lib/pdfbox-app-2.jar
 JCOMPILED=								\
 	putPDDocument.class
 
@@ -24,7 +23,7 @@ dev-links:
 	test -e run || ln -s . run
 
 putPDDocument.class:  putPDDocument.java
-	javac -cp $(CLASSPATH) putPDDocument.java
+	javac -cp $(PDFBOX_APP2_JAR) putPDDocument.java
 
 install: all
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\

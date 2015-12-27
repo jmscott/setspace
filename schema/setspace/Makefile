@@ -32,23 +32,23 @@ clean:
 
 install: all
 ifdef SETSPACE_SCHEMA_PREFIX
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_SCHEMA_PREFIX)
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_SCHEMA_PREFIX)/spool
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_SCHEMA_PREFIX)/run
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_SCHEMA_PREFIX)/sbin
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_SCHEMA_PREFIX)/lib
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_SCHEMA_PREFIX)/log
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_SCHEMA_PREFIX)/etc
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_SCHEMA_PREFIX)/src
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		byte-bitmap						\
 		byte-count						\
 		byte-prefix-32						\
@@ -66,7 +66,7 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		service-xor						\
 		$(SETSPACE_SCHEMA_PREFIX)/sbin
 
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		profile.example						\
 		rummy-week.sql						\
 		rummy.sql						\
@@ -74,7 +74,7 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		setspace.flow.example					\
 		$(SETSPACE_SCHEMA_PREFIX)/lib
 
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
 		byte-bitmap.c						\
 		byte-count.c						\
 		is-byte-hex-40.c					\

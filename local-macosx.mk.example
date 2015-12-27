@@ -1,38 +1,32 @@
 #
 #  Synopsis:
-#	Makefile Template for typical Mac OSX >= 10.6
+#	Makefile template for typical Mac OSX >= 10.6 development environment
 #  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
-#  Note:
-#	The execution PATH must include the PostgreSQL C precompile 'ecpg'
-#	for schema/drblob.  See schema/drblob/Makefile.
+#	https://github.com/jmscott
 #
 
 ########################  BEGIN SECTION OF VARIABLES TO CHANGE
 
-#  during development change to dir in $HOME, like $(HOME)/opt/setspace
-SETSPACE_PREFIX=/usr/local/setspace
+#  in dev environment overide to $(HOME)/local or $(HOME)/opt
+INSTALL_PREFIX=/usr/local
 
-#  in development, set to your user/group id
-SETSPACE_USER=setspace
-SETSPACE_GROUP=staff
+SETSPACE_PREFIX:=$(INSTALL_PREFIX)/setspace
+SETSPACE_USER:=$(USER)
+SETSPACE_GROUP:=staff
 
-SETSPACE_HTTPD_PREFIX=$(SETSPACE_PREFIX)/http
-SETSPACE_HTTPD_CGI_MODE=u=rx,go=
-
-#  strict compilation of C code
-CFLAGS=-Wall -Wextra -Werror
-
-#  where are postgres includes & libraries?
-PGHOME=/usr/local/pgsql
+#  where are postgres 9.5+ includes & libraries?
+PGHOME:=$(INSTALL_PREFIX)/psql
 PGINC=$(PGHOME)/include
 PGLIB=$(PGHOME)/lib
 
-#
-#  We need gnu install.
-#  On MAC OS X may need to set to ginstall from fink package manager.
-#
-INSTALL=ginstall
+#  The execution PATH must include the PostgreSQL C precompiler 'ecpg'.
+PATH:=$(PGHOME)/bin:$(PATH)
+
+# location of pdfbox jar file, version 2
+PDFBOX2_JAR:=$(INSTALL_PREFIX)/pdfbox2/lib/pdfbox-app-2.jar
+
+#  strict compilation of C code.
+#  Note: best not to change under gnu or clang compilers.
+CFLAGS=-Wall -Wextra -Werror
 
 ########################  END SECTION OF VARIABLES TO CHANGE

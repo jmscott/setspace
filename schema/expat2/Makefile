@@ -27,26 +27,26 @@ flatx: flatx.c
 	$(CC) -o flatx $(CFLAGS) flatx.c -lexpat
 
 install:
-	$(INSTALL) -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(EXPAT2_PREFIX)
-	$(INSTALL) -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 		\
+	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 		\
 				-d $(EXPAT2_PREFIX)/etc
-	$(INSTALL) -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m u=wrx,go=	\
+	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m u=wrx,go=	\
 				-d $(EXPAT2_PREFIX)/sbin
-	$(INSTALL) -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 		\
+	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 		\
 				-d $(EXPAT2_PREFIX)/lib
-	$(INSTALL) -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 		\
+	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 		\
 				-d $(EXPAT2_PREFIX)/log
-	$(INSTALL) -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 		\
+	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 		\
 				-d $(EXPAT2_PREFIX)/run
-	$(INSTALL) -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 		\
+	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 		\
 				-d $(EXPAT2_PREFIX)/spool
-	$(INSTALL) -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 		\
+	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 		\
 				-d $(EXPAT2_PREFIX)/tmp
-	$(INSTALL) -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m u=rx,go=	\
+	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m u=rx,go=	\
 		$(PROGS) 						\
 		$(EXPAT2_PREFIX)/sbin
-	$(INSTALL) -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m a=r	\
+	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m a=r	\
 		expat2.flow.example					\
 		profile.example						\
 		schema.sql						\

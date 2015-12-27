@@ -1,19 +1,6 @@
 #
 #  Synopsis:
 #	Example of a GNU Makefile template for typical Linux 2.6 distro.
-#  Description:
-#	Defining SETSPACE_PREFIX will install both the binaries and libraries
-#	of both the client and server subsystems into $SETSPACE_PREFIX.
-#	
-#	In particular, examine the variables:
-#	
-#		INSTALL:		Requires GNU compatible install. 
-#		SETSPACE_PREFIX:	Where to install setspace
-#		SETSPACE_USER:		User id of installed code
-#		SETSPACE_GROUP:		Group id of installed code
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
 #  Note:
 #	The execution PATH must include the PostgreSQL C precompile 'ecpg'
 #	for schema/drblob.  See schema/drblob/Makefile.
@@ -22,21 +9,23 @@
 ########################  BEGIN SECTION OF VARIABLES TO CHANGE
 
 #  during development change to dir in $HOME, like $(HOME)/opt/setspace
-SETSPACE_PREFIX=/usr/local/setspace
+INSTALL_PREFIX=/usr/local
+
+SETSPACE_PREFIX=$(INSTALL_PREFIX)/setspace
 
 #  during development change to your user or group id
 SETSPACE_USER=setspace
 SETSPACE_GROUP=setspace
 
 #  where are postgres includes & libraries?
-PGHOME=/usr/local/pgsql
+PGHOME=$(INSTALL_PREFIX)/pgsql
 PGINC=$(PGHOME)/include
 PGLIB=$(PGHOME)/lib
 
-#  must be gnu install
-INSTALL=install
-
 #  strict compilation of C code
 CFLAGS=-Wall -Wextra -Werror
+
+# location of pdfbox jar file, version 2
+PDFBOX2_JAR:=$(INSTALL_PREFIX)/lib/pdfbox-app-2.jar
 
 ########################  END SECTION OF VARIABLES TO CHANGE

@@ -33,34 +33,34 @@ is-pg-well-formed: is-pg-well-formed.pgc ../../common.c
 	rm is-pg-well-formed.c
 
 install: all
-	$(INSTALL) -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
+	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
 				-d $(LIBXML2_PREFIX)
-	$(INSTALL) -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
+	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
 				-d $(LIBXML2_PREFIX)/etc
-	$(INSTALL) -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m u=wrx,go=	\
+	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m u=wrx,go=	\
 				-d $(LIBXML2_PREFIX)/sbin
-	$(INSTALL) -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
+	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
 				-d $(LIBXML2_PREFIX)/lib
-	$(INSTALL) -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
+	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
 				-d $(LIBXML2_PREFIX)/src
-	$(INSTALL) -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
+	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
 				-d $(LIBXML2_PREFIX)/log
-	$(INSTALL) -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
+	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
 				-d $(LIBXML2_PREFIX)/run
-	$(INSTALL) -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
+	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
 				-d $(LIBXML2_PREFIX)/spool
-	$(INSTALL) -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
+	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
 				-d $(LIBXML2_PREFIX)/tmp
-	$(INSTALL) -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m u=rx,go=	\
+	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m u=rx,go=	\
 		$(PROGS) 						\
 		$(LIBXML2_PREFIX)/sbin
-	$(INSTALL) -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m a=r	\
+	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m a=r	\
 		libxml2.flow.example					\
 		profile.example						\
 		psqlrc.example						\
 		schema.sql						\
 		$(LIBXML2_PREFIX)/lib
-	$(INSTALL) -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m a=r	\
+	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m a=r	\
 		merge-stdin-xml_doc.pgc					\
 		$(LIBXML2_PREFIX)/src
 

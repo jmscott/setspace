@@ -37,6 +37,7 @@ install:
 	cd prefixio && $(MAKE) install
 	cd pdfbox2 && $(MAKE) install
 	cd pgtexts && $(MAKE) install
+	cp psqlrc.example $(SETSPACE_PREFIX)/lib/
 
 distclean:
 	cd setspace && $(MAKE) distclean
@@ -47,3 +48,4 @@ distclean:
 	cd prefixio && $(MAKE) distclean
 	cd pdfbox2 && $(MAKE) distclean
 	cd pgtexts && $(MAKE) distclean
+	rm -f $(SETSPACE_PREFIX)/lib/psqlrc.example

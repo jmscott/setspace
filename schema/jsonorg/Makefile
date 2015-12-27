@@ -29,34 +29,34 @@ clean:
 	rm -f $(COMPILED) merge-stdin-jsonb_255.c
 
 install: all
-	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
 				-d $(JSONORG_PREFIX)
-	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
 				-d $(JSONORG_PREFIX)/etc
-	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m u=wrx,go=	\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m u=wrx,go=	\
 				-d $(JSONORG_PREFIX)/sbin
-	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
 				-d $(JSONORG_PREFIX)/lib
-	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
 				-d $(JSONORG_PREFIX)/src
-	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
 				-d $(JSONORG_PREFIX)/log
-	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
 				-d $(JSONORG_PREFIX)/run
-	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
 				-d $(JSONORG_PREFIX)/spool
-	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
 				-d $(JSONORG_PREFIX)/tmp
-	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m u=rx,go=	\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m u=rx,go=	\
 		$(PROGS) 						\
 		$(JSONORG_PREFIX)/sbin
-	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r	\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r	\
 		jsonorg.flow.example					\
 		profile.example						\
 		psqlrc.example						\
 		schema.sql						\
 		$(JSONORG_PREFIX)/lib
-	$(INSTALL) -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r	\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r	\
 		JSON_checker.c						\
 		merge-stdin-jsonb_255.pgc				\
 		$(JSONORG_PREFIX)/src

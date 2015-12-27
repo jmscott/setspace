@@ -21,25 +21,25 @@ clean:
 
 install: all
 ifdef DRBLOB_PREFIX
-	$(INSTALL) -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 		\
+	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
 				-d $(DRBLOB_PREFIX)
-	$(INSTALL) -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 		\
+	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
 				-d $(DRBLOB_PREFIX)/spool
-	$(INSTALL) -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 		\
+	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
 				-d $(DRBLOB_PREFIX)/run
-	$(INSTALL) -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 		\
+	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
 				-d $(DRBLOB_PREFIX)/sbin
-	$(INSTALL) -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 		\
+	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
 				-d $(DRBLOB_PREFIX)/lib
-	$(INSTALL) -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 		\
+	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
 				-d $(DRBLOB_PREFIX)/log
-	$(INSTALL) -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 		\
+	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
 				-d $(DRBLOB_PREFIX)/etc
-	$(INSTALL) -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 		\
+	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
 				-d $(DRBLOB_PREFIX)/tmp
-	$(INSTALL) -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 		\
+	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
 				-d $(DRBLOB_PREFIX)/src
-	$(INSTALL) -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 		\
+	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
 		get-is-brr-log						\
 		get-is-fdr-log						\
 		get-is-qdr-log						\
@@ -51,7 +51,7 @@ ifdef DRBLOB_PREFIX
 		merge-blob						\
 		$(DRBLOB_PREFIX)/sbin
 
-	$(INSTALL) -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 		\
+	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
 		create-temp-merge_brr_log.sql				\
 		create-temp-merge_fdr_log.sql				\
 		create-temp-merge_qdr_log.sql				\
@@ -75,7 +75,7 @@ ifdef DRBLOB_PREFIX
 		schema.sql						\
 		$(DRBLOB_PREFIX)/lib
 
-	$(INSTALL) -g $(DRBLOB_GROUP) -o $(DRBLOB_USER)		\
+	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER)			\
 		Makefile						\
 		is-brr-log.c						\
 		is-fdr-log.c						\
