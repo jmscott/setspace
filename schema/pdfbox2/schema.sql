@@ -13,6 +13,8 @@
 
 \set ON_ERROR_STOP on
 
+BEGIN;
+
 DROP SCHEMA IF EXISTS pdfbox2 CASCADE;
 CREATE SCHEMA pdfbox2;
 COMMENT ON SCHEMA pdfbox2 IS
@@ -169,3 +171,5 @@ CREATE TABLE pdfbox2.extract_utf8_pending
 COMMENT ON TABLE pdfbox2.extract_utf8_pending IS
   'Actively running extract_utf8 java processes'
 ;
+
+COMMIT;

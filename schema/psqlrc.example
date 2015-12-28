@@ -14,5 +14,6 @@ set search_path to
 	pgtexts,
 	prefixio,
 	setspace,
-	udigset
+	udigset,
+	public
 ;

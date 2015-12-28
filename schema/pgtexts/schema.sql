@@ -7,6 +7,8 @@
  */
 \set ON_ERROR_STOP
 
+BEGIN;
+
 DROP SCHEMA IF EXISTS pgtexts CASCADE;
 CREATE SCHEMA pgtexts;
 COMMENT ON SCHEMA pgtexts IS
@@ -49,3 +51,5 @@ CREATE TABLE pgtexts.merge_tsv_utf8_pending
 COMMENT ON TABLE pgtexts.merge_tsv_utf8_pending IS
   'Actively running processes for merge_tsv_utf8'
 ;
+
+COMMIT;

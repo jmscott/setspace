@@ -29,3 +29,5 @@ CREATE TABLE expat2.is_xmlwf
 	is_xml	bool
 			not null
 );
+
+COMMIT;
