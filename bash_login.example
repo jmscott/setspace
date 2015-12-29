@@ -1,0 +1,22 @@
+#
+#  Synopsis:
+#	Example bash_login used during code development
+#  Usage:
+#	SETSPACE_ROOT=$HOME/opt/setspace
+#	cd $SETSPACE_ROOT
+#	sed "s@^SETSPACE_ROOT=.*@SETSPACE_ROOT=$SETSPACE_ROOT@" 	\
+#				lib/bash_login.example >etc/bash_login
+#	. etc/bash_login
+#  See:
+#	lib/profile.example
+#	https://github.com/jmscott/work/xtitle
+#
+export SETSPACE_ROOT=$HOME/opt/setspace
+PS1='sets@opt> '
+
+cd $SETSPACE_ROOT || exit 1
+
+. etc/profile
+
+#  set xterm title
+test -x "$(which xtitle)" && xtitle 'sets@opt'

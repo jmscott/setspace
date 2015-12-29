@@ -67,6 +67,7 @@ install: all
 		$(SETSPACE_PREFIX)/bin
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+		bash_login.example					\
 		profile.example						\
 		crontab.conf.example					\
 		$(SETSPACE_PREFIX)/lib
