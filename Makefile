@@ -34,8 +34,6 @@ install: all
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/bin
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-				-d $(SETSPACE_PREFIX)/spool
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/sbin
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/schema
@@ -44,7 +42,11 @@ install: all
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/etc
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+				-d $(SETSPACE_PREFIX)/log
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/src
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+				-d $(SETSPACE_PREFIX)/tmp
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		boot-flowd						\
 		cron-pg_dump-mutable					\
@@ -94,11 +96,9 @@ dec2pgbit: dec2pgbit.c
 	cc -o dec2pgbit $(CFLAGS) dec2pgbit.c
 
 distclean:
-#ifdef SETSPACE_PREFIX
 	cd schema && make distclean
 	rm -rf $(SETSPACE_PREFIX)/bin
 	rm -rf $(SETSPACE_PREFIX)/sbin
 	rm -rf $(SETSPACE_PREFIX)/lib
 	rm -rf $(SETSPACE_PREFIX)/src
 	rm -rf $(SETSPACE_PREFIX)/sbin
-#endif
