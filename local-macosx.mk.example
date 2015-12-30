@@ -15,15 +15,19 @@ SETSPACE_USER:=$(USER)
 SETSPACE_GROUP:=staff
 
 #  where are postgres 9.5+ includes & libraries?
-PGHOME:=$(INSTALL_PREFIX)/psql
+PGHOME=/usr/local/pgsql
 PGINC=$(PGHOME)/include
 PGLIB=$(PGHOME)/lib
 
 #  The execution PATH must include the PostgreSQL C precompiler 'ecpg'.
 PATH:=$(PGHOME)/bin:$(PATH)
 
-# location of pdfbox jar file, version 2
-PDFBOX2_JAR:=$(INSTALL_PREFIX)/pdfbox2/lib/pdfbox-app-2.jar
+#  location of pdfbox jar file, version 2
+#
+#  Note: be carefull installing underneath $(INSTALL_PREFIX),
+#        since a 'make distclean' will remove the jar file.
+#
+PDFBOX_APP2_JAR:=/usr/local/lib/pdfbox-app-2.jar
 
 #  strict compilation of C code.
 #  Note: best not to change under gnu or clang compilers.

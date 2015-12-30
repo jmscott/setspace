@@ -18,14 +18,18 @@ SETSPACE_USER=setspace
 SETSPACE_GROUP=setspace
 
 #  where are postgres includes & libraries?
-PGHOME=$(INSTALL_PREFIX)/pgsql
+PGHOME=/usr/local/pgsql
 PGINC=$(PGHOME)/include
 PGLIB=$(PGHOME)/lib
 
 #  strict compilation of C code
 CFLAGS=-Wall -Wextra -Werror
 
-# location of pdfbox jar file, version 2
-PDFBOX2_JAR:=$(INSTALL_PREFIX)/lib/pdfbox-app-2.jar
+#  location of pdfbox jar file, version 2
+#
+#  Note: be carefull installing underneath $(INSTALL_PREFIX),
+#        since a 'make distclean' will remove the jar file.
+#
+PDFBOX_APP2_JAR:=/usr/local/lib/pdfbox-app-2.jar
 
 ########################  END SECTION OF VARIABLES TO CHANGE
