@@ -5,7 +5,7 @@
  *	Unfortunatly inline pg_upgrade fails do to use of the regconfig
  *	datatype in the table pgtexts.tsv_utf8.
  */
-\set ON_ERROR_STOP
+\set ON_ERROR_STOP on
 
 BEGIN;
 
