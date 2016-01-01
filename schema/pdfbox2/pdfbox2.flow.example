@@ -285,9 +285,14 @@ call extract_utf82pg(brr.udig)
 command append_pgtexts_brr
 {
 	path = "sbin/append-pgtexts-brr";
+	argv = (
+		"../pgtexts/spool/pdfbox2.brr"
+	);
 }
 
 call append_pgtexts_brr(brr.udig)
   when
   	extract_utf82pg.exit_status == 0
+	or
+	in_extract_utf8_table.answer == true
 ;
