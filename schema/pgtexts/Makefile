@@ -8,7 +8,9 @@ include ../schema.mk
 include ../../local.mk
 
 COMPILED=merge-stdin-tsv_utf8
-PROGS=merge-stdin-tsv_utf8
+PROGS=									\
+	merge-stdin-tsv_utf8						\
+	merge-tsv_utf8
 
 all: $(COMPILED)
 clean:
@@ -16,8 +18,8 @@ clean:
 
 merge-stdin-tsv_utf8: merge-stdin-tsv_utf8.pgc ../../common.c
 	ecpg merge-stdin-tsv_utf8.pgc
-	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-tsv_utf8.c 			\
-		-o merge-stdin-tsv_utf8 -L$(PGLIB) -lecpg
+	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-tsv_utf8.c		\
+			-o merge-stdin-tsv_utf8 -L$(PGLIB) -lecpg
 	rm merge-stdin-tsv_utf8.c
 
 dev-links:
@@ -27,40 +29,40 @@ dev-links:
 	test -e etc || ln -s . etc
 
 install: all
-	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)				\
+	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
 		-d $(PGTEXTS_PREFIX)
-	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)				\
+	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
 		-d $(PGTEXTS_PREFIX)/lib
-	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)				\
+	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
 		-d $(PGTEXTS_PREFIX)/sbin
-	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)				\
+	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
 		-d $(PGTEXTS_PREFIX)/src
-	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)				\
+	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
 		-d $(PGTEXTS_PREFIX)/log
-	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)				\
+	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
 		-d $(PGTEXTS_PREFIX)/spool
-	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)				\
+	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
 		-d $(PGTEXTS_PREFIX)/run
-	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)				\
-		-d $(PDFBOX2_PREFIX)/log
-	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)				\
+	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
+		-d $(PGTEXTS_PREFIX)/log
+	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
 		-d $(PGTEXTS_PREFIX)/tmp
-	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)				\
+	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
 		-d $(PGTEXTS_PREFIX)/etc
 
-	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER) -m ug=rx			\
-		profile.example							\
-		pgtexts.flow.example						\
-		schema.sql							\
+	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER) -m ug=rx		\
+		profile.example						\
+		pgtexts.flow.example					\
+		schema.sql						\
 		$(PGTEXTS_PREFIX)/lib
 
-	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER) -m u=rx			\
-		$(PROGS)							\
+	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER) -m u=rx		\
+		$(PROGS)						\
 		$(PGTEXTS_PREFIX)/sbin
 
-	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER) -m ug=rx			\
-		Makefile							\
-		merge-stdin-tsv_utf8.pgc					\
+	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER) -m ug=rx		\
+		Makefile						\
+		merge-stdin-tsv_utf8.pgc				\
 		$(PGTEXTS_PREFIX)/src
 
 distclean:

@@ -45,8 +45,6 @@ call brr_on_network()
 		or
 		brr.verb == "get"
 		or
-		brr.verb == "eat"
-		or
 		brr.verb == "wrap"
 		or
 		brr.verb == "roll"
@@ -159,4 +157,35 @@ sql query merge_tsv_utf8_pending row
 query merge_tsv_utf8_pending(brr.udig)
   when
   	in_merge_tsv_utf8_pending_table.answer == false
+;
+
+command merge_tsv_utf8
+{
+	path = "sbin/merge-tsv_utf8";
+	argv = (
+		"english"
+	);
+}
+
+call merge_tsv_utf8(brr.udig, brr.blob_size)
+  when
+  	merge_tsv_utf8_pending.inserted == true
+;
+
+sql exec delete_tsv_utf8_pending
+{
+	statement = `
+
+	DELETE FROM pgtexts.merge_tsv_utf8_pending
+	  WHERE
+	  	blob = $1::udig
+	;
+	`;
+}
+
+query delete_tsv_utf8_pending(brr.udig)
+  when
+  	merge_tsv_utf8.exit_status == 0
+	or
+	merge_tsv_utf8.exit_status == 1
 ;
