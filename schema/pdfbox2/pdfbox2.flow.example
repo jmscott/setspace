@@ -3,6 +3,8 @@
 #	Populate a PostgreSQL schema with the facts extracted by Apache pdfbox2 
 #  See:
 #	schema.sql
+#  Note:
+#	How does a digested pdfbox2 get repushed to schema pgtexts?
 #
 
 boot
