@@ -20,13 +20,19 @@ all: $(COMPILED)
 clean:
 	rm -f $(COMPILED) merge-stdin-xml_doc.c is-pg-well-formed.c
 
-merge-stdin-xml_doc: merge-stdin-xml_doc.pgc ../../common.c
+merge-stdin-xml_doc:							\
+		merge-stdin-xml_doc.pgc					\
+		../../common.c						\
+		../../common-ecpg.c
 	ecpg merge-stdin-xml_doc.pgc
 	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-xml_doc.c 		\
 		-o merge-stdin-xml_doc -L$(PGLIB) -lecpg
 	rm merge-stdin-xml_doc.c
 
-is-pg-well-formed: is-pg-well-formed.pgc ../../common.c
+is-pg-well-formed:							\
+		is-pg-well-formed.pgc					\
+		../../common.c						\
+		../../common-ecpg.c
 	ecpg is-pg-well-formed.pgc
 	$(CC) $(CFLAGS) -I$(PGINC) is-pg-well-formed.c 			\
 		-o is-pg-well-formed -L$(PGLIB) -lecpg

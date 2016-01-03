@@ -16,7 +16,10 @@ all: $(COMPILED)
 clean:
 	rm -f $(COMPILED) merge-stdin-tsv_utf8.c
 
-merge-stdin-tsv_utf8: merge-stdin-tsv_utf8.pgc ../../common.c
+merge-stdin-tsv_utf8:							\
+		merge-stdin-tsv_utf8.pgc				\
+		../../common.c						\
+		../../common-ecpg.c
 	ecpg merge-stdin-tsv_utf8.pgc
 	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-tsv_utf8.c		\
 			-o merge-stdin-tsv_utf8 -L$(PGLIB) -lecpg

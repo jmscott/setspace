@@ -64,7 +64,10 @@ install: all
 JSON_checker: JSON_checker.c
 	$(CC) -o JSON_checker $(CFLAGS) JSON_checker.c
 
-merge-stdin-jsonb_255: merge-stdin-jsonb_255.pgc
+merge-stdin-jsonb_255:							\
+		merge-stdin-jsonb_255.pgc				\
+		../../common.c						\
+		../../common-ecpg.c
 	ecpg merge-stdin-jsonb_255.pgc
 	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-jsonb_255.c		\
 		-o merge-stdin-jsonb_255 -L$(PGLIB) -lecpg
