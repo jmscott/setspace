@@ -17,3 +17,6 @@ PS1='sets@opt> '
 cd $SETSPACE_ROOT || exit 1
 
 . etc/profile
+
+export S=$SETSPACE_ROOT
+export SC=$SETSPACE_ROOT/schema
