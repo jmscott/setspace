@@ -290,6 +290,7 @@ command append_pgtexts_brr
 	argv = (
 		"../pgtexts/spool/pdfbox2.brr"
 	);
+	exit_status is OK when in {0, 1};
 }
 
 call append_pgtexts_brr(brr.udig)
