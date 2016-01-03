@@ -3,10 +3,10 @@
 #   Synopsis:
 #   	Merge a pending UTF8 blob into table pgtexts.tsv_utf8.
 #   Usage:
-# 	 merge-tsv_utf8 <ts_config> <ts_config> <udig> <blob_size>
+# 	 merge-tsv_utf8 <ts_config> <udig> <blob_size>
 #   Arguments:
-#   	1	udig of the blob
-#	2	text search configuration name
+#	1	text search configuration name
+#   	2	udig of the blob
 #   	3	size of the blob in bytes
 #   Exit Status:
 #   	0	ok, tuple was merged

@@ -32,22 +32,18 @@ tail brr
 	path = "spool/pdfbox2.brr";
 }
 
-command brr_on_network
+command brr_has_size
 {
 	path = "true";
 }
 
-call brr_on_network()
+call brr_has_size()
   when
   (
         (
 		brr.verb == "put"
 		or
 		brr.verb == "get"
-		or
-		brr.verb == "wrap"
-		or
-		brr.verb == "roll"
 	)
 	and
 	brr.chat_history == "ok"
@@ -80,7 +76,7 @@ sql query in_service_table row
 
 query in_service_table(brr.udig)
   when
-  	brr_on_network.exit_status == 0
+  	brr_has_size.exit_status == 0
 ;
 
 sql query in_tsv_utf8_table row
