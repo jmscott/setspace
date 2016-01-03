@@ -16,6 +16,9 @@
  *	
  *	exec sql whenever sqlerror call _ecpg_sql_fault();
  *	exec sql whenever sqlwarning call _ecpg_sql_fault();
+ *  Note:
+ *	No way to ignore warnings.  Need to refactor code into
+ *	_ecpg_sql_warn() and _ecpg_sql_error().
  */
 static void
 _ecpg_sql_fault()
