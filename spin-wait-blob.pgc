@@ -1,13 +1,13 @@
 /*
  *  Synopsis:
- *	Hackish wait for a blob to appear in a table.
+ *	Hackish wait for a blob to appear in a table, exp backoff.
  *  Usage:
- *	spin-wait-blob <table> <row> <stop second> <blob udig>
+ *	spin-wait-blob <table> <row> <timeout> <blob udig>
  *  Exit Status:
  *	0	blob appeared
  *	1	blob never appeared
  *	2	wrong number of arguments
- *	3	bad stop seconds
+ *	3	bad timeout seconds
  *	4	sql warning
  *	5	sql error
  *  Note:
@@ -19,7 +19,7 @@ static char progname[] = "spin-wait-blob";
 #define EXIT_OK		0
 #define EXIT_NO_BLOB	1
 #define EXIT_BAD_ARGC	2
-#define EXIT_BAD_STOP	3
+#define EXIT_BAD_TOUT	3
 #define EXIT_SQLWARN	4
 #define EXIT_SQLERROR	5
 
@@ -34,7 +34,7 @@ static char progname[] = "spin-wait-blob";
 int
 main(int argc, char **argv)
 {
-	int stop, pause = 0;
+	int timeout, waited = 0, pause = 0;
 	char *table_name, *row_name, *blob;
 EXEC SQL BEGIN DECLARE SECTION;
 	bool blob_exists;
@@ -49,18 +49,18 @@ EXEC SQL END DECLARE SECTION;
 	blob = argv[4];
 
 	/*
-	 *  Parse the stop seconds.
+	 *  Parse the timeout seconds.
 	 */
 	{
 		char *sec = argv[3];
 		size_t len = strlen(sec);
 
 		if (len < 1 || len > 19)
-			die2(EXIT_BAD_STOP,
-				"stop second not > 0 and < 20 chars", sec);
-		stop = atoi(sec);
-		if (stop <= 0)
-			die2(EXIT_BAD_STOP, "stop second <= 0", sec);
+			die2(EXIT_BAD_TOUT,
+				"timeout second not > 0 and < 20 chars", sec);
+		timeout = atoi(sec);
+		if (timeout <= 0)
+			die2(EXIT_BAD_TOUT, "timeout second <= 0", sec);
 	}
 
 	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_fault();
@@ -105,8 +105,9 @@ again:
 	else
 		pause *= 2;
 
-	if (pause >= stop)
+	if (waited >= timeout)
 		_exit(EXIT_NO_BLOB);
 	sleep(pause);
+	waited += pause;
 	goto again;
 }
