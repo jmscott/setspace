@@ -28,6 +28,7 @@ _ecpg_sql_fault()
 
 	if (sqlca.sqlcode == 0)
 		die(EXIT_SQLERROR, "unexpected sqlca.sqlcode == 0"); 
+	msg[0] = 0;
 	_strcat(msg, sizeof msg, "sql");
 
 	//  what is a WARNING ... pg9.4 docs not too clear
