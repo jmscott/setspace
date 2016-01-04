@@ -4,3 +4,4 @@ dec2pgbit
 flip-tail
 local.mk
 macosx.o
+spin-wait-blob

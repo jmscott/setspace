@@ -21,13 +21,14 @@ PROG=					\
 	append-brr			\
 	RFC3339Nano			\
 	dec2pgbit			\
-	flip-tail
+	flip-tail			\
+	spin-wait-blob
 
 all: $(PROG) $(CGI) 
 	cd schema;  $(MAKE) all
 
 clean:
-	rm -f $(PROG) $(CGI)
+	rm -f $(PROG) $(CGI) spin-wait-blob.c
 	cd schema;  $(MAKE) clean
 
 install: all
@@ -66,6 +67,7 @@ install: all
 		RFC3339Nano						\
 		eat-blob						\
 		flip-tail						\
+		spin-wait-blob						\
 		$(SETSPACE_PREFIX)/bin
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
@@ -94,6 +96,15 @@ flip-tail: flip-tail.c common.c
 
 dec2pgbit: dec2pgbit.c
 	cc -o dec2pgbit $(CFLAGS) dec2pgbit.c
+
+spin-wait-blob:								\
+		spin-wait-blob.pgc					\
+		common.c						\
+		common-ecpg.c
+	ecpg spin-wait-blob.pgc
+	$(CC) $(CFLAGS) -I$(PGINC) spin-wait-blob.c		\
+			-o spin-wait-blob -L$(PGLIB) -lecpg
+	rm spin-wait-blob.c
 
 distclean:
 	cd schema && make distclean

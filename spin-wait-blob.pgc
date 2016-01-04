@@ -1,0 +1,110 @@
+/*
+ *  Synopsis:
+ *	Hackish wait for a blob to appear in a table.
+ *  Usage:
+ *	spin-wait-blob <table> <row> <stop second> <blob udig>
+ *  Exit Status:
+ *	0	blob appeared
+ *	1	blob never appeared
+ *	2	wrong number of arguments
+ *	3	bad start, step or end seconds
+ *	4	sql warning
+ *	5	sql error
+ */
+
+static char progname[] = "spin-wait-blob";
+
+#define EXIT_OK		0
+#define EXIT_NO_BLOB	1
+#define EXIT_BAD_ARGC	2
+#define EXIT_BAD_SEC	3
+#define EXIT_SQLWARN	5
+#define EXIT_SQLERROR	6
+
+#define COMMON_NEED_DIE2
+#include "common.c"
+
+#define COMMON_ECPG_NEED_SQL_FAULT
+#include "common-ecpg.c"
+
+#include <stdlib.h>
+
+int
+main(int argc, char **argv)
+{
+	int stop, pause = 0;
+	char *table_name, *row_name, *blob;
+EXEC SQL BEGIN DECLARE SECTION;
+	VARCHAR spin_blob[512];
+	char query[4096];
+	int spin_blob_ind;
+EXEC SQL END DECLARE SECTION;
+
+	if (argc != 5)
+		die(EXIT_BAD_ARGC, "wrong number of arguments");
+
+	table_name = argv[1];
+	row_name = argv[2];
+	blob = argv[4];
+
+	/*
+	 *  Parse the stop seconds.
+	 */
+	{
+		char *sec = argv[3];
+		size_t len = strlen(sec);
+
+		if (len < 1 || len > 19)
+			die2(EXIT_BAD_SEC,
+				"stop second not > 0 and < 20 chars", sec);
+		stop = atoi(sec);
+		if (stop <= 0)
+			die2(EXIT_BAD_SEC, "stop second <= 0", sec);
+	}
+
+	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_fault();
+	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_fault();
+	EXEC SQL CONNECT TO default;
+	EXEC SQL ALLOCATE DESCRIPTOR d;
+
+	/*
+	 *  Build the query:
+	 *
+	 *	select
+	 *		<row_name>
+	 *	  from
+	 *		<table_name>
+	 *	  where
+	 *		<row_name> = <blob>::udig
+	 */
+	query[0] = 0;
+	_strcat(query, sizeof query, "select ");
+	_strcat(query, sizeof query, row_name);
+	_strcat(query, sizeof query, " from ");
+	_strcat(query, sizeof query, table_name);
+	_strcat(query, sizeof query, " where ");
+	_strcat(query, sizeof query, row_name);
+	_strcat(query, sizeof query, " = '");
+	_strcat(query, sizeof query, blob);
+	_strcat(query, sizeof query, "'::udig");
+
+	EXEC SQL PREPARE get_blob FROM :query;
+
+again:
+	EXEC SQL EXECUTE get_blob INTO :spin_blob :spin_blob_ind;
+
+	//  tuple exists.
+	if (sqlca.sqlcode == 0)
+		_exit(EXIT_OK);
+
+	//  pause doubles on each pass
+	if (pause == 0)
+		pause = 1;
+	else
+		pause *= 2;
+
+	if (pause >= stop)
+		_exit(EXIT_NO_BLOB);
+	sleep(pause);
+	goto again;
+}
