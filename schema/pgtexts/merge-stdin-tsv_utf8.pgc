@@ -94,15 +94,15 @@ EXEC SQL END DECLARE SECTION;
 
 	_read_blob(0, doc, size);
 
-	exec sql whenever sqlerror call _ecpg_sql_fault();
-	exec sql whenever sqlwarning call _ecpg_sql_fault();
-	exec sql connect to default;
+	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_fault();
+	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_fault();
+	EXEC SQL CONNECT TO default;
 
 	/*
 	 *  Merge blob into pgtexts.tsv_utf8 table.
 	 */
-	exec sql BEGIN TRANSACTION;
-	exec sql
+	EXEC SQL BEGIN TRANSACTION;
+	EXEC SQL
 	  INSERT INTO pgtexts.tsv_utf8(
 		blob,
 		ts_conf,
@@ -115,7 +115,7 @@ EXEC SQL END DECLARE SECTION;
   	  ON CONFLICT
   		DO NOTHING
 	;
-	exec sql END TRANSACTION;
+	EXEC SQL END TRANSACTION;
 
 	_exit(EXIT_OK);
 }
