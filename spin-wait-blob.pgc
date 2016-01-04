@@ -7,9 +7,11 @@
  *	0	blob appeared
  *	1	blob never appeared
  *	2	wrong number of arguments
- *	3	bad start, step or end seconds
+ *	3	bad stop seconds
  *	4	sql warning
  *	5	sql error
+ *  Note:
+ *	spin-wait-blob is a hack, to be replaced by pglog2brr replication.
  */
 
 static char progname[] = "spin-wait-blob";
@@ -17,9 +19,9 @@ static char progname[] = "spin-wait-blob";
 #define EXIT_OK		0
 #define EXIT_NO_BLOB	1
 #define EXIT_BAD_ARGC	2
-#define EXIT_BAD_SEC	3
-#define EXIT_SQLWARN	5
-#define EXIT_SQLERROR	6
+#define EXIT_BAD_STOP	3
+#define EXIT_SQLWARN	4
+#define EXIT_SQLERROR	5
 
 #define COMMON_NEED_DIE2
 #include "common.c"
@@ -54,11 +56,11 @@ EXEC SQL END DECLARE SECTION;
 		size_t len = strlen(sec);
 
 		if (len < 1 || len > 19)
-			die2(EXIT_BAD_SEC,
+			die2(EXIT_BAD_STOP,
 				"stop second not > 0 and < 20 chars", sec);
 		stop = atoi(sec);
 		if (stop <= 0)
-			die2(EXIT_BAD_SEC, "stop second <= 0", sec);
+			die2(EXIT_BAD_STOP, "stop second <= 0", sec);
 	}
 
 	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_fault();
@@ -69,12 +71,14 @@ EXEC SQL END DECLARE SECTION;
 	/*
 	 *  Build the query:
 	 *
-	 *	select
+	 *	select exists (
+	 *	  select
 	 *		<row_name>
 	 *	  from
 	 *		<table_name>
 	 *	  where
 	 *		<row_name> = <blob>::udig
+	 *	)
 	 */
 	query[0] = 0;
 	_strcat(query, sizeof query, "select exists (select ");
