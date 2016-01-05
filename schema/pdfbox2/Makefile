@@ -64,6 +64,7 @@ install: all
 		cron-append-pgtexts-brr					\
 		extract_utf82pg						\
 		pddocument2pg						\
+		wait-utf8-byte_count					\
 		$(PDFBOX2_PREFIX)/sbin
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=rx		\
