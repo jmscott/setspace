@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 #  Synopsis:
 #	Wait for the setspace.byte_count to appear for extracted utf8 blob
