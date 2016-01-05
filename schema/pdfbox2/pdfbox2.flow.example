@@ -284,18 +284,31 @@ call extract_utf82pg(brr.udig)
   	merge_extract_utf8_pending.inserted == true
 ;
 
+command wait_utf8_byte_count
+{
+	path = "sbin/wait-utf8-byte_count";
+	argv = (
+		"16"
+	);
+	exit_status is OK when in {0, 1};
+}
+
+call wait_utf8_byte_count(brr.udig)
+  when
+  	extract_utf82pg.exit_status == 0
+	or
+	in_extract_utf8_table.answer == true
+;
+  
 command append_pgtexts_brr
 {
 	path = "sbin/append-pgtexts-brr";
 	argv = (
 		"../pgtexts/spool/pdfbox2.brr"
 	);
-	exit_status is OK when in {0, 1};
 }
 
 call append_pgtexts_brr(brr.udig)
   when
-  	extract_utf82pg.exit_status == 0
-	or
-	in_extract_utf8_table.answer == true
+  	wait_utf8_byte_count.exit_status == 0
 ;
