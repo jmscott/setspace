@@ -24,7 +24,7 @@
  *	Rename is-pg-well-formed.pgc to merge-stdin-is_pg_well_formed.pgc
  */
 
-static char progname[] = "merge-stdin-pg_well_formed";
+static char progname[] = "is-pg-well-formed";
 
 #define EXIT_WF		0
 #define EXIT_NOWF	1
@@ -41,7 +41,8 @@ static char progname[] = "merge-stdin-pg_well_formed";
 #define COMMON_NEED_READ_BLOB
 #include "../../common.c"
 
-#define COMMON_ECPG_NEED_SQL_FAULT
+#define COMMON_ECPG_NEED_SQL_WARNING
+#define COMMON_ECPG_NEED_SQL_ERROR
 #include "../../common-ecpg.c"
 
 #include <stdlib.h>
@@ -82,8 +83,8 @@ EXEC SQL END DECLARE SECTION;
 
 	_read_blob(0, doc, size);
 
-	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_fault();
-	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_fault();
+	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error();
+	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_warning();
 	EXEC SQL CONNECT TO default;
 
 	//  test postgresql's notion of a well formed document

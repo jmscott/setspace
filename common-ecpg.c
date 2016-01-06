@@ -3,40 +3,14 @@
  *	Common routines used by PostgreSQL ecpg code
  */
 
-#ifdef COMMON_ECPG_NEED_SQL_FAULT
-
-/*
- *  Synopsis:
- *	Generic sql fault handler for PostgreSQL ecpg generated code
- *  Usage:
- *	#define COMMON_ECPG_NEED_SQL_FAULT
- *	#include "../../common-ecpg.c"
- *
- *	...
- *	
- *	exec sql whenever sqlerror call _ecpg_sql_fault();
- *	exec sql whenever sqlwarning call _ecpg_sql_fault();
- *  Note:
- *	No way to ignore warnings.  Need to refactor code into
- *	_ecpg_sql_warn() and _ecpg_sql_error().
- */
 static void
-_ecpg_sql_fault()
+_ecpg_sql_fault(int status, char *what)
 {
-	char msg[PIPE_MAX];
-	int status = EXIT_SQLERROR;
+	char msg[PIPE_MAX + 1];
 
-	if (sqlca.sqlcode == 0)
-		die(EXIT_SQLERROR, "unexpected sqlca.sqlcode == 0"); 
 	msg[0] = 0;
-	_strcat(msg, sizeof msg, "sql");
-
-	//  what is a WARNING ... pg9.4 docs not too clear
-
-	if (sqlca.sqlwarn[2] == 'W' || sqlca.sqlwarn[0] == 'W') {
-		_strcat(msg, sizeof msg, ": WARN");
-		status = EXIT_SQLWARN;
-	}
+	_strcat(msg, sizeof msg, "SQL");
+	_strcat(msg, sizeof msg, what);
 
 	//  add the sql state code to error message
 
@@ -47,7 +21,8 @@ _ecpg_sql_fault()
 		memmove(state, sqlca.sqlstate, 5);
 		state[5] = 0;
 		_strcat(msg, sizeof msg, state);
-	}
+	} else
+		_strcat(msg, sizeof msg, ": (missing sql state!)");
 
 	//  add the sql error message
 
@@ -62,4 +37,80 @@ _ecpg_sql_fault()
 	die(status, msg);
 }
 
+#ifdef COMMON_ECPG_NEED_SQL_ERROR
+
+/*
+ *  Synopsis:
+ *	SQL error callback for EXEC SQL WHENEVER SQLERROR CALL ...
+ *  Usage:
+ *	#define EXIT_SQLERROR   5
+ *	#define COMMON_ECPG_NEED_SQL_ERROR
+ *	#include "../../common-ecpg.c"
+ *
+ *	...
+ *	
+ *	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error();
+ */
+static void
+_ecpg_sql_error()
+{
+	_ecpg_sql_fault(EXIT_SQLERROR, "ERROR");
+}
+
+#endif
+
+#ifdef COMMON_ECPG_NEED_SQL_WARNING
+
+/*
+*  Synopsis:
+*	SQL warning callback for EXEC SQL WHENEVER SQLWARNING CALL
+*  Usage:
+*	#define COMMON_ECPG_NEED_SQL_FAULT
+*	#include "../../common-ecpg.c"
+*
+*	...
+*	
+*	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_warning();
+*/
+static void
+_ecpg_sql_warning()
+{
+	_ecpg_sql_fault(EXIT_SQLWARN, "WARNING");
+}
+#endif
+
+#ifdef COMMON_ECPG_NEED_SQL_WARNING_IGNORE
+
+/*
+*  Synopsis:
+*	SQL warning callback with ignores for EXEC SQL WHENEVER SQLWARNING CALL
+*  Usage:
+*	#define COMMON_ECPG_NEED_SQL_WARNING_IGNORE
+*	#include "../../common-ecpg.c"
+*	static char *no_warns[] =
+*	{
+*		"02000",	//  no data found due to upsert conflict
+*		(char *)0
+*	};
+*
+*	...
+*	
+*	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_warning_ignore(no_warns);
+*/
+static void
+_ecpg_sql_warning_ignore(char *ignore[])
+{
+	char **ig = ignore;
+	char *i;
+
+	while ((i = *ig++)) {
+		if (i[0] == sqlca.sqlstate[0] &&
+		    i[1] == sqlca.sqlstate[1] &&
+		    i[2] == sqlca.sqlstate[2] &&
+		    i[3] == sqlca.sqlstate[3] &&
+		    i[4] == sqlca.sqlstate[4])
+			return;
+	}
+	_ecpg_sql_fault(EXIT_SQLWARN, "WARNING");
+}
 #endif
