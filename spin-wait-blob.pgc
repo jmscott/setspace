@@ -26,7 +26,8 @@ static char progname[] = "spin-wait-blob";
 #define COMMON_NEED_DIE2
 #include "common.c"
 
-#define COMMON_ECPG_NEED_SQL_FAULT
+#define COMMON_ECPG_NEED_SQL_ERROR
+#define COMMON_ECPG_NEED_SQL_WARNING
 #include "common-ecpg.c"
 
 #include <stdlib.h>
@@ -63,8 +64,8 @@ EXEC SQL END DECLARE SECTION;
 			die2(EXIT_BAD_TOUT, "timeout second <= 0", sec);
 	}
 
-	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_fault();
-	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_fault();
+	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error();
+	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_warning();
 	EXEC SQL CONNECT TO default;
 
 	/*
