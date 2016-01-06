@@ -8,6 +8,8 @@ Schemas:
 
 	libxml2		Well known libxml2 library for xml documents
 
+	pgtexts		PostgreSQL text search for UTF8 blobs
+
 	drblob		Tables for blob flow, query and process executable
 			detail records: fdr, qdr, xdr, brr
 See:
