@@ -22,7 +22,7 @@ TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
 
 leave()
 {
-	rm -r $TMP_BLOB
+	rm -f $TMP_BLOB
 }
 
 trap leave EXIT
