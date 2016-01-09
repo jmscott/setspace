@@ -6,7 +6,7 @@
 #	append-pgtexts-brr <path-to-brr-file> <pdf-udig> 
 #  Exit Status
 #	0	append utf8 text brr record to <path-to-brr-file>
-#	1	setspace.byte_count tuple does not exist for utf8 blob
+#	1	extract_utf8.exit_code != 0 or byte_count tuple does not exist
 #	2	wrong number of arguments
 #	3	unexpected sql error
 #	4	unexpected error appending brr
