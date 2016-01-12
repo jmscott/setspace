@@ -91,6 +91,8 @@ DROP TABLE IF EXISTS libxml2.is_pg_well_formed;
 CREATE TABLE libxml2.is_pg_well_formed
 (
 	blob	udig
+			references setspace.service
+			on delete cascade
 			primary key,
 	is_xml	bool
 			not null
