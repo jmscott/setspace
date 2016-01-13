@@ -12,6 +12,8 @@ Schemas:
 
 	drblob		Tables for blob flow, query and process executable
 			detail records: fdr, qdr, xdr, brr
+
+	jsonorg		JSON as defined by the program JSON_checker at json.org
 See:
 	schema.sql
 Blame:
