@@ -14,6 +14,8 @@ Schemas:
 			detail records: fdr, qdr, xdr, brr
 
 	jsonorg		JSON as defined by the program JSON_checker at json.org
+
+	prefixio	route blob requests based upon byte prefix of blob
 See:
 	schema.sql
 Blame:
