@@ -16,6 +16,8 @@ Schemas:
 	jsonorg		JSON as defined by the program JSON_checker at json.org
 
 	prefixio	route blob requests based upon byte prefix of blob
+
+	expat2		Facts derived about XML libexpat, version 2
 See:
 	schema.sql
 Blame:
