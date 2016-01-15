@@ -8,9 +8,9 @@
  *	1	some bytes do not comply to utf8 state machine
  *	2	stream is empty
  *	3	read error
+ *	4	wrong number of arguments
  *  Blame:
  *  	jmscott@setspace.com
- *  	setspace@gmail.com
  *  Note:
  *	Some interesting "pure", table driven state machine algorithms exist.
  *	For example, these links describe utf8 state recognizers that expect
@@ -33,14 +33,14 @@
  *		http://www.cl.cam.ac.uk/~mgk25/ucs/examples/UTF-8-test.txt
  */
 
-#include <ctype.h>
-#include <errno.h>
-#include <string.h>
-
 static char progname[] = "is-utf8wf";
+#define EXIT_OK		0
+#define EXIT_BAD_U8	1
+#define EXIT_EMPTY	2
+#define EXIT_BAD_READ	3
+#define EXIT_BAD_ARGC	4
 
 #define COMMON_NEED_READ
-#define EXIT_BAD_READ	2
 
 #include "../../common.c"
 
@@ -59,7 +59,7 @@ static char progname[] = "is-utf8wf";
 #define STATE_4BYTE4	6	/* goto fourth byte of 4 byte sequence */
 
 /*
- *  Bit masks up to 4 bits
+ *  Bit masks up to 4 bytes per character
  */
 #define B00000000	0x0
 #define B10000000	0x80
@@ -69,13 +69,17 @@ static char progname[] = "is-utf8wf";
 #define B11111000	0xF8
 
 int
-main()
+main(int argc, char **argv)
 {
 	unsigned char buf[4096];
 	int nread;
 	unsigned char *p_end = 0;
 	int state = STATE_START;
 	unsigned int code_point = 0;
+
+	if (argc != 1)
+		die(EXIT_BAD_ARGC, "wrong number of arguments");
+	(void)argv;
 
 	while ((nread = _read(0, buf, sizeof buf)) > 0) {
 		unsigned char *p;
@@ -125,7 +129,7 @@ main()
 				code_point = (c & ~B11111000) << 18;
 				state = STATE_4BYTE2;
 			} else
-				_exit(1);
+				_exit(EXIT_BAD_U8);
 			break;
 		/*
 		 *  Expect the second and final byte of two byte/11 bit
@@ -136,7 +140,7 @@ main()
 			 *  No continuation byte implies malformed sequence.
 			 */
 			if ((c & B11000000) != B10000000)
-				_exit(1);
+				_exit(EXIT_BAD_U8);
 			/*
 			 *  Or in the lower 6 bits of the second & final byte.
 			 */
@@ -147,7 +151,7 @@ main()
 			 *  128 must be represented with a single byte/7 bits.
 			 */
 			if (code_point < 128)
-				_exit(1);
+				_exit(EXIT_BAD_U8);
 
 			state = STATE_START;
 			break;
@@ -159,7 +163,7 @@ main()
 			 *  No continuation byte implies malformed sequence.
 			 */
 			if ((c & B11000000) != B10000000)
-				_exit(1);
+				_exit(EXIT_BAD_U8);
 			/*
 			 *  Or in the lower 6 bits of the second byte into
 			 *  bits 12 through 7 of the code point.
@@ -177,7 +181,7 @@ main()
 			 *  No continuation byte implies malformed sequence.
 			 */
 			if ((c & B11000000) != B10000000)
-				_exit(1);
+				_exit(EXIT_BAD_U8);
 			/*
 			 *  Or in the lower 6 bits of the third & final byte
 			 *  into bits 6 through 1 of the code point.
@@ -193,7 +197,7 @@ main()
 			 */
 			if (code_point < 2048 ||
 			    (0xD800 <= code_point&&code_point <= 0xDFFF))
-				_exit(1);
+				_exit(EXIT_BAD_U8);
 			state = STATE_START;
 			break;
 		/*
@@ -204,7 +208,7 @@ main()
 			 *  No continuation byte implies malformed sequence.
 			 */
 			if ((c & B11000000) != B10000000)
-				_exit(1);
+				_exit(EXIT_BAD_U8);
 			/*
 			 *  Or in the lower 6 bits of the second byte into
 			 *  bits 18 through 13 of the code point.
@@ -220,7 +224,7 @@ main()
 			 *  No continuation byte implies malformed sequence.
 			 */
 			if ((c & B11000000) != B10000000)
-				_exit(1);
+				_exit(EXIT_BAD_U8);
 			/*
 			 *  Or in the lower 6 bits of the third byte into
 			 *  bits 12 through 7 of the code point.
@@ -236,7 +240,7 @@ main()
 			 *  No continuation byte implies malformed sequence.
 			 */
 			if ((c & B11000000) != B10000000)
-				_exit(1);
+				_exit(EXIT_BAD_U8);
 			/*
 			 *  Or in the lower 6 bits of the fourth byte into
 			 *  bits 6 through 1 of the code point.
@@ -249,12 +253,12 @@ main()
 			 *  sequence.
 			 */
 			if (code_point < 65536)
-				_exit(1);
+				_exit(EXIT_BAD_U8);
 			state = STATE_START;
 			break;
 		}}
 	}
 	if (state == STATE_START)
-		_exit(p_end ? 0 : 2);
-	_exit(1);
+		_exit(p_end ? EXIT_OK : EXIT_EMPTY);
+	_exit(EXIT_BAD_U8);
 }
