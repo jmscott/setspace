@@ -19,9 +19,10 @@ endif
 
 PROG=					\
 	append-brr			\
-	RFC3339Nano			\
 	dec2pgbit			\
+	escape-json-utf8		\
 	flip-tail			\
+	RFC3339Nano			\
 	spin-wait-blob
 
 all: $(PROG) $(CGI) 
@@ -63,9 +64,10 @@ install: all
 		$(SETSPACE_PREFIX)/sbin
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-		append-brr						\
 		RFC3339Nano						\
+		append-brr						\
 		eat-blob						\
+		escape-json-utf8					\
 		flip-tail						\
 		spin-wait-blob						\
 		$(SETSPACE_PREFIX)/bin
@@ -96,6 +98,9 @@ flip-tail: flip-tail.c common.c
 
 dec2pgbit: dec2pgbit.c
 	cc -o dec2pgbit $(CFLAGS) dec2pgbit.c
+
+escape-json-utf8: escape-json-utf8.c
+	cc -o escape-json-utf8 $(CFLAGS) escape-json-utf8.c
 
 spin-wait-blob:								\
 		spin-wait-blob.pgc					\
