@@ -1,0 +1,52 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Run 'file --brief'  on blob and write json blob with answer.
+#  Usage:
+#	file-json <blob udig>
+#  Exit Status:
+#	0	ok, json blob produced
+#	1	blob does not exist
+#	2	wrong number of command line arguments
+#	3	blobio get failed
+#	4	command 'file --brief <blob> failed'
+#	5	blobio put json failed
+#  Environment:
+#	BLOBIO_SERVICE
+#	TMPDIR
+#  Note:
+#	Does 'file --brief' always generate a single line of utf8 output?
+#
+#	Should the LANG/LC_* variables be explicitly set to UTF8?
+#
+
+PROG=file-json
+
+die()
+{
+	STATUS=$2
+	echo "$PROG: ERROR: $1" >&2
+	exit $STATUS
+}
+
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
+leave()
+{
+	rm -f $TMP_BLOB
+}
+trap leave EXIT
+
+test $# = 1 || die 'wrong number of arguments' 2
+BLOB=$1
+
+#  fetch the blob
+blobio get --udig $BLOB --service $BLOBIO_SERVICE --output-path $TMP_BLOB
+STATUS=$?
+test $STATUS = 1 && exit 1
+test $STATUS = 0 || die "blobio get failed: exit status=$STATUS" 3
+
+#  call 'file --brief'
+FILE_TYPE=$(file --brief $TMP_BLOB)
+test $? = 0 || die "file --brief failed: exit status=$?"
+
+echo $FILE_TYPE

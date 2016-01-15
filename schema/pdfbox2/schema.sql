@@ -20,8 +20,8 @@ CREATE SCHEMA pdfbox2;
 COMMENT ON SCHEMA pdfbox2 IS
   'Text and metadata extracted by pdfbox.apache.org, version 2'
 ;
-DROP TABLE IF EXISTS pdfbox2.pddocument_pending cascade;
 
+DROP TABLE IF EXISTS pdfbox2.pddocument_pending cascade;
 /*
  *  Done pddocument jobs.
  *
