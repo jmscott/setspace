@@ -11,6 +11,7 @@
 #	3	blobio get failed
 #	4	command 'file --brief <blob> failed'
 #	5	blobio put json failed
+#	6	sql failed
 #  Environment:
 #	BLOBIO_SERVICE
 #	TMPDIR
@@ -29,10 +30,10 @@ die()
 	exit $STATUS
 }
 
-TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
+TMP_FILE=${TMPDIR:=/tmp}/$PROG.$$
 leave()
 {
-	rm -f $TMP_BLOB
+	rm -f $TMP_FILE
 }
 trap leave EXIT
 
@@ -40,13 +41,17 @@ test $# = 1 || die 'wrong number of arguments' 2
 BLOB=$1
 
 #  fetch the blob
-blobio get --udig $BLOB --service $BLOBIO_SERVICE --output-path $TMP_BLOB
+blobio get --udig $BLOB --service $BLOBIO_SERVICE --output-path $TMP_FILE
 STATUS=$?
 test $STATUS = 1 && exit 1
 test $STATUS = 0 || die "blobio get failed: exit status=$STATUS" 3
 
 #  call 'file --brief'
-FILE_TYPE=$(file --brief $TMP_BLOB)
+FILE_TYPE=$(file --brief $TMP_FILE)
 test $? = 0 || die "file --brief failed: exit status=$?"
 
+cat >$TMP_FILE <<END || die "cat tmp blob failed: exit status=$?" 5
+{
+	"fffile.setspace
+}
 echo $FILE_TYPE
