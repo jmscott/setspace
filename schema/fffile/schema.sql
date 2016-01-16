@@ -22,9 +22,11 @@ DROP TABLE IF EXISTS fffile.file CASCADE;
 CREATE TABLE fffile.file
 (
 	blob		udig
+				REFERENCES setspace.service(blob)
+				ON DELETE CASCADE
 				PRIMARY KEY,
 
-	//  null indicates file produces non-utf8 output
+	--  null indicates file produces non-utf8 output
 	file_type	text
 );
 COMMENT ON TABLE fffile.file IS
@@ -38,6 +40,8 @@ DROP TABLE IF EXISTS fffile.file_mime_type CASCADE;
 CREATE TABLE fffile.file_mime_type
 (
 	blob		udig
+				REFERENCES setspace.service(blob)
+				ON DELETE CASCADE
 				primary key,
 	mime_type	text
 );
@@ -52,6 +56,8 @@ DROP TABLE IF EXISTS fffile.file_mime_encoding CASCADE;
 CREATE TABLE fffile.file_mime_encoding
 (
 	blob		udig
+				REFERENCES setspace.service(blob)
+				ON DELETE CASCADE
 				primary key,
 	mime_encoding	text
 );
