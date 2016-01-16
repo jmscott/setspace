@@ -22,7 +22,9 @@ DROP TABLE IF EXISTS fffile.file CASCADE;
 CREATE TABLE fffile.file
 (
 	blob		udig
-				primary key,
+				PRIMARY KEY,
+
+	//  null indicates file produces non-utf8 output
 	file_type	text
 );
 COMMENT ON TABLE fffile.file IS
