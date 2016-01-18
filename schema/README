@@ -1,29 +1,23 @@
 Synopsis:
-	Database schemas representing facts about immutable blobs
+	Database schemas of facts about immutable blobs, using open source
 Schemas:
-	setspace	Core tables like byte_count, byte_bitmap, is_utf8wf,
+	setspace	core tables like byte_count, byte_bitmap, is_utf8wf,
 			byte_prefix_32, is_byte_json_rootish ...
 
-	pdfbox2		pdfbox.apache.org tables
+	pdfbox2		pdfbox.apache.org tables, version 2
 
-	libxml2		Well known libxml2 library for xml documents
+	libxml2		libxml2 library for xml documents
 
-	pgtexts		PostgreSQL text search for UTF8 blobs
+	pgtexts		postgreSQL text search
 
-	drblob		Tables for blob flow, query and process executable
-			detail records: fdr, qdr, xdr, brr
-
-	jsonorg		JSON as defined by the program JSON_checker at json.org
+	jsonorg		json as defined by the program JSON_checker at json.org
 
 	prefixio	route blob requests based upon byte prefix of blob
 
-	expat2		Facts derived about XML libexpat, version 2
-See:
-	schema.sql
-Blame:
-	jmscott@setspace.com
-	setspace@gmail.com
-Note:
-	Consider random 'ent' program from
+	expat2		xml libexpat, version 2
 
-		http://www.fourmilab.ch/random/
+	fffile		well known Unix "Fine Free File" command
+
+	drblob		detail billing records for setspace and blobio.
+See:
+	https://github.com/jmscott/setspace/schema/*/schema.sql
