@@ -31,3 +31,25 @@ tail brr
 {
 	path = "spool/setspace.brr";
 }
+
+sql query in_service_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	setspace.service
+	    WHERE
+	    	blob = $1::udig
+	);
+		
+	`;
+
+	result row is (
+		answer bool
+	);
+}
+
+query in_service_table(brr.udig);
