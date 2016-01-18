@@ -26,7 +26,7 @@ CREATE TABLE fffile.file
 				ON DELETE CASCADE
 				PRIMARY KEY,
 
-	--  null indicates file produces non-utf8 output
+	--  null indicates file produces non-utf8 output and exit status == 0
 	file_type	text
 );
 COMMENT ON TABLE fffile.file IS
@@ -43,6 +43,7 @@ CREATE TABLE fffile.file_mime_type
 				REFERENCES setspace.service(blob)
 				ON DELETE CASCADE
 				primary key,
+	--  null indicates file produces non-utf8 output and exit status == 0
 	mime_type	text
 );
 COMMENT ON TABLE fffile.file_mime_type IS
@@ -59,6 +60,7 @@ CREATE TABLE fffile.file_mime_encoding
 				REFERENCES setspace.service(blob)
 				ON DELETE CASCADE
 				primary key,
+	--  null indicates file produces non-utf8 output and exit status == 0
 	mime_encoding	text
 );
 COMMENT ON TABLE fffile.file_mime_encoding IS
