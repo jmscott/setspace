@@ -12,23 +12,26 @@ all:
 clean:
 	
 install: all
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 		\
+	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
 				-d $(FFFILE_PREFIX)
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 		\
+	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
 				-d $(FFFILE_PREFIX)/etc
 	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) -m u=wrx,go=	\
 				-d $(FFFILE_PREFIX)/sbin
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 		\
+	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
 				-d $(FFFILE_PREFIX)/lib
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 		\
+	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
 				-d $(FFFILE_PREFIX)/log
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 		\
+	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
+				-d $(FFFILE_PREFIX)/spool
+	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
 				-d $(FFFILE_PREFIX)/tmp
 	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) -m u=rx,go=	\
-		$(SBIN_PROGS) 						\
+		$(SBIN_PROG) 						\
 		$(FFFILE_PREFIX)/sbin
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) -m a=r	\
+	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) -m a=r		\
 		fffile.flow.example					\
+		profile.example						\
 		schema.sql						\
 		$(FFFILE_PREFIX)/lib
 

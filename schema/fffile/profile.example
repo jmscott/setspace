@@ -1,0 +1,21 @@
+#
+#  Synopsis:
+#	Profile for typical fffile server
+#  Usage:
+#	. $SETSPACE_ROOT/fffile/etc/profile
+#
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/fffile
+export TMPDIR=$SCHEMA_ROOT/tmp
+
+export FFFILE_ROOT=${FFFILE_ROOT:=$SCHEMA_ROOT}
+
+#  create the spool file so tail doesn't abort.
+#  Note: got to be a better way. perhaps flowd.tail ought to create the file.
+BRR=$SCHEMA_ROOT/spool/setspace.brr
+touch $BBR
+chmod u=rw,g=w,o= $BRR
+
+PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
+
+export BLOBIO_SERVICE=${BLOBIO_SERVICE:=localhost:1797}
+export BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=sha}
