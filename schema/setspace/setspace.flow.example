@@ -1122,7 +1122,7 @@ command append_expat2_brr
 
 call append_expat2_brr(
 	brr.start_time,
-	brr.netflow,
+	"fs~schema=expat2",
 	brr.verb,
 	brr.udig,
 	brr.chat_history,
@@ -1136,4 +1136,24 @@ call append_expat2_brr(
 	)
 	and
 	core_exists.exit_status == 0
+;
+
+command append_fffile_brr
+{
+	path = "append-brr";
+	argv = (
+		"../fffile/spool/setspace.brr"
+	);
+}
+
+call append_fffile_brr(
+	brr.start_time,
+	"fs~schema=fffile",
+	brr.verb,
+	brr.udig,
+	brr.chat_history,
+	brr.blob_size,
+	brr.wall_duration
+) when
+  	core_exists.exit_status == 0
 ;
