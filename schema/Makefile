@@ -18,6 +18,7 @@ all:
 	cd libxml2 && $(MAKE) all
 	cd pdfbox2 && $(MAKE) all
 	cd pgtexts && $(MAKE) all
+	cd fffile && $(MAKE) all
 
 clean:
 	cd setspace && $(MAKE) clean
@@ -27,6 +28,7 @@ clean:
 	cd libxml2 && $(MAKE) clean
 	cd pdfbox2 && $(MAKE) clean
 	cd pgtexts && $(MAKE) clean
+	cd fffile && $(MAKE) clean
 
 install:
 	cd setspace && $(MAKE) install
@@ -37,6 +39,7 @@ install:
 	cd prefixio && $(MAKE) install
 	cd pdfbox2 && $(MAKE) install
 	cd pgtexts && $(MAKE) install
+	cd fffile && $(MAKE) install
 	cp psqlrc.example $(SETSPACE_PREFIX)/lib/
 
 distclean:
@@ -48,4 +51,5 @@ distclean:
 	cd prefixio && $(MAKE) distclean
 	cd pdfbox2 && $(MAKE) distclean
 	cd pgtexts && $(MAKE) distclean
+	cd fffile && $(MAKE) distclean
 	rm -f $(SETSPACE_PREFIX)/lib/psqlrc.example

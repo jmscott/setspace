@@ -16,6 +16,7 @@ set search_path to
 	prefixio,
 	setspace,
 	udigset,
+	fffile,
 	public
 ;
 -- Show how long each query takes to execute
