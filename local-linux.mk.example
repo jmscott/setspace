@@ -22,6 +22,9 @@ PGHOME=/usr/local/pgsql
 PGINC=$(PGHOME)/include
 PGLIB=$(PGHOME)/lib
 
+#  The execution PATH must include the PostgreSQL C precompiler 'ecpg'.
+PATH:=$(PGHOME)/bin:$(PATH)
+
 #  strict compilation of C code
 CFLAGS=-Wall -Wextra -Werror
 
