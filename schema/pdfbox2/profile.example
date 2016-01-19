@@ -1,11 +1,8 @@
 #
 #  Synopsis:
-#	Profile for typical jsonorg server
+#	Profile for typical pdfbox2 server
 #  Usage:
-#	. $SETSPACE_ROOT/etc/profile
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
+#	. $SETSPACE_ROOT/schema/pdfbox2/etc/profile
 #  Note:
 #	Contemplate replacing env variable SCHEMA_ROOT with SETSPACE_SCHEMA
 #
