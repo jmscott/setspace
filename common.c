@@ -313,27 +313,30 @@ _fchmod(int fd, int mode)
 
 /*
  *  Convert unsigned long long to decimal ascii string.
- *  Return the pointer to next byte.
+ *  Return the pointer to byte after final digit:
+ *
+ *	*ulltoa(ull, digits) = 0;
  */
 static char *
-ulltoa(unsigned long long ull, char buf[])
+ulltoa(unsigned long long ull, char *digits)
 { 
 	char const digit[] = "0123456789";
-	char* p = buf, *end_p;
-	unsigned long long shifter = ull;
+	char* p = digits, *end_p;
+	unsigned long long power = ull;
 
 	do
 	{
 		++p;
-		shifter = shifter / 10;
-	} while(shifter);
-	*p = 0;
+		power = power / 10;
+
+	} while (power);
 	end_p = p;
 
 	do
 	{
-		*--p = digit[ull %10];
+		*--p = digit[ull % 10];
 		ull = ull / 10;
+
 	} while (ull);
 	return end_p;
 }
