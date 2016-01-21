@@ -20,4 +20,4 @@ Schemas:
 
 	drblob		detail billing records for setspace and blobio.
 See:
-	https://github.com/jmscott/setspace/schema/*/schema.sql
+	github.com/jmscott/setspace/schema/*/schema.sql
