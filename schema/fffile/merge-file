@@ -54,14 +54,18 @@ file --brief $TMP_BLOB >$TMP_FILE
 test $? = 0 || die "file command failed: exit status=$?" 5
 
 #  insure file output is proper utf8, which can be escaped
-FILE_TYPE='"'$(escape-json-utf8 <$TMP_FILE)'"'
+JSON_FILE_TYPE='"'$(escape-json-utf8 <$TMP_FILE)'"'
 STATUS=$?
+
+#  null file type indicates non-utf8 in file type string
 case $STATUS in
 0)
+	IS_NULL=no
 	EXIT_STATUS=0
 	;;
 1)
-	FILE_TYPE=null
+	IS_NULL=yes
+	JSON_FILE_TYPE=null
 	EXIT_STATUS=2
 	;;
 *)
@@ -75,7 +79,7 @@ cat >$TMP_JSON <<END || die "cat >json failed: exit status=$?" 6
 	"fffile.setspace.com": {
 		"file": {
 			"blob": 	"$FILE_BLOB",
-			"file_type":	$FILE_TYPE
+			"file_type":	$JSON_FILE_TYPE
 		},
 		"date":		"$(date)",
 		"hostname":	"$(hostname)",
@@ -97,10 +101,25 @@ test $? = 0 || die "blobio eat failed: exit status=$?" 6
 blobio put --udig $JSON_BLOB --input-path $TMP_JSON --service $BLOBIO_SERVICE
 test $? = 0 || die "blobio put failed: exit status=$?" 6
 
-#  merge file output into table fffile.file
-FILE_TYPE_SIZE=$(file-stat-size $TMP_FILE)
-test $? = 0 || die "file-stat-size failed: exit status=$?" 5
-merge-stdin-file <$TMP_FILE $FILE_BLOB $FILE_TYPE_SIZE ||
-			die "merge-stdin-file failed: exit status=$?" 7
+if [ $IS_NULL = yes ];  then
+	psql --quiet --no-psqlrc <<END
+INSERT INTO fffile.file(
+	blob,
+	file_type
+  ) VALUES(
+  	'$FILE_BLOB',
+	null
+  )  ON CONFLICT
+  	DO NOTHING
+;
+END
+else
+	#  merge file output into table fffile.file
+	FILE_TYPE_SIZE=$(file-stat-size $TMP_FILE)
+	test $? = 0 || die "file-stat-size failed: exit status=$?" 5
+
+	merge-stdin-file <$TMP_FILE $FILE_BLOB $FILE_TYPE_SIZE ||
+				die "merge-stdin-file failed: exit status=$?" 7
+fi
 
 exit $EXIT_STATUS
