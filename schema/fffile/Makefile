@@ -31,6 +31,8 @@ install: all
 	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
 				-d $(FFFILE_PREFIX)/lib
 	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
+				-d $(FFFILE_PREFIX)/src
+	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
 				-d $(FFFILE_PREFIX)/log
 	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
 				-d $(FFFILE_PREFIX)/spool
@@ -45,6 +47,11 @@ install: all
 		rummy.sql						\
 		schema.sql						\
 		$(FFFILE_PREFIX)/lib
+	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) -m a=r		\
+		merge-stdin-file.pgc					\
+		merge-stdin-file_mime_encoding.pgc			\
+		merge-stdin-file_mime_type.pgc				\
+		$(FFFILE_PREFIX)/src
 
 frisk ff:
 	flowd frisk fffile.flow.example
@@ -52,6 +59,7 @@ frisk ff:
 distclean:
 	rm -rf $(FFFILE_PREFIX)/lib
 	rm -rf $(FFFILE_PREFIX)/sbin
+	rm -rf $(FFFILE_PREFIX)/src
 
 merge-stdin-file:							\
 		merge-stdin-file.pgc					\
