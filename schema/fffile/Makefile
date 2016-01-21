@@ -42,6 +42,7 @@ install: all
 	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) -m a=r		\
 		fffile.flow.example					\
 		profile.example						\
+		rummy.sql						\
 		schema.sql						\
 		$(FFFILE_PREFIX)/lib
 
