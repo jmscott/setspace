@@ -7,10 +7,10 @@
 
 boot
 {
-	brr_capacity = 16;
+	brr_capacity = 32;
 	flow_worker_count = 8;
-	os_exec_worker_count = 4;
-	os_exec_capacity = 4;
+	os_exec_worker_count = 8;
+	os_exec_capacity = 8;
 
 	xdr_roll_duration = "24h";
 	fdr_roll_duration = "24h";
