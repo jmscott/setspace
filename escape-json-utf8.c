@@ -87,7 +87,7 @@ escape_ascii(unsigned char c)
 	} else if (c == '\b') {
 		out('\\');
 		out('b');
-	} else if (0 <= c&&c <= 31) {
+	} else if (c <= 31) {
 		static char *control_hex[32] = {
 			"00", "01", "02", "03", "04", "05", "06", "07",
 			"08", "09", "0a", "0b", "0c", "0d", "0e", "0f",
