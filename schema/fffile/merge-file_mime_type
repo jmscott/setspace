@@ -19,6 +19,8 @@
 #  Note:
 #	Should the LANG/LC_* variables be explicitly set to UTF8?
 #
+#	Code is broken when output is not utf8!
+#
 
 PROG=merge-file_mime_type
 
