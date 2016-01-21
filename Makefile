@@ -21,6 +21,7 @@ PROG=					\
 	append-brr			\
 	dec2pgbit			\
 	escape-json-utf8		\
+	file-stat-size			\
 	flip-tail			\
 	RFC3339Nano			\
 	spin-wait-blob
@@ -68,6 +69,7 @@ install: all
 		append-brr						\
 		eat-blob						\
 		escape-json-utf8					\
+		file-stat-size						\
 		flip-tail						\
 		spin-wait-blob						\
 		$(SETSPACE_PREFIX)/bin
@@ -95,6 +97,9 @@ RFC3339Nano: RFC3339Nano.c common.c macosx.c macosx.h
 
 flip-tail: flip-tail.c common.c
 	cc -o flip-tail $(CFLAGS) flip-tail.c
+
+file-stat-size: file-stat-size.c common.c
+	cc -o file-stat-size $(CFLAGS) file-stat-size.c
 
 dec2pgbit: dec2pgbit.c
 	cc -o dec2pgbit $(CFLAGS) dec2pgbit.c
