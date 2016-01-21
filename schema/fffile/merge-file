@@ -17,8 +17,6 @@
 #	BLOBIO_SERVICE
 #	TMPDIR
 #  Note:
-#	Does 'file --brief' always generate a single line of utf8 output?
-#
 #	Should the LANG/LC_* variables be explicitly set to UTF8?
 #
 
