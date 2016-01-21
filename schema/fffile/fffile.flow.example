@@ -124,3 +124,40 @@ call merge_file_mime_type(brr.udig)
   when
   	in_file_mime_type_table.answer == false
 ;
+
+#
+#  Populate table fffile.file_mime_encoding
+#
+sql query in_file_mime_encoding_table row
+{
+	statement = `
+	
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	fffile.file_mime_encoding
+	    WHERE
+	    	blob = $1::udig
+	)
+	`;
+
+	result row is (
+		answer bool
+	);
+}
+
+query in_file_mime_encoding_table(brr.udig)
+  when
+  	in_service_table.answer == true
+;
+
+command merge_file_mime_encoding
+{
+	path = "sbin/merge-file_mime_encoding";
+}
+
+call merge_file_mime_encoding(brr.udig)
+  when
+  	in_file_mime_encoding_table.answer == false
+;

@@ -1,0 +1,107 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Run 'file --mime-encoding --brief' on blob, write json and tuple to PgSQL.
+#  Usage:
+#	merge-file_mime_encoding <blob udig>
+#  Exit Status:
+#	0	ok
+#	1	blob does not exist
+#	2	file --mime-encoding output is not utf8
+#	3	wrong number of command line arguments
+#	4	blobio get failed
+#	5	command 'file --mime-encoding --brief <blob> failed'
+#	6	blobio put json failed
+#	7	sql merge failed
+#  Environment:
+#	BLOBIO_SERVICE
+#	TMPDIR
+#  Note:
+#	Should the LANG/LC_* variables be explicitly set to UTF8?
+#
+
+PROG=merge-file_mime_encoding
+
+die()
+{
+	STATUS=$2
+	echo "$PROG: ERROR: $1" >&2
+	exit $STATUS
+}
+
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG.blob.$$
+TMP_MIME_ENCODING=${TMPDIR:=/tmp}/$PROG.mime.$$
+TMP_JSON=${TMPDIR:=/tmp}/$PROG.json.$$
+TMP_UTF8=${TMPDIR:=/tmp}/$PROG.utf8.$$
+
+leave()
+{
+	rm -f $TMP_BLOB $TMP_MIME_ENCODING $TMP_JSON $TMP_UTF8
+}
+trap leave EXIT
+
+test $# = 1 || die 'wrong number of arguments' 3
+FILE_BLOB=$1
+
+#  fetch the blob
+blobio get --udig $FILE_BLOB --service $BLOBIO_SERVICE --output-path $TMP_BLOB
+STATUS=$?
+test $STATUS = 1 && exit 1
+test $STATUS = 0 || die "blobio get failed: exit status=$STATUS" 4
+
+#  call 'file --mime-encoding --brief'
+file --mime-encoding --brief $TMP_BLOB >$TMP_MIME_ENCODING
+test $? = 0 || die "file --mime-encoding command failed: exit status=$?" 5
+
+#  insure file output is proper utf8, which can be escaped
+MIME_ENCODING='"'$(escape-json-utf8 <$TMP_MIME_ENCODING)'"'
+STATUS=$?
+case $STATUS in
+0)
+	EXIT_STATUS=0
+	;;
+1)
+	MIME_ENCODING=null
+	EXIT_STATUS=2
+	;;
+*)
+	die "escape-json-utf8 failed: exit status=$STATUS" 5
+	;;
+esac
+
+#  build the json blob
+cat >$TMP_JSON <<END || die "cat >json failed: exit status=$?" 6
+{
+	"fffile.setspace.com": {
+		"file_mime_encoding": {
+			"blob": 	"$FILE_BLOB",
+			"mime_encoding":	$MIME_ENCODING
+		},
+		"date":		"$(date)",
+		"hostname":	"$(hostname)",
+		"env":	{
+			"USER":		"$USER"
+		},
+		"process_id":	$$
+	}
+}
+END
+
+JSON_BLOB=$BLOBIO_ALGORITHM:$(
+	blobio eat							\
+		--input-path $TMP_JSON					\
+		--algorithm $BLOBIO_ALGORITHM
+)
+test $? = 0 || die "blobio eat failed: exit status=$?" 6
+
+blobio put --udig $JSON_BLOB --input-path $TMP_JSON --service $BLOBIO_SERVICE
+test $? = 0 || die "blobio put failed: exit status=$?" 6
+
+#  merge file output into table fffile.file_mime_encoding
+MIME_ENCODING_SIZE=$(file-stat-size $TMP_MIME_ENCODING)
+test $? = 0 || die "file-stat-size failed: exit status=$?" 5
+merge-stdin-file_mime_encoding 						\
+	<$TMP_MIME_ENCODING $FILE_BLOB $MIME_ENCODING_SIZE		||
+		die "merge-stdin-file_mime_encoding failed: exit status=$?" 7
+
+exit $EXIT_STATUS

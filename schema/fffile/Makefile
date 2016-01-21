@@ -7,15 +7,20 @@ include ../../local.mk
 
 SBIN_PROG=								\
 	merge-file							\
+	merge-file_mime_encoding					\
 	merge-file_mime_type						\
 	merge-stdin-file						\
+	merge-stdin-file_mime_encoding					\
 	merge-stdin-file_mime_type
 
 all: $(SBIN_PROG)
 
 clean:
-	rm -f merge-stdin-file merge-stdin-file_mime_type
-	
+	rm -f								\
+		merge-stdin-file					\
+		merge-stdin-file_mime_type				\
+		merge-stdin-file_mime_encoding
+
 install: all
 	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
 				-d $(FFFILE_PREFIX)
@@ -64,3 +69,12 @@ merge-stdin-file_mime_type:						\
 	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-file_mime_type.c 	\
 		-o merge-stdin-file_mime_type -L$(PGLIB) -lecpg
 	rm merge-stdin-file_mime_type.c
+
+merge-stdin-file_mime_encoding:						\
+		merge-stdin-file_mime_encoding.pgc			\
+		../../common.c						\
+		../../common-ecpg.c
+	ecpg merge-stdin-file_mime_encoding.pgc
+	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-file_mime_encoding.c 	\
+		-o merge-stdin-file_mime_encoding -L$(PGLIB) -lecpg
+	rm merge-stdin-file_mime_encoding.c
