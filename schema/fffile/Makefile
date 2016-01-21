@@ -5,9 +5,9 @@
 include ../schema.mk
 include ../../local.mk
 
-SBIN_PROG=file-json
+SBIN_PROG=merge-file merge-stdin-file
 
-all:
+all: $(SBIN_PROG)
 
 clean:
 	
@@ -41,3 +41,12 @@ frisk ff:
 distclean:
 	rm -rf $(FFFILE_PREFIX)/lib
 	rm -rf $(FFFILE_PREFIX)/sbin
+
+merge-stdin-file:							\
+		merge-stdin-file.pgc					\
+		../../common.c						\
+		../../common-ecpg.c
+	ecpg merge-stdin-file.pgc
+	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-file.c 		\
+		-o merge-stdin-file -L$(PGLIB) -lecpg
+	rm merge-stdin-file.c

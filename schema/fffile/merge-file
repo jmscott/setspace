@@ -1,17 +1,18 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Run 'file --brief'  on blob and write json blob with answer.
+#	Run 'file --brief' on blob and write json blob and tuple to postgresql.
 #  Usage:
-#	file-json <blob udig>
+#	merge-file <blob udig>
 #  Exit Status:
-#	0	ok, json blob produced
+#	0	ok
 #	1	blob does not exist
 #	2	file output is not utf8
 #	3	wrong number of command line arguments
 #	4	blobio get failed
 #	5	command 'file --brief <blob> failed'
 #	6	blobio put json failed
+#	7	sql merge failed
 #  Environment:
 #	BLOBIO_SERVICE
 #	TMPDIR
@@ -21,7 +22,7 @@
 #	Should the LANG/LC_* variables be explicitly set to UTF8?
 #
 
-PROG=file-json
+PROG=merge-file
 
 die()
 {
@@ -42,10 +43,10 @@ leave()
 trap leave EXIT
 
 test $# = 1 || die 'wrong number of arguments' 3
-BLOB=$1
+FILE_BLOB=$1
 
 #  fetch the blob
-blobio get --udig $BLOB --service $BLOBIO_SERVICE --output-path $TMP_BLOB
+blobio get --udig $FILE_BLOB --service $BLOBIO_SERVICE --output-path $TMP_BLOB
 STATUS=$?
 test $STATUS = 1 && exit 1
 test $STATUS = 0 || die "blobio get failed: exit status=$STATUS" 4
@@ -75,7 +76,7 @@ cat >$TMP_JSON <<END || die "cat >json failed: exit status=$?" 6
 {
 	"fffile.setspace.com": {
 		"file": {
-			"blob": 	"$BLOB",
+			"blob": 	"$FILE_BLOB",
 			"file_type":	$FILE_TYPE
 		},
 		"date":		"$(date)",
@@ -88,13 +89,20 @@ cat >$TMP_JSON <<END || die "cat >json failed: exit status=$?" 6
 }
 END
 
-BLOB=$BLOBIO_ALGORITHM:$(
+JSON_BLOB=$BLOBIO_ALGORITHM:$(
 	blobio eat							\
 		--input-path $TMP_JSON					\
 		--algorithm $BLOBIO_ALGORITHM
 )
 test $? = 0 || die "blobio eat failed: exit status=$?" 6
 
-blobio put --udig $BLOB --input-path $TMP_JSON --service $BLOBIO_SERVICE
+blobio put --udig $JSON_BLOB --input-path $TMP_JSON --service $BLOBIO_SERVICE
 test $? = 0 || die "blobio put failed: exit status=$?" 6
+
+#  merge file output into table fffile.file
+FILE_TYPE_SIZE=$(file-stat-size $TMP_FILE)
+test $? = 0 || die "file-stat-size failed: exit status=$?" 5
+merge-stdin-file <$TMP_FILE $FILE_BLOB $FILE_TYPE_SIZE ||
+			die "merge-stdin-file failed: exit status=$?" 7
+
 exit $EXIT_STATUS

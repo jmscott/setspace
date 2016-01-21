@@ -53,3 +53,27 @@ sql query in_service_table row
 }
 
 query in_service_table(brr.udig);
+
+sql query in_file_table row
+{
+	statement = `
+	
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	fffile.file
+	    WHERE
+	    	blob = $1::udig
+	)
+	`;
+
+	result row is (
+		answer bool
+	);
+}
+
+query in_file_table(brr.udig)
+  when
+  	in_service_table.answer == false
+;
