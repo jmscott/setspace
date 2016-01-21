@@ -5,11 +5,16 @@
 include ../schema.mk
 include ../../local.mk
 
-SBIN_PROG=merge-file merge-stdin-file
+SBIN_PROG=								\
+	merge-file							\
+	merge-file_mime_type						\
+	merge-stdin-file						\
+	merge-stdin-file_mime_type
 
 all: $(SBIN_PROG)
 
 clean:
+	rm -f merge-stdin-file merge-stdin-file_mime_type
 	
 install: all
 	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
@@ -50,3 +55,12 @@ merge-stdin-file:							\
 	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-file.c 		\
 		-o merge-stdin-file -L$(PGLIB) -lecpg
 	rm merge-stdin-file.c
+
+merge-stdin-file_mime_type:						\
+		merge-stdin-file_mime_type.pgc				\
+		../../common.c						\
+		../../common-ecpg.c
+	ecpg merge-stdin-file_mime_type.pgc
+	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-file_mime_type.c 	\
+		-o merge-stdin-file_mime_type -L$(PGLIB) -lecpg
+	rm merge-stdin-file_mime_type.c

@@ -75,5 +75,52 @@ sql query in_file_table row
 
 query in_file_table(brr.udig)
   when
-  	in_service_table.answer == false
+  	in_service_table.answer == true
+;
+
+command merge_file
+{
+	path = "sbin/merge-file";
+}
+
+call merge_file(brr.udig)
+  when
+  	in_file_table.answer == false
+;
+
+#
+#  Populate table file_mime_type
+#
+sql query in_file_mime_type_table row
+{
+	statement = `
+	
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	fffile.file_mime_type
+	    WHERE
+	    	blob = $1::udig
+	)
+	`;
+
+	result row is (
+		answer bool
+	);
+}
+
+query in_file_mime_type_table(brr.udig)
+  when
+  	in_service_table.answer == true
+;
+
+command merge_file_mime_type
+{
+	path = "sbin/merge-file_mime_type";
+}
+
+call merge_file_mime_type(brr.udig)
+  when
+  	in_file_mime_type_table.answer == false
 ;
