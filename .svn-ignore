@@ -4,6 +4,7 @@ dec2pgbit
 escape-json-utf8
 file-stat-size
 flip-tail
+is-utf8wf
 local.mk
 macosx.o
 spin-wait-blob

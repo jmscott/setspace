@@ -18,12 +18,13 @@ ifeq "$(shell uname)" "Linux"
 endif
 
 PROG=					\
+	RFC3339Nano			\
 	append-brr			\
 	dec2pgbit			\
 	escape-json-utf8		\
 	file-stat-size			\
 	flip-tail			\
-	RFC3339Nano			\
+	is-utf8wf			\
 	spin-wait-blob
 
 all: $(PROG) $(CGI) 
@@ -71,6 +72,7 @@ install: all
 		escape-json-utf8					\
 		file-stat-size						\
 		flip-tail						\
+		is-utf8wf						\
 		spin-wait-blob						\
 		$(SETSPACE_PREFIX)/bin
 
@@ -106,6 +108,9 @@ dec2pgbit: dec2pgbit.c
 
 escape-json-utf8: escape-json-utf8.c
 	cc -o escape-json-utf8 $(CFLAGS) escape-json-utf8.c
+
+is-utf8wf: is-utf8wf.c
+	cc -o is-utf8wf $(CFLAGS) is-utf8wf.c
 
 spin-wait-blob:								\
 		spin-wait-blob.pgc					\

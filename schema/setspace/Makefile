@@ -22,7 +22,6 @@ COMPILED=								\
 	is-byte-hex-40							\
 	is-sha-udigish							\
 	is-udigish							\
-	is-utf8wf							\
 	new-line-count
 
 all: $(COMPILED)
@@ -57,7 +56,6 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		has-byte-json-bracket					\
 		has-byte-xml-bracket				\
 		is-udigish						\
-		is-utf8wf						\
 		merge-byte_bitmap					\
 		merge-byte_count					\
 		merge-byte_prefix_32					\
@@ -83,7 +81,6 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		has-byte-xml-bracket.c					\
 		is-sha-udigish.c					\
 		is-udigish.c						\
-		is-utf8wf.c						\
 		Makefile						\
 		new-line-count.c					\
 		$(SETSPACE_SCHEMA_PREFIX)/src
@@ -107,9 +104,6 @@ byte-count: byte-count.c ../../common.c
 
 byte-prefix-32: byte-prefix-32.c ../../common.c
 	cc -o byte-prefix-32 $(CFLAGS) byte-prefix-32.c
-
-is-utf8wf: is-utf8wf.c ../../common.c
-	cc -o is-utf8wf $(CFLAGS) is-utf8wf.c
 
 is-udigish: is-udigish.c ../../common.c
 	cc -o is-udigish $(CFLAGS) is-udigish.c

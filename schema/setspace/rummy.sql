@@ -39,11 +39,6 @@ select
 	  	bm.blob is null
 	) as "No byte_bitmap Total",
 
-	/*
-	 *  Note:
-	 *	eventually blobs containing 0xff or 0xfe will not bm
-	 *	not bm counted in is-utf8wf.
-	 */
 	(select
 		count(*)
 	  from

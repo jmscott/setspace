@@ -42,7 +42,7 @@ static char progname[] = "is-utf8wf";
 
 #define COMMON_NEED_READ
 
-#include "../../common.c"
+#include "common.c"
 
 /*
  *  States of scanner.
