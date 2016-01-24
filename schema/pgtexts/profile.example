@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Profile for typical jsonorg server
+#	Profile for typical pgtexts server
 #  Usage:
 #	. $SETSPACE_ROOT/etc/profile
 #  Blame:
