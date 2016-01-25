@@ -60,10 +60,10 @@ install: all
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m u=rx		\
 		$(PROGS)						\
 		append-pgtexts-brr					\
-		cron-merge-json						\
 		cron-append-pgtexts-brr					\
+		cron-merge-json						\
 		extract_utf82pg						\
-		pddocument2pg						\
+		merge-pddocument					\
 		wait-utf8-byte_count					\
 		$(PDFBOX2_PREFIX)/sbin
 

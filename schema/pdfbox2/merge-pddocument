@@ -3,7 +3,7 @@
 #  Synopsis:
 #	Extract the PDDocument scalars from PDF and merge into PostgreSQL
 #  Usage:
-#	json-pddocument2pg <udig>
+#	merge-pddocument <udig>
 #  Exit Status:
 #	0	ok, extracted pddocument info and stored into PostgreSQL
 #	1	pdf load failed (but still stored in PG)
@@ -19,7 +19,7 @@
 #	How do we know the output of putPDDocument is always UTF-8?
 #
 
-PROG=pddocument2pg
+PROG=merge-pddocument
 
 TMP_BLOB=${TMP_DIR:=/tmp}/$PROG-$$.pdf
 TMP_ERR=${TMP_DIR:=/tmp}/$PROG-$$.err
@@ -64,7 +64,6 @@ esac
 #  execute the java extract.  although we expect only 0 and no stderr,
 #  0 with stderr is normal.  an exit status os 1 indicates a failed load
 #  of the pdf file.
-#  
 
 java -cp $CLASSPATH putPDDocument <$TMP_BLOB >$TMP_ROW 2>$TMP_ERR
 EXIT_STATUS=$?
@@ -103,19 +102,30 @@ case $EXIT_STATUS in
 	;;
 esac
 
-#  handle reasonable error parsing pdf
+#  pddocument succeeded (although pdf may be unloadable),
+#  so a tuple will be merged into PostgreSQL.
+#  log any stderr to our stderr for easy debugging.
+
 if [ -s $TMP_ERR ];  then
 	ERROR 'java pdf load failed (ok), stderr follows'
 	cat $TMP_ERR
+
+	#  get the digest of stderr output file
+
 	D=$(
 		blobio eat						\
 			--algorithm $BLOBIO_ALGORITHM			\
 			--input-path $TMP_ERR
 	)
 	test $? = 0 || die "blobio eat stderr failed: exit status=$?" 4
+
+	#  put the standard error blob
+
 	UD=$BLOBIO_ALGORITHM:$D
 	blobio put --udig $UD --input-path $TMP_ERR --service $BLOBIO_SERVICE
 	test $? = 0 || die "blobio put stderr failed: exit status=$?" 4
+
+	#  record for the write to the table.
 	STDERR_BLOB="\"$UD\""
 	ERROR "stderr blob: $UD"
 	SQL_STDERR_BLOB="'$UD'"

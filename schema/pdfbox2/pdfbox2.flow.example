@@ -202,13 +202,13 @@ query merge_pddocument_pending(brr.udig)
   	in_pddocument_pending_table.answer == false
 ;
 
-command pddocument2pg
+command merge_pddocument
 {
-	path = "sbin/pddocument2pg";
+	path = "sbin/merge-pddocument";
 	exit_status is OK when in {0, 1};
 }
 
-call pddocument2pg(brr.udig)
+call merge_pddocument(brr.udig)
   when
   	merge_pddocument_pending.inserted == true
 ;
@@ -222,7 +222,7 @@ call pddocument_exists(brr.udig)
   when
   	in_pddocument_table.is_pdf == true
   	or
-  	pddocument2pg.exit_status == 0
+  	merge_pddocument.exit_status == 0
 ;
 
 sql query in_extract_utf8_table row
