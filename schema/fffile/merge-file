@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Run 'file --brief' on blob and write json blob and tuple to postgresql.
+#	Run 'file --brief' on blob and write tuple to postgresql.
 #  Usage:
 #	merge-file <blob udig>
 #  Exit Status:
@@ -11,8 +11,7 @@
 #	3	wrong number of command line arguments
 #	4	blobio get failed
 #	5	command 'file --brief <blob> failed'
-#	6	blobio put json failed
-#	7	sql merge failed
+#	6	sql merge failed
 #  Environment:
 #	BLOBIO_SERVICE
 #	TMPDIR
@@ -31,33 +30,35 @@ die()
 
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG.blob.$$
 TMP_FILE=${TMPDIR:=/tmp}/$PROG.file.$$
-TMP_JSON=${TMPDIR:=/tmp}/$PROG.json.$$
-TMP_UTF8=${TMPDIR:=/tmp}/$PROG.utf8.$$
 
 leave()
 {
-	rm -f $TMP_BLOB $TMP_FILE $TMP_JSON $TMP_UTF8
+	rm -f $TMP_BLOB $TMP_FILE
 }
 trap leave EXIT
 
 test $# = 1 || die 'wrong number of arguments' 3
 FILE_BLOB=$1
 
-#  fetch the blob
+#  fetch the blob into temporary file
+
 blobio get --udig $FILE_BLOB --service $BLOBIO_SERVICE --output-path $TMP_BLOB
 STATUS=$?
 test $STATUS = 1 && exit 1
 test $STATUS = 0 || die "blobio get failed: exit status=$STATUS" 4
 
-#  call 'file --brief'
+#  call 'file --brief' and save output to temp file
+
 file --brief $TMP_BLOB >$TMP_FILE
 test $? = 0 || die "file command failed: exit status=$?" 5
 
-#  insure file output is proper utf8, which can be escaped
-JSON_FILE_TYPE='"'$(escape-json-utf8 <$TMP_FILE)'"'
+#  insure file output is proper utf8
+
+is-utf8wf <$TMP_FILE
 STATUS=$?
 
 #  null file type indicates non-utf8 in file type string
+
 case $STATUS in
 0)
 	IS_NULL=no
@@ -65,43 +66,23 @@ case $STATUS in
 	;;
 1)
 	IS_NULL=yes
-	JSON_FILE_TYPE=null
 	EXIT_STATUS=2
 	;;
 *)
-	die "escape-json-utf8 failed: exit status=$STATUS" 5
+	die "is-utf8wf failed: exit status=$STATUS" 5
 	;;
 esac
 
-#  build the json blob
-cat >$TMP_JSON <<END || die "cat >json failed: exit status=$?" 6
-{
-	"fffile.setspace.com": {
-		"file": {
-			"blob": 	"$FILE_BLOB",
-			"file_type":	$JSON_FILE_TYPE
-		},
-		"date":		"$(date)",
-		"hostname":	"$(hostname)",
-		"env":	{
-			"USER":		"$USER"
-		},
-		"process_id":	$$
-	}
-}
-END
+if [ $IS_NULL = no ];  then
 
-JSON_BLOB=$BLOBIO_ALGORITHM:$(
-	blobio eat							\
-		--input-path $TMP_JSON					\
-		--algorithm $BLOBIO_ALGORITHM
-)
-test $? = 0 || die "blobio eat failed: exit status=$?" 6
+	#  stat the size of the temp file with utf8
+	FILE_TYPE_SIZE=$(file-stat-size $TMP_FILE)
+	test $? = 0 || die "file-stat-size failed: exit status=$?" 5
 
-blobio put --udig $JSON_BLOB --input-path $TMP_JSON --service $BLOBIO_SERVICE
-test $? = 0 || die "blobio put failed: exit status=$?" 6
-
-if [ $IS_NULL = yes ];  then
+	#  merge the output of file command into table fffile.file
+	merge-stdin-file <$TMP_FILE $FILE_BLOB $FILE_TYPE_SIZE ||
+				die "merge-stdin-file failed: exit status=$?" 6
+else
 	psql --quiet --no-psqlrc <<END
 INSERT INTO fffile.file(
 	blob,
@@ -113,13 +94,7 @@ INSERT INTO fffile.file(
   	DO NOTHING
 ;
 END
-else
-	#  merge file output into table fffile.file
-	FILE_TYPE_SIZE=$(file-stat-size $TMP_FILE)
-	test $? = 0 || die "file-stat-size failed: exit status=$?" 5
-
-	merge-stdin-file <$TMP_FILE $FILE_BLOB $FILE_TYPE_SIZE ||
-				die "merge-stdin-file failed: exit status=$?" 7
+	test $? = 0 || die "psql null insert failed: exit status=$?" 6
 fi
 
 exit $EXIT_STATUS

@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Run 'file --mime-type --brief' on blob, write json and tuple to PgSQL.
+#	Run 'file --mime-type --brief' on blob and answer to PostgreSQL.
 #  Usage:
 #	merge-file_mime_type <blob udig>
 #  Exit Status:
@@ -11,15 +11,12 @@
 #	3	wrong number of command line arguments
 #	4	blobio get failed
 #	5	command 'file --mime-type --brief <blob> failed'
-#	6	blobio put json failed
-#	7	sql merge failed
+#	6	sql merge failed
 #  Environment:
 #	BLOBIO_SERVICE
 #	TMPDIR
 #  Note:
 #	Should the LANG/LC_* variables be explicitly set to UTF8?
-#
-#	Code is broken when output is not utf8!
 #
 
 PROG=merge-file_mime_type
@@ -33,12 +30,10 @@ die()
 
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG.blob.$$
 TMP_MIME_TYPE=${TMPDIR:=/tmp}/$PROG.mime.$$
-TMP_JSON=${TMPDIR:=/tmp}/$PROG.json.$$
-TMP_UTF8=${TMPDIR:=/tmp}/$PROG.utf8.$$
 
 leave()
 {
-	rm -f $TMP_BLOB $TMP_MIME_TYPE $TMP_JSON $TMP_UTF8
+	rm -f $TMP_BLOB $TMP_MIME_TYPE
 }
 trap leave EXIT
 
@@ -46,63 +41,58 @@ test $# = 1 || die 'wrong number of arguments' 3
 FILE_BLOB=$1
 
 #  fetch the blob
+
 blobio get --udig $FILE_BLOB --service $BLOBIO_SERVICE --output-path $TMP_BLOB
 STATUS=$?
 test $STATUS = 1 && exit 1
 test $STATUS = 0 || die "blobio get failed: exit status=$STATUS" 4
 
 #  call 'file --mime-type --brief'
+
 file --mime-type --brief $TMP_BLOB >$TMP_MIME_TYPE
 test $? = 0 || die "file --mime-type command failed: exit status=$?" 5
 
-#  insure file output is proper utf8, which can be escaped
-MIME_TYPE='"'$(escape-json-utf8 <$TMP_MIME_TYPE)'"'
+#  insure file output is proper utf8
+
+is-utf8wf <$TMP_MIME_TYPE
 STATUS=$?
 case $STATUS in
 0)
+	IS_NULL=no
 	EXIT_STATUS=0
 	;;
 1)
-	MIME_TYPE=null
+	IS_NULL=yes
 	EXIT_STATUS=2
 	;;
 *)
-	die "escape-json-utf8 failed: exit status=$STATUS" 5
+	die "is-utf8wf failed: exit status=$STATUS" 5
 	;;
 esac
 
-#  build the json blob
-cat >$TMP_JSON <<END || die "cat >json failed: exit status=$?" 6
-{
-	"fffile.setspace.com": {
-		"file_mime_type": {
-			"blob": 	"$FILE_BLOB",
-			"mime_type":	$MIME_TYPE
-		},
-		"date":		"$(date)",
-		"hostname":	"$(hostname)",
-		"env":	{
-			"USER":		"$USER"
-		},
-		"process_id":	$$
-	}
-}
+if [ $IS_NULL = no ];  then
+	#  calculate the size of file output
+
+	MIME_TYPE_SIZE=$(file-stat-size $TMP_MIME_TYPE)
+	test $? = 0 || die "file-stat-size failed: exit status=$?" 5
+
+	#  merge utf8 output of file command into table fffile.file_mime_type
+
+	merge-stdin-file_mime_type <$TMP_MIME_TYPE $FILE_BLOB $MIME_TYPE_SIZE ||
+		die "merge-stdin-file_mime_type failed: exit status=$?" 6
+else
+	psql --quiet --no-psqlrc <<END
+INSERT INTO fffile.file_mime_type(
+	blob,
+	file_type
+  ) VALUES(
+  	'$FILE_BLOB',
+	null
+  ) ON CONFLICT
+  	DO NOTHING
+;
 END
-
-JSON_BLOB=$BLOBIO_ALGORITHM:$(
-	blobio eat							\
-		--input-path $TMP_JSON					\
-		--algorithm $BLOBIO_ALGORITHM
-)
-test $? = 0 || die "blobio eat failed: exit status=$?" 6
-
-blobio put --udig $JSON_BLOB --input-path $TMP_JSON --service $BLOBIO_SERVICE
-test $? = 0 || die "blobio put failed: exit status=$?" 6
-
-#  merge file output into table fffile.file_mime_type
-MIME_TYPE_SIZE=$(file-stat-size $TMP_MIME_TYPE)
-test $? = 0 || die "file-stat-size failed: exit status=$?" 5
-merge-stdin-file_mime_type <$TMP_MIME_TYPE $FILE_BLOB $MIME_TYPE_SIZE ||
-		die "merge-stdin-file_mime_type failed: exit status=$?" 7
+	test $? = 0 || die "psql null failed: exit status=$?" 6
+fi
 
 exit $EXIT_STATUS
