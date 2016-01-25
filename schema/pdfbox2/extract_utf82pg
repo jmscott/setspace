@@ -1,18 +1,18 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Extract UTF8 text from PDF, store results in json blob and pg database.
+#	Extract UTF8 text from PDF and store results in PostgreSQL.
 #  Usage:
-#	extract_utf82pg <udig>
+#	merge-extract_utf8 <udig>
 #  Exit Status:
-#	0	extracted utf8 text and stored json blob
-#	1	pdf failed to load
+#	0	extracted utf8 text and tuple stored in PostgreSQL
+#	1	pdf failed to load and tuple stored in PostgreSQL
 #	2	blob does not exist
 #	3	wrong number of arguments
 #	4	PDFBOX2_JAR not defined or file does not exist
 #	5	blobio error
-#	6	json error
-#	7	java ExtractText unexpected exit status
+#	6	java ExtractText unexpected exit status
+#	7	Error proving extracted text is well formed UTF8
 #	8	pg database error
 #  Java Environment:
 #	The jar of pdfbox, version 2, must be in the CLASSPATH.
@@ -21,20 +21,21 @@
 #	BLOBIO_SERVICE=${BLOBIO_SERVICE:=localhost:1797}
 #	PDFBOX2_JAR
 #  Note:
-#	I have seen extract_utg8_pending inserted but not cleared.
-#	May have a race condition.
+#	Why does ExtractText depend on explicit jar file.  Seems like
+#	setting CLASSPATH ought to good enough.
 #
 
-PROG=extract_utf82pg
+PROG=merge-extract_utf8
 
 TMP_BLOB=${TMP_DIR:=/tmp}/$PROG-$$.pdf
 TMP_ERR=${TMP_DIR:=/tmp}/$PROG-$$.err
 TMP_UTF8=${TMP_DIR:=/tmp}/$PROG-$$.utf8
-TMP_JSON=${TMP_DIR:=/tmp}/$PROG-$$.json
 
 leave()
 {
-	rm -f $TMP_BLOB $TMP_ERR $TMP_UTF8 $TMP_JSON
+	#  Note:  can rm changed exit status of script?
+
+	rm -f $TMP_BLOB $TMP_ERR $TMP_UTF8
 }
 trap leave EXIT
 
@@ -45,16 +46,44 @@ die()
 	exit $STATUS
 }
 
-test $# = 1 || die 'wrong number of arguments' 3
-UDIG=$1
+put_file()
+{
+	FP=$1
+	if [ ! -s $FP ];  then
+		echo null
+		return 0
+	fi
+	WHAT=$2
 
-#  Note: ought to be in CLASSPATH!
+	DIG=$(
+		blobio eat					\
+			--input-path $FP			\
+			--algorithm $BLOBIO_ALGORITHM		\
+	)
+	test $? = 0 ||  die "$WHAT: blobio eat failed: exit status=$?" 5
+
+	#  write the blob
+
+	FILE_UDIG=$BLOBIO_ALGORITHM:$DIG
+	blobio put --udig $FILE_UDIG --input-path $FP --service $BLOBIO_SERVICE
+	test $? = 0 || die "$WHAT: blobio put failed: exit status=$?" 5
+
+	#  stringify udig for postgresql
+
+	echo "'"$FILE_UDIG"'"
+}
+
+test $# = 1 || die 'wrong number of arguments' 3
+PDF_UDIG=$1
+
+#  Note: why not just CLASSPATH?
+
 test -n "$PDFBOX2_JAR" || die "environment not defined: PDFBOX2_JAR" 4
 test -e $PDFBOX2_JAR || die "jar file does not exist: $PDFBOX2_JAR" 4
 
 #  fetch the pdf blob
 
-blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_SERVICE
+blobio get --udig $PDF_UDIG --output-path $TMP_BLOB --service $BLOBIO_SERVICE
 STATUS=$?
 case $STATUS in
 0)
@@ -67,64 +96,46 @@ case $STATUS in
 	;;
 esac
 
-put_file()
-{
-	FP=$1
-	if [ ! -e $FP ];  then
-		echo null
-		return
-	fi
-
-	DIG=$(
-		blobio eat					\
-			--input-path $FP			\
-			--algorithm $BLOBIO_ALGORITHM		\
-	)
-	test $? = 0 ||  die "blobio eat failed: exit status=$?" 5
-	FILE_UDIG=$BLOBIO_ALGORITHM:$DIG
-	blobio put --udig $FILE_UDIG --input-path $FP --service $BLOBIO_SERVICE
-	test $? = 0 || die "blobio put failed: exit status=$?" 5
-	echo '"'$FILE_UDIG'"'
-}
-
 #  execute the java extract, faulting if exit_code > 1
 
 java -jar $PDFBOX2_JAR ExtractText $TMP_BLOB $TMP_UTF8 2>$TMP_ERR
 EXIT_STATUS=$?
 test $EXIT_STATUS = 0 -o $EXIT_STATUS = 1 ||
-		die "java ExtractText failed: exit status=$EXIT_STATUS" 7
+		die "java ExtractText failed: exit status=$EXIT_STATUS" 6
 
-UTF8_BLOB=$(put_file $TMP_UTF8)
+#  insure the extracted text is well formed UTF8;
+#  otherwise, set UTF8 udig to sql null.
+
+if [ -s $TMP_UTF8 ];  then
+	is-utf8wf <$TMP_UTF8
+	STATUS=$?
+	test $STATUS -le 1 || die "is-utf8wf failed: exit status=$?" 7
+
+	if [ $STATUS -eq 0 ];  then
+
+		#  valid utf8 so put the blob
+
+		UTF8_BLOB=$(put_file $TMP_UTF8 'extract utf8')
+		test $? = 0 || exit 5
+	else
+		UTF8_BLOB=null
+	fi
+else
+	UTF8_BLOB=null
+fi
+
+#  put any stderr err of the extract
+
+STDERR_BLOB=$(put_file $TMP_ERR 'extract stderr')
 test $? = 0 || exit 5
 
-# Note: a fault here orphans the TMP_UTF8 blob.
-STDERR_BLOB=$(put_file $TMP_ERR)
-test $? = 0 || exit 5
+#  merge the extract_utf8 tuple into postgres and zap the pending tuple
 
-cat >$TMP_JSON <<END || die "cat >json failed: exit status: $?" 6
-{
-	"pdfbox2.setspace.com": {
-		"extract_utf8": {
-			"blob":		"$UDIG",
-			"exit_status":	$EXIT_STATUS,
-			"utf8_blob": 	$UTF8_BLOB,
-			"stderr_blob":	$STDERR_BLOB
-		},
-		"date":		"$(date)",
-		"hostname":	"$(hostname)",
-		"USER":		"$USER",
-		"process_id":	$$
-	}
-}
-END
-
-put_file $TMP_JSON >/dev/null 
-test $? = 0 || exit 5
-
-#  put the extract_utf8 record to the database
-psql --no-psqlrc --quiet <<END || die "psql insert failed: exit status=$?" 8
+psql --no-psqlrc --quiet <<EOF || die "psql insert failed: exit status=$?" 8
 
 \\set ON_ERROR_STOP on
+
+BEGIN TRANSACTION;
 
 INSERT INTO
   pdfbox2.extract_utf8(
@@ -133,18 +144,20 @@ INSERT INTO
 	utf8_blob,
 	stderr_blob
     ) VALUES (
-    	'$UDIG',
+    	'$PDF_UDIG',
 	$EXIT_STATUS,
-	$(echo $UTF8_BLOB | tr '"' "'"),
-	$(echo $STDERR_BLOB | tr '"' "'")
-
+	$UTF8_BLOB,
+	$STDERR_BLOB
     ) ON CONFLICT
     	DO NOTHING
 ;
 DELETE FROM pdfbox2.extract_utf8_pending
   WHERE
-  	blob = '$UDIG'
+  	blob = '$PDF_UDIG'
 ;
-END
+
+END TRANSACTION;
+
+EOF
 
 exit $EXIT_STATUS
