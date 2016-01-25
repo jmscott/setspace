@@ -274,12 +274,12 @@ query merge_extract_utf8_pending(brr.udig)
   	in_extract_utf8_table.answer == false
 ;
 
-command extract_utf82pg
+command merge_extract_utf8
 {
-	path = "sbin/extract_utf82pg";
+	path = "sbin/merge-extract_utf8";
 }
 
-call extract_utf82pg(brr.udig)
+call merge_extract_utf8(brr.udig)
   when
   	merge_extract_utf8_pending.inserted == true
 ;
@@ -293,9 +293,15 @@ command wait_utf8_byte_count
 	exit_status is OK when in {0, 1};
 }
 
+#  wait for extracted text to appear in setspace.byte_count before
+#  sending to pgtexts.
+#
+#  Note: seems like this text ought to be in pgtexts.  Logical decoding
+#        will eliminate the need for this test.
+
 call wait_utf8_byte_count(brr.udig)
   when
-  	extract_utf82pg.exit_status == 0
+  	merge_extract_utf8.exit_status == 0
 	or
 	in_extract_utf8_table.answer == true
 ;
