@@ -1,14 +1,14 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Flip a tailable schema's <schema>/spool/<inbound>.brr file
+#	Flip an active blob request log file for a particular schema.
 #  Usage:
 #	flip-brr-file <schema>
 #	flip-brr-file setspace
 #  See:
 #	flip-tail.c
 #  Exit Status:
-#	0	all inbound brr files have been flipped
+#	0	all active brr files have been flipped
 #	1	unknown error, flowd may not have started
 #  Blame:
 #  	jmscott@setspace.com
@@ -69,7 +69,7 @@ fi
 
 cd $SPOOL || die "cd $SPOOL failed: exit status=$?"
 
-log 'finding <inbound>.brr files ...'
+log 'finding active blob request log files ...'
 ls *.brr | grep -v '[-][0-9][0-9]*.*[.]brr$' | while read BRR;  do
 	NEW_BRR=$(basename $BRR .brr)-$(date +%s).brr
 	log "flip $BRR -> $NEW_BRR"
