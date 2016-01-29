@@ -19,5 +19,7 @@ Schemas:
 	fffile		well known Unix "Fine Free File" command
 
 	drblob		detail billing records for setspace and blobio.
+
+	pgtexts		PostgreSQL Text Search
 See:
 	github.com/jmscott/setspace/schema/*/schema.sql
