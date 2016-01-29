@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Hackish wait for a blob to appear in a table, exp backoff.
+ *	Spin wait for a blob to appear in a table, backing off exponentially.
  *  Usage:
  *	spin-wait-blob <table> <row> <timeout> <blob udig>
  *  Exit Status:
