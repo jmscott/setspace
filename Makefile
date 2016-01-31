@@ -84,10 +84,19 @@ install: all
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
 		Makefile						\
-		append-brr.c						\
 		RFC3339Nano.c						\
+		append-brr.c						\
+		common-ecpg.c						\
+		common.c						\
+		dec2pgbit.c						\
+		escape-json-utf8.c					\
+		file-stat-size.c					\
+		flip-tail.c						\
+		is-utf8wf.c						\
 		local-linux.mk.example					\
 		local-macosx.mk.example					\
+		macosx.c						\
+		spin-wait-blob.pgc					\
 		$(SETSPACE_PREFIX)/src
 	cd schema && make install
 
