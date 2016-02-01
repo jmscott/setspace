@@ -68,4 +68,32 @@ COMMENT ON TABLE fffile.file_mime_encoding IS
   'Output of file --mime-encoding --brief command on blob'
 ;
 
+/*
+ *  Track very rare failures in various file commands defined in flowd.
+ */
+DROP TABLE IF EXISTS fffile.fault;
+CREATE TABLE fffile.fault
+(
+	blob		udig,
+	command_name	text CHECK (
+				command_name in (
+					'file',
+					'file_mime_encoding',
+					'file_mime_type'
+				)
+			),
+	exit_status	smallint CHECK (
+				exit_status > 0
+				and
+				exit_status <= 255
+			),
+	insert_time	timestamptz
+				DEFAULT now()
+				NOT NULL,
+	PRIMARY KEY	(blob, command_name)
+);
+COMMENT ON TABLE fffile.fault IS
+  'Track failures in file commands'
+;
+
 COMMIT;
