@@ -74,6 +74,8 @@ sql query in_file_or_fault_table row
 	    	fffile.fault
 	    WHERE
 	    	blob = $1::udig
+		and
+		command_name = 'file'
 	 );
 	`;
 
@@ -91,6 +93,11 @@ query in_file_or_fault_table(brr.udig)
 command merge_file
 {
 	path = "sbin/merge-file";
+	exit_status is OK when in {
+		0,
+		1,
+		5		#  uggh
+	};
 }
 
 call merge_file(brr.udig)
@@ -122,7 +129,38 @@ sql query in_file_mime_type_table row
 	);
 }
 
-query in_file_mime_type_table(brr.udig)
+sql query in_file_mime_type_or_fault_table row
+{
+	statement = `
+	
+	SELECT 
+	 EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	fffile.file_mime_type
+	    WHERE
+	    	blob = $1::udig
+	),
+	 EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	fffile.fault
+	    WHERE
+	    	blob = $1::udig
+		and
+		command_name = 'file_mime_type'
+	 );
+	`;
+
+	result row is (
+		in_file bool,
+		in_fault bool
+	);
+}
+
+query in_file_mime_type_or_fault_table(brr.udig)
   when
   	in_service_table.answer == true
 ;
@@ -130,36 +168,55 @@ query in_file_mime_type_table(brr.udig)
 command merge_file_mime_type
 {
 	path = "sbin/merge-file_mime_type";
+	exit_status is OK when in {
+		0,
+		1,
+		5		#  ughh
+	};
 }
 
 call merge_file_mime_type(brr.udig)
   when
-  	in_file_mime_type_table.answer == false
+  	in_file_mime_type_or_fault_table.in_file == false
+	and
+  	in_file_mime_type_or_fault_table.in_fault == false
 ;
 
 #
 #  Populate table fffile.file_mime_encoding
 #
-sql query in_file_mime_encoding_table row
+sql query in_file_mime_encoding_or_fault_table row
 {
 	statement = `
 	
-	SELECT EXISTS (
+	SELECT
+	 EXISTS (
 	  SELECT
 	  	blob
 	    FROM
 	    	fffile.file_mime_encoding
 	    WHERE
 	    	blob = $1::udig
-	)
+	),
+	 EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	fffile.fault
+	    WHERE
+	    	blob = $1::udig
+		and
+		command_name = 'file_mime_encoding'
+	 )
 	`;
 
 	result row is (
-		answer bool
+		in_file bool,
+		in_fault bool
 	);
 }
 
-query in_file_mime_encoding_table(brr.udig)
+query in_file_mime_encoding_or_fault_table(brr.udig)
   when
   	in_service_table.answer == true
 ;
@@ -167,9 +224,87 @@ query in_file_mime_encoding_table(brr.udig)
 command merge_file_mime_encoding
 {
 	path = "sbin/merge-file_mime_encoding";
+	exit_status is OK when in {
+		0,
+		1,
+		5		#  ughh
+	};
 }
 
 call merge_file_mime_encoding(brr.udig)
   when
-  	in_file_mime_encoding_table.answer == false
+  	in_file_mime_encoding_or_fault_table.in_file == false
+	and
+  	in_file_mime_encoding_or_fault_table.in_fault == false
+;
+
+sql exec insert_file_fault
+{
+	statement = `
+	  INSERT INTO fffile.fault(
+	  	blob,
+		command_name,
+		exit_status
+	  )  VALUES(
+	  	$1::udig,
+		'file',
+		$2::smallint
+	  )  ON CONFLICT
+	  	DO NOTHING
+	  ;
+	`;
+}
+
+query insert_file_fault(brr.udig, merge_file.exit_status)
+  when
+  	merge_file.exit_status == 5	#  file command failed
+;
+
+sql exec insert_file_mime_type_fault
+{
+	statement = `
+	  INSERT INTO fffile.fault(
+	  	blob,
+		command_name,
+		exit_status
+	  )  VALUES(
+	  	$1::udig,
+		'file_mime_type',
+		$2::smallint
+	  )  ON CONFLICT
+	  	DO NOTHING
+	  ;
+	`;
+}
+
+query insert_file_mime_type_fault(brr.udig, merge_file_mime_type.exit_status)
+  when
+	#  file_mime_encoding command failed
+  	merge_file_mime_type.exit_status == 5
+;
+
+sql exec insert_file_mime_encoding_fault
+{
+	statement = `
+	  INSERT INTO fffile.fault(
+	  	blob,
+		command_name,
+		exit_status
+	  )  VALUES(
+	  	$1::udig,
+		'file_mime_encoding',
+		$2::smallint
+	  )  ON CONFLICT
+	  	DO NOTHING
+	  ;
+	`;
+}
+
+query insert_file_mime_encoding_fault(
+	brr.udig,
+	merge_file_mime_encoding.exit_status
+)
+  when
+	#  file_mime_encoding command failed
+  	merge_file_mime_encoding.exit_status == 5
 ;

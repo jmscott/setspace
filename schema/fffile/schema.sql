@@ -86,7 +86,7 @@ CREATE TABLE fffile.fault
 				exit_status > 0
 				and
 				exit_status <= 255
-			),
+			) NOT NULL,
 	insert_time	timestamptz
 				DEFAULT now()
 				NOT NULL,
