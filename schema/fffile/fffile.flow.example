@@ -54,26 +54,36 @@ sql query in_service_table row
 
 query in_service_table(brr.udig);
 
-sql query in_file_table row
+sql query in_file_or_fault_table row
 {
 	statement = `
 	
-	SELECT EXISTS (
+	SELECT 
+	 EXISTS (
 	  SELECT
 	  	blob
 	    FROM
 	    	fffile.file
 	    WHERE
 	    	blob = $1::udig
-	)
+	),
+	 EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	fffile.fault
+	    WHERE
+	    	blob = $1::udig
+	 );
 	`;
 
 	result row is (
-		answer bool
+		in_file bool,
+		in_fault bool
 	);
 }
 
-query in_file_table(brr.udig)
+query in_file_or_fault_table(brr.udig)
   when
   	in_service_table.answer == true
 ;
@@ -85,7 +95,9 @@ command merge_file
 
 call merge_file(brr.udig)
   when
-  	in_file_table.answer == false
+  	in_file_or_fault_table.in_file == false
+	and
+	in_file_or_fault_table.in_fault == false
 ;
 
 #
