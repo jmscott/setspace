@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Tables related to blob activity through biod and flowd
+ *	Tables describing sets of uniform digests.
  *  Usage:
  *	psql -f schema.sql
  *  Blame:
@@ -11,32 +11,15 @@
 \timing
 
 begin;
-drop schema if exists bloblog cascade;
+drop schema if exists udigset cascade;
 
-create schema bloblog;
-
-set search_path to bloblog,setspace,public;
-
-/*
- *  Is blob a log of blob request records.  See process biod-brr-logger.
- */
-drop table if exists bloblog.is_brr_log;
-create table bloblog.is_brr_log
-(
-	blob	udig
-			references setspace.service
-			on delete cascade
-			primary key,
-
-	is_brr_log	bool
-				not null
-);
+create schema udigset;
 
 /*
  *  Is a set of uniform digests, as defined by program is-udig-set
  */
-drop table if exists bloblog.is_udig_set;
-create table bloblog.is_udig_set
+drop table if exists udigset.is_udig_set;
+create table udigset.is_udig_set
 (
 	blob	udig
 			references setspace.service

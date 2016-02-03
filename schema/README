@@ -21,5 +21,7 @@ Schemas:
 	drblob		detail billing records for setspace and blobio.
 
 	pgtexts		PostgreSQL Text Search
+
+	udigset		details about sets of uniform digests
 See:
 	github.com/jmscott/setspace/schema/*/schema.sql
