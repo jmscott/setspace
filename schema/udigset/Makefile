@@ -8,7 +8,7 @@
 include ../../local.mk
 include ../schema.mk
 
-COMPILED=is-brr-log is-udig-set
+COMPILED=is-udig-set
 
 all: $(COMPILED)
 
@@ -36,16 +36,11 @@ install: all
 		bloblog.flow.example					\
 		$(BLOBLOG_PREFIX)/lib
 	install -g $(BLOBLOG_GROUP) -o $(BLOBLOG_USER) 		\
-		is-brr-log						\
 		is-udig-set						\
 		$(BLOBLOG_PREFIX)/sbin
 	install -g $(BLOBLOG_GROUP) -o $(BLOBLOG_USER) 		\
-		is-brr-log.c						\
 		is-udig-set.c						\
 		$(BLOBLOG_PREFIX)/src
-
-is-brr-log: is-brr-log.c
-	cc $(CFLAGS) -o is-brr-log is-brr-log.c
 
 is-udig-set: is-udig-set.c
 	cc $(CFLAGS) -o is-udig-set is-udig-set.c
