@@ -3,7 +3,7 @@
 #  Synopsis:
 #	Merge the byte count of a blob into the table byte_count
 #  Usage:
-#	merge-byte_count <blob	udig>
+#	merge-byte_count <blob udig>
 #  Exit Status:
 #  	0	count merged into table byte_count
 #	1	blob does not exist
