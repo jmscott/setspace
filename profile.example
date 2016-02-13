@@ -10,17 +10,27 @@
 export SETSPACE_ROOT=${SETSPACE_ROOT:=/usr/local/setspace}
 
 export BLOBIO_ROOT=${BLOBIO_ROOT:=/usr/local/blobio}
-export BLOBIO_SERVICE=${BLOBIO_SERVICE:=localhost:1797}
+
+export BLOBIO_SERVICE=${BLOBIO_SERVICE:=bio4:localhost:1797}
+
+#  set readonly service to $BLOBIO_ROOT if not set
+
+if [ -x $BLOBIO_ROOT/data ];  then
+	BLOBIO_RO_SERVICE=${BLOBIO_RO_SERVICE:=rofs:$BLOBIO_ROOT}
+else
+	BLOBIO_RO_SERVICE=$BLOBIO_SERVICE
+fi
+export BLOBIO_RO_SERVICE
+
 export BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=sha}
 export PATH=$PATH:$BLOBIO_ROOT/bin
+
+#  PostgreSQL database
 
 export PGHOST=/tmp
 export PGPORT=5432
 export PGUSER=postgres
 export PGDATABASE=setspace
+unset PGSYSCONFDIR
 
-PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:/usr/local/bin:/usr/bin:/bin:$PATH
-
-#  mostly for development environments rooted in $HOME/opt/setspace
-export HISTFILE=$SETSPACE_ROOT/.bash_history
-export HISTSIZE=5000
+PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:$BLOBIO_ROOT/bin:/usr/local/bin:/usr/bin:/bin:$PATH
