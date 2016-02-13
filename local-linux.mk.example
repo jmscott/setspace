@@ -8,24 +8,29 @@
 
 ########################  BEGIN SECTION OF VARIABLES TO CHANGE
 
-#  during development change to dir in $HOME, like $(HOME)/opt/setspace
+#  during development change INSTALL_PREFIX to dir in $HOME, like $(HOME)/opt
+
 INSTALL_PREFIX=/usr/local
 
 SETSPACE_PREFIX=$(INSTALL_PREFIX)/setspace
 
 #  during development change to your user or group id
-SETSPACE_USER=setspace
-SETSPACE_GROUP=setspace
+
+SETSPACE_USER=$(USER)
+SETSPACE_GROUP=$(USER)
 
 #  where are postgres includes & libraries?
+
 PGHOME=/usr/local/pgsql
 PGINC=$(PGHOME)/include
 PGLIB=$(PGHOME)/lib
 
 #  The execution PATH must include the PostgreSQL C precompiler 'ecpg'.
+
 PATH:=$(PGHOME)/bin:$(PATH)
 
 #  strict compilation of C code
+
 CFLAGS=-Wall -Wextra -Werror
 
 #  location of pdfbox jar file, version 2
