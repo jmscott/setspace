@@ -13,10 +13,7 @@
 #	5	blobio get failed for unknown reason
 #	6	command failed for unknown reason: exit status not in {0, 1, 2} 
 #  Environment:
-#	BLOBIO_SERVICE
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
+#	BLOBIO_RO_SERVICE
 #  Note:
 #	Not clear if forcing the sematics of an empty blob up to this script
 #	is the best approach.
@@ -54,7 +51,7 @@ BLOB=$2
 
 #  fetch the blob into temp file
 
-blobio get --service $BLOBIO_SERVICE --udig $BLOB --output-path $TMP_BLOB
+blobio get --service $BLOBIO_RO_SERVICE --udig $BLOB --output-path $TMP_BLOB
 STATUS=$?
 case $STATUS in
 0)

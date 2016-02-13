@@ -3,7 +3,7 @@
 #  Synopsis:
 #	Merge the new-line count of a blob into the table new_line_count
 #  Usage:
-#	merge-new_line_count <blob	udig>
+#	merge-new_line_count <blob udig>
 #  Exit Status:
 #  	0	count merged into table new_line_count
 #	1	blob does not exist
@@ -12,7 +12,7 @@
 #	4	new-line-count failed for unknown reason
 #	5	sql merge failed for unknown reason
 #  Environment:
-#	BLOBIO_SERVICE
+#	BLOBIO_RO_SERVICE
 #	PG* variables
 #  Blame:
 #  	jmscott@setspace.com
@@ -41,7 +41,7 @@ BLOB=$1
 
 #  fetch the blob into temp file
 
-blobio get --service $BLOBIO_SERVICE --udig $BLOB --output-path $TMP_BLOB
+blobio get --service $BLOBIO_RO_SERVICE --udig $BLOB --output-path $TMP_BLOB
 STATUS=$?
 case $STATUS in
 0)

@@ -3,7 +3,7 @@
 #  Synopsis:
 #	Merge the 32 byte prefix of the blob into the table byte_prefix_32
 #  Usage:
-#	merge-byte_prefix_32 <blob	udig>
+#	merge-byte_prefix_32 <blob udig>
 #  Exit Status:
 #  	0	prefix merged into table byte_prefix_32
 #	1	blob does not exist
@@ -12,7 +12,7 @@
 #	4	byte-prefix-32 failed for unknown reason
 #	5	sql merge failed for unknown reason
 #  Environment:
-#	BLOBIO_SERVICE
+#	BLOBIO_RO_SERVICE
 #	PG* variables
 #  Blame:
 #  	jmscott@setspace.com
@@ -42,7 +42,7 @@ BLOB=$1
 
 #  fetch the blob into temp file
 
-blobio get --service $BLOBIO_SERVICE --udig $BLOB --output-path $TMP_BLOB
+blobio get --service $BLOBIO_RO_SERVICE --udig $BLOB --output-path $TMP_BLOB
 STATUS=$?
 case $STATUS in
 0)

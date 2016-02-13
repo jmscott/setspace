@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Profile for typical setspace server
+#	Profile for typical setspace flowd server
 #  Usage:
 #	. $SETSPACE_ROOT/etc/profile
 #  Blame:
@@ -8,6 +8,10 @@
 #  	setspace@gmail.com
 #
 SCHEMA_ROOT=$SETSPACE_ROOT/schema/setspace
+cd $SCHEMA_ROOT || exit
+
+test ! -x tmp && mkdir -p tmp && test $? != 0 && exit 1
+TMDIR=$SCHEMA_ROOT/tmp
 
 touch $SCHEMA_ROOT/spool/biod.brr
 
