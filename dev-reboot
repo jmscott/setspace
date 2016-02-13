@@ -40,6 +40,7 @@ cp_chmod()
 }
 
 cp_chmod lib/profile.example etc/profile || exit 1
+cp_chmod lib/psqlrc.example etc/psqlrc || exit 1
 
 #  copy schema level profile.example and $SCHEMA.flow.example to $SCHEMA/etc.
 #  remove the log files for each schema.
