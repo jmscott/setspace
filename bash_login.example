@@ -20,3 +20,8 @@ cd $SETSPACE_ROOT || exit 1
 
 export S=$SETSPACE_ROOT
 export SC=$SETSPACE_ROOT/schema
+
+export HISTFILE=$SETSPACE_ROOT/.bash_history
+export HISTSIZE=1000
+export HISTFILESIZE=100000
+HISTCONTROL=ignoreboth
