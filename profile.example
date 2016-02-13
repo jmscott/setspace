@@ -34,3 +34,6 @@ export PGDATABASE=setspace
 unset PGSYSCONFDIR
 
 PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:$BLOBIO_ROOT/bin:/usr/local/bin:/usr/bin:/bin:$PATH
+
+export TMPDIR=$SETSPACE_ROOT/tmp
+mkdir -p $TMPDIR || exit 1
