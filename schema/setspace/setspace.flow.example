@@ -411,7 +411,7 @@ sql query has_char_0xff row {
 
 query has_char_0xff(brr.udig)
   when
-	service_exists.exit_status == 0
+	byte_bitmap_exists.exit_status == 0
 ;
 
 call get_is_utf8wf(brr.udig)
