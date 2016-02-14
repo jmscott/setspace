@@ -70,7 +70,7 @@ select
 ;
 \x off
 
-select now() as "Current Time";
+select now() as "Start Time";
 
 \echo selecting udigs with unknown rummy states
 (select
@@ -101,3 +101,4 @@ select now() as "Current Time";
 	ud.blob is null
 )
 ;
+select now() as "End Time";
