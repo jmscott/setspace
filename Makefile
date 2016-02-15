@@ -68,7 +68,6 @@ install: all
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		RFC3339Nano						\
 		append-brr						\
-		eat-blob						\
 		escape-json-utf8					\
 		file-stat-size						\
 		flip-tail						\
@@ -77,7 +76,7 @@ install: all
 		$(SETSPACE_PREFIX)/bin
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-		bash_login.example					\
+		bash_login-dev.example					\
 		profile.example						\
 		crontab.conf.example					\
 		$(SETSPACE_PREFIX)/lib

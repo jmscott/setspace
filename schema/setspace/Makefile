@@ -51,6 +51,7 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		byte-bitmap						\
 		byte-count						\
 		byte-prefix-32						\
+		eat-zombie						\
 		get-bool-command					\
 		get-is-utf8wf						\
 		has-byte-json-bracket					\

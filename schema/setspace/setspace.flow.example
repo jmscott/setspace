@@ -152,7 +152,7 @@ command is_zombie_alive
 {
 	#  typically in $SETSPACE_ROOT/sbin
 
-	path = "eat-blob";
+	path = "sbin/eat-zombie";
 	exit_status is OK when in {0, 1};
 }
 
