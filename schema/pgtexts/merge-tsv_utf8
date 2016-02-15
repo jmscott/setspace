@@ -1,26 +1,27 @@
 #!/bin/bash
 #
-#   Synopsis:
-#   	Merge a pending UTF8 blob into table pgtexts.tsv_utf8.
-#   Usage:
-# 	 merge-tsv_utf8 <ts_config> <udig> <blob_size>
-#   Arguments:
+#  Synopsis:
+#	Merge a pending UTF8 blob into table pgtexts.tsv_utf8.
+#  Usage:
+#	 merge-tsv_utf8 <ts_config> <udig> <blob_size>
+#  Arguments:
 #	1	text search configuration name
 #   	2	udig of the blob
 #   	3	size of the blob in bytes
-#   Exit Status:
+#  Exit Status:
 #   	0	ok, tuple was merged
 #	1	blob does not exist
 #   	2	wrong number of arguments
 #	3	unexpected blobio error
 #	4	unexpected merge error
-#   See:
+#  See:
 #	PostgreSQL table pgtexts.tsv_utf8_pending.
-#   Blame:
-#   	jmscott@setspace.com
+#  Environment:
+#	BLOBIO_SERVICE
+#	BLOBIO_RO_SERVICE
 #  
 PROG=merge-tsv_utf8
-TMP_BLOB=${TMP_DIR:=/tmp}/$PROG.$$
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
 
 die()
 {
@@ -42,7 +43,7 @@ TS_CONF=$1
 UDIG=$2
 SIZE=$3
 
-blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_SERVICE
+blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_RO_SERVICE
 STATUS=$?
 
 case $STATUS in
