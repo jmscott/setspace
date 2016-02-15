@@ -31,7 +31,7 @@ PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:$BLOBIO_ROOT/bin:$PGROOT/bin:/usr/lo
 
 #  blobio service rofs needs tmp/ owned by caller, to remove hard links
 
-export TMPDIR=$BLOBIO_ROOT/tmp
+export TMPDIR=$SETSPACE_ROOT/tmp
 if [ ! -e $TMPDIR ];  then
 	mkdir -p $TMPDIR/tmp || exit 1
 fi
