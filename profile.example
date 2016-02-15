@@ -10,30 +10,28 @@
 export SETSPACE_ROOT=${SETSPACE_ROOT:=/usr/local/setspace}
 
 export BLOBIO_ROOT=${BLOBIO_ROOT:=/usr/local/blobio}
-
 export BLOBIO_SERVICE=${BLOBIO_SERVICE:=bio4:localhost:1797}
-
-#  set readonly service to $BLOBIO_ROOT if not set
-
-if [ -x $BLOBIO_ROOT/data ];  then
-	BLOBIO_RO_SERVICE=${BLOBIO_RO_SERVICE:=rofs:$BLOBIO_ROOT}
-else
-	BLOBIO_RO_SERVICE=$BLOBIO_SERVICE
-fi
-export BLOBIO_RO_SERVICE
-
+export BLOBIO_RO_SERVICE=${BLOBIO_RO_SERVICE:=rofs:$BLOBIO_ROOT}
 export BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=sha}
-export PATH=$PATH:$BLOBIO_ROOT/bin
 
-#  PostgreSQL database
+#  set postgresql variables
 
-export PGHOST=/tmp
-export PGPORT=5432
-export PGUSER=postgres
-export PGDATABASE=setspace
+export PGHOME=${PGHOME:=/usr/local/pgsql}
+export PGDATA=${PGDATA:=$PGHOME/data}
+export PGHOST=${PGHOST:=/tmp}
+export PGPORT=${PGPORT:=5432}
+export PGUSER=${PGUSER:=postgres}
+export PGPASSWORD=${PGPASSWORD:=}
+export PGDATABASE=${PGDATABASE:=setspace}
+
+#  golang libpq gripes about PGSYSCONFDIR
 unset PGSYSCONFDIR
 
-PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:$BLOBIO_ROOT/bin:/usr/local/bin:/usr/bin:/bin:$PATH
+PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:$BLOBIO_ROOT/bin:$PGROOT/bin:/usr/local/bin:/usr/bin:/bin:$PATH
 
-export TMPDIR=$SETSPACE_ROOT/tmp
-mkdir -p $TMPDIR || exit 1
+#  blobio service rofs needs tmp/ owned by caller, to remove hard links
+
+export TMPDIR=$BLOBIO_ROOT/tmp
+if [ ! -e $TMPDIR ];  then
+	mkdir -p $TMPDIR/tmp || exit 1
+fi
