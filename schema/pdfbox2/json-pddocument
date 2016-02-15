@@ -13,15 +13,16 @@
 #	5	java putPDDocument failed
 #	6	save json error
 #  Environment:
-#	BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=sha}
-#	BLOBIO_SERVICE=${BLOBIO_SERVICE:=localhost:1797}
+#	BLOBIO_ALGORITHM
+#	BLOBIO_SERVICE
+#	BLOBIO_RO_SERVICE
 #
 
 PROG=json-pddocument
-TMP_BLOB=${TMP_DIR:=/tmp}/$PROG-$$.pdf
-TMP_ERR=${TMP_DIR:=/tmp}/$PROG-$$.err
-TMP_ROW=${TMP_DIR:=/tmp}/$PROG-$$.row
-TMP_JSON=${TMP_DIR:=/tmp}/$PROG-$$.json
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.pdf
+TMP_ERR=${TMPDIR:=/tmp}/$PROG-$$.err
+TMP_ROW=${TMPDIR:=/tmp}/$PROG-$$.row
+TMP_JSON=${TMPDIR:=/tmp}/$PROG-$$.json
 
 leave()
 {
@@ -41,7 +42,7 @@ UDIG=$1
 
 #  fetch the pdf blob
 
-blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_SERVICE
+blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_RO_SERVICE
 STATUS=$?
 case $STATUS in
 0)
