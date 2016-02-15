@@ -13,12 +13,11 @@
 #   	2	wrong number of arguments
 #	3	unexpected blobio error
 #	4	unexpected merge error
-#   Blame:
-#   	jmscott@setspace.com
-#   	setspace@gmail.com
+#  Environment
+#	BLOBIO_RO_SERVICE
 #  
 PROG=merge-blob-jsonb_255
-TMP_BLOB=${TMP_DIR:=/tmp}/$PROG.$$
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
 
 die()
 {
@@ -39,7 +38,7 @@ test $# = 2 || die 'wrong number of arguments' 2
 UDIG=$1
 SIZE=$2
 
-blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_SERVICE
+blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_RO_SERVICE
 STATUS=$?
 
 case $STATUS in

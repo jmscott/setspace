@@ -9,13 +9,10 @@
 #	3	wrong number of command line arguments
 #	4	unknown blobio error
 #	5	unknown JSON_checker error
-#  Environment
-#	BLOBIO_SERVICE
 #  Usage:
 #	get-JSON_checker <blob> <byte count>
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
+#  Environment
+#	BLOBIO_RO_SERVICE
 #
 PROG=get-JSON_checker
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
@@ -38,7 +35,7 @@ die()
 test $# = 1 || die "wrong number of command line arguments" 3
 UDIG=$1
 
-blobio get --udig "$UDIG" --service $BLOBIO_SERVICE --output-path $TMP_BLOB
+blobio get --udig "$UDIG" --service $BLOBIO_RO_SERVICE --output-path $TMP_BLOB
 STATUS=$?
 case $STATUS in
 0)
