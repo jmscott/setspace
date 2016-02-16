@@ -12,19 +12,19 @@
  *  Note:
  *	Use the blobio domains for timestamp, name, etc.
  */
-create temporary table merge_brr_log
+CREATE TEMPORARY TABLE merge_brr_log
 (
 	start_time	timestamptz
-				not null,
+				NOT NULL,
 	netflow		text
-				check (
+				CHECK (
 					-- see blobio/README
 					netflow ~
 				       '^[a-z][a-z0-9]{0,7}~[[:graph:]]{1,128}$'
 				)
-				not null,
+				NOT NULL,
 	verb		text
-				check (
+				CHECK (
 					verb in (
 						'get',
 						'put',
@@ -35,11 +35,11 @@ create temporary table merge_brr_log
 						'roll'
 					)
 				)
-				not null,
+				NOT NULL,
 	blob		udig
-				not null,
+				NOT NULL,
 	chat_history	text
-				check (
+				CHECK (
 					chat_history in (
 						'ok',
 						'ok,ok',
@@ -50,17 +50,17 @@ create temporary table merge_brr_log
 						'ok,ok,no'
 					)
 				)
-				not null,
+				NOT NULL,
 	blob_size	bigint
-				check (
+				CHECK (
 					blob_size >= 0
 				)
-				not null,
+				NOT NULL,
 	wall_duration	interval
-				check (
+				CHECK (
 					wall_duration >= '0'::interval
 				)
-				not null
+				NOT NULL
 );
 \copy merge_brr_log from pstdin
-analyze merge_brr_log;
+ANALYZE merge_brr_log;
