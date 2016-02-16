@@ -57,6 +57,8 @@ install: all
 		cron-reboot						\
 		dec2pgbit						\
 		dev-reboot						\
+		find-brr						\
+		find-rolled-brr						\
 		find-schema						\
 		flip-all-brr-file					\
 		flip-brr-file						\

@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Find active blob request log files across all schemas
+#  Usage:
+#	wc -l $(find-brr)
+#
+
+PROG=find-brr
+
+ROLLED_BRR_PAT='*-[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9].brr'
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&2
+	exit 1
+}
+
+test -n "$SETSPACE_ROOT" || die 'environment var not defined: SETSPACE_ROOT'
+cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
+
+. etc/profile
+
+find-schema | while read SCH;  do
+	find schema/$SCH/spool 						\
+		-maxdepth 1						\
+		-name '*.brr'						\
+		! -name $ROLLED_BRR_PAT					\
+		-print
+done
