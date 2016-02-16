@@ -10,11 +10,10 @@
 #	2	wrong number arguments
 #	3	blobio get failed
 #	4	psql insert failed
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
+#  Environment:
+#	BLOBIO_RO_SERVICE
 #
-PROG=merge-log
+PROG=merge-blob
 TABLE=
 BLOB_TMP=${TMPDIR:=/tmp}/$PROG-$$.blob
 
@@ -47,7 +46,7 @@ test $# = 2 || die 'wrong number arguments' 1
 TABLE=$1
 BLOB=$2
 
-blobio get --udig $BLOB --output-path $BLOB_TMP --service $BLOBIO_SERVICE
+blobio get --udig $BLOB --output-path $BLOB_TMP --service $BLOBIO_RO_SERVICE
 STATUS=$?
 case $STATUS in
 0)

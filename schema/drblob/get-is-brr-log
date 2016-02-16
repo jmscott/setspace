@@ -13,15 +13,12 @@
 #	5	blobio get failed for unknown reason
 #	6	is-brr-log failed for unknown reason
 #  Environment:
-#	BLOBIO_SERVICE
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
+#	BLOBIO_RO_SERVICE
 #  Note:
 #	All is-<table> can be collapsed into is-<table>, like merge-blob was
 #	collapsed.
 #
-PROG='get-is-brr-log'
+PROG=get-is-brr-log
 
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
 
@@ -44,7 +41,7 @@ BLOB=$1
 
 #  fetch the blob into temp file
 
-blobio get --service $BLOBIO_SERVICE --udig $BLOB --output-path $TMP_BLOB
+blobio get --service $BLOBIO_RO_SERVICE --udig $BLOB --output-path $TMP_BLOB
 STATUS=$?
 case $STATUS in
 0)
