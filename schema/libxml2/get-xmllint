@@ -12,6 +12,8 @@
 #	13	unknown xmllint error
 #  Usage:
 #	get-xmllint <udig>
+#  Environment:
+#	BLOBIO_RO_SERVICE
 #
 PROG=get-xmllint_status
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
@@ -32,7 +34,7 @@ die()
 test $# = 1 || die 'wrong number of arguments' 11
 UDIG=$1
 
-blobio get --output-path $TMP_BLOB --udig $UDIG --service $BLOBIO_SERVICE
+blobio get --output-path $TMP_BLOB --udig $UDIG --service $BLOBIO_RO_SERVICE
 STATUS=$?
 
 case $STATUS in

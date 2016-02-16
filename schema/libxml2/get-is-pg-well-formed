@@ -11,8 +11,8 @@
 #	3	wrong number of arguments
 #	4	unknown blobio error
 #	5	unknown database error
-#  Usage:
-#	get-is <udig>
+#  Environment:
+#	BLOBIO_RO_SERVICE
 #
 PROG=get-is-pg-well-formed
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
@@ -34,7 +34,7 @@ test $# = 2 || die 'wrong number of arguments' 3
 UDIG=$1
 SIZE=$2
 
-blobio get --output-path $TMP_BLOB --udig $UDIG --service $BLOBIO_SERVICE
+blobio get --output-path $TMP_BLOB --udig $UDIG --service $BLOBIO_RO_SERVICE
 STATUS=$?
 
 case $STATUS in
