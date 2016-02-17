@@ -73,7 +73,9 @@ UNION (
     WHERE
     	ex.utf8_blob is NOT NULL
 	AND
-	--  extracted utf8 blob not in text  table
+
+	--  extracted utf8 blob not in text search vector table
+
 	NOT EXISTS (
 	  SELECT
 	  	ex.blob
@@ -83,6 +85,9 @@ UNION (
 	    	ts.blob = ex.utf8_blob
 	)
 	AND
+
+	--  extracted utf8 blob not in text search vector pending table
+
 	NOT EXISTS (
 	  SELECT
 	  	pen.blob
