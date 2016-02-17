@@ -3,62 +3,93 @@
  *	Find unresolved pddocument blobs, in both extract_utf and pgtexts.
  *  Usage:
  *	psql -f rummy.sql --set since="'-1 week'"
+ *  Note:
+ *	Might ought to rewrite with CTE
  */
+
+/*
+ *  table pdf_candidate:
+ *	Find all recent pdf candidates which are not in any pending jobs
+ */
+WITH pdf_candidate AS (
+  SELECT
+  	pre.blob
+    FROM
+    	setspace.byte_prefix_32 pre
+	  INNER JOIN setspace.service s ON (s.blob = pre.blob)
+	  LEFT OUTER JOIN pdfbox2.pddocument_pending pdp ON
+	  	(pdp.blob = pre.blob)
+	  LEFT OUTER JOIN pdfbox2.extract_utf8_pending eup ON
+	  	(eup.blob = pre.blob)
+    WHERE
+  	substring(pre.prefix, 1, 4) = '\x25504446'
+	AND
+	s.discover_time >= now() + :since
+	AND
+	pdp.blob is NULL
+	AND
+	eup.blob is NULL
+)
+
+--  pdf candidates not in pddocument
+
 SELECT
-	pd.blob
+	pdf.blob
   FROM
-  	setspace.service s,
-  	pdfbox2.pddocument pd
-	  LEFT OUTER JOIN pdfbox2.extract_utf8 ex ON (ex.blob = pd.blob)
+  	pdf_candidate pdf
+	  LEFT OUTER JOIN pdfbox2.pddocument pd ON (pd.blob = pdf.blob)
   WHERE
-  	s.blob = pd.blob
-	AND
-  	pd.exit_status = 0
-	AND
-	pd.is_encrypted is false
-	AND
-	(
-		--  not in extract_utf8 table
-		ex.blob IS NULL
-		OR
-		--  utf8 text exists and no pgtexts exists
-		(
-			ex.utf8_blob IS NOT NULL
-			AND
-			NOT EXISTS (
-			  SELECT
-				tu8.blob
-			    FROM
-				pgtexts.tsv_utf8 tu8
-			    WHERe
-				tu8.blob = ex.utf8_blob
-			)
+  	pd.blob is NULL
 
-			--  not pending in tsv_utf8
-			AND
-			NOT EXISTS (
-			  SELECT
-				pent.blob
-			    FROM
-				pgtexts.merge_tsv_utf8_pending pent
-			    WHERe
-				pent.blob = ex.utf8_blob
-			)
-		)
+--  parsable pdfs in pddocument and not in extract_utf
+
+UNION (
+  SELECT
+  	pd.blob
+    FROM
+    	pdf_candidate pdf
+    	  INNER JOIN pdfbox2.pddocument pd ON (pd.blob = pdf.blob)
+    WHERE
+    	pd.exit_status = 0
+	AND
+	NOT EXISTS (
+	  SELECT
+	  	ex.blob
+	    FROM
+	    	pdfbox2.extract_utf8 ex
+	    WHERE
+	    	ex.blob = pd.blob
 	)
+) UNION
 
-	--   not pending  in extract_utf8
+--  extracted utf8 text with no text search vector
+
+(
+  SELECT
+  	ex.blob
+    FROM
+    	pdf_candidate pdf
+	  INNER JOIN pdfbox2.extract_utf8 ex ON (ex.blob = pdf.blob)
+    WHERE
+    	ex.utf8_blob is NOT NULL
+	AND
+	--  extracted utf8 blob not in text  table
+	NOT EXISTS (
+	  SELECT
+	  	ex.blob
+	    FROM
+	    	pgtexts.tsv_utf8 ts
+	    WHERE
+	    	ts.blob = ex.utf8_blob
+	)
 	AND
 	NOT EXISTS (
 	  SELECT
 	  	pen.blob
-	   FROM
-	  	pdfbox2.extract_utf8_pending pen
-	   WHERE
-	    	pen.blob = pd.blob
+	    FROM
+	    	pgtexts.merge_tsv_utf8_pending pen
+	    WHERE
+	    	pen.blob = ex.utf8_blob
 	)
-	AND
-	s.discover_time >= now() + :since
-  ORDER BY
-  	s.discover_time DESC
+)
 ;
