@@ -4,61 +4,61 @@
  *  Usage:
  *	psql -f rummy.sql --set since="'-1 week'"
  */
-select
+SELECT
 	pd.blob
-  from
+  FROM
   	setspace.service s,
   	pdfbox2.pddocument pd
-	  left outer join pdfbox2.extract_utf8 ex on (ex.blob = pd.blob)
-  where
+	  LEFT OUTER JOIN pdfbox2.extract_utf8 ex ON (ex.blob = pd.blob)
+  WHERE
   	s.blob = pd.blob
-	and
+	AND
   	pd.exit_status = 0
-	and
+	AND
 	pd.is_encrypted is false
-	and
+	AND
 	(
 		--  not in extract_utf8 table
-		ex.blob is null
-		or
+		ex.blob IS NULL
+		OR
 		--  utf8 text exists and no pgtexts exists
 		(
-			ex.utf8_blob is not null
-			and
-			not exists (
-			  select
+			ex.utf8_blob IS NOT NULL
+			AND
+			NOT EXISTS (
+			  SELECT
 				tu8.blob
-			    from
+			    FROM
 				pgtexts.tsv_utf8 tu8
-			    where
+			    WHERe
 				tu8.blob = ex.utf8_blob
 			)
 
 			--  not pending in tsv_utf8
-			and
-			not exists (
-			  select
+			AND
+			NOT EXISTS (
+			  SELECT
 				pent.blob
-			    from
+			    FROM
 				pgtexts.merge_tsv_utf8_pending pent
-			    where
+			    WHERe
 				pent.blob = ex.utf8_blob
 			)
 		)
 	)
 
 	--   not pending  in extract_utf8
-	and
-	not exists (
-	  select
+	AND
+	NOT EXISTS (
+	  SELECT
 	  	pen.blob
-	  from
+	   FROM
 	  	pdfbox2.extract_utf8_pending pen
-	    where
+	   WHERE
 	    	pen.blob = pd.blob
 	)
-	and
+	AND
 	s.discover_time >= now() + :since
-  order by
-  	s.discover_time desc
+  ORDER BY
+  	s.discover_time DESC
 ;
