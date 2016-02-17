@@ -39,7 +39,7 @@ COMMENT ON TABLE pgtexts.tsv_utf8 IS
   'Text Vector of Extracted UTF8 Text'
 ;
 
-DROP TABLE IF EXISTS pgtexts.tsv_utf8_pending;
+DROP TABLE IF EXISTS pgtexts.merge_tsv_utf8_pending;
 CREATE TABLE pgtexts.merge_tsv_utf8_pending
 (
 	blob		udig
