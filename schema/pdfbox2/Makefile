@@ -53,6 +53,7 @@ install: all
 		merge-json-pddocument.sql				\
 		pdfbox2.flow.example					\
 		profile.example						\
+		rummy.sql						\
 		schema.sql						\
 		unmerged-tsv_utf8.sql					\
 		$(PDFBOX2_PREFIX)/lib
