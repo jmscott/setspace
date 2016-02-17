@@ -4,11 +4,16 @@
 #	Find all rolled blob request log files across all schemas
 #  Usage:
 #	wc -l $(find-brr)
+#  Note:
+#	The output path ought to be relative to the current directory,
+#	enabling execution in any directory.
 #
 
 PROG=find-brr
 
-ROLLED_BRR_PAT='*-[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9].brr'
+#  match:  <schema>-1455329936.brr.  expires 2038.
+
+ROLLED_BRR_PAT='*-[1-4][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9].brr'
 
 die()
 {
