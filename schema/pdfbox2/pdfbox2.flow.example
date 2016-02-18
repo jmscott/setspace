@@ -277,6 +277,11 @@ query merge_extract_utf8_pending(brr.udig)
 command merge_extract_utf8
 {
 	path = "sbin/merge-extract_utf8";
+	exit_status is OK when in {
+		0,
+		1,
+		2
+	};
 }
 
 call merge_extract_utf8(brr.udig)
