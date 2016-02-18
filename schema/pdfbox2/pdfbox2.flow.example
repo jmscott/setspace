@@ -295,7 +295,11 @@ command wait_utf8_byte_count
 	argv = (
 		"16"
 	);
-	exit_status is OK when in {0, 1};
+	exit_status is OK when in {
+		0,	#  ok, blob appeared
+		1,	#  blob failed to appear after 16 seconds,
+		2	#  no entry in extract_utf8
+	};
 }
 
 #  wait for extracted text to appear in setspace.byte_count before
