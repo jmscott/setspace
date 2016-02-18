@@ -12,31 +12,31 @@
  *  Note:
  *	Use the blobio domains for timestamp, name, etc.
  */
-create temporary table merge_fdr_log
+CREATE TEMPORARY TABLE merge_fdr_log
 (
 	start_time	timestamptz
-				not null,
+				NOT NULL,
 	blob		udig
-				not null,
+				NOT NULL,
 
-	ok_count	bigint check (
+	ok_count	bigint CHECK (
 				ok_count >= 0
 			)
-			not null,
+			NOT NULL,
 
 	fault_count	bigint check (
 				fault_count >= 0
 			)
-			not null,
+			NOT NULL,
 
-	wall_duration	interval check (
+	wall_duration	interval CHECK (
 				wall_duration >= '0'::interval
 			)
-			not null,
+			NOT NULL,
 
-	sequence	bigint check (
+	sequence	bigint CHECK (
 				sequence > 0
 			)
 );
 \copy merge_fdr_log from pstdin
-analyze merge_fdr_log;
+ANALYZE merge_fdr_log;
