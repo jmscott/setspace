@@ -99,7 +99,8 @@ esac
 
 #  execute the java extract, faulting if exit_code > 1
 
-java -jar $PDFBOX2_JAR ExtractText $TMP_BLOB $TMP_UTF8 2>$TMP_ERR
+java -jar $PDFBOX2_JAR ExtractText 					\
+			-encoding UTF-8 $TMP_BLOB $TMP_UTF8 2>$TMP_ERR
 EXIT_STATUS=$?
 test $EXIT_STATUS = 0 -o $EXIT_STATUS = 1 ||
 		die "java ExtractText failed: exit status=$EXIT_STATUS" 6
