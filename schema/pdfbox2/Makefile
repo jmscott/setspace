@@ -49,8 +49,6 @@ install: all
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=rx		\
 		$(JCOMPILED)						\
-		merge-json-extract_utf8.sql				\
-		merge-json-pddocument.sql				\
 		pdfbox2.flow.example					\
 		profile.example						\
 		rummy.sql						\
@@ -62,7 +60,6 @@ install: all
 		$(PROGS)						\
 		append-pgtexts-brr					\
 		cron-append-pgtexts-brr					\
-		cron-merge-json						\
 		merge-extract_utf8					\
 		merge-pddocument					\
 		wait-utf8-byte_count					\
