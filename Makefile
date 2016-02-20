@@ -64,6 +64,7 @@ install: all
 		flip-brr-file						\
 		kill-all-flowd						\
 		kill-flowd						\
+		rummy							\
 		tail-flowd						\
 		$(SETSPACE_PREFIX)/sbin
 

@@ -1,0 +1,37 @@
+#
+#  Synopsis:
+#	Find all blobs with known unknowns, across all schemas.
+#  Usage:
+#	unset BLOBIO_RO_SERVICE
+#	rummy | xargs bio-file
+#
+
+PROG=rummy
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&2
+	exit 1
+}
+
+case $# in
+0)
+	SINCE='1000 years'
+	;;
+1)
+	SINCE="$1"
+	;;
+*)
+	die 'wrong number of arguments'
+	;;
+esac
+
+test -n "$SETSPACE_ROOT" || die "env variable not defined: SETSPACE_ROOT"
+cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
+
+find-schema | egrep 'pdfbox|ffile' | while read SCH;  do
+	SQL=schema/$SCH/lib/rummy.sql
+	test -e $SQL || continue
+	echo "<$SQL" >&2
+	psql --no-psqlrc --quiet -f $SQL --set since="'-$SINCE'"
+done | sort -u
