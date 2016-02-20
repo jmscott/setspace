@@ -7,11 +7,10 @@
  *	Might ought to rewrite with CTE
  */
 
-/*
- *  table pdf_candidate:
- *	Find all recent pdf candidates which are not in any pending jobs
- */
 WITH pdf_candidate AS (
+
+  --  find all recent pdf candidates which are not in any pending jobs
+
   SELECT
   	pre.blob
     FROM
