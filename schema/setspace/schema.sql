@@ -8,6 +8,10 @@
  *  	setspace@gmail.com
  *  Note:
  *	A view is_printable_unix?  See file setspace.flow.example.
+ *
+ *	add sql comments!
+ *
+ *	what about a setspace.core view?
  */
 \set ON_ERROR_STOP on
 \timing
