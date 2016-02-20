@@ -54,6 +54,7 @@ install: all
 		jsonorg.flow.example					\
 		profile.example						\
 		psqlrc.example						\
+		rummy.sql						\
 		schema.sql						\
 		$(JSONORG_PREFIX)/lib
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r	\
