@@ -1,12 +1,7 @@
 /*
  *  Synopsis:
  *	Find recent blobs in service but not in a table in fffile.*
- *  Usage:
- *	psql --set since="'-1 day'" --file schema.sql --no-psqlrc --quiet
  */
-\pset tuples_only
-\pset format unaligned
-
 select
 	s.blob
   from
