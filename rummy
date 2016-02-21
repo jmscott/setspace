@@ -29,9 +29,9 @@ esac
 test -n "$SETSPACE_ROOT" || die "env variable not defined: SETSPACE_ROOT"
 cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
 
-find-schema | egrep 'pdfbox|ffile' | while read SCH;  do
+find-schema | while read SCH;  do
 	SQL=schema/$SCH/lib/rummy.sql
 	test -e $SQL || continue
 	echo "<$SQL" >&2
-	psql --no-psqlrc --quiet -f $SQL --set since="'-$SINCE'"
+	psql --file $SQL --no-psqlrc --quiet --set since="'-$SINCE'"
 done | sort -u
