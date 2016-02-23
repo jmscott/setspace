@@ -7,14 +7,22 @@
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
  */
-select
-	s.blob
+with recent_service as (
+  select
+  	s.blob
+    from
+    	setspace.service s
+    where
+    	s.discover_time >= now() + :since
+)
+ select
+	rs.blob
   from
-  	setspace.service s
-	  natural left outer join setspace.byte_count bc
-	  natural left outer join setspace.byte_bitmap bm
-	  natural left outer join setspace.byte_prefix_32 bp32
-	  natural left outer join setspace.is_utf8wf u8
+  	recent_service rs
+	  left outer join setspace.byte_count bc on (bc.blob = rs.blob)
+	  left outer join setspace.byte_bitmap bm on (bm.blob = rs.blob)
+	  left outer join setspace.byte_prefix_32 bp32 on (bp32.blob = rs.blob)
+	  left outer join setspace.is_utf8wf u8 on (u8.blob = rs.blob)
   where
   	bc.blob is null
 	or
@@ -28,7 +36,8 @@ select
 	u8.blob
     from
   	setspace.is_utf8wf u8
-	  natural left outer join setspace.is_udigish ud
+	  inner join recent_service rs on (rs.blob = u8.blob)
+	  left outer join setspace.is_udigish ud on (ud.blob = rs.blob)
     where
   	u8.is_utf8 = true
 	and
