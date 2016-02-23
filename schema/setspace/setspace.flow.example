@@ -18,7 +18,7 @@
 #	taken from rfc4627, section 3
 #
 #	Note: in_has_byte_json_bracket_table is testing non-utf8 blobs.
-#	      should only utf8 blobs be presented?
+#	      should only utf8 blobs be presented?  same is true for xml.
 
 boot
 {
