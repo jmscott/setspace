@@ -55,6 +55,7 @@ install: all
 		boot-flowd						\
 		cron-pg_dump-mutable					\
 		cron-reboot						\
+		cron-rummy						\
 		dec2pgbit						\
 		dev-reboot						\
 		find-brr						\

@@ -9,7 +9,7 @@ SETSPACE_ROOT=/usr/local/setspace
 56 2 * * * crontab -l >etc/crontab.conf
 
 #  What:
-#	Reboot setpsace process (flowd)
+#	Reboot flowd processes
 #  When:
 #	OS System revoot
 #
@@ -17,8 +17,8 @@ SETSPACE_ROOT=/usr/local/setspace
 
 #
 #  What:
-#	Snapshot crontab to etc/ directory
+#	"Get" blobs discovered within a week and with known unknown facts.
 #  When:
-#	12:53am, every night
+#	Every minute
 #
-53 0 * * * crontab -l >$SETSPACE_ROOT/etc/crontab.conf
+* * * * * $SETSPACE_ROOT/sbin/cron-rummy '1 week' >>$SETSPACE_ROOT/log/cron-rummy.log 2>&1
