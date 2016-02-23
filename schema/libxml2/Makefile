@@ -65,6 +65,7 @@ install: all
 		profile.example						\
 		psqlrc.example						\
 		schema.sql						\
+		rummy.sql						\
 		$(LIBXML2_PREFIX)/lib
 	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m a=r	\
 		merge-stdin-xml_doc.pgc					\
