@@ -3,8 +3,6 @@
  *	Find unresolved pddocument blobs, in both extract_utf and pgtexts.
  *  Usage:
  *	psql -f rummy.sql --set since="'-1 week'"
- *  Note:
- *	Might ought to rewrite with CTE
  */
 
 WITH pdf_candidate AS (
