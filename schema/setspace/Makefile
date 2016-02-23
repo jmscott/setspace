@@ -67,7 +67,6 @@ ifdef SETSPACE_SCHEMA_PREFIX
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		profile.example						\
-		rummy-week.sql						\
 		rummy.sql						\
 		schema.sql						\
 		setspace.flow.example					\
