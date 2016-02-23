@@ -27,7 +27,7 @@ export PGDATABASE=${PGDATABASE:=setspace}
 #  golang libpq gripes about PGSYSCONFDIR
 unset PGSYSCONFDIR
 
-PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:$BLOBIO_ROOT/bin:$PGROOT/bin:/usr/local/bin:/usr/bin:/bin:$PATH
+PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:$BLOBIO_ROOT/bin:$PGHOME/bin:/usr/local/bin:/usr/bin:/bin:$PATH
 
 #  blobio service rofs needs tmp/ owned by caller, to remove hard links
 
