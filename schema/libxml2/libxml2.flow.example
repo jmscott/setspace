@@ -158,7 +158,7 @@ command get_xmllint
 	};
 }
 
-call get_xmllint (brr.udig)
+call get_xmllint(brr.udig)
   when
   	in_xmllint_table.answer == false
 ;
