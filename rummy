@@ -41,5 +41,14 @@ cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
 find-schema | while read SCH;  do
 	SQL=schema/$SCH/lib/rummy.sql
 	test -e $SQL || continue
-	psql --tuples-only --file $SQL --no-psqlrc --quiet --set since="'-$SINCE'"
-done | sort -u | sed '/^ *$/d' | sed 's/ //g'
+	psql								\
+		--tuples-only						\
+		--file $SQL						\
+		--no-psqlrc						\
+		--quiet							\
+		--set since="'-$SINCE'"					|
+	  sed '/^ *$/d'							|
+	  sed 's/ //g'							|
+	  sed "s/.*/$SCH	&/"
+
+done
