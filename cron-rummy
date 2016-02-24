@@ -3,7 +3,7 @@
 #  Synopsis:
 #	Cron jobs to "get" all blobs with undiscovered facts.
 #  Usage:
-#	* * * * * cron-rummy '-1 week' >>log/cron-rummy.log 2>&1
+#	* * * * * cron-rummy '-1 day' >>log/cron-rummy.log 2>&1
 #  Exit Status:
 #	0	ok
 #	1	failed
@@ -11,13 +11,14 @@
 #	A nice addition would be to display/log the discover time of each
 #	gotten blob.
 #
+#	Ought to "get" a blob only once, by tracking in an associative array.
+#
 
 PROG=cron-rummy
-TMP_RUMMY=${TMPDIR:=/tmp}/$PROG-$$.udig
 
 log()
 {
-	echo "$(date +'%Y/%m/%d %H:%M:%S'): $@"
+	echo "$(date +'%Y/%m/%d %H:%M:%S'): $#: $@"
 }
 
 die()
@@ -42,12 +43,15 @@ SINCE="$1"
 test -n "$SETSPACE_ROOT" || die 'env var not defined: SETSPACE_ROOT'
 cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
 log "SETSPACE_ROOT=$SETSPACE_ROOT"
+log "BLOBIO_ROOT=$BLOBIO_ROOT"
 
 log "since: $SINCE"
 
 . etc/profile
+log "TMPDIR=$TMPDIR"
+TMP_RUMMY=${TMPDIR:=/tmp}/$PROG-$$.udig
 
-log 'finding rummy udigs across all schemas ...'
+log "finding rummy udigs since $SINCE across all schemas ..."
 
 rummy "$SINCE" >$TMP_RUMMY || die "rummy failed: exit status=$?"
 RC=$(wc -l $TMP_RUMMY | awk '{print $1}')
@@ -59,16 +63,16 @@ declare -a ok_no
 ok_no[0]=0;
 ok_no[1]=0;
 
-while read U;  do
+while read SCH U;  do
 	blobio get --udig $U --service $BLOBIO_SERVICE >/dev/null
 	STATUS=$?
 	case $STATUS in
 	0)
-		log "<$U"
+		log "<$U	$SCH"
 		ok_no[0]=$(expr ${ok_no[0]} + 1)
 		;;
 	1)
-		log "?$U"
+		log "?$U	$SCH"
 		ok_no[1]=$(expr ${ok_no[1]} + 1)
 		;;
 	*)
