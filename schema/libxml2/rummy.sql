@@ -21,11 +21,18 @@ SELECT
   FROM
 	xml_candidate xc
 	  LEFT OUTER JOIN libxml2.xmllint xl on (xl.blob = xc.blob)
+	  LEFT OUTER JOIN libxml2.is_pg_well_formed pg on (pg.blob = xc.blob)
   WHERE
   	xl.blob is null
 	OR
+	pg.blob is null
+	OR
 	(
+		--  check existence in table xml_doc
+
 		xl.exit_status = 0
+		AND
+		pg.is_xml is true
 		AND
 		NOT EXISTS (
 		   SELECT
