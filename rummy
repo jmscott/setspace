@@ -14,6 +14,11 @@
 #		$ rummy | cut -f2 | sort -u
 #	letting the caller filter out the
 #
+#	Need to verify that the variable since > 1 minute.
+#
+#	Think about adding second command line argument which is the recent
+#	time interval.  Currently the default value is one minute.
+#
 
 PROG=rummy
 
