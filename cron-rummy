@@ -1,9 +1,15 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Cron jobs to "get" all blobs with undiscovered facts.
+#	Cron job to "get" blobs with unknown facts and log details to spool.
 #  Usage:
-#	* * * * * cron-rummy '-1 day' >>log/cron-rummy.log 2>&1
+#	SBIN=/usr/local/setspace/sbin
+#	LOG=/usr/local/setspace/log
+#
+#	* * * * * $SBIN/cron-rummy '-1 day' >>$LOG 2>&1
+#	24 * * * * $SBIN/cron-rummy '1 week' >>$LOG 2>&1
+#	01 4 * * * $SBIN/cron-rummy '1 month' >>$LOG 2>&1
+#	01 5 4 * * $SBIN/cron-rummy '1 year' >>$LOG 2>&1
 #  Exit Status:
 #	0	ok
 #	1	failed
@@ -13,12 +19,14 @@
 #
 #	Ought to "get" a blob only once, by tracking in an associative array.
 #
+#	Think about adding a "what" label to the rummy detail record.
+#
 
 PROG=cron-rummy
 
 log()
 {
-	echo "$(date +'%Y/%m/%d %H:%M:%S'): $$: $@"
+	echo "$(date +'%Y/%m/%d %H:%M:%S'): #$$: $@"
 }
 
 die()
@@ -41,44 +49,64 @@ test $# = 1 || die 'wrong number of arguments'
 SINCE="$1"
 
 test -n "$SETSPACE_ROOT" || die 'env var not defined: SETSPACE_ROOT'
-cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
 log "SETSPACE_ROOT=$SETSPACE_ROOT"
 log "BLOBIO_ROOT=$BLOBIO_ROOT"
+log "BLOBIO_SERVICE=$BLOBIO_SERVICE"
 
 log "since: $SINCE"
 
 . etc/profile
+cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
+test -d spool || die "directory not found: $(pwd)/spool"
+SPOOL=spool/rummy.rdr
+
 log "TMPDIR=$TMPDIR"
 TMP_RUMMY=${TMPDIR:=/tmp}/$PROG-$$.udig
 
-log "finding rummy udigs since $SINCE across all schemas ..."
+NOW=$(RFC3339Nano)
+log "now: $NOW"
 
+#  find the blobs with known unknowns ..
+
+log "finding udigs for blobs discovered since $SINCE ..."
 rummy "$SINCE" >$TMP_RUMMY || die "rummy failed: exit status=$?"
 RC=$(wc -l $TMP_RUMMY | awk '{print $1}')
-log "getting $RC rummied udigs"
+log "total blob count: $RC"
 
-#  track ok/no count in global array
+#  track blobio ok/no chat history count in global array
 
 declare -a ok_no
 ok_no[0]=0;
 ok_no[1]=0;
 
+#  "get" the blobs one at a time and record status in spool/rummy.rdr
+
 while read SCH U;  do
+
+	#  fetch the blob from the service
+
 	blobio get --udig $U --service $BLOBIO_SERVICE >/dev/null
 	STATUS=$?
 	case $STATUS in
 	0)
 		log "<$U	$SCH"
 		ok_no[0]=$(expr ${ok_no[0]} + 1)
+		CHAT_HISTORY=ok
 		;;
 	1)
 		log "?$U	$SCH"
 		ok_no[1]=$(expr ${ok_no[1]} + 1)
+		CHAT_HISTORY=no
 		;;
 	*)
 		die "blobio get $U failed: exit status=$STATUS"
 		;;
 	esac
+
+	#  record the detail of the rummied blob into spool/rummy.rdr
+
+	echo "$NOW	$U	$SCH	$CHAT_HISTORY" >>$SPOOL ||
+				die "echo >$SPOOL failed: exit status=$?"
 done <$TMP_RUMMY
 log "ok count: ${ok_no[0]}"
 log "no count: ${ok_no[1]}"

@@ -2,11 +2,44 @@ SETSPACE_ROOT=/usr/local/setspace
 
 #
 #  What:
+#	"Get" blobs discovered within a day and with known unknown facts.
+#  When:
+#	Every minute
+#
+* * * * * $SETSPACE_ROOT/sbin/cron-rummy '1 day' >>$SETSPACE_ROOT/log/cron-rummy.log 2>&1
+
+#
+#  What:
+#	"Get" blobs discovered within a week and with known unknown facts.
+#  When:
+#	24 minutes after every hour
+#
+24 * * * * $SETSPACE_ROOT/sbin/cron-rummy '1 week' >>$SETSPACE_ROOT/log/cron-rummy.log 2>&1
+
+#
+#  What:
+#	"Get" blobs discovered within a month and with known unknown facts.
+#  When:
+#	4:01am, every day
+#
+01 4 * * * $SETSPACE_ROOT/sbin/cron-rummy '1 month' >>$SETSPACE_ROOT/log/cron-rummy.log 2>&1
+
+#
+#  What:
+#	"Get" blobs discovered within a year and with known unknown facts.
+#  When:
+#	4th day at 5:01am, every month
+#
+01 5 4 * * $SETSPACE_ROOT/sbin/cron-rummy '1 year' >>$SETSPACE_ROOT/log/cron-rummy.log 2>&1
+
+#
+#  What:
 #	Snapshot crontab to $HOME/etc/crontab.conf
 #  When:
 #	2:56am, every night
 #
 56 2 * * * crontab -l >etc/crontab.conf
+56 2 * * * crontab -l >$SETSPACE_ROOT/etc/crontab.conf
 
 #  What:
 #	Reboot flowd processes
@@ -14,11 +47,3 @@ SETSPACE_ROOT=/usr/local/setspace
 #	OS System revoot
 #
 @reboot sleep 10; $SETSPACE_ROOT/sbin/cron-reboot >>$SETSPACE_ROOT/log/cron-reboot.log 2>&1
-
-#
-#  What:
-#	"Get" blobs discovered within a week and with known unknown facts.
-#  When:
-#	Every minute
-#
-* * * * * $SETSPACE_ROOT/sbin/cron-rummy '1 week' >>$SETSPACE_ROOT/log/cron-rummy.log 2>&1

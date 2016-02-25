@@ -48,6 +48,8 @@ install: all
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/log
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+				-d $(SETSPACE_PREFIX)/spool
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/src
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/tmp

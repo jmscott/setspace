@@ -13,7 +13,7 @@ with recent_service as (
     from
     	setspace.service s
     where
-    	s.discover_time >= now() + :since
+	s.discover_time between (now() + :since) and (now() + '-1 minute')
 )
  select
 	rs.blob

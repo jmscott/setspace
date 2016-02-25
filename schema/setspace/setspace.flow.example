@@ -19,6 +19,10 @@
 #
 #	Note: in_has_byte_json_bracket_table is testing non-utf8 blobs.
 #	      should only utf8 blobs be presented?  same is true for xml.
+#
+#	"put" requests are not being pushed to prefixio.  in particular,
+#	trace the blob sha:d25703b4a1178064390a517d43c5fb1f6f370ce6
+#
 
 boot
 {

@@ -21,7 +21,7 @@ WITH pdf_candidate AS (
     WHERE
   	substring(pre.prefix, 1, 4) = '\x25504446'
 	AND
-	s.discover_time >= now() + :since
+	s.discover_time between (now() + :since) and (now() + '-1 minute')
 	AND
 	pdp.blob is NULL
 	AND

@@ -8,9 +8,9 @@ SELECT
 	setspace.has_byte_xml_bracket xb
 	  INNER JOIN setspace.service s ON (s.blob = xb.blob)
   WHERE
-  	xb.has_bracket is true
+  	xb.has_bracket IS TRUE
 	AND
-	s.discover_time >= now() + :since
+	s.discover_time BETWEEN (now() + :since) AND (now() + '-1 minute')
 	AND
 	NOT EXISTS (
 	  SELECT

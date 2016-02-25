@@ -9,9 +9,9 @@ WITH json_candidate AS (
 	setspace.has_byte_json_bracket bjb
 	  INNER JOIN setspace.service s ON (s.blob = bjb.blob)
     WHERE
-  	bjb.has_bracket is true
+  	bjb.has_bracket IS TRUE
 	AND
-	s.discover_time >= now() + :since
+	s.discover_time BETWEEN (now() + :since) AND (now() + '-1 minute')
 )
 
 --  json candidates not in table checker_255

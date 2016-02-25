@@ -5,6 +5,8 @@
  *	psql -f rummy.sql
  *  See:
  *	sbin/rummy
+ *  Note:
+ *	Rewrite query to use CTE for candidate blobs.
  */
 select
 	bl.blob
@@ -22,7 +24,7 @@ select
 		tim.blob is null
 	)
 	and
-	s.discover_time >= now() + :since
+	s.discover_time between (now() + :since) and (now() + '-1 minute')
 UNION
 select
 	fl.blob
@@ -43,7 +45,7 @@ select
 		seq.blob is null
 	)
 	and
-	s.discover_time >= now() + :since
+	s.discover_time between (now() + :since) and (now() + '-1 minute')
 UNION
 select
 	ql.blob
@@ -78,7 +80,7 @@ select
 		)
 	)
 	and
-	s.discover_time >= now() + :since
+	s.discover_time between (now() + :since) and (now() + '-1 minute')
 UNION
 select
 	xl.blob
@@ -113,5 +115,5 @@ select
 		)
 	)
 	and
-	s.discover_time >= now() + :since
+	s.discover_time between (now() + :since) and (now() + '-1 minute')
 ;
