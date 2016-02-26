@@ -55,8 +55,8 @@ log "BLOBIO_SERVICE=$BLOBIO_SERVICE"
 
 log "since: $SINCE"
 
-. etc/profile
 cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
+. etc/profile
 test -d spool || die "directory not found: $(pwd)/spool"
 SPOOL=spool/rummy.rdr
 
