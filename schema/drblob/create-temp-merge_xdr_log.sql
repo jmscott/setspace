@@ -14,51 +14,51 @@
  *
  *	Use the blobio domains for timestamp, name, etc.
  */
-create temporary table merge_xdr_log
+CREATE TEMPORARY TABLE merge_xdr_log
 (
 	start_time		timestamptz
-					not null,
+					NOT NULL,
 
-	flow_sequence		bigint check (
+	flow_sequence		bigint CHECK (
 					flow_sequence > 0
 				)
-				not null,
+				NOT NULL,
 
-	command_name		text check (
+	command_name		text CHECK (
 					command_name ~
 					      '^[[:alpha:]][[:alnum:]_]{0,64}$'
 				)
-				not null,
+				NOT NULL,
 
-	termination_class	text check (
+	termination_class	text CHECK (
 					termination_class in (
 						'OK',
 						'ERR'
 					)
-				) not null,
+				) NOT NULL,
 
 	blob			udig
-					not null,
+					NOT NULL,
 
-	termination_code	bigint check (
+	termination_code	bigint CHECK (
 					termination_code >= 0
 				)
-				not null,
+				NOT NULL,
 
-	wall_duration		interval check (
+	wall_duration		interval CHECK (
 					wall_duration >= '0'::interval
 				)
-				not null,
+				NOT NULL,
 
-	system_duration		interval check (
+	system_duration		interval CHECK (
 					system_duration >= '0'::interval
 				)
-				not null,
+				NOT NULL,
 
-	user_duration		interval check (
+	user_duration		interval CHECK (
 					user_duration >= '0'::interval
 				)
-				not null
+				NOT NULL
 );
 \copy merge_xdr_log from pstdin
-analyze merge_xdr_log;
+ANALYZE merge_xdr_log;
