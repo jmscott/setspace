@@ -1,7 +1,7 @@
 select
 	ex.blob
   from
-  	pdfbox2.extract_utf8 ex
+  	pdfbox2.extract_text_utf8 ex
 	  inner join setspace.service s on (s.blob = ex.blob)
 	  inner join pdfbox2.pddocument pd on (pd.blob = ex.blob)
   where

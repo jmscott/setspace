@@ -8,7 +8,7 @@
 select
 	e8.blob
   from
-  	pdfbox2.extract_utf8 e8
+  	pdfbox2.extract_text_utf8 e8
 	  join setspace.service s on (s.blob = e8.utf8_blob)
 	  join setspace.byte_count bc on (bc.blob = e8.utf8_blob)
 	  left outer join pgtexts.tsv_utf8 tu8 on (tu8.blob = e8.utf8_blob)

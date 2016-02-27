@@ -53,7 +53,7 @@ UNION (
 	  SELECT
 	  	ex.blob
 	    FROM
-	    	pdfbox2.extract_utf8 ex
+	    	pdfbox2.extract_text_utf8 ex
 	    WHERE
 	    	ex.blob = pd.blob
 	)
@@ -66,7 +66,7 @@ UNION (
   	ex.blob
     FROM
     	pdf_candidate pdf
-	  INNER JOIN pdfbox2.extract_utf8 ex ON (ex.blob = pdf.blob)
+	  INNER JOIN pdfbox2.extract_text_utf8 ex ON (ex.blob = pdf.blob)
     WHERE
     	ex.utf8_blob is NOT NULL
 	AND

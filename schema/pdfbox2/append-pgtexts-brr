@@ -37,7 +37,7 @@ select
 	u8.utf8_blob,
 	bc.byte_count
   from
-  	pdfbox2.extract_utf8 u8
+  	pdfbox2.extract_text_utf8 u8
 	  inner join setspace.byte_count bc on (bc.blob = u8.utf8_blob)
   where
   	u8.blob = '$PDF_UDIG'

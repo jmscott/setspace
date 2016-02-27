@@ -7,7 +7,7 @@
 #  Exit Status:
 #	0	ok, blob appeared
 #	1	ok, blob failed to appear after <max wait> seconds.
-#	2	utf8 blob does not exist in table extract_utf8
+#	2	utf8 blob does not exist in table extract_text_utf8
 #	3	wrong number of arguments
 #	4	unexpected sql error
 #	5	unexpected error in spin-wait-blob
@@ -31,7 +31,7 @@ UTF8_UDIG=$(
 select
 	utf8_blob
   from
-  	pdfbox2.extract_utf8
+  	pdfbox2.extract_text_utf8
   where
   	blob = '$PDF_UDIG'::udig
 END

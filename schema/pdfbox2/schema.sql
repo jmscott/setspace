@@ -1,12 +1,12 @@
 /*
  *  Synopsis:
- *	Schema of the pdfbox, version 2, api
+ *	Schema of the pdfbox.apache.org version 2 api
  *  See:
  *	https://pdfbox.apache.org
  *	http://semver.org/	
  *  Note:
  *	Need to add integrity triggers that verify exit_status == 0 in foreign
- *	keys for extract_utf8.blob.
+ *	keys for extract_text_utf8.blob.
  *
  *	Does the the ts_conf column need to reference a foreign key?
  */
@@ -120,8 +120,8 @@ COMMENT ON TABLE pdfbox2.pddocument IS
 /*
  *  Blob of UTF8 Text extracted from pdf
  */
-DROP TABLE IF EXISTS pdfbox2.extract_utf8;
-CREATE TABLE pdfbox2.extract_utf8
+DROP TABLE IF EXISTS pdfbox2.extract_text_utf8;
+CREATE TABLE pdfbox2.extract_text_utf8
 (
 	blob		udig
 				REFERENCES pdfbox2.pddocument(blob)
@@ -147,14 +147,14 @@ CREATE TABLE pdfbox2.extract_utf8
 		blob != stderr_blob
 	)
 );
-COMMENT ON TABLE pdfbox2.extract_utf8 IS
+COMMENT ON TABLE pdfbox2.extract_text_utf8 IS
   'Blob of UTF8 Text extracted from pdf'
 ;
 
-CREATE INDEX extract_utf8_blob on extract_utf8(utf8_blob);
+CREATE INDEX extract_utf8_blob on extract_text_utf8(utf8_blob);
 
 /*
- *  Pending extract_utf8 jobs.
+ *  Pending extract_text_utf8 jobs.
  *
  *  Note:
  *	Notice no fk reference to setspace.service(blob).
@@ -169,7 +169,7 @@ CREATE TABLE pdfbox2.extract_utf8_pending
 				NOT NULL
 );
 COMMENT ON TABLE pdfbox2.extract_utf8_pending IS
-  'Actively running extract_utf8 java processes'
+  'Actively running extract_text_utf8 java processes'
 ;
 
 COMMIT;

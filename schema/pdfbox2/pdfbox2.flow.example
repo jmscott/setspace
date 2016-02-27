@@ -197,7 +197,7 @@ call pddocument_exists(brr.udig)
   	merge_pddocument.exit_status == 0
 ;
 
-sql query in_extract_utf8_table row
+sql query in_extract_text_utf8_table row
 {
 	statement = `
 	
@@ -205,7 +205,7 @@ sql query in_extract_utf8_table row
 	  SELECT
 		blob
 	          FROM
-	    	pdfbox2.extract_utf8
+	    	pdfbox2.extract_text_utf8
 	         WHERE
 	    	blob = $1::udig
 	)
@@ -216,17 +216,17 @@ sql query in_extract_utf8_table row
 	);
 }
 
-query in_extract_utf8_table(brr.udig)
+query in_extract_text_utf8_table(brr.udig)
   when
   	pddocument_exists.exit_status == 0
 ;
 
-sql query merge_extract_utf8_pending row
+sql query merge_extract_text_utf8_pending row
 {
 	statement = `
 
 	INSERT INTO
-	  pdfbox2.extract_utf8_pending(
+	  pdfbox2.extract_text_utf8_pending(
 		blob
 	  ) VALUES(
 	  	$1::udig
@@ -241,14 +241,14 @@ sql query merge_extract_utf8_pending row
 	);
 }
 
-query merge_extract_utf8_pending(brr.udig)
+query merge_extract_text_utf8_pending(brr.udig)
   when
-  	in_extract_utf8_table.answer == false
+  	in_extract_text_utf8_table.answer == false
 ;
 
-command merge_extract_utf8
+command merge_extract_text_utf8
 {
-	path = "sbin/merge-extract_utf8";
+	path = "sbin/merge-extract_text_utf8";
 	exit_status is OK when in {
 		0,
 		1,
@@ -256,9 +256,9 @@ command merge_extract_utf8
 	};
 }
 
-call merge_extract_utf8(brr.udig)
+call merge_extract_text_utf8(brr.udig)
   when
-  	merge_extract_utf8_pending.inserted == true
+  	merge_extract_text_utf8_pending.inserted == true
 ;
 
 command wait_utf8_byte_count
@@ -270,7 +270,7 @@ command wait_utf8_byte_count
 	exit_status is OK when in {
 		0,	#  ok, blob appeared
 		1,	#  blob failed to appear after 16 seconds,
-		2	#  no entry in extract_utf8
+		2	#  no entry in extract_text_utf8
 	};
 }
 
@@ -282,9 +282,9 @@ command wait_utf8_byte_count
 
 call wait_utf8_byte_count(brr.udig)
   when
-  	merge_extract_utf8.exit_status == 0
+  	merge_extract_text_utf8.exit_status == 0
 	or
-	in_extract_utf8_table.answer == true
+	in_extract_text_utf8_table.answer == true
 ;
   
 command append_pgtexts_brr

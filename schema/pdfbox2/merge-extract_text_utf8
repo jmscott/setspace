@@ -3,7 +3,7 @@
 #  Synopsis:
 #	Extract UTF8 text from PDF and store results in PostgreSQL.
 #  Usage:
-#	merge-extract_utf8 <udig>
+#	merge-extract_text_utf8 <udig>
 #  Exit Status:
 #	0	extracted utf8 text and tuple stored in PostgreSQL
 #	1	pdf failed to load and tuple stored in PostgreSQL
@@ -26,7 +26,7 @@
 #	setting CLASSPATH ought to good enough.
 #
 
-PROG=merge-extract_utf8
+PROG=merge-extract_text_utf8
 
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.pdf
 TMP_ERR=${TMPDIR:=/tmp}/$PROG-$$.err
@@ -131,7 +131,7 @@ fi
 STDERR_BLOB=$(put_file $TMP_ERR 'extract stderr')
 test $? = 0 || exit 5
 
-#  merge the extract_utf8 tuple into postgres and zap the pending tuple
+#  merge the extract_text_utf8 tuple into postgres and zap the pending tuple
 
 psql --no-psqlrc --quiet <<EOF || die "psql insert failed: exit status=$?" 8
 
@@ -140,7 +140,7 @@ psql --no-psqlrc --quiet <<EOF || die "psql insert failed: exit status=$?" 8
 BEGIN TRANSACTION;
 
 INSERT INTO
-  pdfbox2.extract_utf8(
+  pdfbox2.extract_text_utf8(
   	blob,
 	exit_status,
 	utf8_blob,
@@ -153,7 +153,7 @@ INSERT INTO
     ) ON CONFLICT
     	DO NOTHING
 ;
-DELETE FROM pdfbox2.extract_utf8_pending
+DELETE FROM pdfbox2.extract_text_utf8_pending
   WHERE
   	blob = '$PDF_UDIG'
 ;
