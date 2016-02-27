@@ -16,7 +16,7 @@ WITH pdf_candidate AS (
 	  INNER JOIN setspace.service s ON (s.blob = pre.blob)
 	  LEFT OUTER JOIN pdfbox2.pddocument_pending pdp ON
 	  	(pdp.blob = pre.blob)
-	  LEFT OUTER JOIN pdfbox2.extract_utf8_pending eup ON
+	  LEFT OUTER JOIN pdfbox2.extract_text_utf8_pending eup ON
 	  	(eup.blob = pre.blob)
     WHERE
   	substring(pre.prefix, 1, 4) = '\x25504446'

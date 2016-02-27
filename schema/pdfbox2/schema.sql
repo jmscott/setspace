@@ -151,7 +151,7 @@ COMMENT ON TABLE pdfbox2.extract_text_utf8 IS
   'Blob of UTF8 Text extracted from pdf'
 ;
 
-CREATE INDEX extract_utf8_blob on extract_text_utf8(utf8_blob);
+CREATE INDEX extract_text_utf8_blob on extract_text_utf8(utf8_blob);
 
 /*
  *  Pending extract_text_utf8 jobs.
@@ -160,7 +160,7 @@ CREATE INDEX extract_utf8_blob on extract_text_utf8(utf8_blob);
  *	Notice no fk reference to setspace.service(blob).
  *	Sudden termination may leave stale entries.
  */
-CREATE TABLE pdfbox2.extract_utf8_pending
+CREATE TABLE pdfbox2.extract_text_utf8_pending
 (
 	blob		udig
 				PRIMARY KEY,
@@ -168,7 +168,7 @@ CREATE TABLE pdfbox2.extract_utf8_pending
 				DEFAULT now()
 				NOT NULL
 );
-COMMENT ON TABLE pdfbox2.extract_utf8_pending IS
+COMMENT ON TABLE pdfbox2.extract_text_utf8_pending IS
   'Actively running extract_text_utf8 java processes'
 ;
 
