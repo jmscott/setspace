@@ -38,6 +38,7 @@ CREATE UNIQUE INDEX tsv_utf8_ts_blob ON pgtexts.tsv_utf8(blob, ts_conf);
 COMMENT ON TABLE pgtexts.tsv_utf8 IS
   'Text Vector of Extracted UTF8 Text'
 ;
+CREATE INDEX tsv_utf8_doc ON tsv_utf8 USING gin(doc);
 
 DROP TABLE IF EXISTS pgtexts.merge_tsv_utf8_pending;
 CREATE TABLE pgtexts.merge_tsv_utf8_pending
