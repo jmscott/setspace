@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Find unresolved pddocument blobs, in both extract_utf and pgtexts.
+ *	Find unresolved pddocument blobs, in both extract_text_utf8 and pgtexts.
  *  Usage:
  *	psql -f rummy.sql --set since="'-1 week'"
  */
@@ -38,7 +38,7 @@ SELECT
   WHERE
   	pd.blob is NULL
 
---  parsable pdfs in pddocument and not in extract_utf
+--  parsable pdfs in pddocument and not in extract_text_utf8
 
 UNION (
   SELECT
@@ -71,9 +71,9 @@ UNION (
     	ex.utf8_blob is NOT NULL
 	AND
 
-	--  extracted utf8 blob not in text search vector table
-
-	NOT EXISTS (
+	 --  extracted utf8 blob not in text search vector or blob table
+	(
+	 (NOT EXISTS (
 	  SELECT
 	  	ex.blob
 	    FROM
@@ -92,6 +92,27 @@ UNION (
 	    	pgtexts.merge_tsv_utf8_pending pen
 	    WHERE
 	    	pen.blob = ex.utf8_blob
+	))
+	OR
+	 (NOT EXISTS (
+	  SELECT
+	  	ex.blob
+	    FROM
+	    	pgtexts.text_utf8 ts
+	    WHERE
+	    	ts.blob = ex.utf8_blob
 	)
+	AND
+
+	--  extracted utf8 blob not in text blob pending table
+
+	NOT EXISTS (
+	  SELECT
+	  	pen.blob
+	    FROM
+	    	pgtexts.merge_text_utf8_pending pen
+	    WHERE
+	    	pen.blob = ex.utf8_blob
+	)))
 )
 ;

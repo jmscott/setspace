@@ -442,6 +442,7 @@ sql exec merge_is_utf8wf_not
 }
 
 #  blob not utf8 when 0xff char exists
+
 query merge_is_utf8wf_not(brr.udig)
   when
   	has_char_0xff.answer == true
@@ -514,6 +515,9 @@ command core_exists
 #
 #	setspace.{byte_bitmap, byte_count, byte_prefix, is_utf8wf}
 #
+#  All blobs have core facts.
+#
+
 call core_exists()
   when
 	# 

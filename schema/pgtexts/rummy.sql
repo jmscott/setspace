@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Select symetric difference of tsv_utf8.blob and text_utf8.blob.
+ *	Select symmetric difference of tsv_utf8.blob and text_utf8.blob.
  */
 (SELECT
 	tsv.blob
