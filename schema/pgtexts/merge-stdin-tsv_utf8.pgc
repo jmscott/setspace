@@ -76,26 +76,31 @@ EXEC SQL END DECLARE SECTION;
 	close(1);
 
 	//  parse the udig as argv[1]
+
 	blob = argv[1];
 	len = strlen(blob);
 	if (len < 3 || len > 255 || strchr(blob, ':') == NULL)
 		die2(EXIT_BAD_UDIG, "syntax error in utf8 udig", blob);
 
 	// the text search configuration
+
 	ts_conf = argv[2];
 
 	//  parse the blob size as argv[3]
+
 	sz = argv[3];
 	len = strlen(sz);
 	if (len < 1 || len > 19)
 		die2(EXIT_BAD_SIZE, "blob size not > 0 and < 20 chars", sz);
 
 	//  need to validate that all chars are decimal digits
+
 	size = atoi(sz);
 	if (size <= 0)
 		die2(EXIT_BAD_SIZE, "atoi(blob size) <= 0", sz);
 
 	//  allocate the utf8 buffer plus null byte
+
 	doc = malloc(size + 1);
 	if (doc == NULL)
 		die2(EXIT_BAD_MALLOC, "malloc() failed", sz);

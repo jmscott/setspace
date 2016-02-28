@@ -187,3 +187,112 @@ query delete_tsv_utf8_pending(brr.udig)
 	or
 	merge_tsv_utf8.exit_status == 1
 ;
+
+#  text tables
+
+sql query in_text_utf8_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	pgtexts.text_utf8
+	    WHERE
+	    	blob = $1::udig
+	);
+	`;
+
+	result row is (
+		answer bool
+	);
+
+}
+
+query in_text_utf8_table(brr.udig)
+  when
+  	in_service_table.answer == true
+;
+
+sql query in_merge_text_utf8_pending_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	pgtexts.merge_text_utf8_pending
+	    WHERE
+		blob = $1::udig
+	  )
+	;
+	`;
+
+	result row is (
+		answer bool
+	);
+
+}
+
+query in_merge_text_utf8_pending_table(brr.udig)
+  when
+  	in_text_utf8_table.answer == false
+;
+
+sql query merge_text_utf8_pending row
+{
+	statement = `
+
+	INSERT INTO
+	  pgtexts.merge_text_utf8_pending(
+		blob
+	  ) VALUES(
+	  	$1::udig
+ 	  )  ON CONFLICT
+	  	DO NOTHING
+	  RETURNING
+	  	true
+	`;
+
+	result row is (
+		inserted bool
+	);
+}
+
+query merge_text_utf8_pending(brr.udig)
+  when
+  	in_merge_text_utf8_pending_table.answer == false
+;
+
+command merge_text_utf8
+{
+	path = "sbin/merge-text_utf8";
+	argv = (
+		"english"
+	);
+}
+
+call merge_text_utf8(brr.udig, brr.blob_size)
+  when
+  	merge_text_utf8_pending.inserted == true
+;
+
+sql exec delete_text_utf8_pending
+{
+	statement = `
+
+	DELETE FROM pgtexts.merge_text_utf8_pending
+	  WHERE
+	  	blob = $1::udig
+	;
+	`;
+}
+
+query delete_text_utf8_pending(brr.udig)
+  when
+  	merge_text_utf8.exit_status == 0
+	or
+	merge_text_utf8.exit_status == 1
+;

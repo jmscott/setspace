@@ -53,4 +53,26 @@ COMMENT ON TABLE pgtexts.merge_tsv_utf8_pending IS
   'Actively running processes for merge_tsv_utf8'
 ;
 
+DROP TABLE IF EXISTS pgtexts.text_utf8;
+CREATE TABLE pgtexts.text_utf8
+(
+	blob	udig
+			REFERENCES setspace.is_utf8wf(blob),
+	doc	text
+			not null
+);
+
+DROP TABLE IF EXISTS pgtexts.merge_text_utf8_pending;
+CREATE TABLE pgtexts.merge_text_utf8_pending
+(
+	blob		udig
+				PRIMARY KEY,
+	insert_time	timestamptz
+				DEFAULT now()
+				NOT NULL
+);
+COMMENT ON TABLE pgtexts.merge_text_utf8_pending IS
+  'Actively running processes for merge_text_utf8'
+;
+
 COMMIT;

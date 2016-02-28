@@ -7,9 +7,11 @@
 include ../schema.mk
 include ../../local.mk
 
-COMPILED=merge-stdin-tsv_utf8
+COMPILED=merge-stdin-tsv_utf8 merge-stdin-text_utf8
 PROGS=									\
+	merge-stdin-text_utf8						\
 	merge-stdin-tsv_utf8						\
+	merge-text_utf8							\
 	merge-tsv_utf8
 
 all: $(COMPILED)
@@ -24,6 +26,15 @@ merge-stdin-tsv_utf8:							\
 	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-tsv_utf8.c		\
 			-o merge-stdin-tsv_utf8 -L$(PGLIB) -lecpg
 	rm merge-stdin-tsv_utf8.c
+
+merge-stdin-text_utf8:							\
+		merge-stdin-text_utf8.pgc				\
+		../../common.c						\
+		../../common-ecpg.c
+	ecpg merge-stdin-text_utf8.pgc
+	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-text_utf8.c		\
+			-o merge-stdin-text_utf8 -L$(PGLIB) -lecpg
+	rm merge-stdin-text_utf8.c
 
 dev-links:
 	test -e lib || ln -s . lib
@@ -56,6 +67,7 @@ install: all
 	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER) -m ug=rx		\
 		profile.example						\
 		pgtexts.flow.example					\
+		rummy.sql						\
 		schema.sql						\
 		$(PGTEXTS_PREFIX)/lib
 

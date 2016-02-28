@@ -17,7 +17,6 @@
 #  See:
 #	PostgreSQL table pgtexts.tsv_utf8_pending.
 #  Environment:
-#	BLOBIO_SERVICE
 #	BLOBIO_RO_SERVICE
 #  
 PROG=merge-tsv_utf8
