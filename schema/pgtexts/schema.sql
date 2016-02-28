@@ -57,7 +57,8 @@ DROP TABLE IF EXISTS pgtexts.text_utf8;
 CREATE TABLE pgtexts.text_utf8
 (
 	blob	udig
-			REFERENCES setspace.is_utf8wf(blob),
+			REFERENCES setspace.is_utf8wf(blob)
+			PRIMARY KEY,
 	doc	text
 			not null
 );
