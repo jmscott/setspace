@@ -1027,7 +1027,6 @@ call append_prefixio_brr(
 #
 sql query in_has_byte_xml_bracket_table row
 {
-
 	result row is (
 		answer	bool,
 		has_bracket bool
