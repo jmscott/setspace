@@ -269,9 +269,6 @@ query merge_text_utf8_pending(brr.udig)
 command merge_text_utf8
 {
 	path = "sbin/merge-text_utf8";
-	argv = (
-		"english"
-	);
 }
 
 call merge_text_utf8(brr.udig, brr.blob_size)
