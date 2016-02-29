@@ -68,7 +68,7 @@ log "now: $NOW"
 
 #  find the blobs with known unknowns ..
 
-log "finding udigs for blobs discovered since $SINCE ..."
+log "finding blobs discovered since $SINCE ago ..."
 rummy "$SINCE" >$TMP_RUMMY || die "rummy failed: exit status=$?"
 RC=$(wc -l $TMP_RUMMY | awk '{print $1}')
 log "total blob count: $RC"
