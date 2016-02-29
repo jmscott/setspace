@@ -25,6 +25,9 @@
  *	Should tsvector config be passed as an argument oncommand line?
  *
  *	Think about refactoring common routines in ../../sql-common.h
+ *
+ *	SQL ERROR code "54000: string is too long for tsvector" ought to
+ *	mapped onto specific process exit code other than generic sql error.
  */
 
 static char progname[] = "merge-stdin-tsv_utf8";
