@@ -23,7 +23,7 @@ CREATE TEMPORARY TABLE merge_qdr_log
 					flow_sequence > 0
 				) NOT NULL,
 
-	query_name		text check (
+	query_name		text CHECK (
 					query_name ~
 					       '^[[:alpha:]][[:alnum:]_]{0,64}$'
 				) NOT NULL,

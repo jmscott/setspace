@@ -24,7 +24,7 @@ CREATE TEMPORARY TABLE merge_fdr_log
 			)
 			NOT NULL,
 
-	fault_count	bigint check (
+	fault_count	bigint CHECK (
 				fault_count >= 0
 			)
 			NOT NULL,
