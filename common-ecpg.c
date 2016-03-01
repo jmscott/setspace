@@ -1,7 +1,26 @@
 /*
  *  Synopsis:
  *	Common routines used by PostgreSQL ecpg code
+ *  Note:
+ *	The process exit status of both warnings and errors are remapped through
+ *	the array _ecpg_state2exit[] array.  Do we need two arrays,
+ *	one for	warnings and one for errors?
  */
+
+//  map sql state codes onto process exit status
+//  only used when query faults.
+
+struct sql_exit_status
+{
+	char	*sql_state;
+	int	exit_status;
+};
+
+#ifndef COMMON_ECPG_SQL_EXIT_STATUS
+
+static struct sql_exit_status _ecpg_state2exit[] = {};
+
+#endif
 
 static void
 _ecpg_sql_fault(int status, char *what)
@@ -16,11 +35,28 @@ _ecpg_sql_fault(int status, char *what)
 
 	if (sqlca.sqlstate[0] != 0) {
 		char state[6];
+		int ne = sizeof _ecpg_state2exit / sizeof _ecpg_state2exit[0];
 
 		_strcat(msg, sizeof msg, ": ");
 		memmove(state, sqlca.sqlstate, 5);
 		state[5] = 0;
 		_strcat(msg, sizeof msg, state);
+
+		//  remap the process exit code for a particular sql state code
+
+		if (ne > 0) {
+			int i;
+
+			for (i = 0;  i < ne;  i++) {
+				char *s;
+
+				s = _ecpg_state2exit[i].sql_state;
+				if (strcmp(state, s) == 0)
+					break;
+			}
+			if (i < ne)
+				status = _ecpg_state2exit[i].exit_status;
+		}
 	} else
 		_strcat(msg, sizeof msg, ": (missing sql state!)");
 
