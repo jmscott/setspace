@@ -10,20 +10,20 @@
 //  map sql state codes onto process exit status
 //  only used when query faults.
 
-struct sql_exit_status
+struct _ecpg_sql_state_fault
 {
 	char	*sql_state;
-	int	exit_status;
+
+	// -1 implies ignore fault, 0 <= 255 implies remap exit status
+
+	int	action;
 };
 
-#ifndef COMMON_ECPG_SQL_EXIT_STATUS
-
-static struct sql_exit_status _ecpg_state2exit[] = {};
-
-#endif
-
+/*
+ *  Note: Need to add the process name to the error message
+ */
 static void
-_ecpg_sql_fault(int status, char *what)
+_ecpg_sql_fault(int status, char *what, struct _ecpg_sql_state_fault *fault)
 {
 	char msg[PIPE_MAX + 1];
 
@@ -35,7 +35,6 @@ _ecpg_sql_fault(int status, char *what)
 
 	if (sqlca.sqlstate[0] != 0) {
 		char state[6];
-		int ne = sizeof _ecpg_state2exit / sizeof _ecpg_state2exit[0];
 
 		_strcat(msg, sizeof msg, ": ");
 		memmove(state, sqlca.sqlstate, 5);
@@ -44,23 +43,34 @@ _ecpg_sql_fault(int status, char *what)
 
 		//  remap the process exit code for a particular sql state code
 
-		if (ne > 0) {
-			int i;
-
-			for (i = 0;  i < ne;  i++) {
-				char *s;
-
-				s = _ecpg_state2exit[i].sql_state;
-				if (strcmp(state, s) == 0)
+		if (fault) {
+			while (fault->sql_state) {
+				if (strcmp(state, fault->sql_state) == 0)
 					break;
+				fault++;
 			}
-			if (i < ne)
-				status = _ecpg_state2exit[i].exit_status;
+
+			//  change the default behavior of the fault based
+			//  the sql state code
+
+			if (fault->sql_state) {
+				int act = fault->action;
+
+				//  ignore the fault
+
+				if (act == -1)
+					return;
+
+				//  change the process exit status
+
+				if (0 <= act && act <= 255)
+					status = act;
+			}
 		}
 	} else
-		_strcat(msg, sizeof msg, ": (missing sql state!)");
+		_strcat(msg, sizeof msg, ": (WARN: missing sql state)");
 
-	//  add the sql error message
+	//  tack on the sql error message
 
 	if (sqlca.sqlerrm.sqlerrml > 0) {
 		char err[SQLERRMC_LEN + 1];
@@ -88,9 +98,9 @@ _ecpg_sql_fault(int status, char *what)
  *	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error();
  */
 static void
-_ecpg_sql_error()
+_ecpg_sql_error(struct _ecpg_sql_state_fault *fault)
 {
-	_ecpg_sql_fault(EXIT_SQLERROR, "ERROR");
+	_ecpg_sql_fault(EXIT_SQLERROR, "ERROR", fault);
 }
 
 #endif
@@ -109,44 +119,8 @@ _ecpg_sql_error()
 *	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_warning();
 */
 static void
-_ecpg_sql_warning()
+_ecpg_sql_warning(struct _ecpg_sql_state_fault *fault)
 {
-	_ecpg_sql_fault(EXIT_SQLWARN, "WARNING");
-}
-#endif
-
-#ifdef COMMON_ECPG_NEED_SQL_WARNING_IGNORE
-
-/*
-*  Synopsis:
-*	SQL warning callback with ignores for EXEC SQL WHENEVER SQLWARNING CALL
-*  Usage:
-*	#define COMMON_ECPG_NEED_SQL_WARNING_IGNORE
-*	#include "../../common-ecpg.c"
-*	static char *no_warns[] =
-*	{
-*		"02000",	//  no data found due to upsert conflict
-*		(char *)0
-*	};
-*
-*	...
-*	
-*	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_warning_ignore(no_warns);
-*/
-static void
-_ecpg_sql_warning_ignore(char *ignore[])
-{
-	char **ig = ignore;
-	char *i;
-
-	while ((i = *ig++)) {
-		if (i[0] == sqlca.sqlstate[0] &&
-		    i[1] == sqlca.sqlstate[1] &&
-		    i[2] == sqlca.sqlstate[2] &&
-		    i[3] == sqlca.sqlstate[3] &&
-		    i[4] == sqlca.sqlstate[4])
-			return;
-	}
-	_ecpg_sql_fault(EXIT_SQLWARN, "WARNING");
+	_ecpg_sql_fault(EXIT_SQLWARN, "WARNING", fault);
 }
 #endif
