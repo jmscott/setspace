@@ -117,7 +117,7 @@ if [ -s $TMP_UTF8 ];  then
 
 		#  valid utf8 so put the blob
 
-		UTF8_BLOB=$(put_file $TMP_UTF8 'extract utf8')
+		UTF8_BLOB=$(put_file $TMP_UTF8 'extract text utf8')
 		test $? = 0 || exit 5
 	else
 		UTF8_BLOB=null
