@@ -64,8 +64,12 @@ EXEC SQL END DECLARE SECTION;
 			die2(EXIT_BAD_TOUT, "timeout second <= 0", sec);
 	}
 
-	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error();
-	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_warning();
+	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error(
+		(struct _ecpg_sql_state_fault *)0
+	);
+	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_warning(
+		(struct _ecpg_sql_state_fault *)0
+	);
 	EXEC SQL CONNECT TO default;
 
 	/*
