@@ -50,13 +50,13 @@ SINCE="$1"
 
 test -n "$SETSPACE_ROOT" || die 'env var not defined: SETSPACE_ROOT'
 log "SETSPACE_ROOT=$SETSPACE_ROOT"
-log "BLOBIO_ROOT=$BLOBIO_ROOT"
-log "BLOBIO_SERVICE=$BLOBIO_SERVICE"
 
 log "since: $SINCE"
 
 cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
 . etc/profile
+log "BLOBIO_ROOT=$BLOBIO_ROOT"
+log "BLOBIO_SERVICE=$BLOBIO_SERVICE"
 test -d spool || die "directory not found: $(pwd)/spool"
 SPOOL=spool/rummy.rdr
 
