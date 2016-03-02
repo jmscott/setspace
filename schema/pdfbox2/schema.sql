@@ -160,6 +160,7 @@ CREATE INDEX extract_text_utf8_blob on extract_text_utf8(utf8_blob);
  *	Notice no fk reference to setspace.service(blob).
  *	Sudden termination may leave stale entries.
  */
+DROP TABLE IF EXISTS pdfbox2.extract_text_utf8_pending;
 CREATE TABLE pdfbox2.extract_text_utf8_pending
 (
 	blob		udig
