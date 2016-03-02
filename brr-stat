@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Count lines in active blob request files.
+#  Usage:
+#	brr-stat		#  from any directory
+#
+
+PROG=$(basename $0)
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&2
+	exit 1
+}
+
+test -n "$SETSPACE_ROOT" || die 'env var not defined: SETSPACE_ROOT'
+cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed: exit status=$?"
+
+. etc/profile
+
+wc -l $(find-brr)

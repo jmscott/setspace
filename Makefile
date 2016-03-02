@@ -55,6 +55,7 @@ install: all
 				-d $(SETSPACE_PREFIX)/tmp
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		boot-flowd						\
+		brr-stat						\
 		cron-pg_dump-mutable					\
 		cron-reboot						\
 		cron-rummy						\
