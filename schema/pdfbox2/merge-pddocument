@@ -63,7 +63,7 @@ case $STATUS in
 esac
 
 #  execute the java extract.  although we expect only 0 and no stderr,
-#  0 with stderr is normal.  an exit status os 1 indicates a failed load
+#  0 with stderr is normal.  an exit status of 1 indicates a failed load
 #  of the pdf file.
 
 java -cp $CLASSPATH putPDDocument <$TMP_BLOB >$TMP_ROW 2>$TMP_ERR
