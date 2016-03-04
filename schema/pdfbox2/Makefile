@@ -70,6 +70,7 @@ install: all
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=rx		\
 		Makefile						\
+		ExtractPagesUTF8.java					\
 		putPDDocument.java					\
 		$(PDFBOX2_PREFIX)/src
 distclean:
