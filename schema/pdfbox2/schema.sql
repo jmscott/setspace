@@ -21,7 +21,7 @@ COMMENT ON SCHEMA pdfbox2 IS
   'Text and metadata extracted by pdfbox.apache.org, version 2'
 ;
 
-DROP TABLE IF EXISTS pdfbox2.pddocument_pending cascade;
+DROP TABLE IF EXISTS pdfbox2.pddocument_pending CASCADE;
 /*
  *  Done pddocument jobs.
  *
@@ -44,7 +44,7 @@ COMMENT ON TABLE pdfbox2.pddocument_pending IS
 /*
  *  PDDocument scalar fields from Java Object
  */
-DROP TABLE IF EXISTS pdfbox2.pddocument;
+DROP TABLE IF EXISTS pdfbox2.pddocument CASCADE;
 CREATE TABLE pdfbox2.pddocument
 (
 	blob		udig
@@ -120,7 +120,7 @@ COMMENT ON TABLE pdfbox2.pddocument IS
 /*
  *  Blob of UTF8 Text extracted from pdf
  */
-DROP TABLE IF EXISTS pdfbox2.extract_text_utf8;
+DROP TABLE IF EXISTS pdfbox2.extract_text_utf8 CASCADE;
 CREATE TABLE pdfbox2.extract_text_utf8
 (
 	blob		udig
@@ -148,7 +148,7 @@ CREATE TABLE pdfbox2.extract_text_utf8
 	)
 );
 COMMENT ON TABLE pdfbox2.extract_text_utf8 IS
-  'Blob of UTF8 Text extracted from pdf'
+  'Results of extracted UTF8 text from a PDF blob'
 ;
 
 CREATE INDEX extract_text_utf8_blob on extract_text_utf8(utf8_blob);
@@ -160,7 +160,7 @@ CREATE INDEX extract_text_utf8_blob on extract_text_utf8(utf8_blob);
  *	Notice no fk reference to setspace.service(blob).
  *	Sudden termination may leave stale entries.
  */
-DROP TABLE IF EXISTS pdfbox2.extract_text_utf8_pending;
+DROP TABLE IF EXISTS pdfbox2.extract_text_utf8_pending CASCADE;
 CREATE TABLE pdfbox2.extract_text_utf8_pending
 (
 	blob		udig
