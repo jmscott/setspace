@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Summarize today's flowd activity, particulaly faults.
+#
+
+PROG=flowd-stat
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&1
+	exit 1
+}
+
+test -n "$SETSPACE_ROOT" || die 'env var not defined: SETSPACE_ROOT'
+cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed: exit status=$?"
+. etc/profile
+
+TODAY_LOG=$(echo flowd-$(date +%a)).log
+find-schema | while read SCH;  do
+	LOG=schema/$SCH/log/$TODAY_LOG
+
+	test -e $LOG || continue
+	test -r $LOG || die "flowd log not readable: $LOG"
+	echo
+	echo $SCH: $TODAY_LOG
+	egrep ': (ERROR|WARN): ' $LOG | while read L;  do
+		echo "	$L"
+	done
+done

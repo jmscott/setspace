@@ -66,6 +66,7 @@ install: all
 		find-schema						\
 		flip-all-brr-file					\
 		flip-brr-file						\
+		flowd-stat						\
 		kill-all-flowd						\
 		kill-flowd						\
 		rummy							\
