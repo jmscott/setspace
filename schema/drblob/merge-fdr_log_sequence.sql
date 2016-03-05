@@ -19,15 +19,15 @@ INSERT into drblob.fdr_log_sequence (
 	max_sequence
 ) SELECT
 	:blob,
-	(select
+	(SELECT
 		min(sequence)
-	  from
+	  FROM
 	  	merge_fdr_log
 	) min_sequence,
 
-	(select
+	(SELECT
 		max(sequence)
-	  from
+	  FROM
 	  	merge_fdr_log
 	) max_sequence
   ON CONFLICT
