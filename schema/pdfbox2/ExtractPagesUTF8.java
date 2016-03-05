@@ -14,6 +14,9 @@
  *	See this discussion for details on maximum number of pages in a pdf.
  *
  *		http://tex.stackexchange.com/questions/97071
+ *
+ *	Embedded pdfs are not extracted.  Eventually code from ExtractText.java
+ *	will be added to ExtractPagesUTF8.java.
  */
 import java.io.File;
 import java.io.FileOutputStream;
