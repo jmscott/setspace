@@ -5,10 +5,15 @@
  *	java -cp $CLASSPATH ExtractPagesUTF8 <hamlet.pdf
  *	cat 0*.txt | shasum
  *  Exit Status:
- *	0	utf8 text extracted to files 000000001.txt to [0-9]{9}.txt
+ *	0	utf8 text extracted to files 0000001.txt to [0-9]{7}.txt
  *	1	extraction failed, some [0-9]{9}.txt may exist.
  *	2	permission denied to extract the text
  *	3	wrong number of arguments
+ * Note:
+ *	Maximum number of pages in a pdf file is assumed to be 2,603,538.
+ *	See this discussion for details on maximum number of pages in a pdf.
+ *
+ *		http://tex.stackexchange.com/questions/97071
  */
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,7 +52,7 @@ public final class ExtractPagesUTF8
 			
 			Writer out = new OutputStreamWriter(
 					new FileOutputStream(
-						String.format("%010d.txt", p)),
+						String.format("%07.txt", p)),
 						"UTF-8"
 			);
 
