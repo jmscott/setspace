@@ -55,7 +55,7 @@ public final class ExtractPagesUTF8
 			
 			Writer out = new OutputStreamWriter(
 					new FileOutputStream(
-						String.format("%07.txt", p)),
+						String.format("%07d.txt", p)),
 						"UTF-8"
 			);
 

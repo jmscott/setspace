@@ -173,4 +173,78 @@ COMMENT ON TABLE pdfbox2.extract_text_utf8_pending IS
   'Actively running extract_text_utf8 java processes'
 ;
 
+/*
+ *  Extracted Pages of UTF8 text from a pdf blob
+ */
+DROP TABLE IF EXISTS pdfbox2.extract_pages_utf8 CASCADE;
+CREATE TABLE pdfbox2.extract_pages_utf8
+(
+	blob		udig
+				REFERENCES pdfbox2.pddocument(blob)
+				ON DELETE CASCADE
+				PRIMARY KEY,
+
+	exit_status	smallint CHECK (
+				exit_status >= 0
+				AND
+				exit_status <= 255
+			),
+
+	stderr_blob	udig,
+
+	--  no quines
+	CONSTRAINT stderr_not_blob CHECK (
+		blob != stderr_blob
+	)
+);
+COMMENT ON TABLE pdfbox2.extract_pages_utf8 IS
+  'UTF8 Text extracted from pdf blob'
+;
+
+DROP TABLE IF EXISTS pdfbox2.extract_page_utf8 CASCADE;
+CREATE TABLE pdfbox2.extract_page_utf8
+(
+	pdf_blob	udig
+				REFERENCES pdfbox2.extract_pages_utf8(blob)
+				ON DELETE CASCADE,
+	page_blob	udig,
+
+	page_number	int check (
+				page_number > 0
+				and
+
+				-- Note: why 2603538?  see
+				-- http://tex.stackexchange.com/questions/97071
+
+				page_number <= 2603538
+			) NOT NULL,
+	PRIMARY KEY	(pdf_blob, page_blob)
+);
+COMMENT ON TABLE pdfbox2.extract_pages_utf8 IS
+  'Individual Pages of UTF8 Text extracted from parent pdf blob'
+;
+CREATE INDEX extract_page_utf8_page on pdfbox2.extract_page_utf8(
+	page_blob
+);
+
+/*
+ *  Pending extract_pages_utf8 jobs.
+ *
+ *  Note:
+ *	Notice no fk reference to setspace.service(blob).
+ *	Sudden termination may leave stale entries.
+ */
+DROP TABLE IF EXISTS pdfbox2.extract_pages_utf8_pending CASCADE;
+CREATE TABLE pdfbox2.extract_pages_utf8_pending
+(
+	blob		udig
+				PRIMARY KEY,
+	insert_time	timestamptz
+				DEFAULT now()
+				NOT NULL
+);
+COMMENT ON TABLE pdfbox2.extract_pages_utf8_pending IS
+  'Actively running extract_pages_utf8 java processes'
+;
+
 COMMIT;
