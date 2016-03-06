@@ -74,7 +74,11 @@ case $STATUS in
 	EXIT_STATUS=1
 	;;
 *)
-	test -s STDERR && cat STDERR
+	if [ -s STDERR ];  then
+		cat STDERR
+	else
+		echo "$PROG: ERROR: unexpected empty stderr output" >&2
+	fi
 	die "ExtractPagesUTF8 failed: exit status=$STATUS" 5
 	;;
 esac
