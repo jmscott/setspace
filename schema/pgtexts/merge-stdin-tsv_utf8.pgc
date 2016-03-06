@@ -2,7 +2,7 @@
  *  Synopsis:
  *  	Merge an UTF8 blob read on standard input into table pgtext2.tsv_utf8
  *  Usage:
- *	merge-stdin-tsv_utf8 
+ *	merge-stdin-tsv_utf8 <udig> <tsv_config> <byte_count>
  *  Arguments:
  *  	1	udig of the blob
  *	2	name of text search configuration
