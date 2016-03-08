@@ -72,9 +72,9 @@ case $STATUS in
 0)
 	EXIT_STATUS=0
 	;;
-1)
-	#  load failed, probably not valid pdf
-	EXIT_STATUS=1
+1|2)
+	#  load failed or permission denied to extract
+	EXIT_STATUS=$STATUS
 	;;
 *)
 	if [ -s STDERR ];  then
