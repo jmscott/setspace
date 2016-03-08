@@ -4,9 +4,6 @@
  *  See:
  *	https://pdfbox.apache.org
  *	http://semver.org/	
- *  Note:
- *	Need to add integrity triggers that verify exit_status == 0 in foreign
- *	keys for extract_text_utf8.blob.
  *
  *	Does the the ts_conf column need to reference a foreign key?
  */
@@ -117,61 +114,6 @@ COMMENT ON TABLE pdfbox2.pddocument IS
   'PDDocument scalar fields from Java Object'
 ;
 
-/*
- *  Blob of UTF8 Text extracted from pdf
- */
-DROP TABLE IF EXISTS pdfbox2.extract_text_utf8 CASCADE;
-CREATE TABLE pdfbox2.extract_text_utf8
-(
-	blob		udig
-				REFERENCES pdfbox2.pddocument(blob)
-				ON DELETE CASCADE
-				PRIMARY KEY,
-
-	exit_status	smallint CHECK (
-				exit_status >= 0
-				AND
-				exit_status <= 255
-			),
-
-	utf8_blob	udig,
-	stderr_blob	udig,
-
-	--  no quines
-	CONSTRAINT utf8_not_blob CHECK (
-		blob != utf8_blob
-	),
-
-	--  no quines
-	CONSTRAINT stderr_not_blob CHECK (
-		blob != stderr_blob
-	)
-);
-COMMENT ON TABLE pdfbox2.extract_text_utf8 IS
-  'Results of extracted UTF8 text from a PDF blob'
-;
-
-CREATE INDEX extract_text_utf8_blob on extract_text_utf8(utf8_blob);
-
-/*
- *  Pending extract_text_utf8 jobs.
- *
- *  Note:
- *	Notice no fk reference to setspace.service(blob).
- *	Sudden termination may leave stale entries.
- */
-DROP TABLE IF EXISTS pdfbox2.extract_text_utf8_pending CASCADE;
-CREATE TABLE pdfbox2.extract_text_utf8_pending
-(
-	blob		udig
-				PRIMARY KEY,
-	insert_time	timestamptz
-				DEFAULT now()
-				NOT NULL
-);
-COMMENT ON TABLE pdfbox2.extract_text_utf8_pending IS
-  'Actively running extract_text_utf8 java processes'
-;
 
 /*
  *  Extracted Pages of UTF8 text from a pdf blob
