@@ -218,7 +218,9 @@ CREATE TABLE pdfbox2.extract_page_utf8
 
 				page_number <= 2603538
 			) NOT NULL,
+	UNIQUE		(pdf_blob, page_number),
 	PRIMARY KEY	(pdf_blob, page_blob)
+
 );
 COMMENT ON TABLE pdfbox2.extract_pages_utf8 IS
   'Individual Pages of UTF8 Text extracted from parent pdf blob'
