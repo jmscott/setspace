@@ -9,7 +9,7 @@
 #	1	pdf failed to load and tuple stored in PostgreSQL
 #	2	blob does not exist
 #	3	wrong number of arguments
-#	4	PDFBOX2_JAR not defined or file does not exist
+#	4	PDFBOX2_APP_JAR not defined or file does not exist
 #	5	blobio error
 #	6	java ExtractText unexpected exit status
 #	7	Error proving extracted text is well formed UTF8
@@ -20,7 +20,7 @@
 #	BLOBIO_ALGORITHM
 #	BLOBIO_SERVICE
 #	BLOBIO_RO_SERVICE
-#	PDFBOX2_JAR
+#	PDFBOX2_APP_JAR
 #  Note:
 #	Why does ExtractText depend on explicit jar file.  Seems like
 #	setting CLASSPATH ought to good enough.
@@ -79,8 +79,8 @@ PDF_UDIG=$1
 
 #  Note: why not just CLASSPATH?
 
-test -n "$PDFBOX2_JAR" || die "environment not defined: PDFBOX2_JAR" 4
-test -e $PDFBOX2_JAR || die "jar file does not exist: $PDFBOX2_JAR" 4
+test -n "$PDFBOX2_APP_JAR" || die "environment not defined: PDFBOX2_APP_JAR" 4
+test -e $PDFBOX2_APP_JAR || die "jar file does not exist: $PDFBOX2_APP_JAR" 4
 
 #  fetch the pdf blob
 
@@ -99,7 +99,7 @@ esac
 
 #  execute the java extract, faulting if exit_code > 1
 
-java -jar $PDFBOX2_JAR ExtractText 					\
+java -jar $PDFBOX2_APP_JAR ExtractText 					\
 			-encoding UTF-8 $TMP_BLOB $TMP_UTF8 2>$TMP_ERR
 EXIT_STATUS=$?
 test $EXIT_STATUS = 0 -o $EXIT_STATUS = 1 ||
