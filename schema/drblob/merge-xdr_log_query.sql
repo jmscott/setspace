@@ -13,9 +13,9 @@
 
 \include lib/create-temp-merge_xdr_log.sql
 
-create index command_name_idx on merge_xdr_log(command_name);
+CREATE INDEX command_name_idx ON merge_xdr_log(command_name);
 
-INSERT into drblob.xdr_log_query (
+INSERT INTO drblob.xdr_log_query (
 	blob,
 	command_name,
 	record_count,
@@ -33,46 +33,46 @@ INSERT into drblob.xdr_log_query (
 	min_flow_sequence,
 	max_flow_sequence,
 	termination_code_count
-) select
+) SELECT
 	:blob,
 	x1.command_name,
-	count(x1.blob) as record_count,
-	count(distinct x1.blob) as blob_count,
-	(select
+	count(x1.blob) AS record_count,
+	count(distinct x1.blob) AS blob_count,
+	(SELECT
 		count(x2.blob)
-	  from
+	  FROM
 	  	merge_xdr_log x2
-	  where
+	  WHERE
 		x2.command_name = x1.command_name
-		and
+		AND
 		x2.termination_class = 'OK'
-	) as OK_count,
-	(select
+	) AS OK_count,
+	(SELECT
 		count(x2.blob)
-	  from
+	  FROM
 	  	merge_xdr_log x2
-	  where
+	  WHERE
 		x2.command_name = x1.command_name
-		and
+		AND
 		x2.termination_class = 'ERR'
-	) as ERR_count,
+	) AS ERR_count,
 
-	min(x1.start_time) as min_start_time,
-	max(x1.start_time) as max_start_time,
-	min(x1.wall_duration) as min_wall_duration,
-	max(x1.wall_duration) as max_wall_duration,
-	min(x1.user_duration) as min_user_duration,
-	max(x1.user_duration) as max_user_duration,
-	min(x1.system_duration) as min_system_duration,
-	max(x1.system_duration) as max_system_duration,
+	min(x1.start_time) AS min_start_time,
+	max(x1.start_time) AS max_start_time,
+	min(x1.wall_duration) AS min_wall_duration,
+	max(x1.wall_duration) AS max_wall_duration,
+	min(x1.user_duration) AS min_user_duration,
+	max(x1.user_duration) AS max_user_duration,
+	min(x1.system_duration) AS min_system_duration,
+	max(x1.system_duration) AS max_system_duration,
 
-	min(x1.flow_sequence) as min_flow_sequence,
-	max(x1.flow_sequence) as max_flow_sequence,
+	min(x1.flow_sequence) AS min_flow_sequence,
+	max(x1.flow_sequence) AS max_flow_sequence,
 
-	count(distinct x1.termination_code) as termination_code_count
-  from
+	count(distinct x1.termination_code) AS termination_code_count
+  FROM
   	merge_xdr_log x1
-  group by
+  GROUP BY
   	x1.command_name
   ON CONFLICT
   	do nothing
