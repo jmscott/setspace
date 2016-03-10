@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Merge a xdr_log_flow_sequence tuple built from log blob read from stdin
+ *	Merge a xdr_log_flow_sequence tuple built FROM log blob read FROM stdin
  *  Usage:
  *	psql -f merge-xdr_log_flow_sequence.sql <flowd.xdr
  *	bio-cat sha:abc ... | psql -f merge-xdr_log_flow_sequence.sql
@@ -13,23 +13,23 @@
 
 \include lib/create-temp-merge_xdr_log.sql
 
-INSERT into drblob.xdr_log_flow_sequence (
+INSERT INTO drblob.xdr_log_flow_sequence (
 	blob,
 	min_sequence,
 	max_sequence
 ) SELECT
 	:blob,
-	(select
+	(SELECT
 		min(flow_sequence)
-	  from
+	  FROM
 	  	merge_xdr_log
 	) min_sequence,
 
-	(select
+	(SELECT
 		max(flow_sequence)
-	  from
+	  FROM
 	  	merge_xdr_log
 	) max_sequence
   ON CONFLICT
-  	do nothing
+  	DO NOTHING
 ;
