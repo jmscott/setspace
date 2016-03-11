@@ -19,6 +19,8 @@ COMMENT ON SCHEMA pgtexts IS
  *  Note:
  *	Is the ts_config bound to the tsvector data item?
  *	In other words, is a ts_conf field needed in table?
+ *
+ *	doc column ought to be renamed to "vector".
  */
 DROP TABLE IF EXISTS pgtexts.tsv_utf8;
 CREATE TABLE pgtexts.tsv_utf8
@@ -58,6 +60,7 @@ CREATE TABLE pgtexts.text_utf8
 (
 	blob	udig
 			REFERENCES setspace.is_utf8wf(blob)
+			ON DELETE CASCADE
 			PRIMARY KEY,
 	doc	text
 			not null
