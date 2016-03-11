@@ -149,7 +149,8 @@ CREATE TABLE pdfbox2.extract_page_utf8
 	pdf_blob	udig
 				REFERENCES pdfbox2.extract_pages_utf8(blob)
 				ON DELETE CASCADE,
-	page_blob	udig,
+	page_blob	udig
+				NOT NULL,
 
 	page_number	int check (
 				page_number > 0
@@ -160,8 +161,8 @@ CREATE TABLE pdfbox2.extract_page_utf8
 
 				page_number <= 2603538
 			) NOT NULL,
-	UNIQUE		(pdf_blob, page_number),
-	PRIMARY KEY	(pdf_blob, page_blob)
+
+	PRIMARY KEY	(pdf_blob, page_number)
 
 );
 COMMENT ON TABLE pdfbox2.extract_pages_utf8 IS
