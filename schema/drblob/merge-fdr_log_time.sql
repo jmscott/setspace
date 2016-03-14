@@ -13,7 +13,7 @@
 
 \include lib/create-temp-merge_fdr_log.sql
 
-INSERT into drblob.fdr_log_time (
+INSERT INTO drblob.fdr_log_time (
 	blob,
 	min_start_time,
 	max_start_time,
@@ -21,29 +21,29 @@ INSERT into drblob.fdr_log_time (
 	max_wall_duration
 ) SELECT
 	:blob,
-	(select
+	(SELECT
 		min(start_time)
-	  from
+	  FROM
 	  	merge_fdr_log
 	) min_start_time,
 
-	(select
+	(SELECT
 		max(start_time)
-	  from
+	  FROM
 	  	merge_fdr_log
 	) max_start_time,
 
-	(select
+	(SELECT
 		min(wall_duration)
-	  from
+	  FROM
 	  	merge_fdr_log
 	) min_wall_duration,
 
-	(select
+	(SELECT
 		max(wall_duration)
-	  from
+	  FROM
 	  	merge_fdr_log
 	) max_wall_duration
   ON CONFLICT
-  	do nothing
+  	DO NOTHING
 ;
