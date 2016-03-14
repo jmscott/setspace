@@ -64,6 +64,7 @@ install: all
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m u=rx		\
 		$(PROGS)						\
+		append-page-pgtexts-brr					\
 		append-pgtexts-brr					\
 		cron-append-pgtexts-brr					\
 		merge-extract_pages_utf8				\
