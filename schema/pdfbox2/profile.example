@@ -19,4 +19,4 @@ chmod u=rw,g=w,o= $SCHEMA_ROOT/spool/prefixio.brr
 PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
 
 export PDFBOX2_APP_JAR=${PDFBOX2_APP_JAR:=/usr/local/lib/pdfbox-app-2.jar}
-export CLASSPATH=${CLASSPATH:=lib:$PDFBOX2_APP_JAR}
+export CLASSPATH=$PDFBOX2_ROOT/lib:$PDFBOX2_APP_JAR:$CLASSPATH
