@@ -45,12 +45,12 @@ sql query is_in_service_table row
 {
 	statement = `
 
-	  SELECT exists (
-	    select
+	  SELECT EXISTS (
+	    SELECT
 	    	blob
-	      from
+	      FROM
 	      	setspace.service
-	      where
+	      WHERE
 	      	blob = $1::udig
 	  );
 
@@ -84,20 +84,20 @@ sql query in_is_brr_log_table row
 	statement = `
 
 	SELECT
-	  (select exists (
-	     select
+	  (SELECT EXISTS (
+	     SELECT
 		blob
-	       from
+	       FROM
 	    		drblob.is_brr_log
-	       where
+	       WHERE
 			blob = $1::udig
 	     )
 	  ),
-	  (select
+	  (SELECT
 	  	is_brr
-	    from
+	    FROM
 	    	drblob.is_brr_log
-	    where
+	    WHERE
 	    	blob = $1::udig
 	  )
 	`;
@@ -115,16 +115,16 @@ sql query merge_is_brr_log row
 {
 	statement = `
 
-	INSERT into drblob.is_brr_log (
+	INSERT INTO drblob.is_brr_log (
 		blob,
 		is_brr
 	  ) SELECT
 		$1::udig,
-		case $2 
-	  		when '0' then true
-	  		when '1' then false
-	  		when '2' then false
-		end
+		CASE $2 
+	  		WHEN '0' then true
+	  		WHEN '1' then false
+	  		WHEN '2' then false
+		END
   	  ON CONFLICT
   		do nothing
 	  RETURNING
@@ -260,12 +260,12 @@ sql query in_brr_log_total_table row
 {
 	statement = `
 
-	  SELECT exists (
-	    select
+	  SELECT EXISTS (
+	    SELECT
 	  	blob
-	    from
+	      FROM
 	    	drblob.brr_log_total
-	    where
+	      WHERE
 	    	blob = $1::udig
 	  );
 
@@ -302,11 +302,11 @@ sql query in_brr_log_time_table row
 	statement = `
 
 	  SELECT exists (
-	    select
+	    SELECT
 	  	blob
-	    from
+	      FROM
 	    	drblob.brr_log_time
-	    where
+	      WHERE
 	    	blob = $1::udig
 	  );
 
@@ -366,18 +366,18 @@ sql query in_is_fdr_log_table row
 
 	SELECT
 	  exists (
-	    select
+	    SELECT
 	  	blob
-	      from
+	      FROM
 	    	drblob.is_fdr_log
-	      where
+	      WHERE
 		blob = $1::udig
 	  ),
-	  (select
+	  (SELECT
 		is_fdr
-	    from
+	    FROM
 	  	drblob.is_fdr_log
-	    where
+	    WHERE
 	  	blob = $1::udig
 	  )
 	;
@@ -397,16 +397,16 @@ sql query merge_is_fdr_log row
 {
 	statement = `
 
-	INSERT into drblob.is_fdr_log (
+	INSERT INTO drblob.is_fdr_log (
 		blob,
 		is_fdr
 	  ) SELECT
 		$1::udig,
-		case $2 
-	  		when '0' then true
-	  		when '1' then false
-	  		when '2' then false
-		end
+		CASE $2 
+	  		WHEN '0' then true
+	  		WHEN '1' then false
+	  		WHEN '2' then false
+		END
   	  ON CONFLICT
   		do nothing
 	  RETURNING
@@ -441,12 +441,12 @@ sql query in_fdr_log_total_table row
 {
 	statement = `
 
-	  SELECT exists (
-	    select
+	  SELECT EXISTS (
+	    SELECT
 	  	blob
-	    from
+	      FROM
 	    	drblob.fdr_log_total
-	    where
+	      WHERE
 	    	blob = $1::udig
 	  );
 
@@ -482,12 +482,12 @@ sql query in_fdr_log_time_table row
 {
 	statement = `
 
-	  SELECT exists (
-	    select
+	  SELECT EXISTS (
+	    SELECT
 	  	blob
-	    from
+	      FROM
 	    	drblob.fdr_log_time
-	    where
+	      WHERE
 	    	blob = $1::udig
 	  );
 
@@ -523,12 +523,12 @@ sql query in_fdr_log_sequence_table row
 {
 	statement = `
 
-	  SELECT exists (
-	    select
+	  SELECT EXISTS (
+	    SELECT
 	  	blob
-	    from
+	      FROM
 	    	drblob.fdr_log_sequence
-	    where
+	      WHERE
 	    	blob = $1::udig
 	  );
 
@@ -586,19 +586,19 @@ sql query in_is_qdr_log_table row
 	statement = `
 
 	SELECT
-	  exists (
-		select
-			blob
-	    	  from
-			drblob.is_qdr_log
-	    	where
-			blob = $1::udig
-	  ),
-	  (select
-		is_qdr
-	    from
+	  EXISTS (
+	    SELECT
+		blob
+	      FROM
 		drblob.is_qdr_log
-	    where
+	      WHERE
+		blob = $1::udig
+	  ),
+	  (SELECT
+		is_qdr
+	    FROM
+		drblob.is_qdr_log
+	    WHERE
 		blob = $1::udig
 	  )
 	;
@@ -614,16 +614,16 @@ sql query merge_is_qdr_log row
 {
 	statement = `
 
-	INSERT into drblob.is_qdr_log (
+	INSERT INTO drblob.is_qdr_log (
 		blob,
 		is_qdr
 	  ) SELECT
 		$1::udig,
-		case $2 
-	  		when '0' then true
-	  		when '1' then false
-	  		when '2' then false
-		end
+		CASE $2 
+	  		WHEN '0' then true
+	  		WHEN '1' then false
+	  		WHEN '2' then false
+		END
   	  ON CONFLICT
   		do nothing
 	  RETURNING
@@ -660,12 +660,12 @@ sql query in_qdr_log_total_table row
 {
 	statement = `
 
-	  SELECT exists (
-	    select
+	  SELECT EXISTS (
+	    SELECT
 	  	blob
-	    from
+	    FROM
 	    	drblob.qdr_log_total
-	    where
+	    WHERE
 	    	blob = $1::udig
 	  );
 
@@ -702,12 +702,12 @@ sql query in_qdr_log_time_table row
 	statement = `
 
 	SELECT
-	  exists (
-	    select
+	  EXISTS (
+	    SELECT
 	  	blob
-	    from
+	      FROM
 	    	drblob.qdr_log_time
-	    where
+	      WHERE
 	    	blob = $1::udig
 	  )
 	`;
@@ -742,12 +742,12 @@ sql query in_qdr_log_flow_sequence_table row
 {
 	statement = `
 
-	  SELECT exists (
-	    select
+	  SELECT EXISTS (
+	    SELECT
 	  	blob
-	    from
+	      FROM
 	    	drblob.qdr_log_flow_sequence
-	    where
+	      WHERE
 	    	blob = $1::udig
 	  );
 
@@ -783,12 +783,12 @@ sql query in_qdr_log_query_table row
 {
 	statement = `
 
-	SELECT exists (
-	  select
+	SELECT EXISTS (
+	  SELECT
 	  	blob
-	    from
+	    FROM
 	    	drblob.qdr_log_query
-	    where
+	    WHERE
 	    	blob = $1::udig
 	);
 
@@ -847,19 +847,19 @@ sql query in_is_xdr_log_table row
 	statement = `
 
 	SELECT
-	  exists (
-	    select
+	  EXISTS (
+	    SELECT
 	  	blob
-	      from
+	      FROM
 	    	drblob.is_xdr_log
-	      where
+	      WHERE
 	    	blob = $1::udig
 	  ),
-	  (select
+	  (SELECT
 	  	is_xdr
-	    from
+	    FROM
 	    	drblob.is_xdr_log
-	    where
+	    WHERE
 	    	blob = $1::udig
 	  )
 	;
@@ -877,7 +877,7 @@ sql query merge_is_xdr_log row
 {
 	statement = `
 
-	INSERT into drblob.is_xdr_log (
+	INSERT INTO drblob.is_xdr_log (
 		blob,
 		is_xdr
 	  ) SELECT
@@ -922,12 +922,12 @@ sql query in_xdr_log_total_table row
 {
 	statement = `
 
-	  SELECT exists (
-	    select
+	  SELECT EXISTS (
+	    SELECT
 	  	blob
-	    from
+	      FROM
 	    	drblob.xdr_log_total
-	    where
+	      WHERE
 	    	blob = $1::udig
 	  );
 
@@ -964,12 +964,12 @@ sql query in_xdr_log_time_table row
 	statement = `
 
 	SELECT
-	  exists (
-	    select
+	  EXISTS (
+	    SELECT
 	  	blob
-	    from
+	      FROM
 	    	drblob.xdr_log_time
-	    where
+	      WHERE
 	    	blob = $1::udig
 	  )
 	`;
@@ -1004,12 +1004,12 @@ sql query in_xdr_log_flow_sequence_table row
 {
 	statement = `
 
-	  SELECT exists (
-	    select
+	  SELECT EXISTS (
+	    SELECT
 	  	blob
-	    from
+	      FROM
 	    	drblob.xdr_log_flow_sequence
-	    where
+	      WHERE
 	    	blob = $1::udig
 	  );
 
@@ -1045,12 +1045,12 @@ sql query in_xdr_log_query_table row
 {
 	statement = `
 
-	  SELECT exists (
-	    select
+	  SELECT EXISTS (
+	    SELECT
 	  	blob
-	    from
+	      FROM
 	    	drblob.xdr_log_query
-	    where
+	      WHERE
 	    	blob = $1::udig
 	  );
 
