@@ -11,7 +11,7 @@ SCHEMA_ROOT=$SETSPACE_ROOT/schema/setspace
 cd $SCHEMA_ROOT || exit
 
 test ! -x tmp && mkdir -p tmp && test $? != 0 && exit 1
-TMDIR=$SCHEMA_ROOT/tmp
+export TMPDIR=$SCHEMA_ROOT/tmp
 
 touch $SCHEMA_ROOT/spool/biod.brr
 
