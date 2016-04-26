@@ -10,24 +10,24 @@
 \set ON_ERROR_STOP on
 \timing
 
-begin;
-drop schema if exists udigset cascade;
+BEGIN;
+DROP SCHEMA IF EXISTS udigset CASCADE;
 
-create schema udigset;
+CREATE SCHEMA udigset;
 
 /*
  *  Is a set of uniform digests, as defined by program is-udig-set
  */
-drop table if exists udigset.is_udig_set;
-create table udigset.is_udig_set
+DROP TABLE IF EXISTS udigset.is_udig_set;
+CREATE TABLE udigset.is_udig_set
 (
 	blob	udig
-			references setspace.service
-			on delete cascade
-			primary key,
+			REFERENCES setspace.service
+			ON DELETE CASCADE
+			PRIMARY KEY,
 
 	is_udig_set	bool
-				not null
+				NOT NULL
 );
 
-commit;
+COMMIT;
