@@ -13,7 +13,7 @@
 
 \include lib/create-temp-merge_xdr_log.sql
 
-INSERT into drblob.xdr_log_total (
+INSERT INTO drblob.xdr_log_total (
 	blob,
 	record_count,
 	flow_seq_count,
@@ -24,51 +24,51 @@ INSERT into drblob.xdr_log_total (
 	termination_code_count
 ) SELECT
 	:blob,
-	(select
+	(SELECT
 		count(*)
-	  from
+	  FROM
 	  	merge_xdr_log
 	) record_count,
 
-	(select
+	(SELECT
 		count(distinct flow_sequence)
-	  from
+	  FROM
 	  	merge_xdr_log
 	) as flow_seq_count,
 
-	(select
+	(SELECT
 		count(distinct command_name)
-	  from
+	  FROM
 	  	merge_xdr_log
 	) command_name_count,
 
-	(select
+	(SELECT
 		count(termination_class)
-	  from
+	  FROM
 	  	merge_xdr_log
-	  where
+	  WHERE
 	  	termination_class = 'OK'
 	) OK_count,
 
-	(select
+	(SELECT
 		count(termination_class)
-	  from
+	  FROM
 	  	merge_xdr_log
-	  where
+	  WHERE
 	  	termination_class = 'ERR'
 	) ERR_count,
 
-	(select
+	(SELECT
 		count(distinct blob)
-	  from
+	  FROM
 	  	merge_xdr_log
 	) blob_count,
 
-	(select
+	(SELECT
 		count(distinct termination_code)
-	  from
+	  FROM
 	  	merge_xdr_log
 	) termination_code_count
   ON CONFLICT
-  	do nothing
+  	DO NOTHING
 ;
