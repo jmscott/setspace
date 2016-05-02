@@ -1,8 +1,8 @@
 /*
  *  Synopsis:
- *	Is a stream of records a well formed set of udigs
+ *	Is a stream of records a well formed set of udigs?
  *  Description:
- *	Is the stream a set of udigs.  No udig appears more than once in the
+ *	Is the stream a set of udigs?  No udig appears more than once in the
  *	set and no order of elements is assumed.
  *  Exit:
  *  	0	-> is a udig set
