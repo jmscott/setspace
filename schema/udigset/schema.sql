@@ -30,4 +30,19 @@ CREATE TABLE udigset.is_udig_set
 				NOT NULL
 );
 
+/*
+ *  Is a set of sha uniform digests.
+ */
+DROP TABLE IF EXISTS udigset.is_udig_sha_set;
+CREATE TABLE udigset.is_udig_sha_set
+(
+	blob	udig
+			REFERENCES udigset.is_udig_set
+			ON DELETE CASCADE
+			PRIMARY KEY,
+
+	is_sha_set	bool
+				NOT NULL
+);
+
 COMMIT;
