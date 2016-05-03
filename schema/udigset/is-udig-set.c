@@ -8,7 +8,7 @@
  *  	0	-> is a udig set
  *  	1	-> is not a udig set
  *	2	-> is empty
- *  	255	-> system error occured
+ *  	64	-> system error occured
  *  Blame:
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
@@ -69,7 +69,7 @@ die(char *msg)
 	write(2, ERROR, strlen(ERROR));
 	write(2, msg, strlen(msg));
 	write(2, newline, strlen(newline));
-	exit(255);
+	exit(64);
 }
 
 static void
@@ -211,5 +211,7 @@ main()
 			}
 		}
 	}
+	if (state != NEW_UDIG)
+		exit(1);
 	exit(b_end ? 0 : 2);
 }
