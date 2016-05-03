@@ -8,7 +8,7 @@
 include ../../local.mk
 include ../schema.mk
 
-COMPILED=is-udig-set
+COMPILED=is-udig-set is-udig-sha-set
 
 all: $(COMPILED)
 
@@ -37,13 +37,17 @@ install: all
 		$(BLOBLOG_PREFIX)/lib
 	install -g $(BLOBLOG_GROUP) -o $(BLOBLOG_USER) 		\
 		is-udig-set						\
+		is-udig-sha-set						\
 		$(BLOBLOG_PREFIX)/sbin
 	install -g $(BLOBLOG_GROUP) -o $(BLOBLOG_USER) 		\
 		is-udig-set.c						\
+		is-udig-sha-set.c					\
 		$(BLOBLOG_PREFIX)/src
 
 is-udig-set: is-udig-set.c
 	cc $(CFLAGS) -o is-udig-set is-udig-set.c
+is-udig-sha-set: is-udig-sha-set.c
+	cc $(CFLAGS) -o is-udig-sha-set is-udig-sha-set.c
 
 distclean:
 	rm -rf $(BLOBLOG_PREFIX)/lib
