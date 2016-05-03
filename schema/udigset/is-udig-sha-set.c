@@ -169,6 +169,7 @@ main()
 			case SCAN_ALGORITHM_h:
 				if (c != 'h')
 					exit(1);
+				state = SCAN_ALGORITHM_a;
 				break;
 			/*
 			 *  Scan character 'a'.
@@ -201,7 +202,6 @@ main()
 			case SCAN_NEW_LINE:
 				if (c != '\n')
 					exit(1);
-				*dp = 0;
 				add_sha(digest);
 				state = NEW_UDIG;
 				break;
