@@ -12,6 +12,11 @@
 #	4	unexpected blobio error
 #	5	ExtractPagesUTF8.class failed
 #	6	unexpected error during sql merge 
+#  Note:
+#	Upon error page blobs may be orphaned.
+#	Interesting problem.  Since blobio has no notion of a link count,
+#	difficult to simply remove the blob upon error, since another data
+#	structure may be dependent the blob.
 #
 
 PROG=merge-extract_pages_utf8
