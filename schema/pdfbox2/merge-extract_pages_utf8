@@ -12,9 +12,6 @@
 #	4	unexpected blobio error
 #	5	ExtractPagesUTF8.class failed
 #	6	unexpected error during sql merge 
-#  Note:
-#	each page needs to checked for utf8 correctness with program
-#	is-utf8!  see merge-extract_text_utf8.
 #
 
 PROG=merge-extract_pages_utf8
