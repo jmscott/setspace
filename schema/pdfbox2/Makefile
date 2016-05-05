@@ -68,7 +68,6 @@ install: all
 		append-pgtexts-brr					\
 		cron-append-pgtexts-brr					\
 		merge-extract_pages_utf8				\
-		merge-extract_text_utf8					\
 		merge-pddocument					\
 		wait-utf8-byte_count					\
 		$(PDFBOX2_PREFIX)/sbin
