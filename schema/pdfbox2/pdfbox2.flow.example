@@ -196,3 +196,46 @@ call pddocument_exists(brr.udig)
   	or
   	merge_pddocument.exit_status == 0
 ;
+
+sql query in_extract_pages_utf8_table row
+{
+	statement = `
+
+	SELECT
+		EXISTS (
+		  SELECT
+			blob
+		  FROM
+			extract_pages_utf8
+		  WHERE
+			blob = $1::udig
+	  	),
+		(
+		  SELECT
+		  	exit_status = 0
+		    FROM
+		    	extract_pages_utf8
+		    WHERE
+		    	blob = $1::udig
+		)
+	`;
+
+	result row is (
+		answer bool,
+		extracted bool
+	);
+}
+
+query in_extract_pages_utf8_table(brr.udig)
+  when
+  	pddocument_exists.exit_status == 0
+;
+
+command merge_extract_pages_utf8
+{
+	path = "sbin/merge-extract_pages_utf8";
+}
+
+call merge_extract_pages_utf8(brr.udig)
+  when
+  	n_extract_pages_utf8_table.

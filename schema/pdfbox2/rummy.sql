@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Find unresolved pddocument blobs, in both extract_text_utf8 and pgtexts.
+ *	Find unresolved pddocument and extract_pages_ut8 blobs
  *  Usage:
  *	psql -f rummy.sql --set since="'-1 week'"
  */
@@ -16,9 +16,10 @@ WITH pdf_candidate AS (
 	  INNER JOIN setspace.service s ON (s.blob = pre.blob)
 	  LEFT OUTER JOIN pdfbox2.pddocument_pending pdp ON
 	  	(pdp.blob = pre.blob)
-	  LEFT OUTER JOIN pdfbox2.extract_text_utf8_pending eup ON
+	  LEFT OUTER JOIN pdfbox2.extract_pages_utf8_pending eup ON
 	  	(eup.blob = pre.blob)
     WHERE
+	--  Note: need to check all core tables in setspace, not just prefix!!
   	substring(pre.prefix, 1, 4) = '\x25504446'
 	AND
 	s.discover_time between (now() + :since) and (now() + '-1 minute')
@@ -38,7 +39,7 @@ SELECT
   WHERE
   	pd.blob is NULL
 
---  parsable pdfs in pddocument and not in extract_text_utf8
+--  parsable pdfs in pddocument and not in extract_pages_utf8
 
 UNION (
   SELECT
@@ -46,73 +47,41 @@ UNION (
     FROM
     	pdf_candidate pdf
     	  INNER JOIN pdfbox2.pddocument pd ON (pd.blob = pdf.blob)
+	  LEFT OUTER JOIN pdfbox2.extract_pages_utf8 ex ON (
+	  	ex.blob = pd.blob
+	  )
     WHERE
     	pd.exit_status = 0
 	AND
-	NOT EXISTS (
-	  SELECT
-	  	ex.blob
-	    FROM
-	    	pdfbox2.extract_text_utf8 ex
-	    WHERE
-	    	ex.blob = pd.blob
-	)
+	ex.blob IS NULL
 ) UNION
 
---  extracted utf8 text with no text search vector
+--  extracted utf8 pages with no page text search vector or page text doc
 
 (
   SELECT
-  	ex.blob
+  	ex.pdf_blob
     FROM
     	pdf_candidate pdf
-	  INNER JOIN pdfbox2.extract_text_utf8 ex ON (ex.blob = pdf.blob)
+	  JOIN pdfbox2.extract_page_utf8 ex ON (ex.pdf_blob = pdf.blob)
     WHERE
-    	ex.utf8_blob is NOT NULL
-	AND
-
-	 --  extracted utf8 blob not in text search vector or blob table
-	(
-	 (NOT EXISTS (
-	  SELECT
-	  	ex.blob
-	    FROM
-	    	pgtexts.tsv_utf8 ts
-	    WHERE
-	    	ts.blob = ex.utf8_blob
-	)
-	AND
-
-	--  extracted utf8 blob not in text search vector pending table
-
+	 --  extracted page utf8 blob not in text search vector or blob table
 	NOT EXISTS (
 	  SELECT
-	  	pen.blob
+	  	tsv.blob
 	    FROM
-	    	pgtexts.merge_tsv_utf8_pending pen
+	    	pgtexts.tsv_utf8 tsv
 	    WHERE
-	    	pen.blob = ex.utf8_blob
-	))
+	    	tsv.blob = ex.page_blob
+	)
 	OR
-	 (NOT EXISTS (
-	  SELECT
-	  	ex.blob
-	    FROM
-	    	pgtexts.text_utf8 ts
-	    WHERE
-	    	ts.blob = ex.utf8_blob
-	)
-	AND
-
-	--  extracted utf8 blob not in text blob pending table
-
 	NOT EXISTS (
 	  SELECT
-	  	pen.blob
+	  	txt.blob
 	    FROM
-	    	pgtexts.merge_text_utf8_pending pen
+	    	pgtexts.text_utf8 txt
 	    WHERE
-	    	pen.blob = ex.utf8_blob
-	)))
+	    	txt.blob = ex.page_blob
+	)
 )
 ;
