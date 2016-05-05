@@ -235,7 +235,3 @@ command merge_extract_pages_utf8
 {
 	path = "sbin/merge-extract_pages_utf8";
 }
-
-call merge_extract_pages_utf8(brr.udig)
-  when
-  	n_extract_pages_utf8_table.
