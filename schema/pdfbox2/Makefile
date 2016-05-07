@@ -40,6 +40,8 @@ install: all
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\
 		-d $(PDFBOX2_PREFIX)/sbin
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\
+		-d $(PDFBOX2_PREFIX)/bin
+	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\
 		-d $(PDFBOX2_PREFIX)/src
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\
 		-d $(PDFBOX2_PREFIX)/log
@@ -54,7 +56,7 @@ install: all
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\
 		-d $(PDFBOX2_PREFIX)/etc
 
-	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=rx		\
+	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=r		\
 		$(JCOMPILED)						\
 		pdfbox2.flow.example					\
 		profile.example						\
@@ -71,7 +73,12 @@ install: all
 		merge-pddocument					\
 		$(PDFBOX2_PREFIX)/sbin
 
-	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=rx		\
+	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m u=rx		\
+		$(PROGS)						\
+		cat-pages-utf8						\
+		$(PDFBOX2_PREFIX)/bin
+
+	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ugo=r		\
 		Makefile						\
 		ExtractKeywords.java					\
 		ExtractPagesUTF8.java					\
