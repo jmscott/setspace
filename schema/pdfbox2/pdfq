@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Simple keyword query of PDF blobs and associated titles.
+#  Usage:
+#	pdf-keyq word1 word2 ... | more
+#  Exit Status:
+#	0	Matching count and tuples written to standard output
+#	*	sql error
+#  Environment:
+#	PDFBOX2_ROOT
+#	PostgreSQL PG* variables
+#  Depends:
+#	Schema pgtexts
+#	$PDFBOX2_ROOT/lib/pdfq-keyword.sql	
+#
+exec psql -f $PDFBOX2_ROOT/lib/pdfq-keyword.sql --set query="'$@'"
