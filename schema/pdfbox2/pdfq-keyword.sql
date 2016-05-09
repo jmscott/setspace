@@ -45,8 +45,8 @@ select
 with pdf_match as (
   select
 	pp.pdf_blob as blob,
-	count(pp.page_blob) as match_page_count,
-	sum(ts_rank_cd(tsv.doc, q, 4)) as page_rank_sum
+	count(pp.page_blob)::float8 as match_page_count,
+	sum(ts_rank_cd(tsv.doc, q, 4))::float8 as page_rank_sum
   from
 	pdfbox2.extract_page_utf8 pp
   	  inner join pgtexts.tsv_utf8 tsv on (tsv.blob = pp.page_blob),
@@ -57,12 +57,13 @@ with pdf_match as (
 	tsv.ts_conf = 'english'::regconfig
   group by
   	1
-), pdf_page_count as (
-  select
+),
+  pdf_page_count as (
+    select
   	pm.blob,
 	pm.match_page_count,
 	pm.page_rank_sum,
-  	pd.number_of_pages as "document_page_count"
+  	pd.number_of_pages::float8 as "document_page_count"
     from
     	pdf_match pm
 	  join pdfbox2.pddocument pd using (blob)
@@ -71,7 +72,7 @@ with pdf_match as (
 	t.blob,
 	1,
 	ts_rank_cd(t.value_tsv, q, 0),
-	1
+	0.05::float8
   from
   	my_title t,
 	plainto_tsquery('english', :query) as q
@@ -100,7 +101,7 @@ select
   from
   	match_union u
   order by
-  	page_rank_sum * (match_page_count::float8 / document_page_count::float8) desc
+  	page_rank_sum * (match_page_count / document_page_count) desc
   	-- page_rank_sum desc
   limit
   	:limit
