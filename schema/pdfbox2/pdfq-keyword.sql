@@ -7,6 +7,9 @@
  *	The match_union still renders multiple blobs, since the union
  *	is across the full tuple.  Can probably be fixed with a window
  *	function.
+ *
+ *	Need to investigate stripping the tsvector in the count query.  Also 
+ *	need to investigate indexing on strip(tsvector).
  */
 \set ON_ERROR_STOP on
 \timing on
@@ -63,7 +66,8 @@ with pdf_match as (
   	pm.blob,
 	pm.match_page_count,
 	pm.page_rank_sum,
-  	pd.number_of_pages::float8 as "document_page_count"
+  	pd.number_of_pages::float8 as "document_page_count",
+	false as "is_title"
     from
     	pdf_match pm
 	  join pdfbox2.pddocument pd using (blob)
@@ -71,8 +75,9 @@ with pdf_match as (
   select
 	t.blob,
 	1,
-	ts_rank_cd(t.value_tsv, q, 0),
-	0.05::float8
+	ts_rank_cd(t.value_tsv, q, 2),
+	1::float8,
+	true as "is_title"
   from
   	my_title t,
 	plainto_tsquery('english', :query) as q
@@ -101,6 +106,7 @@ select
   from
   	match_union u
   order by
+  	is_title desc,
   	page_rank_sum * (match_page_count / document_page_count) desc
   	-- page_rank_sum desc
   limit
