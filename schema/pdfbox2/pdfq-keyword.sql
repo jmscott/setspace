@@ -3,7 +3,12 @@
  *	Query PDF blobs on pages and titles, sorting by relavence.
  *  See:
  *	Script $PDFBOX2_ROOT/bin/pdfq
+ *  Note:
+ *	The match_union still renders multiple blobs, since the union
+ *	is across the full tuple.  Can probably be fixed with a window
+ *	function.
  */
+\set ON_ERROR_STOP on
 \timing on
 \x on
 
@@ -11,8 +16,9 @@
 \echo Query is :query
 \echo
 
+with matching_blobs as (
 select
-	count(distinct pp.pdf_blob) as "document count"
+	distinct pp.pdf_blob as blob
   from
 	pdfbox2.extract_page_utf8 pp
   	  inner join pgtexts.tsv_utf8 tsv on (tsv.blob = pp.page_blob),
@@ -21,6 +27,19 @@ select
   	tsv.doc @@ q
 	and
 	tsv.ts_conf = 'english'::regconfig
+union
+select
+	t.blob
+  from
+  	my_title t,
+	plainto_tsquery('english', :query) as q
+  where
+  	t.value_tsv @@ q
+)
+  select
+  	count(blob) as "document_count"
+  from
+  	matching_blobs
 ;
 
 with pdf_match as (
@@ -40,56 +59,51 @@ with pdf_match as (
   	1
 ), pdf_page_count as (
   select
-  	pm.*,
+  	pm.blob,
+	pm.match_page_count,
+	pm.page_rank_sum,
   	pd.number_of_pages as "document_page_count"
     from
     	pdf_match pm
-	  join pddocument pd using (blob)
+	  join pdfbox2.pddocument pd using (blob)
+), title_match as (
+  select
+	t.blob,
+	1,
+	ts_rank_cd(t.value_tsv, q, 0),
+	1
+  from
+  	my_title t,
+	plainto_tsquery('english', :query) as q
+  where
+  	t.value_tsv @@ q
+), match_union as (
+  select
+  	*
+    from
+    	pdf_page_count
+  union
+  select
+  	*
+    from
+    	title_match
 )
 select
+	(select
+		t.value
+	  from
+	  	my_title t
+	  where
+	  	t.blob = u.blob 
+	) as title,
 	*
   from
-  	pdf_page_count
+  	match_union u
   order by
   	page_rank_sum * (match_page_count::float8 / document_page_count::float8) desc
   	-- page_rank_sum desc
   limit
-  	200
+  	:limit
 ;
 
 \q
-
---  explain (ANALYZE, COSTS, VERBOSE, BUFFERS, FORMAT JSON)
-with page_hits as (
-  select
-	pp.page_blob,
-	pp.page_number,
-	ts_rank_cd(tsv.doc, q, 0) as rank,
-	q
-  from
-  	pdfbox2.extract_page_utf8 pp
-  	  inner join pgtexts.tsv_utf8 tsv on (tsv.blob = pp.page_blob),
-	plainto_tsquery('english', :query) as q
-  where
-  	tsv.doc @@ q
-	and
-	tsv.ts_conf = 'english'::regconfig
-  order by
-  	rank desc
-  offset
-  	0
-  limit
-  	10
-)
-  select
-  	E'_____________________\n',
-  	ts_headline('english'::regconfig, doc, q),
-	page_number,
-	rank,
-  	page_hits.page_blob
-    from
-    	page_hits
-	  inner join text_utf8 txt on (txt.blob = page_hits.page_blob)
-    order by
-  	rank desc
-;

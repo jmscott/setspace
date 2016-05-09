@@ -3,10 +3,13 @@
 #  Synopsis:
 #	Simple keyword query of PDF blobs and associated titles.
 #  Usage:
-#	pdf-keyq word1 word2 ... | more
+#	pdf-keyq 'word1 word2 ...' [limit] | more
 #  Exit Status:
 #	0	Matching count and tuples written to standard output
-#	*	sql error
+#	1	psql internal error (e.g., out of memory)
+#	2	bad database connection
+#	3	error in sql script with ON_ERROR_STOP set
+#	10	wrong command line arguments
 #  Environment:
 #	PDFBOX2_ROOT
 #	PostgreSQL PG* variables
@@ -14,4 +17,29 @@
 #	Schema pgtexts
 #	$PDFBOX2_ROOT/lib/pdfq-keyword.sql	
 #
-exec psql -f $PDFBOX2_ROOT/lib/pdfq-keyword.sql --set query="'$@'"
+PROG=pdfq
+
+die()
+{
+	echo "$PROG: ERROR: $1" >&2
+	exit $2
+}
+
+case $# in
+1)
+	QUERY="$1"
+	LIMIT=10
+	;;
+2)
+	QUERY="$1"
+	LIMIT=$2
+	;;
+*)
+	die 'wrong number of command line arguments' 10
+	;;
+esac
+
+psql --no-psqlrc --file $PDFBOX2_ROOT/lib/pdfq-keyword.sql		\
+	--set query="'$QUERY'" 						\
+	--set limit="$LIMIT" 						||
+		die "psql failed: exit status=$?" $?
