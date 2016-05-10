@@ -2,8 +2,8 @@
  *  Synopsis:
  *	Database schema for PostgreSQL Text Search
  *  Note:
- *	Unfortunatly inline pg_upgrade fails do to use of the regconfig
- *	datatype in the table pgtexts.tsv_utf8.
+ *	Unfortunatly inline pg_upgrade fails on the regconfig datatype,
+ *	due to the oid dependency.
  */
 \set ON_ERROR_STOP on
 
@@ -77,6 +77,43 @@ CREATE TABLE pgtexts.merge_text_utf8_pending
 );
 COMMENT ON TABLE pgtexts.merge_text_utf8_pending IS
   'Actively running processes for merge_text_utf8'
+;
+
+/*
+ *  A stripped version of the tsv vector, suitable for counting matching items.
+ *  Unfortunatly a functional index fails on values > postgres page size.
+ */
+DROP TABLE IF EXISTS pgtexts.tsv_strip_utf8;
+CREATE TABLE pgtexts.tsv_strip_utf8
+(
+	ts_conf		regconfig,
+	blob		udig
+				REFERENCES setspace.is_utf8wf(blob)
+				ON DELETE CASCADE,
+	doc		tsvector
+				not null,
+
+	PRIMARY KEY	(ts_conf, blob)
+);
+CREATE UNIQUE INDEX tsv_strip_utf8_ts_blob ON
+	pgtexts.tsv_strip_utf8(blob, ts_conf);
+
+COMMENT ON TABLE pgtexts.tsv_strip_utf8 IS
+  'Stripped Text Vector of Extracted UTF8 Text'
+;
+CREATE INDEX tsv_strip_utf8_doc ON tsv_strip_utf8 USING gin(doc);
+
+DROP TABLE IF EXISTS pgtexts.merge_tsv_strip_utf8_pending;
+CREATE TABLE pgtexts.merge_tsv_strip_utf8_pending
+(
+	blob		udig
+				PRIMARY KEY,
+	insert_time	timestamptz
+				DEFAULT now()
+				NOT NULL
+);
+COMMENT ON TABLE pgtexts.merge_tsv_strip_utf8_pending IS
+  'Actively running processes for merge_tsv_strip_utf8'
 ;
 
 COMMIT;
