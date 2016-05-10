@@ -24,7 +24,7 @@ select
 	distinct pp.pdf_blob as blob
   from
 	pdfbox2.extract_page_utf8 pp
-  	  inner join pgtexts.tsv_utf8 tsv on (tsv.blob = pp.page_blob),
+  	  inner join pgtexts.tsv_strip_utf8 tsv on (tsv.blob = pp.page_blob),
 	plainto_tsquery('english', :query) as q
   where
   	tsv.doc @@ q
