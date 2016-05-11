@@ -144,7 +144,7 @@ with pdf_match as (
 			  where
 			  	txt.blob = max_page.page_blob
 			),
-			q
+			q,
 			'MaxFragments=3'
 		)
 	    from
