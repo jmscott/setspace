@@ -91,23 +91,70 @@ with pdf_match as (
   	*
     from
     	title_match
-)
-select
-	(select
-		t.value
-	  from
-	  	my_title t
-	  where
-	  	t.blob = u.blob 
-	) as title,
-	*
+), ranked_match as (
+  select
+  	blob,
+  	max(page_rank_sum * (match_page_count / document_page_count)) as rank
   from
   	match_union u
+  group by
+  	blob
   order by
-  	page_rank_sum * (match_page_count / document_page_count) desc
+  	rank desc
   	-- page_rank_sum desc
   limit
   	:limit
+)
+  select
+  	(
+	  select
+	  	t.value
+	    from
+	    	my_title t
+	    where
+	    	t.blob = rm.blob
+	) as "Title",
+	(with max_page as (
+	    select
+	    	pp.page_blob,
+		max(ts_rank_cd(tsv.doc, q, 14))
+	    from
+		pdfbox2.extract_page_utf8 pp
+  	  	  inner join pgtexts.tsv_utf8 tsv on (tsv.blob = pp.page_blob),
+		plainto_tsquery('english', :query) as q
+	    where
+  		tsv.doc @@ q
+		and
+		tsv.ts_conf = 'english'::regconfig
+		and
+		pp.pdf_blob = rm.blob
+	    group by
+	    	pp.page_blob
+	    --  Note: ought to order by page number
+	    limit
+	    	1
+	  ) select
+	  	ts_headline(
+			'english'::regconfig,
+			(select
+				txt.doc
+			  from
+			  	pgtexts.text_utf8 txt,
+				max_page
+			  where
+			  	txt.blob = max_page.page_blob
+			),
+			q
+			'MaxFragments=3'
+		)
+	    from
+	    	plainto_tsquery('english', :query) as q
+	) as "Snippet",
+	rm.blob
+  from
+  	ranked_match rm
+  order by
+  	rank desc
 ;
 
 \q
