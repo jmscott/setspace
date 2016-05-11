@@ -27,11 +27,11 @@ die()
 
 case $# in
 1)
-	QUERY="$1"
+	KEYWORDS="$1"
 	LIMIT=10
 	;;
 2)
-	QUERY="$1"
+	KEYWORDS="$1"
 	LIMIT=$2
 	;;
 *)
@@ -40,6 +40,6 @@ case $# in
 esac
 
 psql --no-psqlrc --file $PDFBOX2_ROOT/lib/pdfq-keyword.sql		\
-	--set query="'$QUERY'" 						\
+	--set keywords="'$KEYWORDS'"					\
 	--set limit="$LIMIT" 						||
 		die "psql failed: exit status=$?" $?

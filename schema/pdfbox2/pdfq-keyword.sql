@@ -16,7 +16,7 @@
 \x on
 
 \echo 
-\echo Query is :query
+\echo Keywords are :keywords
 \echo
 
 with matching_blobs as (
@@ -25,7 +25,7 @@ select
   from
 	pdfbox2.extract_page_utf8 pp
   	  inner join pgtexts.tsv_strip_utf8 tsv on (tsv.blob = pp.page_blob),
-	plainto_tsquery('english', :query) as q
+	plainto_tsquery('english', :keywords) as q
   where
   	tsv.doc @@ q
 	and
@@ -35,7 +35,7 @@ select
 	t.blob
   from
   	my_title t,
-	plainto_tsquery('english', :query) as q
+	plainto_tsquery('english', :keywords) as q
   where
   	t.value_tsv @@ q
 )
@@ -53,7 +53,7 @@ with pdf_match as (
   from
 	pdfbox2.extract_page_utf8 pp
   	  inner join pgtexts.tsv_utf8 tsv on (tsv.blob = pp.page_blob),
-	plainto_tsquery('english', :query) as q
+	plainto_tsquery('english', :keywords) as q
   where
   	tsv.doc @@ q
 	and
@@ -78,7 +78,7 @@ with pdf_match as (
 	1::float8
   from
   	my_title t,
-	plainto_tsquery('english', :query) as q
+	plainto_tsquery('english', :keywords) as q
   where
   	t.value_tsv @@ q
 ), match_union as (
@@ -124,7 +124,7 @@ with pdf_match as (
 	    from
 		pdfbox2.extract_page_utf8 pp
   	  	  inner join pgtexts.tsv_utf8 tsv on (tsv.blob = pp.page_blob),
-		plainto_tsquery('english', :query) as q
+		plainto_tsquery('english', :keywords) as q
 	    where
   		tsv.doc @@ q
 		and
@@ -148,11 +148,10 @@ with pdf_match as (
 			  where
 			  	txt.blob = max_page.page_blob
 			),
-			q,
-			'MaxFragments=2'
+			q
 		) || ' Page #' || max_page.page_number
 	    from
-	    	plainto_tsquery('english', :query) as q,
+	    	plainto_tsquery('english', :keywords) as q,
 		max_page
 	) as "Snippet",
 	rm.blob
