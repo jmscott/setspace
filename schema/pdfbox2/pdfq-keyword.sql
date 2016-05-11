@@ -114,10 +114,13 @@ with pdf_match as (
 	    where
 	    	t.blob = rm.blob
 	) as "Title",
+
+	--  headline for highest ranking page within the document
 	(with max_page as (
 	    select
-	    	pp.page_blob,
-		max(ts_rank_cd(tsv.doc, q, 14))
+	    	ts_rank_cd(tsv.doc, q, 14),
+		pp.page_number,
+		pp.page_blob
 	    from
 		pdfbox2.extract_page_utf8 pp
   	  	  inner join pgtexts.tsv_utf8 tsv on (tsv.blob = pp.page_blob),
@@ -128,13 +131,14 @@ with pdf_match as (
 		tsv.ts_conf = 'english'::regconfig
 		and
 		pp.pdf_blob = rm.blob
-	    group by
-	    	pp.page_blob
+	    order by
+	    	--  order by rank, then page number
+	    	1 desc, 2 asc
 	    --  Note: ought to order by page number
 	    limit
 	    	1
 	  ) select
-	  	ts_headline(
+	  	'Page #' || max_page.page_number || ': ' || ts_headline(
 			'english'::regconfig,
 			(select
 				txt.doc
@@ -145,10 +149,11 @@ with pdf_match as (
 			  	txt.blob = max_page.page_blob
 			),
 			q,
-			'MaxFragments=3'
-		)
+			'MaxFragments=2'
+		) || ' Page #' || max_page.page_number
 	    from
-	    	plainto_tsquery('english', :query) as q
+	    	plainto_tsquery('english', :query) as q,
+		max_page
 	) as "Snippet",
 	rm.blob
   from
