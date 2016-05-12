@@ -24,51 +24,51 @@ INSERT into drblob.qdr_log_total (
 	sqlstate_count
 ) SELECT
 	:blob,
-	(select
+	(SELECT
 		count(*)
-	  from
+	  FROM
 	  	merge_qdr_log
 	) record_count,
 
-	(select
+	(SELECT
 		count(distinct flow_sequence)
-	  from
+	  FROM
 	  	merge_qdr_log
-	) as flow_seq_count,
+	) AS flow_seq_count,
 
-	(select
+	(SELECT
 		count(distinct query_name)
-	  from
+	  FROM
 	  	merge_qdr_log
 	) query_name_count,
 
-	(select
+	(SELECT
 		count(termination_class)
-	  from
+	  FROM
 	  	merge_qdr_log
-	  where
+	  WHERE
 	  	termination_class = 'OK'
 	) OK_count,
 
-	(select
+	(SELECT
 		count(termination_class)
-	  from
+	  FROM
 	  	merge_qdr_log
-	  where
+	  WHERE
 	  	termination_class = 'ERR'
 	) ERR_count,
 
-	(select
+	(SELECT
 		count(distinct blob)
-	  from
+	  FROM
 	  	merge_qdr_log
 	) blob_count,
 
-	(select
+	(SELECT
 		count(distinct sqlstate)
-	  from
+	  FROM
 	  	merge_qdr_log
 	) sqlstate_count
   ON CONFLICT
-  	do nothing
+  	DO NOTHING
 ;
