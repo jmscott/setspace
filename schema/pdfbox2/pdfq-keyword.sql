@@ -16,7 +16,7 @@
 \x on
 
 \echo 
-\echo Keywords are :keywords
+\echo Keywords are :keywords, Result is limited to :limit rows
 \echo
 
 with matching_blobs as (
@@ -138,7 +138,7 @@ with pdf_match as (
 	    limit
 	    	1
 	  ) select
-	  	'Page #' || max_page.page_number || ': ' || ts_headline(
+	  	ts_headline(
 			'english'::regconfig,
 			(select
 				txt.doc
@@ -149,7 +149,7 @@ with pdf_match as (
 			  	txt.blob = max_page.page_blob
 			),
 			q
-		) || ' Page #' || max_page.page_number
+		) || ' @ Page #' || max_page.page_number
 	    from
 	    	plainto_tsquery('english', :keywords) as q,
 		max_page
