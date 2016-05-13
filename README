@@ -20,6 +20,6 @@ Example Schemas:
 
 	pgtexts		PostgreSQL Text Search
 See:
-	https://github.com/jmscott/setspace/schema
+	https://github.com/jmscott/setspace/tree/master/schema
 	https://github.com/jmscott/blobio
 	https://github.com/jmscott/blobio/tree/master/flowd
