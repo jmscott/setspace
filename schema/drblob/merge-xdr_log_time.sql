@@ -4,9 +4,8 @@
  *  Usage:
  *	psql -f merge-xdr_log_time.sql <biod.xdr
  *	bio-cat sha:abc ... | psql -f merge-xdr_log_time.sql
- *  Blame:
- *  	jmscott@setspace.com
- *  	setspace@gmail.com
+ *  Note:
+ *	Investigate rewriting INSERTS using windowing functions.
  */
 
 \set ON_ERROR_STOP on
@@ -25,53 +24,53 @@ INSERT into drblob.xdr_log_time (
 	max_user_duration
 ) SELECT
 	:blob,
-	(select
+	(SELECT
 		min(start_time)
-	  from
+	  FROM
 	  	merge_xdr_log
 	) min_start_time,
 
-	(select
+	(SELECT
 		max(start_time)
-	  from
+	  FROM
 	  	merge_xdr_log
 	) max_start_time,
 
-	(select
+	(SELECT
 		min(wall_duration)
-	  from
+	  FROM
 	  	merge_xdr_log
 	) min_wall_duration,
 
-	(select
+	(SELECT
 		max(wall_duration)
-	  from
+	  FROM
 	  	merge_xdr_log
 	) max_wall_duration,
 
-	(select
+	(SELECT
 		min(system_duration)
-	  from
+	  FROM
 	  	merge_xdr_log
 	) min_system_duration,
 
-	(select
+	(SELECT
 		max(system_duration)
-	  from
+	  FROM
 	  	merge_xdr_log
 	) max_system_duration,
 
-	(select
+	(SELECT
 		min(user_duration)
-	  from
+	  FROM
 	  	merge_xdr_log
 	) min_user_duration,
 
-	(select
+	(SELECT
 		max(user_duration)
-	  from
+	  FROM
 	  	merge_xdr_log
 	) max_user_duration
   ON CONFLICT
-  	do nothing
+  	DO NOTHING
 ;
