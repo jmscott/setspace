@@ -1,38 +1,28 @@
-Synopsis:
-	SetSpace extracts facts about immutable blobs and puts them in PostgreSQL
-Meme:
-	SetSpace - Harness the Flux
+Schemas are an impediment to moving fast the same way street lights are.
+Useless if you are alone, critical when there are a 100's of you.
+	- Dmitriy Ryaboy
 
+Synopsis:
+	SetSpace extracts and puts facts about immutable blobs into PostgreSQL
+
+Example Schemas:
 	Schemas are an impediment to moving fast the same way street lights are.
 	Useless if you are alone, critical when there are a 100's of you.
 		- Dmitriy Ryaboy
-		
+	jsonorg		json as defined by the program JSON_checker at json.org
+
+	pdfbox2		pdfbox.apache.org tables, version 2
+
+	libxml2		libxml2 library for xml documents
+
+	fffile		well known Unix "Fine Free File" command
+
+	pgtexts		postgreSQL text search
+
+	expat2		xml libexpat, version 2
+
+	pgtexts		PostgreSQL Text Search
 See:
+	https://github.com/jmscott/setspace/schema
 	https://github.com/jmscott/blobio
 	https://github.com/jmscott/blobio/tree/master/flowd
-Blame:
-  	jmscott@setspace.com
-  	setspace@gmail.com
-To Do:
-	--  Requiring PostgreSQL logical replication implies we may not be
-	    able to populate other databases.
-
-	--  think about a custom base32 encoding, taking ideas from these
-	    sources:
-
-	      http://philzimmermann.com/docs/human-oriented-base-32-encoding.txt
-	      https://en.wikipedia.org/wiki/Luhn_algorithm
-	      https://en.wikipedia.org/wiki/Base32
-	      http://www.crockford.com/wrmg/base32.html
-	      https://en.wikipedia.org/wiki/Damm_algorithm
-	      https://en.wikipedia.org/wiki/Verhoeff_algorithm
-	      http://base91.sourceforge.net/
-
-	--  think about a custom hash algorithm, like 192 bit shake256.
-
-	--  Makefile template for new setspace schema
-
-	--  sengine.shtml: link to worldcat.org, icerocket.com
-
-	--  think about pushing from backup database -> live and make live
-	    readonly!!!
