@@ -18,6 +18,8 @@
 #	$PDFBOX2_ROOT/lib/pdfq-keyword.sql	
 #
 PROG=pdfq
+LIMIT=10
+OFFSET=0
 
 die()
 {
@@ -28,11 +30,15 @@ die()
 case $# in
 1)
 	KEYWORDS="$1"
-	LIMIT=10
 	;;
 2)
 	KEYWORDS="$1"
 	LIMIT=$2
+	;;
+3)
+	KEYWORDS="$1"
+	LIMIT=$2
+	OFFSET=$3
 	;;
 *)
 	die 'wrong number of command line arguments' 10
@@ -41,5 +47,6 @@ esac
 
 psql --no-psqlrc --file $PDFBOX2_ROOT/lib/pdfq-keyword.sql		\
 	--set keywords="'$KEYWORDS'"					\
-	--set limit="$LIMIT" 						||
+	--set limit="$LIMIT" 						\
+	--set offset="$OFFSET" 						||
 		die "psql failed: exit status=$?" $?

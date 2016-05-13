@@ -16,7 +16,7 @@
 \x on
 
 \echo 
-\echo Keywords are :keywords, Result is limited to :limit rows
+\echo Keywords are :keywords, Result is :limit rows, offset :offset
 \echo
 
 with matching_blobs as (
@@ -104,6 +104,8 @@ with pdf_match as (
   	-- page_rank_sum desc
   limit
   	:limit
+  offset
+  	:offset
 )
   select
   	(
