@@ -6,9 +6,6 @@ Synopsis:
 	SetSpace extracts and puts facts about immutable blobs into PostgreSQL
 
 Example Schemas:
-	Schemas are an impediment to moving fast the same way street lights are.
-	Useless if you are alone, critical when there are a 100's of you.
-		- Dmitriy Ryaboy
 	jsonorg		json as defined by the program JSON_checker at json.org
 
 	pdfbox2		pdfbox.apache.org tables, version 2
