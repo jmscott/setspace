@@ -30,7 +30,10 @@ CREATE TABLE pgtexts.tsv_utf8
 	 *	of the configuration.
 	 */
 
-	ts_conf		text,
+	ts_conf		text check (
+				--  verify the value is a true regconfig
+				ts_conf = ts_conf::regconfig::text
+			),
 	blob		udig
 				REFERENCES setspace.is_utf8wf(blob)
 				ON DELETE CASCADE,
@@ -94,7 +97,10 @@ CREATE TABLE pgtexts.tsv_strip_utf8
 	/*
 	 *  Note:  see Note above on ts_conf.
 	 */
-	ts_conf		text,
+	ts_conf		text check (
+				--  verify the value is a true regconfig
+				ts_conf = ts_conf::regconfig::text
+			),
 	blob		udig
 				REFERENCES setspace.is_utf8wf(blob)
 				ON DELETE CASCADE,
