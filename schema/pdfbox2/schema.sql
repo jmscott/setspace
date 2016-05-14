@@ -4,8 +4,6 @@
  *  See:
  *	https://pdfbox.apache.org
  *	http://semver.org/	
- *
- *	Does the the ts_conf column need to reference a foreign key?
  */
 
 \set ON_ERROR_STOP on
