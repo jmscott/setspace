@@ -1,6 +1,10 @@
 /*
  *  Synopsis:
  *	Database schema for PostgreSQL Text Search
+ *  Note:
+ *	Unfortunatly the ts_conf column is text instead of regconfig.
+ *	Using regconfig breaks pg_upgrade.  The ts_conf field has a constraint
+ *	that casts to regconfig, which is truly ugly.
  */
 \set ON_ERROR_STOP on
 
@@ -31,7 +35,8 @@ CREATE TABLE pgtexts.tsv_utf8
 	 */
 
 	ts_conf		text check (
-				--  verify the value is a true regconfig
+				--  verify the text ts_conf value is indeed
+				--  is a true regconfig.  really ugly.
 				ts_conf = ts_conf::regconfig::text
 			),
 	blob		udig
@@ -98,7 +103,8 @@ CREATE TABLE pgtexts.tsv_strip_utf8
 	 *  Note:  see Note above on ts_conf.
 	 */
 	ts_conf		text check (
-				--  verify the value is a true regconfig
+				--  verify the text ts_conf value is indeed
+				--  is a true regconfig.  really ugly.
 				ts_conf = ts_conf::regconfig::text
 			),
 	blob		udig
