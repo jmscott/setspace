@@ -1,9 +1,6 @@
 /*
  *  Synopsis:
  *	Database schema for PostgreSQL Text Search
- *  Note:
- *	Unfortunatly inline pg_upgrade fails on the regconfig datatype,
- *	due to the oid dependency.
  */
 \set ON_ERROR_STOP on
 
@@ -25,7 +22,15 @@ COMMENT ON SCHEMA pgtexts IS
 DROP TABLE IF EXISTS pgtexts.tsv_utf8;
 CREATE TABLE pgtexts.tsv_utf8
 (
-	ts_conf		regconfig,
+	/*
+	 *  Note:
+	 *	ts_conf would naturally be a regconfig datatype.
+	 *	Unfortunatly the regconfig database depends upon oid,
+	 *	so pg_upgrade fails.  Instead ts_conf is text, the name
+	 *	of the configuration.
+	 */
+
+	ts_conf		text,
 	blob		udig
 				REFERENCES setspace.is_utf8wf(blob)
 				ON DELETE CASCADE,
@@ -86,7 +91,10 @@ COMMENT ON TABLE pgtexts.merge_text_utf8_pending IS
 DROP TABLE IF EXISTS pgtexts.tsv_strip_utf8;
 CREATE TABLE pgtexts.tsv_strip_utf8
 (
-	ts_conf		regconfig,
+	/*
+	 *  Note:  see Note above on ts_conf.
+	 */
+	ts_conf		text,
 	blob		udig
 				REFERENCES setspace.is_utf8wf(blob)
 				ON DELETE CASCADE,
