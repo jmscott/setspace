@@ -29,7 +29,7 @@ select
   where
   	tsv.doc @@ q
 	and
-	tsv.ts_conf = 'english'::regconfig
+	tsv.ts_conf = 'english'
 union
 select
 	t.blob
@@ -57,7 +57,7 @@ with pdf_match as (
   where
   	tsv.doc @@ q
 	and
-	tsv.ts_conf = 'english'::regconfig
+	tsv.ts_conf = 'english'
   group by
   	1
 ),
@@ -130,7 +130,7 @@ with pdf_match as (
 	    where
   		tsv.doc @@ q
 		and
-		tsv.ts_conf = 'english'::regconfig
+		tsv.ts_conf = 'english'
 		and
 		pp.pdf_blob = rm.blob
 	    order by
