@@ -40,4 +40,8 @@ CFLAGS=-Wall -Wextra -Werror
 #
 PDFBOX_APP2_JAR:=/usr/local/lib/pdfbox-app-2.jar
 
+#  Location of go language distribution
+
+GODIST=/usr/local/go
+
 ########################  END SECTION OF VARIABLES TO CHANGE
