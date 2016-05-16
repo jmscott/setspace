@@ -4,8 +4,8 @@
  *  Depends:
  *	xmpbox jar from pdfbox
  *  Note:
- *	Keywords are not supported in pdfbox2 schema (yet) because so few pdf
- *	appear to support them, at least in a random sample of 140k documents.
+ *	Are the keywords here the same as those extracted in
+ *	PDDocumentInformation?
  */
 
 import org.apache.pdfbox.pdmodel.PDDocument;
