@@ -33,4 +33,8 @@ PDFBOX_APP2_JAR:=/usr/local/lib/pdfbox-app-2.jar
 #  Note: best not to change under gnu or clang compilers.
 CFLAGS=-Wall -Wextra -Werror
 
+#  Location of go language distribution
+
+GODIST=/usr/local/go
+
 ########################  END SECTION OF VARIABLES TO CHANGE
