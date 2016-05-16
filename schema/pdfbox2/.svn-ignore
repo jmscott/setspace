@@ -2,6 +2,7 @@ ExtractPagesUTF8.class
 etc
 lib
 log
+merge-stdin-pddocument_information
 profile
 putPDDocument.class
 putPDDocumentInformation.class

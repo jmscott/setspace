@@ -12,10 +12,12 @@ JCOMPILED=								\
 	putPDDocument.class						\
 	putPDDocumentInformation.class
 
-all: $(JCOMPILED)
+ECPG_COMPILED=merge-stdin-pddocument_information
+
+all: $(JCOMPILED) $(ECPG_COMPILED)
 
 clean:
-	rm -f $(JCOMPILED)
+	rm -f $(JCOMPILED) $(ECPG_COMPILED)
 
 dev-links:
 	test -e lib || ln -s . lib
@@ -31,9 +33,6 @@ putPDDocumentInformation.class:  putPDDocumentInformation.java
 
 ExtractPagesUTF8.class:  ExtractPagesUTF8.java
 	javac -cp $(PDFBOX2_APP_JAR) ExtractPagesUTF8.java
-
-#ExtractKeywords.class:  ExtractKeywords.java
-	#javac -cp $(PDFBOX2_APP_JAR):$(PDFBOX2_XMP_JAR) ExtractKeywords.java
 
 install: all
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\
@@ -75,6 +74,7 @@ install: all
 		cron-append-pgtexts-brr					\
 		merge-extract_pages_utf8				\
 		merge-pddocument					\
+		merge-stdin-pddocument_information			\
 		$(PDFBOX2_PREFIX)/sbin
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m u=rx		\
@@ -87,7 +87,9 @@ install: all
 		Makefile						\
 		ExtractKeywords.java					\
 		ExtractPagesUTF8.java					\
+		merge-stdin-pddocument_information.pgc			\
 		putPDDocument.java					\
+		putPDDocumentInformation.java				\
 		$(PDFBOX2_PREFIX)/src
 distclean:
 	rm -rf $(PDFBOX2_PREFIX)/lib
@@ -96,3 +98,12 @@ distclean:
 
 frisk ff:
 	flowd frisk pdfbox2.flow.example
+
+merge-stdin-pddocument_information:					\
+		merge-stdin-pddocument_information.pgc			\
+		../../common.c						\
+		../../common-ecpg.c
+	ecpg merge-stdin-pddocument_information.pgc
+	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-pddocument_information.c	\
+		-o merge-stdin-pddocument_information -L$(PGLIB) -lecpg
+	rm merge-stdin-pddocument_information.c
