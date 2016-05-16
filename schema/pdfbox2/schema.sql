@@ -227,6 +227,8 @@ CREATE TABLE pdfbox2.pddocument_information
 					exit_status <= 255
 				)
 				not null,
+
+	--  extracted scalar field
 	author			text,
 	creation_date		text,
 	creator			text,
