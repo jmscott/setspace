@@ -37,7 +37,7 @@ die()
 
 leave()
 {
-	rm -f $TMP_RUMMY
+	rm -f $RUN $TMP_RUMMY
 	log 'good bye, cruel world'
 	exit
 }
@@ -59,6 +59,17 @@ log "BLOBIO_ROOT=$BLOBIO_ROOT"
 log "BLOBIO_SERVICE=$BLOBIO_SERVICE"
 test -d spool || die "directory not found: $(pwd)/spool"
 SPOOL=spool/rummy.rdr
+test -d run || die "directory not found: $(pwd)/run"
+RUN=run/$PROG.pid
+
+if [ -e $RUN ];  then
+	log "WARN: run pid exists: $RUN"
+	PID=$(cat $RUN)
+	log "WARN: is another $PROG running with pid #$PID ?"
+	log "WARN: if no process #$PID is running then remove $RUN" 
+	exit
+fi
+echo $$ >$RUN || die "echo >$RUN failed: exit status=$?"
 
 log "TMPDIR=$TMPDIR"
 TMP_RUMMY=${TMPDIR:=/tmp}/$PROG-$$.udig
