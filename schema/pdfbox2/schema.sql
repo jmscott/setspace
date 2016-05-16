@@ -17,8 +17,9 @@ COMMENT ON SCHEMA pdfbox2 IS
 ;
 
 DROP TABLE IF EXISTS pdfbox2.pddocument_pending CASCADE;
+
 /*
- *  Done pddocument jobs.
+ *  Pending pddocument jobs.
  *
  *  Note:
  *	Notice no fk reference to setspace.service(blob).
@@ -188,6 +189,57 @@ CREATE TABLE pdfbox2.extract_pages_utf8_pending
 );
 COMMENT ON TABLE pdfbox2.extract_pages_utf8_pending IS
   'Actively running extract_pages_utf8 java processes'
+;
+
+/*
+ *  Pending pddocument_information jobs.
+ *
+ *  Note:
+ *	Notice no fk reference to setspace.service(blob).
+ *	Sudden termination may leave stale entries.
+ */
+DROP TABLE IF EXISTS pdfbox2.pddocument_information_pending CASCADE;
+CREATE TABLE pdfbox2.pddocument_information_pending
+(
+	blob		udig
+				PRIMARY KEY,
+	insert_time	timestamptz
+				DEFAULT now()
+				NOT NULL
+);
+COMMENT ON TABLE pdfbox2.pddocument_information_pending IS
+  'Pending putPDDocumentInformation java processes'
+;
+
+/*
+ *  PDDocumentInformation scalar fields from Java Object
+ */
+DROP TABLE IF EXISTS pdfbox2.pddocument_information CASCADE;
+CREATE TABLE pdfbox2.pddocument_information
+(
+	blob			udig
+					REFERENCES setspace.service(blob)
+					ON DELETE CASCADE
+					PRIMARY KEY,
+	exit_status		smallint check (
+					exit_status >= 0
+					and
+					exit_status <= 255
+				)
+				not null,
+	author			text,
+	creation_date		text,
+	creator			text,
+	keywords		text,
+	modification_date	text,
+	producer		text,
+	subject			text,
+	title			text,
+	trapped			text
+
+);
+COMMENT ON TABLE pdfbox2.pddocument_information IS
+  'PDDocumentInformation scalar fields from Java Object'
 ;
 
 COMMIT;
