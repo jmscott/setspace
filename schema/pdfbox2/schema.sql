@@ -229,16 +229,33 @@ CREATE TABLE pdfbox2.pddocument_information
 				not null,
 
 	--  extracted scalar field
-	author			text,
-	creation_date		text,
-	creator			text,
-	keywords		text,
-	modification_date	text,
-	producer		text,
-	subject			text,
-	title			text,
-	trapped			text
-
+	author			text check (
+					length(author) < 4096
+				),
+	creation_date		text check (
+					length(creation_date) < 4096
+				),
+	creator			text check (
+					length(creator) < 4096
+				),
+	keywords		text check (
+					length(keywords) < 4096
+				),
+	modification_date	text check (
+					length(modification_date) < 4096
+				),
+	producer		text check (
+					length(producer) < 4096
+				),
+	subject			text check (
+					length(subject) < 4096
+				),
+	title			text check (
+					length(title) < 4096
+				),
+	trapped			text check (
+					length(trapped) < 4096
+				)
 );
 COMMENT ON TABLE pdfbox2.pddocument_information IS
   'PDDocumentInformation scalar fields from Java Object'
