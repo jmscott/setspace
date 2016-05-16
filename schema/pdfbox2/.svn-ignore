@@ -4,6 +4,7 @@ lib
 log
 profile
 putPDDocument.class
+putPDDocumentInformation.class
 run
 sbin
 schema

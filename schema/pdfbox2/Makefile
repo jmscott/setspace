@@ -9,7 +9,8 @@ include ../../local.mk
 
 JCOMPILED=								\
 	ExtractPagesUTF8.class						\
-	putPDDocument.class
+	putPDDocument.class						\
+	putPDDocumentInformation.class
 
 all: $(JCOMPILED)
 
@@ -25,6 +26,8 @@ dev-links:
 
 putPDDocument.class:  putPDDocument.java
 	javac -cp $(PDFBOX2_APP_JAR) putPDDocument.java
+putPDDocumentInformation.class:  putPDDocumentInformation.java
+	javac -cp $(PDFBOX2_APP_JAR) putPDDocumentInformation.java
 
 ExtractPagesUTF8.class:  ExtractPagesUTF8.java
 	javac -cp $(PDFBOX2_APP_JAR) ExtractPagesUTF8.java
