@@ -15,7 +15,8 @@
  *	1	load of pdf failed
  *	2	wrong number of command line arguments
  *	3	field contained new-line character
- *	4	unexpected java exception.
+ *	4	field >= 4096 characters (not bytes)
+ *	5	unexpected java exception.
  */
 import java.util.Calendar;
 
@@ -24,6 +25,17 @@ import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 
 public class putPDDocumentInformation
 {
+	private static String frisk(String s)
+	{
+		if (s == null)
+			return null;
+		if (s.indexOf("\n") > -1)
+			System.exit(3);
+		if (s.length() >= 4096)
+			System.exit(4);
+		return s;
+	}
+
 	public static void main(String[] args) throws Exception
 	{
 		if (args.length != 0) {
@@ -55,64 +67,51 @@ public class putPDDocumentInformation
 
 			//  Author: ...
 
-			String s = info.getAuthor();
-			if (s != null) {
-				if (s.indexOf("\n") > -1)
-					System.exit(3);
+			String s = frisk(info.getAuthor());
+			if (s != null)
 				System.out.println("Author: " + s);
-			}
 
 			//  Subject: ...
 
-			s = info.getSubject();
-			if (s != null) {
-				if (s.indexOf("\n") > -1)
-					System.exit(3);
+			s = frisk(info.getSubject());
+			if (s != null)
 				System.out.println("Subject: " + s);
-			}
 
 			//  Keywords: ...
 
-			s = info.getKeywords();
-			if (s != null) {
-				if (s.indexOf("\n") > -1)
-					System.exit(3);
+			s = frisk(info.getKeywords());
+			if (s != null)
 				System.out.println("Keywords: " + s);
-			}
 
 			//  Creator: ...
 
-			s = info.getCreator();
-			if (s != null) {
-				if (s.indexOf("\n") > -1)
-					System.exit(3);
+			s = frisk(info.getCreator());
+			if (s != null)
 				System.out.println("Creator: " + s);
-			}
 
 			//  Producer: ...
 
-			s = info.getProducer();
-			if (s != null) {
-				if (s.indexOf("\n") > -1)
-					System.exit(3);
+			s = frisk(info.getProducer());
+			if (s != null)
 				System.out.println("Producer: " + s);
-			}
 
 			//  Creation Date: ...
 
 			Calendar cal = info.getCreationDate();
 			if (cal != null)
-				System.out.println("Creation Date: " + cal);
+				System.out.println("Creation Date: " + 
+							frisk(cal.toString()));
 
 			//  Modification Date: ...
 
 			cal = info.getModificationDate();
 			if (cal != null)
-				System.out.println("Modification Date: " + cal);
+				System.out.println("Modification Date: " + 
+							frisk(cal.toString()));
 
 			//  Trapped: ...
 
-			s = info.getTrapped();
+			s = frisk(info.getTrapped());
 			if (s != null)
 				System.out.println("Trapped: " + s);
 
@@ -120,7 +119,7 @@ public class putPDDocumentInformation
 			System.err.println("ERROR: " +
 				putPDDocumentInformation.class.getName() +
 				   	": " + e);
-			System.exit(4);
+			System.exit(5);
 
 		} finally {
 			if (doc != null)
