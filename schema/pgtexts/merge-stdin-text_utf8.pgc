@@ -76,7 +76,7 @@ EXEC SQL END DECLARE SECTION;
 
 	blob = argv[1];
 	len = strlen(blob);
-	if (len < 3 || len > 255 || strchr(blob, ':') == NULL)
+	if (len < 34 || len > 255 || strchr(blob, ':') == NULL)
 		die2(EXIT_BAD_UDIG, "syntax error in utf8 udig", blob);
 
 	//  parse the blob size as argv[3]
