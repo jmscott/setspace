@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Put a record of the pdfmodel.PDDocument scalar data of PDF from stdin.
+ *	Put the PDDocument scalar data onto standard output.
  *  Description:
  *	putPDDocument extracts PDDocument metadata from a pdf document read on
  *	standard input and then writes that metadata as a tab-separated,
