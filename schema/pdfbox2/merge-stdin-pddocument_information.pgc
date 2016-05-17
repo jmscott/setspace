@@ -71,12 +71,12 @@ scan(
 	static int peek_len = -1;
 	char *p, *q;
 
-	//  has a field been scanned but not consumed?
 
 	if (input >= input_limit)
-		if (input >= input_limit)
-			return;
 		return;
+
+	//  has a field been scanned but not consumed?
+
 	if (peek_len == -1) {
 		p = input;
 		peek_len = 0;
@@ -105,11 +105,8 @@ scan(
 
 	//  is this the field we are looking for?
 
-write(2, field_name, strlen(field_name));
-write(2, "\n", 1);
 	if (strcmp(field_name, peek_field_name) != 0)
 		return;
-write(2, "WTF\n", 4);
 
 	strcpy(arr, peek_arr);
 	*len = peek_len;
