@@ -227,6 +227,10 @@ CREATE TABLE pdfbox2.pddocument_information
 					exit_status <= 255
 				)
 				not null,
+	--  extracted scalar field
+	title			text check (
+					length(title) < 4096
+				),
 
 	--  extracted scalar field
 	author			text check (
@@ -249,9 +253,6 @@ CREATE TABLE pdfbox2.pddocument_information
 				),
 	subject			text check (
 					length(subject) < 4096
-				),
-	title			text check (
-					length(title) < 4096
 				),
 	trapped			text check (
 					length(trapped) < 4096

@@ -7,6 +7,13 @@
  *	new-line separated list of mime-header fields.
  *
  *		Author: <author>
+ *		Subject: <subecj>
+ *		Keywords: <keywords>
+ *		Creator: <creator>
+ *		Producer: <producer>
+ *		Creation Date: <creation date>
+ *		Modification Date: <modification date>
+ *		Trapped: <trapped>
  *
  *  Usage:
  *	java putPDDocument <file.pdf
@@ -67,7 +74,13 @@ public class putPDDocumentInformation
 
 			//  Author: ...
 
-			String s = frisk(info.getAuthor());
+			String s = frisk(info.getTitle());
+			if (s != null)
+				System.out.println("Title: " + s);
+
+			//  Title: ...
+
+			s = frisk(info.getAuthor());
 			if (s != null)
 				System.out.println("Author: " + s);
 
