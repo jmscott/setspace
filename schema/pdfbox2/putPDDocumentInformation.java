@@ -26,6 +26,7 @@
  *	5	unexpected java exception.
  */
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -41,6 +42,36 @@ public class putPDDocumentInformation
 		if (s.length() >= 4096)
 			System.exit(4);
 		return s;
+	}
+
+	private static void put(Calendar cal, String what)
+	{
+		if (cal == null)
+			return;
+
+		String timezone = "";
+
+		TimeZone tz = cal.getTimeZone();
+		if (tz != null) {
+
+			timezone = tz.getID();
+			if (timezone == "unknown")
+				timezone = " UTC";
+			else
+				timezone = " " + timezone;
+		}
+
+		System.out.printf(
+			"%s Date: %4d/%02d/%02d %02d:%02d:%02d%s\n",
+			what,
+			cal.get(Calendar.YEAR),
+			cal.get(Calendar.MONTH),
+			cal.get(Calendar.DAY_OF_MONTH),
+			cal.get(Calendar.HOUR_OF_DAY),
+			cal.get(Calendar.MINUTE),
+			cal.get(Calendar.SECOND),
+			timezone
+		);
 	}
 
 	public static void main(String[] args) throws Exception
@@ -110,17 +141,11 @@ public class putPDDocumentInformation
 
 			//  Creation Date: ...
 
-			Calendar cal = info.getCreationDate();
-			if (cal != null)
-				System.out.println("Creation Date: " + 
-							frisk(cal.toString()));
+			put(info.getCreationDate(), "Creation");
 
 			//  Modification Date: ...
 
-			cal = info.getModificationDate();
-			if (cal != null)
-				System.out.println("Modification Date: " + 
-							frisk(cal.toString()));
+			put(info.getModificationDate(), "Modification");
 
 			//  Trapped: ...
 

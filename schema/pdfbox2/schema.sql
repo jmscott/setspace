@@ -236,18 +236,14 @@ CREATE TABLE pdfbox2.pddocument_information
 	author			text check (
 					length(author) < 4096
 				),
-	creation_date		text check (
-					length(creation_date) < 4096
-				),
+	creation_date		timestamptz,
 	creator			text check (
 					length(creator) < 4096
 				),
 	keywords		text check (
 					length(keywords) < 4096
 				),
-	modification_date	text check (
-					length(modification_date) < 4096
-				),
+	modification_date	timestamptz,
 	producer		text check (
 					length(producer) < 4096
 				),
