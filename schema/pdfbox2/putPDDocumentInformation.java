@@ -2,9 +2,9 @@
  *  Synopsis:
  *	Put the PDDocumentInformation scalar data onto standard output.
  *  Description:
- *	putPDDocumentInformation extracts PDDocument metadata from a pdf
- *	document read on standard input and then writes that metadata as a
- *	new-line separated list of mime-header fields.
+ *	putPDDocumentInformation extracts the scalar values from the 
+ *	java object org.apache.pdfbox.pdmodel.PDDocumentInformation.
+ *	The scalar values are written in a mimeish format like:
  *
  *		Author: <author>
  *		Subject: <subecj>
@@ -15,36 +15,61 @@
  *		Modification Date: <modification date>
  *		Trapped: <trapped>
  *
+ *	The absence of a field implies a null value.
+ *
+ *	Dates are parsed for correctness using SimpleDateFormat.
+ *	Unparsable dates are null and the exit status is set to 1.
+ *	Unfortunately unparsable dates seems to be common  - ~10% in academic
+ *	sample of 140k pdfs.
  *  Usage:
- *	java putPDDocument <file.pdf
+ *	java putPDDocumentInformation <file.pdf
+ *  Depends:
+ *	pdfbox-app.jar, version 2
  *  Exit Status:
- *	0	extracted the scalar data and wrote to stdout
- *	1	load of pdf failed
- *	2	wrong number of command line arguments
- *	3	field contained new-line character
- *	4	field >= 4096 characters (not bytes)
- *	5	unexpected java exception.
+ *	0	extracted all scalar data and wrote to stdout
+ *	1	extracted all scalar data except unparsable dates
+ *	2	load of pdf failed
+ *	3	wrong number of command line arguments
+ *	4	field contained unexpected new-line character
+ *	5	field >= 4096 unexpected characters (not bytes)
+ *	6	unexpected java exception.
+ *  Note:
+ *	Consider framing the mime headers with Begin/End:
+ *
+ *		Begin:
+ *		...
+ *		End:
  */
 import java.util.Calendar;
 import java.util.TimeZone;
+import java.text.SimpleDateFormat;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 
 public class putPDDocumentInformation
 {
+	static int unparsable_date = 0;
+
 	private static String frisk(String s)
 	{
 		if (s == null)
 			return null;
 		if (s.indexOf("\n") > -1)
-			System.exit(3);
-		if (s.length() >= 4096)
 			System.exit(4);
+		if (s.length() >= 4096)
+			System.exit(5);
 		return s;
 	}
 
-	private static void put(Calendar cal, String what)
+	private static void put(String what, String val)
+	{
+		val = frisk(val);
+		if (val != null)
+			System.out.printf("%s: %s\n", what, val);
+	}
+
+	private static void put(String what, Calendar cal)
 	{
 		if (cal == null)
 			return;
@@ -53,17 +78,17 @@ public class putPDDocumentInformation
 
 		TimeZone tz = cal.getTimeZone();
 		if (tz != null) {
-
-			timezone = tz.getID();
-			if (timezone == "unknown")
+			timezone = frisk(tz.getID());
+			if (timezone == null || timezone == "unknown")
 				timezone = " UTC";
 			else
 				timezone = " " + timezone;
 		}
 
-		System.out.printf(
-			"%s Date: %4d/%02d/%02d %02d:%02d:%02d%s\n",
-			what,
+		//  assemble reasonable YYYY/MM/DD hh:mm:ss z
+
+		String d = String.format(
+			"%4d/%02d/%02d %02d:%02d:%02d%s",
 			cal.get(Calendar.YEAR),
 			cal.get(Calendar.MONTH),
 			cal.get(Calendar.DAY_OF_MONTH),
@@ -72,6 +97,23 @@ public class putPDDocumentInformation
 			cal.get(Calendar.SECOND),
 			timezone
 		);
+
+		//  validate the date by reparsing the string
+		//  with a new non-linient DateParse Object.
+
+		SimpleDateFormat df = new SimpleDateFormat(
+						"yyyy/MM/dd HH:mm:ss z");
+		df.setLenient(false);
+		try
+		{
+			df.parse(d);
+
+		} catch (java.text.ParseException e) {
+			unparsable_date = 1;
+			return;
+		}
+
+		System.out.printf("%s Date: %s\n", what, d);
 	}
 
 	public static void main(String[] args) throws Exception
@@ -80,7 +122,7 @@ public class putPDDocumentInformation
 			System.err.println("ERROR: " +
 				putPDDocumentInformation.class.getName() +
 				   ": wrong number of arguments");
-			System.exit(2);
+			System.exit(3);
 		}
 
 		PDDocument doc = null;
@@ -96,73 +138,35 @@ public class putPDDocumentInformation
 			try {
 				doc = PDDocument.load(System.in);
 			} catch (Exception el) {
-				System.err.println("ERROR: " +
+				System.err.println("ERROR: load: " +
 				      putPDDocumentInformation.class.getName() +
 								": " + el);
-				System.exit(1);
+				System.exit(2);
 			}
 			info = doc.getDocumentInformation();
 
-			//  Author: ...
+			put("Title", info.getTitle());
+			put("Author", info.getAuthor());
+			put("Subject", info.getSubject());
+			put("Keywords", info.getKeywords());
+			put("Creator", info.getCreator());
+			put("Producer", info.getProducer());
 
-			String s = frisk(info.getTitle());
-			if (s != null)
-				System.out.println("Title: " + s);
+			put("Creation", info.getCreationDate());
+			put("Modification", info.getModificationDate());
 
-			//  Title: ...
-
-			s = frisk(info.getAuthor());
-			if (s != null)
-				System.out.println("Author: " + s);
-
-			//  Subject: ...
-
-			s = frisk(info.getSubject());
-			if (s != null)
-				System.out.println("Subject: " + s);
-
-			//  Keywords: ...
-
-			s = frisk(info.getKeywords());
-			if (s != null)
-				System.out.println("Keywords: " + s);
-
-			//  Creator: ...
-
-			s = frisk(info.getCreator());
-			if (s != null)
-				System.out.println("Creator: " + s);
-
-			//  Producer: ...
-
-			s = frisk(info.getProducer());
-			if (s != null)
-				System.out.println("Producer: " + s);
-
-			//  Creation Date: ...
-
-			put(info.getCreationDate(), "Creation");
-
-			//  Modification Date: ...
-
-			put(info.getModificationDate(), "Modification");
-
-			//  Trapped: ...
-
-			s = frisk(info.getTrapped());
-			if (s != null)
-				System.out.println("Trapped: " + s);
+			put("Trapped", info.getTrapped());
 
 		} catch (Exception e) {
-			System.err.println("ERROR: " +
+			System.err.println("ERROR: get: " +
 				putPDDocumentInformation.class.getName() +
 				   	": " + e);
-			System.exit(5);
+			System.exit(6);
 
 		} finally {
 			if (doc != null)
 				doc.close();
 		}
-		System.exit(0);
+		System.exit(unparsable_date);
 	}
 }
