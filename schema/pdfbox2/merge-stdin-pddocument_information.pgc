@@ -1,22 +1,25 @@
 /*
  *  Synopsis:
- *  	Merge the output of the file command into the pg table fffile.file.
+ *  	Merge the output of the putPDDocumentInformation into the database
  *  Usage:
  *	merge-stdin-file 
  *  Arguments:
  *  	1	udig of the blob that file command analyzed
- *  	2	number of bytes to read on the standard input
+ *	2	exit status of java putPDDocumentInformation.class
+ *  	3	number of bytes to read on the standard input
  *  Exit Status:
  *  	0	ok, tuple was merged
  *  	1	wrong number of arguments
  *  	2	can not parse input blob size
- *  	3	malloc() of xml buffer failed
+ *  	3	malloc() of input blob buffer failed
  *	4	read() of standard input failed
  *	5	syntax error on udig
  *	6	sql error
  *	7	sql warning
  *	8	input field blob too small
  *	9	input field blob too large
+ *  See:
+ *	putPDDocumentInformation.java
  *  Note:
  *	Is VARCHAR truly allocated in characters (not bytes)?
  *
@@ -124,6 +127,7 @@ main(int argc, char **argv)
 
 EXEC SQL BEGIN DECLARE SECTION;
 	char *blob;
+	char *exit_status;
 
 	VARCHAR title[4096];
 	int title_ind = -1;
@@ -154,7 +158,7 @@ EXEC SQL BEGIN DECLARE SECTION;
 
 EXEC SQL END DECLARE SECTION;
 
-	if (argc != 3)
+	if (argc != 4)
 		die(EXIT_BAD_ARGC, "wrong number of arguments");
 
 	close(1);
@@ -164,14 +168,26 @@ EXEC SQL END DECLARE SECTION;
 	blob = argv[1];
 	len = strlen(blob);
 	if (len < 34 || len > 255 || strchr(blob, ':') == NULL)
-		die2(EXIT_BAD_UDIG, "syntax error in xml udig", blob);
+		die2(EXIT_BAD_UDIG, "syntax error in pdf udig", blob);
 
-	//  need to validate that all chars are decimal digits
+	exit_status = argv[2];
 
-	sz = argv[2];
-	input_size = atoi(sz);
-	if (input_size <= 0)
-		die2(EXIT_BAD_SIZE, "atoi(input blob size) <= 0", sz);
+	//  scan the input blob size.
+	//  Note: need to move this code to ../../common.c
+
+	sz = argv[3];
+	if (sz[0]) {
+		if (sz[0] == '0' && !sz[1])
+			input_size = 0;
+		else {
+			static char bad_atoi[] = "atoi(input blob size) <= 0";
+
+			input_size = atoi(sz);
+			if (input_size <= 0)
+				die2(EXIT_BAD_SIZE, bad_atoi, sz);
+		}
+	} else
+		die(EXIT_BAD_SIZE, "input size is empty");
 
 	//  allocate the mime fields buffer plus null byte
 
@@ -219,7 +235,7 @@ EXEC SQL END DECLARE SECTION;
 		trapped
 	  ) VALUES (
 		:blob,
-		0::smallint,
+		:exit_status::smallint,
 		:title INDICATOR :title_ind,
 		:author INDICATOR :author_ind,
 		:creation_date INDICATOR :creation_date_ind,
