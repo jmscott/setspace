@@ -25,6 +25,13 @@
  *
  *	The syntax of the field file is assumed to be correct.
  *	Probably ought to add at least a few inexpensive tests.
+ *
+ *	To the output consider framing the headers with Begin/End.
+ *
+ *		Begin:
+ *		Title: ...
+ *		...
+ *		End:
  */
 
 static char progname[] = "merge-stdin-pddocument_information";
