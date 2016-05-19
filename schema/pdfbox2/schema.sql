@@ -214,6 +214,7 @@ COMMENT ON TABLE pdfbox2.pddocument_information_pending IS
 /*
  *  PDDocumentInformation scalar fields from Java Object
  */
+
 DROP TABLE IF EXISTS pdfbox2.pddocument_information CASCADE;
 CREATE TABLE pdfbox2.pddocument_information
 (
@@ -227,31 +228,30 @@ CREATE TABLE pdfbox2.pddocument_information
 					exit_status <= 255
 				)
 				not null,
-	--  extracted scalar field
-	title			text check (
-					length(title) < 4096
-				),
 
-	--  extracted scalar field
+	title			text check (
+					length(title) < 32768
+				),
 	author			text check (
-					length(author) < 4096
+					length(author) < 32768
 				),
 	creation_date		timestamptz,
 	creator			text check (
-					length(creator) < 4096
+					length(creator) < 32768
 				),
+
 	keywords		text check (
-					length(keywords) < 4096
+					length(keywords) < 32768
 				),
 	modification_date	timestamptz,
 	producer		text check (
-					length(producer) < 4096
+					length(producer) < 32768
 				),
 	subject			text check (
-					length(subject) < 4096
+					length(subject) < 32768
 				),
 	trapped			text check (
-					length(trapped) < 4096
+					length(trapped) < 32768
 				)
 );
 COMMENT ON TABLE pdfbox2.pddocument_information IS
@@ -317,17 +317,13 @@ CREATE TABLE pdfbox2.pddocument_information_metadata_custom
 				and
 				position(':+ ' in key) < 1
 				and
-				position('\n' in key) < 1
-			) not null,
-
+				position(E'\n' in key) < 1
+			),
 	value		text check (
+				position(E'\n' in value) < 1
+				and
 				length(value) < 32768
-			) not null,
+			),
 
-	PRIMARY KEY	(blob, key)
+	primary key	(blob, key)
 );
-COMMENT ON TABLE pdfbox2.pddocument_information_metadata_custom IS
-  'PDDocumentInformation metadata string fields from Java Object'
-;
-
-COMMIT;
