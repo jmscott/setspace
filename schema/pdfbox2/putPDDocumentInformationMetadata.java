@@ -37,7 +37,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 
 public class putPDDocumentInformationMetadata
 {
-	private static int exit_status = 0;
+	private static int failed_constraint = 0;
 
 	private static void die(String msg, int exit_status)
 	{
@@ -67,7 +67,7 @@ public class putPDDocumentInformationMetadata
 		    value.length() >= 32768			||
 		    value.indexOf("\n") > -1
 		) {
-			exit_status = 1;
+			failed_constraint = 1;
 			return;
 		}
 		System.out.printf("%s: %s\n", key, value);
@@ -104,6 +104,6 @@ public class putPDDocumentInformationMetadata
 			if (doc != null)
 				doc.close();
 		}
-		System.exit(exit_status);
+		System.exit(failed_constraint);
 	}
 }
