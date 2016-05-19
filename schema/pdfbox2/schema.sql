@@ -321,9 +321,7 @@ CREATE TABLE pdfbox2.pddocument_information_metadata_custom
 			) not null,
 
 	value		text check (
-				length(value) > 0
-				and
-				length(value) < 2147483647
+				length(value) < 32768
 			) not null,
 
 	PRIMARY KEY	(blob, key)

@@ -23,7 +23,7 @@
  *	pdfbox-app.jar, version 2
  *  Exit Status:
  *	0	extracted all custom metadata data and wrote to stdout
- *	1	omitted at least one metadatum that violates db constraints
+ *	1	wrote all but at least on violating metadata to standard out
  *	2	exception loadIng pdf from standard input
  *	3	wrong number of command line arguments
  *	4	unexpected java exception getting custom result set
@@ -60,11 +60,11 @@ public class putPDDocumentInformationMetadata
 		//  insure key and value are reasonable
 		//  will add back new line in value
 
-		if (key.length() > 256				||
+		if (key.length() >= 256				||
 		    key.indexOf(": ") > -1      		||
 		    key.indexOf(":+ ") > -1			||
 		    key.indexOf("\n") > -1			||
-		    value.length() > 2147483647			||
+		    value.length() >= 32768			||
 		    value.indexOf("\n") > -1
 		) {
 			exit_status = 1;

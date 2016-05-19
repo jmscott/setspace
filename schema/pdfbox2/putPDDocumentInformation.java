@@ -26,13 +26,11 @@
  *  Depends:
  *	pdfbox-app.jar, version 2
  *  Exit Status:
- *	0	extracted all scalar data and wrote to stdout
- *	1	extracted all scalar data except unparsable dates
+ *	0	wrote all metadata to stdout
+ *	1	wrote all but at least on violating metadata to standard out
  *	2	load of pdf failed
  *	3	wrong number of command line arguments
- *	4	field contained unexpected new-line character
- *	5	field >= 4096 unexpected characters (not bytes)
- *	6	unexpected java exception.
+ *	4	unexpected java exception.
  *  Note:
  *	Consider framing the mime headers with Begin/End:
  *
@@ -49,16 +47,16 @@ import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 
 public class putPDDocumentInformation
 {
-	static int unparsable_date = 0;
+	static int violates_constraint = 0;
 
 	private static String frisk(String s)
 	{
 		if (s == null)
 			return null;
-		if (s.indexOf("\n") > -1)
-			System.exit(4);
-		if (s.length() >= 4096)
-			System.exit(5);
+		if (s.indexOf("\n") > -1 || s.length() >= 32768) {
+			violates_constraint = 1;
+			return null;
+		}
 		return s;
 	}
 
@@ -78,7 +76,6 @@ public class putPDDocumentInformation
 
 		TimeZone tz = cal.getTimeZone();
 		if (tz != null) {
-			timezone = frisk(tz.getID());
 			if (timezone == null || timezone == "unknown")
 				timezone = " UTC";
 			else
@@ -97,6 +94,8 @@ public class putPDDocumentInformation
 			cal.get(Calendar.SECOND),
 			timezone
 		);
+		if (frisk(d) == null )
+			return;
 
 		//  validate the date by reparsing the string
 		//  with a new non-linient DateParse Object.
@@ -109,7 +108,7 @@ public class putPDDocumentInformation
 			df.parse(d);
 
 		} catch (java.text.ParseException e) {
-			unparsable_date = 1;
+			violates_constraint = 1;
 			return;
 		}
 
@@ -161,12 +160,12 @@ public class putPDDocumentInformation
 			System.err.println("ERROR: get: " +
 				putPDDocumentInformation.class.getName() +
 				   	": " + e);
-			System.exit(6);
+			System.exit(4);
 
 		} finally {
 			if (doc != null)
 				doc.close();
 		}
-		System.exit(unparsable_date);
+		System.exit(violates_constraint);
 	}
 }
