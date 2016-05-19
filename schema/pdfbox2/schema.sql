@@ -315,8 +315,6 @@ CREATE TABLE pdfbox2.pddocument_information_metadata_custom
 				and
 				position(': ' in key) < 1
 				and
-				position(':+ ' in key) < 1
-				and
 				position(E'\n' in key) < 1
 			),
 	value		text check (
