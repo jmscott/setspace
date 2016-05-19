@@ -258,4 +258,78 @@ COMMENT ON TABLE pdfbox2.pddocument_information IS
   'PDDocumentInformation scalar fields from Java Object'
 ;
 
+/*
+ *  Pending pddocument_information_metadata jobs.
+ *
+ *  Note:
+ *	Notice no fk reference to setspace.service(blob).
+ *	Sudden termination may leave stale entries.
+ */
+DROP TABLE IF EXISTS pdfbox2.pddocument_information_metadata_pending CASCADE;
+CREATE TABLE pdfbox2.pddocument_information_metadata_pending
+(
+	blob		udig
+				PRIMARY KEY,
+	insert_time	timestamptz
+				DEFAULT now()
+				NOT NULL
+);
+COMMENT ON TABLE pdfbox2.pddocument_information_metadata_pending IS
+  'Pending putPDDocumentInformation metadata java processes'
+;
+
+/*
+ *  PDDocumentInformation scalar fields from Java Object
+ */
+DROP TABLE IF EXISTS pdfbox2.pddocument_information_metadata CASCADE;
+CREATE TABLE pdfbox2.pddocument_information_metadata
+(
+	blob			udig
+					REFERENCES setspace.service(blob)
+					ON DELETE CASCADE
+					PRIMARY KEY,
+	exit_status		smallint check (
+					exit_status >= 0
+					and
+					exit_status <= 255
+				)
+);
+COMMENT ON TABLE pdfbox2.pddocument_information_metadata IS
+  'PDDocumentInformation metadata extraction job status'
+;
+
+/*
+ *  PDDocumentInformation custoem metadata fields string fields from Java Object
+ */
+DROP TABLE IF EXISTS pdfbox2.pddocument_information_metadata_custom CASCADE;
+CREATE TABLE pdfbox2.pddocument_information_metadata_custom
+(
+	blob		udig
+				REFERENCES
+				   pdfbox2.pddocument_information_metadata(blob)
+				ON DELETE CASCADE,
+	key		text check (
+				length(key) > 0
+				and
+				length(key) < 256
+				and
+				position(': ' in key) < 1
+				and
+				position(':+ ' in key) < 1
+				and
+				position('\n' in key) < 1
+			) not null,
+
+	value		text check (
+				length(value) > 0
+				and
+				length(value) < 2147483647
+			) not null,
+
+	PRIMARY KEY	(blob, key)
+);
+COMMENT ON TABLE pdfbox2.pddocument_information_metadata_custom IS
+  'PDDocumentInformation metadata string fields from Java Object'
+;
+
 COMMIT;

@@ -6,6 +6,7 @@ merge-stdin-pddocument_information
 profile
 putPDDocument.class
 putPDDocumentInformation.class
+putPDDocumentInformationMetadata.class
 run
 sbin
 schema

@@ -1,8 +1,6 @@
 #
 #  Synopsis:
-#	Makefile suitable for single machine development.
-#  Note:
-#	Need to define CLASSPATH elswhere
+#	Makefile suitable for development home directory.
 #
 include ../schema.mk
 include ../../local.mk
@@ -10,7 +8,8 @@ include ../../local.mk
 JCOMPILED=								\
 	ExtractPagesUTF8.class						\
 	putPDDocument.class						\
-	putPDDocumentInformation.class
+	putPDDocumentInformation.class					\
+	putPDDocumentInformationMetadata.class
 
 ECPG_COMPILED=merge-stdin-pddocument_information
 
@@ -28,8 +27,12 @@ dev-links:
 
 putPDDocument.class:  putPDDocument.java
 	javac -cp $(PDFBOX2_APP_JAR) putPDDocument.java
+
 putPDDocumentInformation.class:  putPDDocumentInformation.java
 	javac -cp $(PDFBOX2_APP_JAR) putPDDocumentInformation.java
+
+putPDDocumentInformationMetadata.class:  putPDDocumentInformationMetadata.java
+	javac -cp $(PDFBOX2_APP_JAR) putPDDocumentInformationMetadata.java
 
 ExtractPagesUTF8.class:  ExtractPagesUTF8.java
 	javac -cp $(PDFBOX2_APP_JAR) ExtractPagesUTF8.java
@@ -90,6 +93,7 @@ install: all
 		merge-stdin-pddocument_information.pgc			\
 		putPDDocument.java					\
 		putPDDocumentInformation.java				\
+		putPDDocumentInformationMetadata.java			\
 		$(PDFBOX2_PREFIX)/src
 distclean:
 	rm -rf $(PDFBOX2_PREFIX)/lib
