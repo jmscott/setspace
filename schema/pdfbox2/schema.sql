@@ -321,7 +321,7 @@ CREATE TABLE pdfbox2.pddocument_information_metadata_custom
 				position(E'\n' in value) < 1
 				and
 				length(value) < 32768
-			),
+			) not null,
 
 	primary key	(blob, key)
 );
