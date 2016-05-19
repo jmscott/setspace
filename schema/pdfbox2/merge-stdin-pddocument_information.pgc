@@ -74,12 +74,12 @@ static char *input_limit = NULL;
 static void
 scan(
 	char *field_name,
-	char arr[4096],
+	char arr[32768],
 	int *len,
 	int *is_null
 ) {
 	static char peek_field_name[18];
-	static char peek_arr[4096];
+	static char peek_arr[32768];
 	static int peek_len = -1;
 	char *p, *q;
 
@@ -138,31 +138,31 @@ EXEC SQL BEGIN DECLARE SECTION;
 	char *blob;
 	char *exit_status;
 
-	VARCHAR title[4096];
+	VARCHAR title[32768];
 	int title_ind = -1;
 
-	VARCHAR author[4096];
+	VARCHAR author[32768];
 	int author_ind = -1;
 
-	VARCHAR creation_date[4096];
+	VARCHAR creation_date[32768];
 	int creation_date_ind = -1;
 
-	VARCHAR creator[4096];
+	VARCHAR creator[32768];
 	int creator_ind = -1;
 
-	VARCHAR keywords[4096];
+	VARCHAR keywords[32768];
 	int keywords_ind = -1;
 
-	VARCHAR modification_date[4096];
+	VARCHAR modification_date[32768];
 	int modification_date_ind = -1;
 
-	VARCHAR producer[4096];
+	VARCHAR producer[32768];
 	int producer_ind = -1;
 
-	VARCHAR subject[4096];
+	VARCHAR subject[32768];
 	int subject_ind = -1;
 
-	VARCHAR trapped[4096];
+	VARCHAR trapped[32768];
 	int trapped_ind = -1;
 
 EXEC SQL END DECLARE SECTION;
