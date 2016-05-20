@@ -62,7 +62,6 @@ public class putPDDocumentInformationMetadata
 
 		if (key.length() >= 256				||
 		    key.indexOf(": ") > -1      		||
-		    key.indexOf(":+ ") > -1			||
 		    key.indexOf("\n") > -1			||
 		    value.length() >= 32768			||
 		    value.indexOf("\n") > -1
