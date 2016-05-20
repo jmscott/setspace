@@ -3,6 +3,7 @@ etc
 lib
 log
 merge-stdin-pddocument_information
+merge-stdin-pddocument_information_metadata
 profile
 putPDDocument.class
 putPDDocumentInformation.class

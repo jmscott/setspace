@@ -11,7 +11,9 @@ JCOMPILED=								\
 	putPDDocumentInformation.class					\
 	putPDDocumentInformationMetadata.class
 
-ECPG_COMPILED=merge-stdin-pddocument_information
+ECPG_COMPILED=								\
+	merge-stdin-pddocument_information				\
+	merge-stdin-pddocument_information_metadata
 
 all: $(JCOMPILED) $(ECPG_COMPILED)
 
@@ -111,3 +113,14 @@ merge-stdin-pddocument_information:					\
 	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-pddocument_information.c	\
 		-o merge-stdin-pddocument_information -L$(PGLIB) -lecpg
 	rm merge-stdin-pddocument_information.c
+
+merge-stdin-pddocument_information_metadata:				\
+		merge-stdin-pddocument_information_metadata.pgc		\
+		../../common.c						\
+		../../common-ecpg.c
+	ecpg merge-stdin-pddocument_information_metadata.pgc
+	$(CC) $(CFLAGS) -I$(PGINC) 					\
+		merge-stdin-pddocument_information_metadata.c		\
+		-o merge-stdin-pddocument_information_metadata		\
+		-L$(PGLIB) -lecpg
+	rm merge-stdin-pddocument_information_metadata.c
