@@ -20,6 +20,8 @@
  *	1	load of pdf failed
  *	2	wrong number of command line arguments
  *	3	unexpected java exception.
+ *  Note:
+ *	Need to frisk the string values.  See out putPDDocument* classes.
  */
 import org.apache.pdfbox.pdmodel.PDDocument;
 

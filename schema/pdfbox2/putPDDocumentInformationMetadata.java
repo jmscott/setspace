@@ -31,13 +31,14 @@
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.text.SimpleDateFormat;
+import java.util.logging.Logger;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 
 public class putPDDocumentInformationMetadata
 {
-	private static int failed_constraint = 0;
+	private static int violated_constraint = 0;
 
 	private static void die(String msg, int exit_status)
 	{
@@ -63,10 +64,12 @@ public class putPDDocumentInformationMetadata
 		if (key.length() >= 256				||
 		    key.indexOf(": ") > -1      		||
 		    key.indexOf("\n") > -1			||
+		    key.indexOf("\0") > -1			||
 		    value.length() >= 32768			||
-		    value.indexOf("\n") > -1
+		    value.indexOf("\n") > -1			||
+		    value.indexOf("\0") > -1
 		) {
-			failed_constraint = 1;
+			violated_constraint = 1;
 			return;
 		}
 		System.out.printf("%s: %s\n", key, value);
@@ -81,6 +84,8 @@ public class putPDDocumentInformationMetadata
 		PDDocumentInformation info;
 
 		try {
+			java.util.logging.Logger.getLogger("org.apache.pdfbox").
+				setLevel(java.util.logging.Level.SEVERE);
 			/*
 			 *  Note:
 			 *	BufferedInputStream makes no difference in
@@ -103,6 +108,6 @@ public class putPDDocumentInformationMetadata
 			if (doc != null)
 				doc.close();
 		}
-		System.exit(failed_constraint);
+		System.exit(violated_constraint);
 	}
 }

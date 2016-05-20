@@ -41,6 +41,7 @@
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.text.SimpleDateFormat;
+import java.util.logging.Logger;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -53,7 +54,10 @@ public class putPDDocumentInformation
 	{
 		if (s == null)
 			return null;
-		if (s.indexOf("\n") > -1 || s.length() >= 32768) {
+		if (s.indexOf("\n") > -1			||
+		    s.length() >= 32768				||
+		    s.indexOf("\0") > -1
+		) {
 			violates_constraint = 1;
 			return null;
 		}
@@ -128,6 +132,8 @@ public class putPDDocumentInformation
 		PDDocumentInformation info;
 
 		try {
+			java.util.logging.Logger.getLogger("org.apache.pdfbox").
+				setLevel(java.util.logging.Level.SEVERE);
 			/*
 			 *  Note:
 			 *	BufferedInputStream makes no difference in
