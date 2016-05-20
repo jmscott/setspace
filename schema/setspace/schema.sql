@@ -12,6 +12,8 @@
  *	add sql comments!
  *
  *	what about a setspace.core view?
+ *
+ *	new table byte_suffix_32.
  */
 \set ON_ERROR_STOP on
 \timing
@@ -146,7 +148,7 @@ comment on table setspace.is_udigish is
 ;
 
 /*
- *  Does blob contain json leading object or arrary bracket chars?
+ *  Does blob contain json leading object or array bracket chars?
  */
 drop table if exists setspace.has_byte_json_bracket cascade;
 create table setspace.has_byte_json_bracket
