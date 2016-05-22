@@ -15,10 +15,12 @@ ECPG_COMPILED=								\
 	merge-stdin-pddocument_information				\
 	merge-stdin-pddocument_information_metadata
 
-all: $(JCOMPILED) $(ECPG_COMPILED)
+GO_COMPILED=rest-pdfbox2
+
+all: $(JCOMPILED) $(ECPG_COMPILED) $(GO_COMPILED)
 
 clean:
-	rm -f $(JCOMPILED) $(ECPG_COMPILED)
+	rm -f $(JCOMPILED) $(ECPG_COMPILED) $(GO_COMPILED)
 
 dev-links:
 	test -e lib || ln -s . lib
@@ -124,3 +126,8 @@ merge-stdin-pddocument_information_metadata:				\
 		-o merge-stdin-pddocument_information_metadata		\
 		-L$(PGLIB) -lecpg
 	rm merge-stdin-pddocument_information_metadata.c
+
+rest-pdfbox2: rest-pdfbox2.go
+	#  Note: do not remove the which command.  otherwise
+	#  gnumake 3.81 incorrectly execs 'go' with unexported value of PATH.
+	which go; go build rest-pdfbox2.go
