@@ -8,7 +8,7 @@ profile
 putPDDocument.class
 putPDDocumentInformation.class
 putPDDocumentInformationMetadata.class
-rest-pdfbox2
+restd-pdfbox2
 run
 sbin
 schema

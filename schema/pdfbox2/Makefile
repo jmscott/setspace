@@ -15,7 +15,7 @@ ECPG_COMPILED=								\
 	merge-stdin-pddocument_information				\
 	merge-stdin-pddocument_information_metadata
 
-GO_COMPILED=rest-pdfbox2
+GO_COMPILED=restd-pdfbox2
 
 all: $(JCOMPILED) $(ECPG_COMPILED) $(GO_COMPILED)
 
@@ -127,8 +127,8 @@ merge-stdin-pddocument_information_metadata:				\
 		-L$(PGLIB) -lecpg
 	rm merge-stdin-pddocument_information_metadata.c
 
-rest-pdfbox2: rest-pdfbox2.go
+restd-pdfbox2: restd-pdfbox2.go
 	#  Note: do not remove the 'which' command.  otherwise
 	#  gnumake 3.81 ignores PATH variable redefined in local.mk
 
-	which go; go build rest-pdfbox2.go
+	which go; go build restd-pdfbox2.go

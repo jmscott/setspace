@@ -1,4 +1,5 @@
-//rest service for pdfbox2 schema.  do /pdfbox2/help for details
+//rest service daemon for pdfbox2 schema.
+
 package main
 
 import (
@@ -14,7 +15,7 @@ import (
 )
 
 var listen string = ":8080";
-var path_prefix = "/rest/pdfbox2";
+var path_prefix = "/rest/pdfbox2/";
 
 var (
 	stderr = os.NewFile(uintptr(syscall.Stderr), "/dev/stderr")
