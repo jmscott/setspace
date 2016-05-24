@@ -14,11 +14,24 @@ import (
 )
 
 var listen string = ":8080";
+var path_prefix = "/rest/pdfbox2";
 
 var (
 	stderr = os.NewFile(uintptr(syscall.Stderr), "/dev/stderr")
 	stdout = os.NewFile(uintptr(syscall.Stdout), "/dev/stdout")
 )
+
+type rest_query struct {
+	query_path	string
+	source_path	string
+}
+
+var rest_queries = []rest_query {
+
+	{"query/keyword",	"lib/pdfq-keyword.sql"},
+}
+
+var query_keyword string;
 
 func usage() {
 	fmt.Fprintf(stderr, "usage: rest-pdfbox2\n")
@@ -53,13 +66,14 @@ func die(format string, args ...interface{}) {
 	leave(2)
 }
 
-func slurp_file(path string) string {
+func (q rest_query) load() {
 	
-	buf, err := ioutil.ReadFile(path)
+	log("loading sql rest query: %s", q.query_path)
+	log("	sql source file: %s", q.source_path)
+	_, err := ioutil.ReadFile(q.source_path)
 	if err != nil {
 		die("%s", err)
 	}
-	return string(buf)
 }
 
 func main() {
@@ -73,10 +87,6 @@ func main() {
 		)
 	}
 
-	log("process id: %d", os.Getpid())
-	log("go version: %s", runtime.Version())
-	log("listen service: %s", listen)
-
 	//  catch signals
 
 	go func() {
@@ -89,9 +99,19 @@ func main() {
 		leave(0)
 	}()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	log("process id: %d", os.Getpid())
+	log("go version: %s", runtime.Version())
+	log("listen service: %s", listen)
 
-		fmt.Fprintf(w, "Not Found: %q", html.EscapeString(r.URL.Path))
+	for _, q := range rest_queries {
+		q.load()
+	}
+
+	http.HandleFunc(
+		path_prefix,
+		func(w http.ResponseWriter, r *http.Request,
+	) {
+		fmt.Fprintf(w, "Rest: %q", html.EscapeString(r.URL.Path))
 	})
 
 	err := http.ListenAndServe(listen, nil)
