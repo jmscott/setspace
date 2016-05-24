@@ -128,6 +128,7 @@ merge-stdin-pddocument_information_metadata:				\
 	rm merge-stdin-pddocument_information_metadata.c
 
 rest-pdfbox2: rest-pdfbox2.go
-	#  Note: do not remove the which command.  otherwise
-	#  gnumake 3.81 incorrectly execs 'go' with unexported value of PATH.
+	#  Note: do not remove the 'which' command.  otherwise
+	#  gnumake 3.81 ignores PATH variable redefined in local.mk
+
 	which go; go build rest-pdfbox2.go
