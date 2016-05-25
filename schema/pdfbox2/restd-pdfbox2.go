@@ -112,7 +112,9 @@ func main() {
 		path_prefix,
 		func(w http.ResponseWriter, r *http.Request,
 	) {
-		fmt.Fprintf(w, "Rest: %q", html.EscapeString(r.URL.Path))
+		url :=  html.EscapeString(r.URL.String())
+		fmt.Fprintf(w, "Rest: %s: %s", r.Method, url)
+		log("%s: %s: %s", r.RemoteAddr, r.Method, url)
 	})
 
 	err := http.ListenAndServe(listen, nil)
