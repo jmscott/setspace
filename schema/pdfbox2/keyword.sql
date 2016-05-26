@@ -1,10 +1,23 @@
 /*
  *  Synopsis:
  *	Keyword query of PDF blobs on pages and titles, sorting by relavence.
- *  Args:
- *	keywords	text[255]
- *	limit		uint16
- *	offset		uint32
+ *
+ *  PGSQL Variables: {
+ *	"keywords": {
+ *		"http-name":	"q",
+ *		"type":		"string",
+ *		"length":	255
+ *	},
+ *	"limit": {
+ *		"http-name":	"lim",
+ *		"in":		[10, 100, 1000]
+ *	},
+ *	"offset": {
+ *		"http-name":	"off",
+ *		"type":		"uint32"
+ *	}
+ *  }
+ *
  *  Usage:
  *	psql --set keywords="'$KEYWORDS'" --set limit=10 --set offset=0
  *  Note:
