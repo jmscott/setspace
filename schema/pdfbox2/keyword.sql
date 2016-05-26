@@ -1,8 +1,12 @@
 /*
  *  Synopsis:
- *	Query PDF blobs on pages and titles, sorting by relavence.
- *  See:
- *	Script $PDFBOX2_ROOT/bin/pdfq
+ *	Keyword query of PDF blobs on pages and titles, sorting by relavence.
+ *  Args:
+ *	keywords	text[255]
+ *	limit		uint16
+ *	offset		uint32
+ *  Usage:
+ *	psql --set keywords="'$KEYWORDS'" --set limit=10 --set offset=0
  *  Note:
  *	The match_union still renders multiple blobs, since the union
  *	is across the full tuple.  Can probably be fixed with a window
