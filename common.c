@@ -21,8 +21,9 @@
 #include <string.h>
 #include <strings.h>
 
+//  Note: shouldn't be PIPE_BUF!!
 #ifndef PIPE_MAX
-#define PIPE_MAX	512
+#define PIPE_MAX	4096
 #endif
 
 #if defined(COMMON_NEED_READ)					||	\
