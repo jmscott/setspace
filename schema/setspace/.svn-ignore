@@ -1,6 +1,7 @@
 byte-bitmap
 byte-count
 byte-prefix-32
+byte-suffix-32
 has-byte-json-bracket
 has-byte-xml-bracket
 is-byte-hex-40

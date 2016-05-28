@@ -17,6 +17,7 @@ COMPILED=								\
 	byte-bitmap							\
 	byte-count							\
 	byte-prefix-32							\
+	byte-suffix-32							\
 	has-byte-json-bracket						\
 	has-byte-xml-bracket						\
 	is-byte-hex-40							\
@@ -51,6 +52,7 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		byte-bitmap						\
 		byte-count						\
 		byte-prefix-32						\
+		byte-suffix-32						\
 		eat-zombie						\
 		get-bool-command					\
 		get-is-utf8wf						\
@@ -77,6 +79,7 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		byte-count.c						\
 		is-byte-hex-40.c					\
 		byte-prefix-32.c					\
+		byte-suffix-32.c					\
 		has-byte-json-bracket.c					\
 		has-byte-xml-bracket.c					\
 		is-sha-udigish.c					\
@@ -104,6 +107,9 @@ byte-count: byte-count.c ../../common.c
 
 byte-prefix-32: byte-prefix-32.c ../../common.c
 	cc -o byte-prefix-32 $(CFLAGS) byte-prefix-32.c
+
+byte-suffix-32: byte-suffix-32.c ../../common.c
+	cc -o byte-suffix-32 $(CFLAGS) byte-suffix-32.c
 
 is-udigish: is-udigish.c ../../common.c
 	cc -o is-udigish $(CFLAGS) is-udigish.c
