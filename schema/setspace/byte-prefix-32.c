@@ -63,7 +63,7 @@ main(int argc, char **argv)
 	nread = read_prefix(prefix);
 	if (nread > 0) {
 		p = prefix;
-		p_limit = prefix + 32;
+		p_limit = prefix + nread;
 		h = hex;
 		while (p < p_limit) {
 			*h++ = nib2hex[(*p & 0xf0) >> 4];
