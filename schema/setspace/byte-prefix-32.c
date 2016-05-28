@@ -7,6 +7,7 @@
  *  	0	ok, wrote prefix
  *  	1	error reading standard input
  *  	2	error writing standard output
+ *	3	bad argument count
  *  Blame:
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
