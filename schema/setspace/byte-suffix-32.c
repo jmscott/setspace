@@ -86,6 +86,10 @@ main(int argc, char **argv)
 	int nbuf = 0;
 	char hex[65];
 
+#if PIPE_MAX < 32
+	"this compilation error means that PIPE_MAX < 32 bytes"
+#endif
+
 	if (argc != 1)
 		die(EXIT_BAD_ARGC, "wrong number of command line arguments");
 	(void)argv;
