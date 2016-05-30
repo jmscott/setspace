@@ -16,6 +16,8 @@ Schemas:
 
 	expat2		xml libexpat, version 2
 
+	exif		exif tool, version 10
+
 	fffile		well known Unix "Fine Free File" command
 
 	drblob		detail billing records for setspace and blobio.
@@ -25,4 +27,5 @@ Schemas:
 	udigset		details about sets of uniform digests
 See:
 	http://lwn.net/Articles/688396/
+	http://projects.iq.harvard.edu/fits
 	github.com/jmscott/setspace/schema/*/schema.sql
