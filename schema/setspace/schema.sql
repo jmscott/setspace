@@ -12,8 +12,6 @@
  *	add sql comments!
  *
  *	what about a setspace.core view?
- *
- *	new table byte_suffix_32.
  */
 \set ON_ERROR_STOP on
 \timing
@@ -110,7 +108,13 @@ create table setspace.byte_prefix_32
 				)
 				not null
 );
+comment on table setspace.byte_prefix_32 is
+	'First 32 bytes in a blob'
+;
 create index byte_prefix_32_prefix on setspace.byte_prefix_32(prefix);
+
+--  Note: move index byte_prefix_32_4 to schema prefixio?
+
 create index byte_prefix_32_4 on setspace.byte_prefix_32
 		(substring(prefix from 1 for 4))
 ;
