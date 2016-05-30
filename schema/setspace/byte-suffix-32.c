@@ -23,13 +23,16 @@ static char progname[] = "byte-suffix-32";
 #define COMMON_NEED_WRITE
 #include "../../common.c"
 
+#define FLIP_BUF() (bp == bufA ? bufB : bufA)
+
 static char nib2hex[] =
 {
 	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 	'a', 'b', 'c', 'd', 'e', 'f'
 };
 
-static int fill(unsigned char *buf)
+static int
+fill(unsigned char *buf, int *pnr)
 {
 	unsigned char *p, *p_limit;
 
@@ -43,7 +46,10 @@ static int fill(unsigned char *buf)
 			break;
 		p += nr;
 	}
-	return p - buf;
+	if (p - buf == 0)
+		return 0;
+	*pnr = p - buf;
+	return 1;
 }
 
 static void
@@ -75,51 +81,67 @@ put_hex(char *hex, unsigned char *bp, int nbytes)
 int
 main(int argc, char **argv)
 {
-	unsigned char buf1[PIPE_MAX], buf2[PIPE_MAX], *bp;
-	int nr, nbuf = 0;
+	unsigned char bufA[PIPE_MAX], bufB[PIPE_MAX], *bp, *bp1, *bp2;
+	int tail_nr;
+	int nbuf = 0;
 	char hex[65];
 
 	if (argc != 1)
 		die(EXIT_BAD_ARGC, "wrong number of command line arguments");
 	(void)argv;
 
-	//  read exactly PIPE_MAX bytes or read the tail of the input,
-	//  alternating between buf1 and buf2.
+	//  read exactly PIPE_MAX bytes or read the tail of the blob,
+	//  alternating between bufA and bufB.
 
-	bp = buf1;
-	while ((nr = fill(bp)) > 0) {
+	bp = bufA;
+	while (fill(bp, &tail_nr)) {
 		nbuf++;
-		if (bp == buf1)
-			bp = buf2;
+		if (bp == bufA)
+			bp = bufB;
 		else
-			bp = buf1;
+			bp = bufA;
 	}
+
+	bp = (bp == bufA ? bufB : bufA);
 
 	//  final read() of blob got at least 32 bytes
 
-	if (nr >= 32)
-		put_hex(hex, bp + nr - 32, 32);
+	if (tail_nr >= 32)
+		put_hex(hex, bp + tail_nr - 32, 32);
 	
 	//  zero length blob
 
 	if (nbuf == 0)
 		_exit(0);
 
-
 	//  total blob size < 32 bytes
 
 	if (nbuf == 1)
-		put_hex(hex, bp, nr);
+		put_hex(hex, bp, tail_nr);
+
+	//  we now know that the suffix will be exactly 32 bytes.
 
 	//  is the suffix entirely in the previous block
 
-	if (nr == 0) {
-		if (bp == buf1)
-			put_hex(hex, buf2 + PIPE_MAX - 32, 32);
-		put_hex(hex, buf1 + PIPE_MAX - 32, 32);
+	if (tail_nr == PIPE_MAX)
+		put_hex(hex, bp + PIPE_MAX - 32, 32);
+
+	//  tail block was read less than PIPE_MAX bytes, so 32 byte suffix
+	//  spans final two chunks, where the length of tail chunk is 0 <&&< 32
+	//  bytes and that the length of previous chunk is exactly PIPE_MAX
+	//  bytes.
+
+	if (bp == bufA) {
+		bp1 = bufB;
+		bp2 = bufA;
+	} else {
+		bp1 = bufA;
+		bp2 = bufB;
 	}
 
-	//  suffix is in both previous chunk and final chunk
-
+	byte2hex(hex, bp1 + (PIPE_MAX - (32 - tail_nr)), 32 - tail_nr);
+	byte2hex(hex + (64 - tail_nr * 2), bp2, tail_nr);
+	hex[64] = '\n';
+	_write(1, hex, 65);
 	_exit(0);
 }
