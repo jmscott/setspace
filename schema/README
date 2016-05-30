@@ -24,4 +24,5 @@ Schemas:
 
 	udigset		details about sets of uniform digests
 See:
+	http://lwn.net/Articles/688396/
 	github.com/jmscott/setspace/schema/*/schema.sql
