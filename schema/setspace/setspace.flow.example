@@ -505,6 +505,46 @@ call merge_byte_prefix_32(brr.udig)
 	service_exists.exit_status == 0
 ;
 
+#
+#  Synopsis:
+#	Populate byte_suffix_32 table
+#
+sql query in_byte_suffix_32_table row
+{
+
+	result row is (
+		answer bool
+	);
+
+	statement = `
+
+	SELECT exists (
+	  select
+		blob
+	    from
+		setspace.byte_suffix_32
+	    where
+		blob = $1::udig
+	);
+	
+	`;
+}
+
+command merge_byte_suffix_32
+{
+	path = "sbin/merge-byte_suffix_32";
+	exit_status is OK when in {0, 1};
+}
+
+query in_byte_suffix_32_table(brr.udig);
+
+call merge_byte_suffix_32(brr.udig)
+  when
+  	in_byte_suffix_32_table.answer == false
+	and
+	service_exists.exit_status == 0
+;
+
 command core_exists
 {
 	path = "true";
@@ -520,14 +560,22 @@ command core_exists
 
 call core_exists()
   when
-	# 
+	#
   	#  tuple in table byte_prefix_32 does indeed exist
 	#
-
   	(
 		in_byte_prefix_32_table.answer == true
 		or
 		merge_byte_prefix_32.exit_status == 0
+	)
+	and
+	#
+  	#  tuple in table byte_suffix_32 does indeed exist
+	#
+  	(
+		in_byte_suffix_32_table.answer == true
+		or
+		merge_byte_suffix_32.exit_status == 0
 	)
 	and
 	byte_bitmap_exists.exit_status == 0

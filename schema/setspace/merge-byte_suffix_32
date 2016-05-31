@@ -1,0 +1,74 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Merge the 32 byte suffix of the blob into the table byte_suffix_32
+#  Usage:
+#	merge-byte_suffix_32 <blob udig>
+#  Exit Status:
+#  	0	suffix merged into table byte_suffix_32
+#	1	blob does not exist
+#  	2	wrong number of command line arguments
+#	3	blobio get failed for unknown reason
+#	4	byte-suffix-32 failed for unknown reason
+#	5	sql merge failed for unknown reason
+#  Environment:
+#	BLOBIO_RO_SERVICE
+#	PG* variables
+#  Note:
+#	Replace BLOBIO_RO_SERVICE with BLOBIO_GET_SERVICE
+#
+
+PROG=merge-byte_suffix_32
+
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
+
+die()
+{
+	echo "$PROG: ERROR: $1" >&2
+	exit $2
+}
+
+leave()
+{
+	rm -f $TMP_BLOB
+	exit
+}
+
+trap leave EXIT INT TERM QUIT
+
+test $# = 1 || die 'wrong number of arguments' 2
+BLOB=$1
+
+#  fetch the blob into temp file
+
+blobio get --service $BLOBIO_RO_SERVICE --udig $BLOB --output-path $TMP_BLOB
+STATUS=$?
+case $STATUS in
+0)
+	;;
+1)
+	exit 1
+	;;
+*)
+	die "blobio get failed: exit status=$STATUS" 3
+	;;
+esac
+
+PREFIX=$(byte-suffix-32 <$TMP_BLOB)
+test $? = 0 || die "byte-suffix-32 failed: exit status=$?" 4
+
+#  merge new record
+psql --quiet --no-psqlrc <<END
+insert into setspace.byte_suffix_32(
+	blob,
+	suffix
+  ) values (
+  	'$BLOB'::udig,
+	E'\\\\x$PREFIX'
+  ) on conflict
+  	do nothing
+;
+END
+test $? = 0 || die "psql insert failed: exit status=$?" 5
+
+exit 0

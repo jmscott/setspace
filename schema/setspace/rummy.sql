@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Summarize tables partially flowed.
+ *	Summarize tables with incomplete information since a point in time.
  *  Usage:
  *	psql -f rummy.sql
  *  Blame:
@@ -22,6 +22,7 @@ with recent_service as (
 	  left outer join setspace.byte_count bc on (bc.blob = rs.blob)
 	  left outer join setspace.byte_bitmap bm on (bm.blob = rs.blob)
 	  left outer join setspace.byte_prefix_32 bp32 on (bp32.blob = rs.blob)
+	  left outer join setspace.byte_suffix_32 bs32 on (bs32.blob = rs.blob)
 	  left outer join setspace.is_utf8wf u8 on (u8.blob = rs.blob)
   where
   	bc.blob is null
@@ -31,6 +32,8 @@ with recent_service as (
 	u8.blob is null
 	or
 	bp32.blob is null
+	or
+	bs32.blob is null
  union (
   select
 	u8.blob
