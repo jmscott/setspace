@@ -2,20 +2,18 @@
  *  Synopsis:
  *	Keyword query of PDF blobs on pages and titles, sorting by relavence.
  *
- *  PGSQL Variables: {
- *	"keywords": {
- *		"http-name":	"q",
- *		"type":		"string",
- *		"length":	255
- *	},
- *	"limit": {
- *		"http-name":	"lim",
- *		"in":		[10, 100, 1000]
- *	},
- *	"offset": {
- *		"http-name":	"off",
- *		"type":		"uint32"
- *	}
+ *  REST: {
+ *	"pgsql-args": {
+ *		"keywords": {
+ *			"type":	"text"
+ *		},
+ *		"limit": {
+ *			"type":	"int8"
+ *		},
+ *		"offset": {
+ *			"type":	"int8"
+ *		}
+ *  	},
  *  }
  *
  *  Usage:
@@ -27,6 +25,8 @@
  *
  *	Need to investigate stripping the tsvector in the count query.  Also 
  *	need to investigate indexing on strip(tsvector).
+ *
+ *	Concerning SQL injection, can a go string contain a null byte?
  */
 \set ON_ERROR_STOP on
 \timing on
