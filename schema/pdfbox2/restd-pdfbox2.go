@@ -3,12 +3,14 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"html"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"os/signal"
+	"regexp"
 	"runtime"
 	"syscall"
 	"time"
@@ -30,14 +32,20 @@ type cli_arg struct {
 type REST_query struct {
 	query_path	string
 	source_path	string
+	cli_arg		map[string]cli_arg
 }
 
 var REST_queries = []REST_query {
 
-	{"query/keyword",	"lib/keyword.sql"},
+	{"query/keyword",	"lib/keyword.sql", nil},
 }
 
-var query_keyword string;
+func init() {
+	
+	for _, q := range REST_queries {
+		q.cli_arg = make(map[string]cli_arg)
+	}
+}
 
 func usage() {
 	fmt.Fprintf(stderr, "usage: rest-pdfbox2\n")
@@ -74,11 +82,50 @@ func die(format string, args ...interface{}) {
 
 func (q REST_query) load() {
 	
+	const clia_re = `^ *[*] *Command Line Arguments: *{ *$`
+	const clia_twice string =
+			`Command Line Arguments defined twice near line %d`
+
 	log("loading sql rest query: %s", q.query_path)
 	log("	sql source file: %s", q.source_path)
-	_, err := ioutil.ReadFile(q.source_path)
+
+	inf, err := os.Open(q.source_path)
 	if err != nil {
 		die("%s", err)
+	}
+	defer inf.Close()
+
+	in_clia_section := false
+	seen_clia_section := false
+	line_no := 0
+
+	in := bufio.NewReader(inf)
+	for {
+		line, err := in.ReadString('\n')
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			panic(err)
+		}
+		line_no++
+
+		//  Note: must compile regexp!
+		matched, err := regexp.Match(clia_re, []byte(line))
+		if err != nil {
+			panic(err)
+		}
+		if matched {
+			if seen_clia_section {
+				die(clia_twice, line_no)
+			}
+			seen_clia_section = true
+			in_clia_section = true
+			continue
+		}
+		if !in_clia_section {
+			continue
+		}
 	}
 }
 
@@ -109,9 +156,13 @@ func main() {
 	log("go version: %s", runtime.Version())
 	log("listen service: %s", listen)
 
+	log("loading sql files ...")
+	c := 0
 	for _, q := range REST_queries {
 		q.load()
+		c++
 	}
+	log("loaded %d sql files", c)
 
 	http.HandleFunc(
 		path_prefix,
