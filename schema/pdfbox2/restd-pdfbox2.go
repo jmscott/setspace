@@ -22,14 +22,19 @@ var (
 	stdout = os.NewFile(uintptr(syscall.Stdout), "/dev/stdout")
 )
 
-type rest_query struct {
+type cli_arg struct {
+	name	string
+	pgtype	string
+}
+
+type REST_query struct {
 	query_path	string
 	source_path	string
 }
 
-var rest_queries = []rest_query {
+var REST_queries = []REST_query {
 
-	{"query/keyword",	"lib/pdfq-keyword.sql"},
+	{"query/keyword",	"lib/keyword.sql"},
 }
 
 var query_keyword string;
@@ -67,7 +72,7 @@ func die(format string, args ...interface{}) {
 	leave(2)
 }
 
-func (q rest_query) load() {
+func (q REST_query) load() {
 	
 	log("loading sql rest query: %s", q.query_path)
 	log("	sql source file: %s", q.source_path)
@@ -104,7 +109,7 @@ func main() {
 	log("go version: %s", runtime.Version())
 	log("listen service: %s", listen)
 
-	for _, q := range rest_queries {
+	for _, q := range REST_queries {
 		q.load()
 	}
 
