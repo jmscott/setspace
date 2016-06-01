@@ -2,18 +2,16 @@
  *  Synopsis:
  *	Keyword query of PDF blobs on pages and titles, sorting by relavence.
  *
- *  REST: {
- *	"pgsql-args": {
- *		"keywords": {
- *			"type":	"text"
- *		},
- *		"limit": {
- *			"type":	"int8"
- *		},
- *		"offset": {
- *			"type":	"int8"
- *		}
- *  	},
+ *  Command Line Arguments: {
+ *	"keywords": {
+ *		"type":	"text"
+ *	},
+ *	"limit": {
+ *		"type":	"int8"
+ *	},
+ *	"offset": {
+ *		"type":	"int8"
+ *	}
  *  }
  *
  *  Usage:
