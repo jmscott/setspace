@@ -4,6 +4,8 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"html"
 	"io"
@@ -12,6 +14,7 @@ import (
 	"os/signal"
 	"regexp"
 	"runtime"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -24,27 +27,47 @@ var (
 	stdout = os.NewFile(uintptr(syscall.Stdout), "/dev/stdout")
 )
 
-type cli_arg struct {
+type query_cli_arg struct {
 	name	string
 	pgtype	string
 }
 
-type REST_query struct {
+type query_file struct {
 	query_path	string
 	source_path	string
-	cli_arg		map[string]cli_arg
+	query_cli_arg	map[string]query_cli_arg
+	in		*bufio.Reader
+	line_no		int
+	query_args	map[string]query_cli_arg
 }
 
-var REST_queries = []REST_query {
+var rest_queries = []query_file {
 
-	{"query/keyword",	"lib/keyword.sql", nil},
+	{"query/keyword",	"lib/keyword.sql", nil, nil, 0, nil},
 }
+
+var	preamble_begin_re *regexp.Regexp	
+var	preamble_end_re *regexp.Regexp	
+
+var	sql_json_begin_re *regexp.Regexp
+var	sql_json_end_re *regexp.Regexp
+var	sql_json_prefix_re *regexp.Regexp
 
 func init() {
 	
-	for _, q := range REST_queries {
-		q.cli_arg = make(map[string]cli_arg)
+	for _, q := range rest_queries {
+		q.query_cli_arg = make(map[string]query_cli_arg)
 	}
+
+	preamble_begin_re = regexp.MustCompile(`^\s*/[*]\s*$`)
+	preamble_end_re = regexp.MustCompile(`^\s*[*]/\s*$`)
+
+	//  regular expression for parsing comment preamble
+
+	sql_json_begin_re = regexp.MustCompile(
+	      `^\s*[*]\s*Command\s+Line\s+Arguments:\s*{\s*$`)
+	sql_json_prefix_re = regexp.MustCompile(`^\s*[*] *(.*)`)
+	sql_json_end_re = regexp.MustCompile(`^ [*]  }\s*$`)
 }
 
 func usage() {
@@ -76,16 +99,83 @@ func leave(status int) {
 
 func die(format string, args ...interface{}) {
 
-	ERROR(format, args)
+	ERROR(format, args...)
 	leave(2)
 }
 
-func (q REST_query) load() {
-	
-	const clia_re = `^ *[*] *Command Line Arguments: *{ *$`
-	const clia_twice string =
-			`Command Line Arguments defined twice near line %d`
+//  Load the very first comment in the file and extract the
+//  json in the "Command Line Arguments:" section.
 
+func (q *query_file) load_preamble() {
+
+	const clia_redefined string =
+		`section "Command Line Arguments:" redefined`
+
+	var qjson bytes.Buffer
+
+	seen_clia_section := false
+	in_clia_section := false
+
+	_die := func(format string, args ...interface{}) {
+		die("%s: preamble: %s near line %d",
+			q.source_path,
+			fmt.Sprintf(format, args...),
+			q.line_no,
+		)
+	}
+
+	for {
+		line, err := q.in.ReadString('\n')
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			panic(err)
+		}
+		q.line_no++
+
+ 		//  Command Line Arguments:  {
+
+		if sql_json_begin_re.MatchString(line) {
+			if seen_clia_section {
+				_die(clia_redefined)
+			}
+			seen_clia_section = true
+			in_clia_section = true
+			qjson.WriteString("{")
+			continue
+		}
+
+		if !in_clia_section {
+			continue
+		}
+
+		//  At end of json declation?
+
+		if sql_json_end_re.MatchString(line) {
+			in_clia_section = false
+			qjson.WriteString("}")
+			continue
+		}
+
+		//  Extract json line
+
+		matches := sql_json_prefix_re.FindStringSubmatch(line)
+		if len(matches) != 2 {
+			_die("unexpected prefix in json declaration")
+		}
+		_, _ = qjson.WriteString(matches[1])
+	}
+	dec := json.NewDecoder(strings.NewReader(qjson.String()))
+	err := dec.Decode(&q.query_args)
+	if err != nil && err != io.EOF {
+		log("	json: %s", qjson.String())
+		_die("failed to decode json: %s", err.Error())
+	}
+}
+
+func (q *query_file) load() {
+	
 	log("loading sql rest query: %s", q.query_path)
 	log("	sql source file: %s", q.source_path)
 
@@ -95,35 +185,25 @@ func (q REST_query) load() {
 	}
 	defer inf.Close()
 
-	in_clia_section := false
-	seen_clia_section := false
-	line_no := 0
+	q.in = bufio.NewReader(inf)
 
-	in := bufio.NewReader(inf)
 	for {
-		line, err := in.ReadString('\n')
+		line, err := q.in.ReadString('\n')
 		if err != nil {
 			if err == io.EOF {
 				break
 			}
 			panic(err)
 		}
-		line_no++
+		line = strings.TrimSuffix(line, "\n")
+		q.line_no++
 
-		//  Note: must compile regexp!
-		matched, err := regexp.Match(clia_re, []byte(line))
-		if err != nil {
-			panic(err)
-		}
-		if matched {
-			if seen_clia_section {
-				die(clia_twice, line_no)
+		//  look for comment preamble at start of file
+
+		if preamble_begin_re.MatchString(line) {
+			if q.line_no == 1 {
+				q.load_preamble()
 			}
-			seen_clia_section = true
-			in_clia_section = true
-			continue
-		}
-		if !in_clia_section {
 			continue
 		}
 	}
@@ -158,7 +238,7 @@ func main() {
 
 	log("loading sql files ...")
 	c := 0
-	for _, q := range REST_queries {
+	for _, q := range rest_queries {
 		q.load()
 		c++
 	}
