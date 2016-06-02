@@ -166,10 +166,16 @@ func (q *query_file) load_preamble() {
 		}
 		_, _ = qjson.WriteString(matches[1])
 	}
-	dec := json.NewDecoder(strings.NewReader(qjson.String()))
+
+	//  verify json command line args exist
+	js := qjson.String()
+	if js == "" {
+		_die("missing json command section")
+	}
+	dec := json.NewDecoder(strings.NewReader(js))
 	err := dec.Decode(&q.query_args)
 	if err != nil && err != io.EOF {
-		log("	json: %s", qjson.String())
+		log("	json: %s", js)
 		_die("failed to decode json: %s", err.Error())
 	}
 }
