@@ -4,13 +4,13 @@
  *
  *  Command Line Arguments: {
  *	"keywords": {
- *		"pgtype":	"text"
+ *		"type":	"text"
  *	},
  *	"limit": {
- *		"pgtype":	"int8"
+ *		"type":	"ubigint"
  *	},
  *	"offset": {
- *		"pgtype":	"int8"
+ *		"type":	"ubigint"
  *	}
  *  }
  *
