@@ -325,3 +325,5 @@ CREATE TABLE pdfbox2.pddocument_information_metadata_custom
 
 	primary key	(blob, key)
 );
+
+COMMIT;
