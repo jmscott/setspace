@@ -1,0 +1,14 @@
+{
+	"synopsis":		"PDFBox (version 2) Schema for SetSpace",
+	"http-listen":		":8080",
+	"rest-path-prefix":	"/pdfbox2",
+
+	"sql-query-set": {
+		"keyword": {
+			"source-path":	"keyword.sql"
+		}
+	},
+	"warn-slow-sql-query-duration": 5,
+
+	"http-query-arg-set": {}
+}

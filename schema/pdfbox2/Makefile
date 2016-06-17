@@ -65,8 +65,9 @@ install: all
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=r		\
 		$(JCOMPILED)						\
-		pdfbox2.flow.example					\
 		keyword.sql						\
+		pdfbox2.flow.example					\
+		pdfbox2.rasql.example					\
 		profile.example						\
 		rummy.sql						\
 		schema.sql						\
