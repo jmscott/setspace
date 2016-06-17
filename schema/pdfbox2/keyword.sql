@@ -32,32 +32,6 @@
 \echo Keywords are :keywords, Result is :limit rows, offset :offset
 \echo
 
-with matching_blobs as (
-select
-	distinct pp.pdf_blob as blob
-  from
-	pdfbox2.extract_page_utf8 pp
-  	  inner join pgtexts.tsv_strip_utf8 tsv on (tsv.blob = pp.page_blob),
-	plainto_tsquery('english', :keywords) as q
-  where
-  	tsv.doc @@ q
-	and
-	tsv.ts_conf = 'english'
-union
-select
-	t.blob
-  from
-  	my_title t,
-	plainto_tsquery('english', :keywords) as q
-  where
-  	t.value_tsv @@ q
-)
-  select
-  	count(blob) as "document_count"
-  from
-  	matching_blobs
-;
-
 with pdf_match as (
   select
 	pp.pdf_blob as blob,
