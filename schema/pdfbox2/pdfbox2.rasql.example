@@ -8,7 +8,19 @@
 			"source-path":	"keyword.sql"
 		}
 	},
-	"warn-slow-sql-query-duration": 5,
-
-	"http-query-arg-set": {}
+	"http-query-arg-set": {
+		"q": {
+			"sql-alias": "keywords"
+		},
+		"limit": {
+			"default": "10",
+			"matches": "^(?:10|100|1000)$",
+			"sql-alias": "limit"
+		},
+		"offset": {
+			"default": "0",
+			"sql-alias": "offset"
+		}
+	},
+	"warn-slow-sql-query-duration": 5
 }
