@@ -11,7 +11,8 @@
  *	4	sql warning
  *	5	sql error
  *  Note:
- *	spin-wait-blob is a hack, to be replaced by pglog2brr replication.
+ *	spin-wait-blob is a desparate but effective hack.  hopefully pg logical
+ *	replication will alleviate the need.
  */
 
 static char progname[] = "spin-wait-blob";
@@ -19,7 +20,7 @@ static char progname[] = "spin-wait-blob";
 #define EXIT_OK		0
 #define EXIT_NO_BLOB	1
 #define EXIT_BAD_ARGC	2
-#define EXIT_BAD_TOUT	3
+#define EXIT_BAD_TMOUT	3
 #define EXIT_SQLWARN	4
 #define EXIT_SQLERROR	5
 
@@ -57,11 +58,11 @@ EXEC SQL END DECLARE SECTION;
 		size_t len = strlen(sec);
 
 		if (len < 1 || len > 19)
-			die2(EXIT_BAD_TOUT,
+			die2(EXIT_BAD_TMOUT,
 				"timeout second not > 0 and < 20 chars", sec);
 		timeout = atoi(sec);
 		if (timeout <= 0)
-			die2(EXIT_BAD_TOUT, "timeout second <= 0", sec);
+			die2(EXIT_BAD_TMOUT, "timeout second <= 0", sec);
 	}
 
 	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error(
