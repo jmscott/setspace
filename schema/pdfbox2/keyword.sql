@@ -1,13 +1,12 @@
 /*
  *  Synopsis:
  *	Keyword query of PDF blobs on pages and titles, sorting by relavence.
- *
  *  Command Line Arguments: {
  *	"keywords": {
  *		"type":	"text"
  *	},
  *	"limit": {
- *		"type":	"ubigint"
+ *		"type":	"uint16"
  *	},
  *	"offset": {
  *		"type":	"ubigint"
