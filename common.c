@@ -21,7 +21,7 @@
 #include <string.h>
 #include <strings.h>
 
-//  Note: shouldn't be PIPE_BUF!!
+//  Note: should be PIPE_BUF or MAX_MSG_SIZE?
 
 #ifndef PIPE_MAX
 #define PIPE_MAX	4096
