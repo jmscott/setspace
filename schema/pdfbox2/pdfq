@@ -27,6 +27,8 @@ die()
 	exit $2
 }
 
+test -n "$PDFBOX2_ROOT" || die 'environment not defined: PDFBOX2_ROOT'
+
 case $# in
 1)
 	KEYWORDS="$1"
