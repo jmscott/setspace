@@ -16,8 +16,6 @@ COMMENT ON SCHEMA pdfbox2 IS
   'Text and metadata extracted by pdfbox.apache.org, version 2'
 ;
 
-DROP TABLE IF EXISTS pdfbox2.pddocument_pending CASCADE;
-
 /*
  *  Pending pddocument jobs.
  *
@@ -25,6 +23,7 @@ DROP TABLE IF EXISTS pdfbox2.pddocument_pending CASCADE;
  *	Notice no fk reference to setspace.service(blob).
  *	Sudden termination may leave stale entries.
  */
+DROP TABLE IF EXISTS pdfbox2.pddocument_pending CASCADE;
 CREATE TABLE pdfbox2.pddocument_pending
 (
 	blob		udig
@@ -115,7 +114,7 @@ COMMENT ON TABLE pdfbox2.pddocument IS
 
 
 /*
- *  Extracted Pages of UTF8 text from a pdf blob
+ *  Status of extraction process for utf8 text.
  */
 DROP TABLE IF EXISTS pdfbox2.extract_pages_utf8 CASCADE;
 CREATE TABLE pdfbox2.extract_pages_utf8
@@ -139,9 +138,12 @@ CREATE TABLE pdfbox2.extract_pages_utf8
 	)
 );
 COMMENT ON TABLE pdfbox2.extract_pages_utf8 IS
-  'UTF8 Text extracted from pdf blob'
+  'Status of extraction process for utf8 text'
 ;
 
+/*
+ *  Track individual pages in a pdf blob
+ */
 DROP TABLE IF EXISTS pdfbox2.extract_page_utf8 CASCADE;
 CREATE TABLE pdfbox2.extract_page_utf8
 (
@@ -279,7 +281,7 @@ COMMENT ON TABLE pdfbox2.pddocument_information_metadata_pending IS
 ;
 
 /*
- *  PDDocumentInformation scalar fields from Java Object
+ *  Job status of extraction process for of Pddocument Information Metadata.
  */
 DROP TABLE IF EXISTS pdfbox2.pddocument_information_metadata CASCADE;
 CREATE TABLE pdfbox2.pddocument_information_metadata
