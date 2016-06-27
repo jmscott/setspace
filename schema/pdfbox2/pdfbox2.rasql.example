@@ -6,6 +6,9 @@
 	"sql-query-set": {
 		"keyword": {
 			"source-path":	"keyword.sql"
+		},
+		"keyword-count": {
+			"source-path":	"keyword-count.sql"
 		}
 	},
 	"http-query-arg-set": {
