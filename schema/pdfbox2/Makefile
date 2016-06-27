@@ -12,8 +12,12 @@ JCOMPILED=								\
 	putPDDocumentInformationMetadata.class
 
 ECPG_COMPILED=								\
+	merge-stdin-page_text_utf8					\
+	merge-stdin-page_tsv_utf8					\
 	merge-stdin-pddocument_information				\
 	merge-stdin-pddocument_information_metadata
+
+COMPILED=$(JCOMPILED) $(ECPG_COMPILED)
 
 all: $(JCOMPILED) $(ECPG_COMPILED)
 
@@ -75,18 +79,15 @@ install: all
 		$(PDFBOX2_PREFIX)/lib
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m u=rx		\
-		$(PROGS)						\
+		$(COMPILED)						\
 		append-page-pgtexts-brr					\
 		append-pgtexts-brr					\
 		cron-append-pgtexts-brr					\
 		merge-extract_pages_utf8				\
 		merge-pddocument					\
-		merge-stdin-pddocument_information			\
 		$(PDFBOX2_PREFIX)/sbin
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m u=rx		\
-		$(PROGS)						\
-		cat-pages-utf8						\
 		pdfq							\
 		$(PDFBOX2_PREFIX)/bin
 
@@ -94,7 +95,10 @@ install: all
 		Makefile						\
 		ExtractKeywords.java					\
 		ExtractPagesUTF8.java					\
+		merge-stdin-page_text_utf8.pgc				\
+		merge-stdin-page_tsv_utf8.pgc				\
 		merge-stdin-pddocument_information.pgc			\
+		merge-stdin-pddocument_information_metadata.pgc		\
 		putPDDocument.java					\
 		putPDDocumentInformation.java				\
 		putPDDocumentInformationMetadata.java			\
@@ -126,3 +130,25 @@ merge-stdin-pddocument_information_metadata:				\
 		-o merge-stdin-pddocument_information_metadata		\
 		-L$(PGLIB) -lecpg
 	rm merge-stdin-pddocument_information_metadata.c
+
+merge-stdin-page_text_utf8:				\
+		merge-stdin-page_text_utf8.pgc		\
+		../../common.c						\
+		../../common-ecpg.c
+	ecpg merge-stdin-page_text_utf8.pgc
+	$(CC) $(CFLAGS) -I$(PGINC) 					\
+		merge-stdin-page_text_utf8.c		\
+		-o merge-stdin-page_text_utf8		\
+		-L$(PGLIB) -lecpg
+	rm merge-stdin-page_text_utf8.c
+
+merge-stdin-page_tsv_utf8:				\
+		merge-stdin-page_tsv_utf8.pgc		\
+		../../common.c						\
+		../../common-ecpg.c
+	ecpg merge-stdin-page_tsv_utf8.pgc
+	$(CC) $(CFLAGS) -I$(PGINC) 					\
+		merge-stdin-page_tsv_utf8.c		\
+		-o merge-stdin-page_tsv_utf8		\
+		-L$(PGLIB) -lecpg
+	rm merge-stdin-page_tsv_utf8.c
