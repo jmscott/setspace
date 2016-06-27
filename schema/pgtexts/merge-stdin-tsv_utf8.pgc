@@ -2,7 +2,7 @@
  *  Synopsis:
  *  	Merge an UTF8 blob read on standard input into table pgtext2.tsv_utf8
  *  Usage:
- *	merge-stdin-tsv_utf8 <udig> <tsv_config> <byte_count>
+ *	merge-stdin-tsv_utf8 <udig> <tsv_config> <text_byte_count>
  *  Arguments:
  *  	1	udig of the blob
  *	2	name of text search configuration
@@ -18,14 +18,7 @@
  *	7	sql warning
  *	8	blob too small
  *	9	blob too large
- *  Blame:
- *  	jmscott@setspace.com
- *  	setspace@gmail.com
  *  Note:
- *	Should tsvector config be passed as an argument oncommand line?
- *
- *	Think about refactoring common routines in ../../sql-common.h
- *
  *	SQL ERROR code "54000: string is too long for tsvector" ought to
  *	mapped onto specific process exit code other than generic sql error.
  */
