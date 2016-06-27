@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *  	Merge an UTF8 blob read on standard input into table pgtext2.text_utf8
+ *  	Merge a UTF8 blob read on standard input into table pgtext2.text_utf8
  *  Usage:
  *	merge-stdin-text_utf8 <utf-blob> <tsv_config> <text_byte_count>
  *  Arguments:
