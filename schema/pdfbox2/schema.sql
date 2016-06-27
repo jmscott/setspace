@@ -299,7 +299,7 @@ COMMENT ON TABLE pdfbox2.pddocument_information_metadata IS
 ;
 
 /*
- *  PDDocumentInformation custoem metadata fields string fields from Java Object
+ *  PDDocumentInformation custom metadata fields string fields from Java Object
  */
 DROP TABLE IF EXISTS pdfbox2.pddocument_information_metadata_custom CASCADE;
 CREATE TABLE pdfbox2.pddocument_information_metadata_custom
