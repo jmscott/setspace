@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Makefile suitable for development home directory.
+#	Makefile suitable for development of pdfbox2 in local directory.
 #
 include ../schema.mk
 include ../../local.mk
@@ -84,6 +84,8 @@ install: all
 		append-pgtexts-brr					\
 		cron-append-pgtexts-brr					\
 		merge-extract_pages_utf8				\
+		merge-page_text_utf8					\
+		merge-page_tsv_utf8					\
 		merge-pddocument					\
 		$(PDFBOX2_PREFIX)/sbin
 

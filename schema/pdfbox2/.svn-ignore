@@ -2,6 +2,8 @@ ExtractPagesUTF8.class
 etc
 lib
 log
+merge-stdin-page_text_utf8
+merge-stdin-page_tsv_utf8
 merge-stdin-pddocument_information
 merge-stdin-pddocument_information_metadata
 profile
