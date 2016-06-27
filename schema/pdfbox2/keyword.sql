@@ -14,7 +14,10 @@
  *  }
  *
  *  Usage:
- *	psql --set keywords="'$KEYWORDS'" --set limit=10 --set offset=0
+ *	psql -f keyword.sql						\
+ *		--set keywords="'$KEYWORDS'"				\
+ *		--set limit=10						\
+ *		--set offset=0
  *  Note:
  *	The match_union still renders multiple blobs, since the union
  *	is across the full tuple.  Can probably be fixed with a window
