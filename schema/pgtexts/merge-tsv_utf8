@@ -17,9 +17,11 @@
 #  See:
 #	PostgreSQL table pgtexts.tsv_utf8_pending.
 #  Environment:
-#	BLOBIO_RO_SERVICE
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
 #  
 PROG=merge-tsv_utf8
+SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
 
 die()
@@ -42,7 +44,7 @@ TS_CONF=$1
 UDIG=$2
 SIZE=$3
 
-blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_RO_SERVICE
+blobio get --udig $UDIG --output-path $TMP_BLOB $SERVICE
 STATUS=$?
 
 case $STATUS in

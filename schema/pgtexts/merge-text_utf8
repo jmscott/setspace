@@ -17,10 +17,12 @@
 #  See:
 #	PostgreSQL table pgtexts.text_utf8_pending.
 #  Environment:
-#	BLOBIO_RO_SERVICE
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
 #  
 PROG=merge-text_utf8
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
+SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
 
 die()
 {
@@ -41,7 +43,7 @@ test $# = 2 || die 'wrong number of arguments' 2
 UDIG=$1
 SIZE=$2
 
-blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_RO_SERVICE
+blobio get --udig $UDIG --output-path $TMP_BLOB $SERVICE
 STATUS=$?
 
 case $STATUS in
