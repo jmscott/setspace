@@ -204,7 +204,7 @@ sql query in_extract_pages_utf8_table row
 		  SELECT
 			blob
 		  FROM
-			extract_pages_utf8
+			pdfbox2.extract_pages_utf8
 		  WHERE
 			blob = $1::udig
 	  	),
@@ -212,7 +212,7 @@ sql query in_extract_pages_utf8_table row
 		  SELECT
 		  	exit_status = 0
 		    FROM
-		    	extract_pages_utf8
+		    	pdfbox2.extract_pages_utf8
 		    WHERE
 		    	blob = $1::udig
 		)
