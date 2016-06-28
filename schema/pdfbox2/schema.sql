@@ -330,6 +330,10 @@ CREATE TABLE pdfbox2.pddocument_information_metadata_custom
 
 /*
  *  Page of text of at least one pdf blob.
+ *  Possibly many pdfs may reference this page.
+ *
+ *  Note:
+ *	Need to add a trigger to extracted_page_utf8..
  */
 DROP TABLE IF EXISTS pdfbox2.page_text_utf8 CASCADE;
 CREATE TABLE pdfbox2.page_text_utf8
@@ -347,7 +351,11 @@ COMMENT ON TABLE pdfbox2.page_text_utf8 IS
 ;
 
 /*
- *  Text search vector of page of a pdf blob
+ *  Text search vector of at least one page of a pdf blob
+ *  Possibly many pdfs may reference this page.
+ *
+ *  Note:
+ *	Need to add a trigger to extracted_page_utf8.
  */
 DROP TABLE IF EXISTS pdfbox2.page_tsv_utf8;
 CREATE TABLE pdfbox2.page_tsv_utf8
