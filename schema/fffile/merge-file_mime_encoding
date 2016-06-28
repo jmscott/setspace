@@ -13,13 +13,13 @@
 #	5	command 'file --mime-encoding --brief <blob> failed'
 #	6	sql merge failed
 #  Environment:
-#	BLOBIO_RO_SERVICE
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
 #	TMPDIR
-#  Note:
-#	Should the LANG/LC_* variables be explicitly set to UTF8?
 #
 
 PROG=merge-file_mime_encoding
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 
 die()
 {
@@ -42,7 +42,7 @@ FILE_BLOB=$1
 
 #  fetch the blob
 
-blobio get --udig $FILE_BLOB --service $BLOBIO_RO_SERVICE --output-path $TMP_BLOB
+blobio get --udig $FILE_BLOB --service $BLOBIO_GET_SERVICE --output-path $TMP_BLOB
 STATUS=$?
 test $STATUS = 1 && exit 1
 test $STATUS = 0 || die "blobio get failed: exit status=$STATUS" 4

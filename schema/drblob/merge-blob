@@ -11,9 +11,11 @@
 #	3	blobio get failed
 #	4	psql insert failed
 #  Environment:
-#	BLOBIO_RO_SERVICE
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
 #
 PROG=merge-blob
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 TABLE=
 BLOB_TMP=${TMPDIR:=/tmp}/$PROG-$$.blob
 
@@ -46,7 +48,7 @@ test $# = 2 || die 'wrong number arguments' 1
 TABLE=$1
 BLOB=$2
 
-blobio get --udig $BLOB --output-path $BLOB_TMP --service $BLOBIO_RO_SERVICE
+blobio get --udig $BLOB --output-path $BLOB_TMP --service $BLOBIO_GET_SERVICE
 STATUS=$?
 case $STATUS in
 0)

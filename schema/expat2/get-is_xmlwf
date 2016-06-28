@@ -7,16 +7,17 @@
 #  Exit Status:
 #	0	yes, is valid xml
 #	1	no, is not valid xml
-#	2	blob does not exist from $BLOBIO_RO_SERVICE
+#	2	blob does not exist from $BLOBIO_GET_SERVICE
 #	3	wrong number of arguments
 #	4	unexpected 'blobio get' error
 #	5	unexpected xmlwf error
 #  Environment:
-#	BLOBIO_RO_SERVICE
-#  Blame:
-#	jmscott@setspace.com
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
 #
-PROG='get-is_xmlwf'
+PROG=get-is_xmlwf
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
+
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
 
 #  bonedheaded xmlwf does NOT set exit code.
@@ -40,7 +41,7 @@ die()
 test $# = 1 || die 'wrong number of arguments' 3
 
 UDIG=$1
-blobio get --output-path $TMP_BLOB --udig $UDIG --service $BLOBIO_RO_SERVICE
+blobio get --output-path $TMP_BLOB --udig $UDIG --service $BLOBIO_GET_SERVICE
 STATUS=$?
 
 case $STATUS in

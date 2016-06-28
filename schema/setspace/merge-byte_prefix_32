@@ -12,14 +12,13 @@
 #	4	byte-prefix-32 failed for unknown reason
 #	5	sql merge failed for unknown reason
 #  Environment:
-#	BLOBIO_RO_SERVICE
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
 #	PG* variables
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
 #
 
 PROG=merge-byte_prefix_32
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=BLOBIO_SERVICE}
 
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
 
@@ -42,7 +41,7 @@ BLOB=$1
 
 #  fetch the blob into temp file
 
-blobio get --service $BLOBIO_RO_SERVICE --udig $BLOB --output-path $TMP_BLOB
+blobio get --service $BLOBIO_GET_SERVICE --udig $BLOB --output-path $TMP_BLOB
 STATUS=$?
 case $STATUS in
 0)

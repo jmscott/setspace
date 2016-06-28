@@ -12,9 +12,12 @@
 #	4	unknown blobio error
 #	5	unknown database error
 #  Environment:
-#	BLOBIO_RO_SERVICE
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
+#	TMPDIR
 #
 PROG=get-is-pg-well-formed
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
 
 leave()
@@ -34,7 +37,7 @@ test $# = 2 || die 'wrong number of arguments' 3
 UDIG=$1
 SIZE=$2
 
-blobio get --output-path $TMP_BLOB --udig $UDIG --service $BLOBIO_RO_SERVICE
+blobio get --output-path $TMP_BLOB --udig $UDIG --service $BLOBIO_GET_SERVICE
 STATUS=$?
 
 case $STATUS in

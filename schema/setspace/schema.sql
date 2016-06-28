@@ -185,4 +185,25 @@ comment on table setspace.has_byte_xml_bracket is
 	'Blob Might be Framed by <.*>'
 ;
 
+/*
+ *  Final 32 bytes of the blob.
+ */
+drop table if exists setspace.byte_suffix_32 cascade;
+create table setspace.byte_suffix_32
+(
+	blob		udig
+				references setspace.service
+				on delete cascade
+				primary key,
+	suffix		bytea
+				check (
+					octet_length(suffix) <= 32
+				)
+				not null
+);
+comment on table setspace.byte_suffix_32 is
+	'First 32 bytes in a blob'
+;
+create index byte_suffix_32_suffix on setspace.byte_suffix_32(suffix);
+
 commit;

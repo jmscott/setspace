@@ -57,11 +57,12 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		get-bool-command					\
 		get-is-utf8wf						\
 		has-byte-json-bracket					\
-		has-byte-xml-bracket				\
+		has-byte-xml-bracket					\
 		is-udigish						\
 		merge-byte_bitmap					\
 		merge-byte_count					\
 		merge-byte_prefix_32					\
+		merge-byte_suffix_32					\
 		merge-new_line_count					\
 		new-line-count						\
 		service-xor						\

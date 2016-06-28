@@ -13,12 +13,12 @@
 #	5	blobio get failed for unknown reason
 #	6	is-utf8wf failed for unknown reason
 #  Environment:
-#	BLOBIO_RO_SERVICE
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
+#	PG* variables
 #
 PROG='get-is-utf8wf'
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=BLOBIO_SERVICE}
 
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
 
@@ -41,7 +41,7 @@ BLOB=$1
 
 #  fetch the blob into temp file
 
-blobio get --service $BLOBIO_RO_SERVICE --udig $BLOB --output-path $TMP_BLOB
+blobio get --service $BLOBIO_GET_SERVICE --udig $BLOB --output-path $TMP_BLOB
 STATUS=$?
 case $STATUS in
 0)

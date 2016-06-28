@@ -16,12 +16,14 @@
 #  Environment:
 #	BLOBIO_ALGORITHM
 #	BLOBIO_SERVICE
-#	BLOBIO_RO_SERVICE
+#	BLOBIO_GET_SERVICE
+#	TMPDIR
 #  Note:
 #	How do we know the output of putPDDocumentInformation is always UTF-8?
 #
 
 PROG=merge-pddocument_information
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.pdf
 TMP_ERR=${TMPDIR:=/tmp}/$PROG-$$.err
@@ -50,7 +52,7 @@ UDIG=$1
 
 #  fetch the pdf blob
 
-blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_RO_SERVICE
+blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_GET_SERVICE
 STATUS=$?
 case $STATUS in
 0)

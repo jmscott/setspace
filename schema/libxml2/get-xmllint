@@ -13,9 +13,11 @@
 #  Usage:
 #	get-xmllint <udig>
 #  Environment:
-#	BLOBIO_RO_SERVICE
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
 #
 PROG=get-xmllint_status
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
 
 leave()
@@ -34,7 +36,7 @@ die()
 test $# = 1 || die 'wrong number of arguments' 11
 UDIG=$1
 
-blobio get --output-path $TMP_BLOB --udig $UDIG --service $BLOBIO_RO_SERVICE
+blobio get --output-path $TMP_BLOB --udig $UDIG --service $BLOBIO_GET_SERVICE
 STATUS=$?
 
 case $STATUS in

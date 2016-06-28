@@ -13,12 +13,14 @@
 #	5	blobio get failed for unknown reason
 #	6	is-fdr-log failed for unknown reason
 #  Environment:
-#	BLOBIO_RO_SERVICE
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
 #  Note:
 #	All is-<table> can be collapsed into is-<table>, like merge-blob was
 #	collapsed.
 #
 PROG=get-is-fdr-log
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
 
@@ -41,7 +43,7 @@ BLOB=$1
 
 #  fetch the blob into temp file
 
-blobio get --service $BLOBIO_RO_SERVICE --udig $BLOB --output-path $TMP_BLOB
+blobio get --service $BLOBIO_GET_SERVICE --udig $BLOB --output-path $TMP_BLOB
 STATUS=$?
 case $STATUS in
 0)

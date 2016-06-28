@@ -12,9 +12,12 @@
 #  Usage:
 #	get-JSON_checker <blob> <byte count>
 #  Environment
-#	BLOBIO_RO_SERVICE
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
+#	TMPDIR
 #
 PROG=get-JSON_checker
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
 
 leave()
@@ -35,7 +38,7 @@ die()
 test $# = 1 || die "wrong number of command line arguments" 3
 UDIG=$1
 
-blobio get --udig "$UDIG" --service $BLOBIO_RO_SERVICE --output-path $TMP_BLOB
+blobio get --udig "$UDIG" --service $BLOBIO_GET_SERVICE --output-path $TMP_BLOB
 STATUS=$?
 case $STATUS in
 0)

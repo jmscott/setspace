@@ -12,13 +12,12 @@
 #	4	new-line-count failed for unknown reason
 #	5	sql merge failed for unknown reason
 #  Environment:
-#	BLOBIO_RO_SERVICE
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
 #	PG* variables
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
 #
 PROG=merge-new_line_count
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=BLOBIO_SERVICE}
 
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
 
@@ -41,7 +40,7 @@ BLOB=$1
 
 #  fetch the blob into temp file
 
-blobio get --service $BLOBIO_RO_SERVICE --udig $BLOB --output-path $TMP_BLOB
+blobio get --service $BLOBIO_GET_SERVICE --udig $BLOB --output-path $TMP_BLOB
 STATUS=$?
 case $STATUS in
 0)
