@@ -40,6 +40,8 @@ psql							\
 	--dbname $BLOBIO_PGDATABASE			\
 	--no-align					\
 	--tuples-only					\
+	--quiet						\
+	--no-psqlrc					\
 	--command 					\
 "
 select
@@ -53,6 +55,8 @@ select
 psql							\
 	--no-align					\
 	--tuples-only					\
+	--quiet						\
+	--no-psqlrc					\
 	--command 					\
 "
 select

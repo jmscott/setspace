@@ -47,7 +47,9 @@ case $# in
 	;;
 esac
 
-psql --no-psqlrc --file $PDFBOX2_ROOT/lib/keyword.sql			\
+psql	--quiet								\
+	--no-psqlrc 							\
+	--file $PDFBOX2_ROOT/lib/keyword.sql				\
 	--set keywords="'$KEYWORDS'"					\
 	--set limit="$LIMIT" 						\
 	--set offset="$OFFSET" 						||
