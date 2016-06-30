@@ -329,86 +329,59 @@ CREATE TABLE pdfbox2.pddocument_information_metadata_custom
 );
 
 /*
- *  Page of text of at least one pdf blob.
- *  Possibly many pdfs may reference this page.
- *
- *  Note:
- *	Need to add a trigger to extracted_page_utf8..
+ *  Text of individual pages of a pdf blob
  */
 DROP TABLE IF EXISTS pdfbox2.page_text_utf8 CASCADE;
 CREATE TABLE pdfbox2.page_text_utf8
 (
-	blob		udig
-				PRIMARY KEY
-				REFERENCES
-				   setspace.service(blob)
-				ON DELETE CASCADE,
-	page text
-			not null
+	pdf_blob	udig,
+	page_number	int check (
+				page_number > 0
+				and
+
+				-- Note: why 2603538?  see
+				-- http://tex.stackexchange.com/questions/97071
+
+				page_number <= 2603538
+			) NOT NULL,
+	txt		text
+				not null,
+	PRIMARY KEY	(pdf_blob, page_number),
+	FOREIGN KEY	(pdf_blob, page_number)
+				REFERENCES pdfbox2.extract_page_utf8(
+					pdf_blob,
+					page_number
+				)
 );
 COMMENT ON TABLE pdfbox2.page_text_utf8 IS
-  'Page of text of at least one pdf blob'
+  'Individual Pages of UTF8 Text extracted from a pdf blob'
 ;
 
 /*
- *  Text search vector of at least one page of a pdf blob
- *  Possibly many pdfs may reference this page.
- *
- *  Note:
- *	Need to add a trigger to extracted_page_utf8.
+ *  Text search vector of individual pages of a pdf blob
  */
-DROP TABLE IF EXISTS pdfbox2.page_tsv_utf8;
+DROP TABLE IF EXISTS pdfbox2.page_tsv_utf8 CASCADE;
 CREATE TABLE pdfbox2.page_tsv_utf8
 (
-	/*
-	 *  Note:
-	 *	ts_conf would naturally be a regconfig datatype.
-	 *	Unfortunatly the regconfig database depends upon oid,
-	 *	so pg_upgrade fails.  Instead ts_conf is text, the name
-	 *	of the configuration.
-	 */
+	pdf_blob	udig,
+	page_number	int check (
+				page_number > 0
+				and
 
-	ts_conf		text check (
-				--  verify the text ts_conf value is indeed
-				--  is a true regconfig.  really ugly.
-				ts_conf = ts_conf::regconfig::text
-			),
-	blob		udig
-				REFERENCES setspace.service(blob)
-				ON DELETE CASCADE,
-	tsv		tsvector
+				-- Note: why 2603538?  see
+				-- http://tex.stackexchange.com/questions/97071
+
+				page_number <= 2603538
+			) NOT NULL,
+	txt		text
 				not null,
-
-	PRIMARY KEY	(ts_conf, blob)
+	PRIMARY KEY	(pdf_blob, page_number),
+	FOREIGN KEY	(pdf_blob, page_number)
+				REFERENCES pdfbox2.extract_page_utf8(
+					pdf_blob,
+					page_number
+				)
 );
 COMMENT ON TABLE pdfbox2.page_tsv_utf8 IS
-  'Text search vector of at least one page in a pdf blob'
+  'Individual Pages of UTF8 Text extracted from a pdf blob'
 ;
-
-DROP TABLE IF EXISTS pdfbox2.merge_pdf_page_text_utf8_pending;
-CREATE TABLE pdfbox2.merge_pdf_page_text_utf8_pending
-(
-	blob		udig
-				PRIMARY KEY,
-	insert_time	timestamptz
-				DEFAULT now()
-				NOT NULL
-);
-COMMENT ON TABLE pdfbox2.merge_pdf_page_text_utf8_pending IS
-  'Actively running processes for merge_pdf_page_text_utf8'
-;
-
-DROP TABLE IF EXISTS pdfbox2.merge_pdf_page_tsv_utf8_pending;
-CREATE TABLE pdfbox2.merge_pdf_page_tsv_utf8_pending
-(
-	blob		udig
-				PRIMARY KEY,
-	insert_time	timestamptz
-				DEFAULT now()
-				NOT NULL
-);
-COMMENT ON TABLE pdfbox2.merge_pdf_page_tsv_utf8_pending IS
-  'Actively running processes for merge_pdf_page_tsv_utf8'
-;
-
-COMMIT;
