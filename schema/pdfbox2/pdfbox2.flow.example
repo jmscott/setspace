@@ -229,7 +229,79 @@ query in_extract_pages_utf8_table(brr.udig)
   	pddocument_exists.exit_status == 0
 ;
 
+sql query in_extract_pages_utf8_pending_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	pdfbox2.extract_pages_utf8_pending
+	    WHERE
+		blob = $1::udig
+	  )
+	;
+	`;
+
+	result row is (
+		answer bool
+	);
+
+}
+
+query in_extract_pages_utf8_pending_table(brr.udig)
+  when
+  	in_extract_pages_utf8_table.answer == false
+;
+
+sql query merge_extract_pages_utf8_pending row
+{
+	statement = `
+
+	INSERT INTO
+	  pdfbox2.extract_pages_utf8_pending(
+		blob
+	  ) VALUES(
+	  	$1::udig
+ 	  )  ON CONFLICT
+	  	DO NOTHING
+	  RETURNING
+	  	true
+	`;
+
+	result row is (
+		inserted bool
+	);
+
+}
+
+query merge_extract_pages_utf8_pending(brr.udig)
+  when
+  	in_extract_pages_utf8_pending_table.answer == false
+;
+
 command merge_extract_pages_utf8
 {
 	path = "sbin/merge-extract_pages_utf8";
 }
+
+call merge_extract_pages_utf8(brr.udig)
+  when
+  	merge_extract_pages_utf8_pending.inserted == true
+;
+
+sql exec delete_extract_pages_utf8_pending
+{
+	statement = `
+
+	DELETE FROM pdfbox2.extract_pages_utf8_pending
+	  WHERE
+	  	blob = $1::udig
+	`;
+}
+
+query delete_extract_pages_utf8_pending(brr.udig)
+  when
+  	merge_extract_pages_utf8.exit_status == 0
+;
