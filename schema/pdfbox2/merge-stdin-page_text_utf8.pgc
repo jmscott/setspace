@@ -101,11 +101,11 @@ EXEC SQL END DECLARE SECTION;
 	EXEC SQL CONNECT TO default;
 
 	/*
-	 *  Merge blob into pgtexts.text_utf8 table.
+	 *  Merge blob into pdfbox2.page_text_utf8 table.
 	 */
 	EXEC SQL BEGIN TRANSACTION;
 	EXEC SQL
-	  INSERT INTO pgtexts.text_utf8(
+	  INSERT INTO pdfbox2.page_text_utf8(
 		blob,
 		page
 	  ) VALUES (

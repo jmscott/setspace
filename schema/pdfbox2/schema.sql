@@ -385,8 +385,8 @@ COMMENT ON TABLE pdfbox2.page_tsv_utf8 IS
   'Text search vector of at least one page in a pdf blob'
 ;
 
-DROP TABLE IF EXISTS pdfbox2.merge_page_tsv_utf8_pending;
-CREATE TABLE pdfbox2.merge_page_tsv_utf8_pending
+DROP TABLE IF EXISTS pdfbox2.merge_pdf_page_text_utf8_pending;
+CREATE TABLE pdfbox2.merge_pdf_page_text_utf8_pending
 (
 	blob		udig
 				PRIMARY KEY,
@@ -394,12 +394,12 @@ CREATE TABLE pdfbox2.merge_page_tsv_utf8_pending
 				DEFAULT now()
 				NOT NULL
 );
-COMMENT ON TABLE pdfbox2.merge_page_tsv_utf8_pending IS
-  'Actively running processes for merge_page_tsv_utf8'
+COMMENT ON TABLE pdfbox2.merge_pdf_page_text_utf8_pending IS
+  'Actively running processes for merge_pdf_page_text_utf8'
 ;
 
-DROP TABLE IF EXISTS pdfbox2.merge_page_text_utf8_pending;
-CREATE TABLE pdfbox2.merge_page_text_utf8_pending
+DROP TABLE IF EXISTS pdfbox2.merge_pdf_page_tsv_utf8_pending;
+CREATE TABLE pdfbox2.merge_pdf_page_tsv_utf8_pending
 (
 	blob		udig
 				PRIMARY KEY,
@@ -407,8 +407,8 @@ CREATE TABLE pdfbox2.merge_page_text_utf8_pending
 				DEFAULT now()
 				NOT NULL
 );
-COMMENT ON TABLE pdfbox2.merge_page_text_utf8_pending IS
-  'Actively running processes for merge_page_text_utf8'
+COMMENT ON TABLE pdfbox2.merge_pdf_page_tsv_utf8_pending IS
+  'Actively running processes for merge_pdf_page_tsv_utf8'
 ;
 
 COMMIT;

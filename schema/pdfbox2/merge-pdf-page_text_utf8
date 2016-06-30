@@ -1,0 +1,83 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Merge all pages of pending pdf blob into table pdfbox2.page_text_utf8.
+#  Usage:
+#	 merge-pdf-page_text_utf8 <pdf-udig>
+#  Arguments:
+#	1	text search configuration name
+#   	2	udig of the pdf blob
+#  Exit Status:
+#   	0	ok, all pages merged
+#	1	a page blob does not exist, but existing blobs commited
+#   	2	wrong number of arguments
+#	3	unexpected blobio error
+#	4	unexpected postgresql error
+#  See:
+#	PostgreSQL table pdfbox2.pdf_page_text_utf8_pending.
+#  Environment:
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
+#	TMPDIR
+#  
+PROG=merge-pdf-page_text_utf8
+SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
+TMP_PAGE=${TMPDIR:=/tmp}/$PROG-$$.page
+EXIT_STATUS=0
+
+die()
+{
+	STATUS=$2
+	echo "$PROG: ERROR: $1" >&2
+	exit $STATUS
+}
+
+leave()
+{
+	rm -f $TMP_BLOB $TMP_PAGE
+}
+
+trap leave EXIT
+
+test $# = 1 || die 'wrong number of arguments' 2
+
+PDF_UDIG=$1
+
+psql --quiet --no-psqlrc --tuples-only --no-align <<END
+\\o $TMP_PAGE
+select
+	ep.page_blob
+  from
+  	pdfbox2.extract_page_utf8 ep
+	  left outer join pdfbox2.page_text_utf8 ppt on (
+	  	ppt.blob = ep.page_blob
+	)
+  where
+  	ep.pdf_blob = '$PDF_UDIG'
+	and
+	ppt.blob is null
+;
+END
+test $?=0 || die "psql failed: exit status=$?" 4
+
+while read PAGE_UDIG;  do
+	rm -f $TMP_BLOB || exit 3
+	blobio get --udig $PAGE_UDIG --output-path $TMP_BLOB $SERVICE
+	STATUS=$?
+	case $STATUS in
+	0)
+		;;
+	1)
+		EXIT_STATUS=1
+		continue
+		;;
+	*)
+		die "blobio get failed: exit status=$STATUS" 3
+		;;
+	esac
+	SIZE=$(file-stat-size $TMP_BLOB)
+	merge-stdin-page_text_utf8 $PAGE_UDIG $SIZE <$TMP_BLOB ||
+		die "merge-stdin-page_text_utf8 failed: exit status=$?" 4
+done <$TMP_PAGE
+exit $EXIT_STATUS
