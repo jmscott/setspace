@@ -51,10 +51,11 @@ leave()
 }
 
 test $# = 1 || die 'wrong number of arguments'
-SCHEMA=$1
 
 log 'hello, world'
 trap leave EXIT
+log "schema: $1"
+SCHEMA=$1
 
 test -n "$SETSPACE_ROOT" ||
 			die "environment variable not defined: SETSPACE_ROOT"
