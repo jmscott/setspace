@@ -373,7 +373,7 @@ CREATE TABLE pdfbox2.page_tsv_utf8
 
 				page_number <= 2603538
 			) NOT NULL,
-	txt		text
+	tsv		text
 				not null,
 	PRIMARY KEY	(pdf_blob, page_number),
 	FOREIGN KEY	(pdf_blob, page_number)
