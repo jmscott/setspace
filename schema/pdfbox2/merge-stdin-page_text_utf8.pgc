@@ -4,34 +4,36 @@
  *  Usage:
  *	merge-stdin-page_text_utf8 <udig> <tsv_config> <text_byte_count>
  *  Arguments:
- *  	1	udig of the blob
- *	2	name of text search configuration
+ *  	1	udig of the pdf blob
+ *	2	page number in pdf
  *  	3	number of bytes to read on the standard input
  *  Exit Status:
  *  	0	ok, tuple was merged
  *  	1	Wrong number of arguments
- *  	2	Incorrect blob size
- *  	3	malloc() of utf8 buffer failed
- *	4	read() of standard input failed
- *	5	syntax error on udig
- *	6	sql error
- *	7	sql warning
- *	8	blob too small
- *	9	blob too large
+ *  	2	Incorrect pdf page number
+ *  	3	Incorrect blob size
+ *  	4	malloc() of utf8 buffer failed
+ *	5	read() of standard input failed
+ *	6	syntax error on udig
+ *	7	sql error
+ *	8	sql warning
+ *	9	blob too small
+ *	10	blob too large
  */
 
 static char progname[] = "merge-stdin-page_text_utf8";
 
 #define EXIT_OK		0
 #define EXIT_BAD_ARGC	1
-#define EXIT_BAD_SIZE	2
-#define EXIT_BAD_MALLOC 3
-#define EXIT_BAD_READ	4
-#define EXIT_BAD_UDIG	5
-#define EXIT_SQLERROR	6
-#define EXIT_SQLWARN	7
-#define EXIT_BLOB_SMALL 8
-#define EXIT_BLOB_BIG	9
+#define EXIT_BAD_PAGEN	2
+#define EXIT_BAD_SIZE	3
+#define EXIT_BAD_MALLOC 4
+#define EXIT_BAD_READ	5
+#define EXIT_BAD_UDIG	6
+#define EXIT_SQLERROR	7
+#define EXIT_SQLWARN	8
+#define EXIT_BLOB_SMALL 9
+#define EXIT_BLOB_BIG	10
 
 #define COMMON_NEED_READ_BLOB
 #include "../../common.c"
@@ -51,48 +53,62 @@ static struct _ecpg_sql_state_fault no_warns[] =
 int
 main(int argc, char **argv)
 {
-	int size;
+	int stdin_size;
 	size_t len;
-	char *sz;
+	char *sz, *pn;
 
 EXEC SQL BEGIN DECLARE SECTION;
-	char *blob;
-	char *page;
+	char *pdf_blob;
+	char *page_txt;
+	int page_number;
 EXEC SQL END DECLARE SECTION;
 
-	if (argc != 3)
+	if (argc != 4)
 		die(EXIT_BAD_ARGC, "wrong number of arguments");
 
 	close(1);
 
-	//  parse the udig as argv[1]
+	//  parse the pdf udig from argv[1]
 
-	blob = argv[1];
-	len = strlen(blob);
-	if (len < 34 || len > 255 || strchr(blob, ':') == NULL)
-		die2(EXIT_BAD_UDIG, "syntax error in utf8 udig", blob);
+	pdf_blob = argv[1];
+	len = strlen(pdf_blob);
+	if (len < 34 || len > 255 || strchr(pdf_blob, ':') == NULL)
+		die2(EXIT_BAD_UDIG, "syntax error in pdf udig", pdf_blob);
 
-	//  parse the blob size as argv[3]
+	//  parse the pdf page number from argv[2]
 
-	sz = argv[2];
-	len = strlen(sz);
+	pn = argv[2];
+	len = strlen(pn);
 	if (len < 1 || len > 19)
-		die2(EXIT_BAD_SIZE, "blob size not > 0 and < 20 chars", sz);
+		die2(EXIT_BAD_PAGEN, "page number not > 0 and < 20 chars", pn);
 
 	//  need to validate that all chars are decimal digits
 
-	size = atoi(sz);
-	if (size <= 0)
-		die2(EXIT_BAD_SIZE, "atoi(blob size) <= 0", sz);
+	page_number = atoi(pn);
+	if (page_number <= 0)
+		die2(EXIT_BAD_PAGEN, "atoi(page size) <= 0", pn);
+
+	//  parse the page blob size as argv[3]
+
+	sz = argv[3];
+	len = strlen(sz);
+	if (len < 1 || len > 19)
+		die2(EXIT_BAD_SIZE, "blob page size not > 0 and < 20 chars",sz);
+
+	//  need to validate that all chars are decimal digits
+
+	stdin_size = atoi(sz);
+	if (stdin_size <= 0)
+		die2(EXIT_BAD_SIZE, "atoi(stdin page size) <= 0", sz);
 
 	//  allocate the utf8 buffer plus null byte
 
-	page = malloc(size + 1);
-	if (page == NULL)
-		die2(EXIT_BAD_MALLOC, "malloc() failed", sz);
-	page[size] = 0;
+	page_txt = malloc(stdin_size + 1);
+	if (page_txt == NULL)
+		die2(EXIT_BAD_MALLOC, "malloc(page text stdin) failed", sz);
+	page_txt[stdin_size] = 0;
 
-	_read_blob(0, page, size);
+	_read_blob(0, page_txt, stdin_size);
 
 	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error(
 		(struct _ecpg_sql_state_fault *)0
@@ -106,11 +122,13 @@ EXEC SQL END DECLARE SECTION;
 	EXEC SQL BEGIN TRANSACTION;
 	EXEC SQL
 	  INSERT INTO pdfbox2.page_text_utf8(
-		blob,
-		page
+		pdf_blob,
+		page_number,
+		txt
 	  ) VALUES (
-		:blob::udig,
-		:page
+		:pdf_blob::udig,
+		:page_number,
+		:page_txt
 	  )
   	  ON CONFLICT
   		DO NOTHING

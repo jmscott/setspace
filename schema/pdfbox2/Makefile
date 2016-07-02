@@ -69,8 +69,8 @@ install: all
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=r		\
 		$(JCOMPILED)						\
-		keyword.sql						\
 		keyword-count.sql					\
+		keyword.sql						\
 		pdfbox2.flow.example					\
 		pdfbox2.rasql.example					\
 		profile.example						\
@@ -84,6 +84,8 @@ install: all
 		append-pgtexts-brr					\
 		cron-append-pgtexts-brr					\
 		merge-extract_pages_utf8				\
+		merge-pages_text_utf8					\
+		merge-pages_tsv_utf8					\
 		merge-pddocument					\
 		$(PDFBOX2_PREFIX)/sbin
 
@@ -92,9 +94,9 @@ install: all
 		$(PDFBOX2_PREFIX)/bin
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ugo=r		\
-		Makefile						\
 		ExtractKeywords.java					\
 		ExtractPagesUTF8.java					\
+		Makefile						\
 		merge-stdin-page_text_utf8.pgc				\
 		merge-stdin-page_tsv_utf8.pgc				\
 		merge-stdin-pddocument_information.pgc			\

@@ -3,7 +3,7 @@
 #  Synopsis:
 #	Merge all pages of pending pdf blob into table pdfbox2.page_text_utf8.
 #  Usage:
-#	 merge-pdf-page_text_utf8 <pdf-udig>
+#	 merge-pdf-page_text_utf8  <pdf-udig>
 #  Arguments:
 #	1	text search configuration name
 #   	2	udig of the pdf blob
@@ -21,6 +21,7 @@
 #	TMPDIR
 #  
 PROG=merge-pdf-page_text_utf8
+
 SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
 TMP_PAGE=${TMPDIR:=/tmp}/$PROG-$$.page
@@ -44,24 +45,31 @@ test $# = 1 || die 'wrong number of arguments' 2
 
 PDF_UDIG=$1
 
-psql --quiet --no-psqlrc --tuples-only --no-align <<END
+#  select udig of page blobs into temp files
+
+psql --quiet --no-psqlrc --field-separator='	' --tuples-only --no-align <<END
 \\o $TMP_PAGE
 select
+	ep.pdf_blob,
+	ep.page_number,
 	ep.page_blob
   from
   	pdfbox2.extract_page_utf8 ep
 	  left outer join pdfbox2.page_text_utf8 ppt on (
-	  	ppt.blob = ep.page_blob
+	  	ppt.pdf_blob = ep.pdf_blob
+		and
+		ppt.page_number = ep.page_number
 	)
   where
   	ep.pdf_blob = '$PDF_UDIG'
 	and
-	ppt.blob is null
+	ppt.pdf_blob is null
 ;
 END
 test $?=0 || die "psql failed: exit status=$?" 4
 
-while read PAGE_UDIG;  do
+while read PDF_UDIG PAGE_NUMBER PAGE_UDIG;  do
+
 	rm -f $TMP_BLOB || exit 3
 	blobio get --udig $PAGE_UDIG --output-path $TMP_BLOB $SERVICE
 	STATUS=$?
@@ -77,7 +85,10 @@ while read PAGE_UDIG;  do
 		;;
 	esac
 	SIZE=$(file-stat-size $TMP_BLOB)
-	merge-stdin-page_text_utf8 $PAGE_UDIG $SIZE <$TMP_BLOB ||
-		die "merge-stdin-page_text_utf8 failed: exit status=$?" 4
+	merge-stdin-page_text_utf8 					\
+		$PDF_UDIG						\
+		$PAGE_NUMBER						\
+		$SIZE <$TMP_BLOB					||
+			die "merge-stdin-page_text_utf8 failed: exit status=$?" 4
 done <$TMP_PAGE
 exit $EXIT_STATUS

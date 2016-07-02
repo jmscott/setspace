@@ -373,9 +373,18 @@ CREATE TABLE pdfbox2.page_tsv_utf8
 
 				page_number <= 2603538
 			) NOT NULL,
-	tsv		text
-				not null,
-	PRIMARY KEY	(pdf_blob, page_number),
+	/*
+	 *  Note:  see Note above on ts_conf.
+	 */
+	ts_conf		text check (
+				--  verify the text ts_conf value is indeed
+				--  is a true regconfig.  really ugly.
+
+				ts_conf = ts_conf::regconfig::text
+			),
+	tsv		tsvector
+				NOT NULL,
+	PRIMARY KEY	(pdf_blob, page_number, ts_conf),
 	FOREIGN KEY	(pdf_blob, page_number)
 				REFERENCES pdfbox2.extract_page_utf8(
 					pdf_blob,
@@ -383,5 +392,11 @@ CREATE TABLE pdfbox2.page_tsv_utf8
 				)
 );
 COMMENT ON TABLE pdfbox2.page_tsv_utf8 IS
-  'Individual Pages of UTF8 Text extracted from a pdf blob'
+  'text Vector of Individual Pages of UTF8 Text extracted from a pdf blob'
 ;
+CREATE INDEX page_tsv_utf8_rumx ON pdfbox2.page_tsv_utf8
+  USING
+  	rum(tsv rum_tsvector_ops)
+;
+
+COMMIT;
