@@ -89,6 +89,6 @@ while read PDF_UDIG PAGE_NUMBER PAGE_UDIG;  do
 		$PDF_UDIG						\
 		$PAGE_NUMBER						\
 		$SIZE <$TMP_BLOB					||
-			die "merge-stdin-page_text_utf8 failed: exit status=$?" 4
+		       die "merge-stdin-page_text_utf8 failed: exit status=$?" 4
 done <$TMP_PAGE
 exit $EXIT_STATUS

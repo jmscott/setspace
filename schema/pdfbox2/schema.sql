@@ -399,4 +399,44 @@ CREATE INDEX page_tsv_utf8_rumx ON pdfbox2.page_tsv_utf8
   	rum(tsv rum_tsvector_ops)
 ;
 
+/*
+ *  Pending page_text_utf8 jobs.
+ *
+ *  Note:
+ *	Notice no fk reference to setspace.service(blob).
+ *	Sudden termination may leave stale entries.
+ */
+DROP TABLE IF EXISTS pdfbox2.page_text_utf8_pending CASCADE;
+CREATE TABLE pdfbox2.page_text_utf8_pending
+(
+	blob		udig
+				PRIMARY KEY,
+	insert_time	timestamptz
+				DEFAULT now()
+				NOT NULL
+);
+COMMENT ON TABLE pdfbox2.page_text_utf8_pending IS
+  'Pending page_text_utf8 processes'
+;
+
+/*
+ *  Pending page_tst_utf8 jobs.
+ *
+ *  Note:
+ *	Notice no fk reference to setspace.service(blob).
+ *	Sudden termination may leave stale entries.
+ */
+DROP TABLE IF EXISTS pdfbox2.page_tsv_utf8_pending CASCADE;
+CREATE TABLE pdfbox2.page_tsv_utf8_pending
+(
+	blob		udig
+				PRIMARY KEY,
+	insert_time	timestamptz
+				DEFAULT now()
+				NOT NULL
+);
+COMMENT ON TABLE pdfbox2.page_tsv_utf8_pending IS
+  'Pending page_tsv_utf8 (text search vector) processes'
+;
+
 COMMIT;
