@@ -11,8 +11,8 @@
 #   	0	ok, all pages merged
 #	1	a page blob does not exist, but existing blobs commited
 #   	2	wrong number of arguments
-#	3	unexpected blobio error
-#	4	unexpected postgresql error
+#	3	unexpected blobio error, some pages may be merged
+#	4	unexpected postgresql error, some pages may be merged
 #  See:
 #	PostgreSQL table pdfbox2.pdf_page_text_utf8_pending.
 #  Environment:
