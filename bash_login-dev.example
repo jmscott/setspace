@@ -9,13 +9,12 @@
 #	. etc/bash_login
 #  See:
 #	lib/profile.example
-#	https://github.com/jmscott/work/xtitle
 #
 export SETSPACE_ROOT=$HOME/opt/setspace
 
 export BLOBIO_ROOT=$HOME/opt/blobio
 export BLOBIO_SERVICE=bio4:localhost:1796
-export BLOBIO_RO_SERVICE=rofs:$BLOBIO_ROOT
+export BLOBIO_GET_SERVICE=fs:$BLOBIO_ROOT
 export BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=sha}
 
 PS1='sets@opt> '
