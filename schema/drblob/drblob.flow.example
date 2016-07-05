@@ -72,7 +72,8 @@ command get_is_brr_log
 	exit_status is OK when in {
 		0,			#  is a blob request log
 		1,			#  is not a blob request log
-		2			#  blob is empty
+		2,			#  blob is empty
+		3			#  blob does not exist
 	};
 }
 
@@ -353,7 +354,8 @@ command get_is_fdr_log
 	exit_status is OK when in {
 		0,			#  is a flow detail log
 		1,			#  is not a flow detail log
-		2			#  blob is empty
+		2,			#  blob is empty
+		3			#  blob does not exist
 	};
 }
 
@@ -574,7 +576,8 @@ command get_is_qdr_log
 	exit_status is OK when in {
 		0,			#  is a query detail log
 		1,			#  is not a query detail log
-		2			#  blob is empty
+		2,			#  blob is empty
+		3			#  blob does not exist
 	};
 }
 
