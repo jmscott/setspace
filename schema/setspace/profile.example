@@ -10,7 +10,7 @@
 SCHEMA_ROOT=$SETSPACE_ROOT/schema/setspace
 cd $SCHEMA_ROOT || exit
 
-BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
+export BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 
 test ! -x tmp && mkdir -p tmp && test $? != 0 && exit 1
 export TMPDIR=$SCHEMA_ROOT/tmp
