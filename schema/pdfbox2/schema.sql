@@ -439,4 +439,16 @@ COMMENT ON TABLE pdfbox2.page_tsv_utf8_pending IS
   'Pending page_tsv_utf8 (text search vector) processes'
 ;
 
+DROP TABLE IF EXISTS pdfbox2.merge_pages_text_utf8 cascade;
+CREATE TABLE pdfbox2.merge_pages_text_utf8
+(
+	blob		udig
+				primary key,
+	exit_status	smallint check (
+				exit_status >= 0
+				and
+				exit_status <= 255
+			) not null
+);
+
 COMMIT;
