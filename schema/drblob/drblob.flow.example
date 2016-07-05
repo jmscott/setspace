@@ -838,7 +838,8 @@ command get_is_xdr_log
 	exit_status is OK when in {
 		0,			#  is a execution detail log
 		1,			#  is not a execution detail log
-		2			#  blob is empty
+		2,			#  blob is empty
+		3			#  blob does not exist
 	};
 }
 
