@@ -3,7 +3,7 @@
 #  Synopsis:
 #	Merge all pages of pending pdf blob into table pdfbox2.page_text_utf8.
 #  Usage:
-#	 merge-pdf-page_text_utf8  <pdf-udig>
+#	 merge-pages_text_utf8  <pdf-udig>
 #  Arguments:
 #	1	text search configuration name
 #   	2	udig of the pdf blob
@@ -20,7 +20,7 @@
 #	BLOBIO_GET_SERVICE
 #	TMPDIR
 #  
-PROG=merge-pdf-page_text_utf8
+PROG=merge-pages_text_utf8
 
 SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
