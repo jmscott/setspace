@@ -411,4 +411,92 @@ COMMENT ON TABLE pdfbox2.merge_pages_text_utf8_pending IS
   'Pending merge-pages_text_utf8 jobs'
 ;
 
+/*
+ *  Text of individual pages of a pdf blob
+ */
+DROP TABLE IF EXISTS pdfbox2.page_tsv_utf8 CASCADE;
+CREATE TABLE pdfbox2.page_tsv_utf8
+(
+	pdf_blob	udig,
+	page_number	int check (
+				page_number > 0
+				and
+
+				-- Note: why 2603538?  see
+				-- http://tex.stackexchange.com/questions/97071
+
+				page_number <= 2603538
+			) NOT NULL,
+	ts_conf		text check (
+				--  verify the text ts_conf value is indeed
+				--  is a true regconfig.  really ugly.
+				ts_conf = ts_conf::regconfig::text
+			),
+	tsv		text
+				not null,
+	PRIMARY KEY	(pdf_blob, page_number),
+	FOREIGN KEY	(pdf_blob, page_number)
+				REFERENCES pdfbox2.extract_page_utf8(
+					pdf_blob,
+					page_number
+				)
+);
+COMMENT ON TABLE pdfbox2.page_tsv_utf8 IS
+  'Individual Pages of UTF8 Text extracted from a pdf blob'
+;
+
+DROP TABLE IF EXISTS pdfbox2.merge_pages_tsv_utf8 CASCADE;
+CREATE TABLE pdfbox2.merge_pages_tsv_utf8
+(
+	blob		udig
+				primary key,
+	stderr_blob	udig,
+	exit_status	smallint check (
+				exit_status >= 0
+				and
+				exit_status <= 255
+			) not null
+);
+
+COMMENT ON TABLE pdfbox2.merge_pages_tsv_utf8 IS
+  'Exit Status of merge-pages_tsv_utf8 script'
+;
+
+DROP TABLE IF EXISTS pdfbox2.merge_pages_tsv_utf8 cascade;
+CREATE TABLE pdfbox2.merge_pages_tsv_utf8
+(
+	blob		udig
+				PRIMARY KEY,
+
+	/*
+	 *  Note:
+	 *	stderr_blob currently ignored.
+	 *	eventually hoq will flow stdout/stderr of executed process,
+	 *	instead of just flowing the exit_status.
+	 */
+
+	stderr_blob	udig,
+	exit_status	smallint check (
+				exit_status >= 0
+				and
+				exit_status <= 255
+			) not null
+);
+COMMENT ON TABLE pdfbox2.merge_pages_tsv_utf8 IS
+  'Exit Status of merge-pages_tsv_utf8 script'
+;
+
+DROP TABLE IF EXISTS pdfbox2.merge_pages_tsv_utf8_pending cascade;
+CREATE TABLE pdfbox2.merge_pages_tsv_utf8_pending
+(
+	blob		udig
+				PRIMARY KEY,
+	insert_time	timestamptz
+				default now()
+				not null
+);
+COMMENT ON TABLE pdfbox2.merge_pages_tsv_utf8_pending IS
+  'Pending merge-pages_tsv_utf8 jobs'
+;
+
 COMMIT;

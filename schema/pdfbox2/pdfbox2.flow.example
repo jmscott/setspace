@@ -435,3 +435,120 @@ query insert_merge_pages_text_utf8(brr.udig, merge_pages_text_utf8.exit_status)
   	#  Note: hack to get around lack of <command>.invoked bool
   	merge_pages_text_utf8.exit_status != 256
 ;
+
+sql query in_merge_pages_tsv_utf8_table row
+{
+	statement = `
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	pdfbox2.merge_pages_tsv_utf8
+	    WHERE
+	    	blob = $1::udig
+	)
+	`;
+	result row is (
+		answer bool
+	);
+}
+
+query in_merge_pages_tsv_utf8_table(brr.udig)
+  when
+  	extract_pages_utf8_exists.exit_status == 0
+;
+
+sql query in_merge_pages_tsv_utf8_pending_table row
+{
+	statement = `
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	pdfbox2.merge_pages_tsv_utf8_pending
+	    WHERE
+	    	blob = $1::udig
+	)
+	`;
+	result row is (
+		answer bool
+	);
+}
+
+query in_merge_pages_tsv_utf8_pending_table(brr.udig)
+  when
+  	in_merge_pages_tsv_utf8_table.answer == false
+;
+
+sql query insert_merge_pages_tsv_utf8_pending row
+{
+	statement = `
+	INSERT INTO pdfbox2.merge_pages_tsv_utf8_pending(
+		blob
+	  ) VALUES(
+	  	$1::udig
+	  )
+	  ON CONFLICT
+	  	DO NOTHING
+	  RETURNING
+	  	true
+	`;
+	result row is (
+		inserted bool
+	);
+}
+
+query insert_merge_pages_tsv_utf8_pending(brr.udig)
+  when
+	in_merge_pages_tsv_utf8_pending_table.answer == false
+;
+
+command merge_pages_tsv_utf8
+{
+	path = "sbin/merge-pages_tsv_utf8";
+	argv = (
+		"english"
+	);
+}
+
+call merge_pages_tsv_utf8(brr.udig)
+  when
+  	insert_merge_pages_tsv_utf8_pending.inserted == true
+;
+
+sql exec delete_merge_pages_tsv_utf8_pending
+{
+	statement = `
+	DELETE FROM pdfbox2.merge_pages_tsv_utf8_pending
+	  WHERE
+	  	blob = $1::udig
+	`;
+}
+
+query delete_merge_pages_tsv_utf8_pending(brr.udig)
+  when
+  	merge_pages_tsv_utf8.exit_status == 0
+;
+
+sql exec insert_merge_pages_tsv_utf8
+{
+	statement = `
+	INSERT INTO pdfbox2.merge_pages_tsv_utf8(
+		blob,
+		exit_status
+	  ) VALUES(
+	  	$1::udig,
+		$2::int
+	  )
+	  ON CONFLICT
+	  	DO NOTHING
+	  RETURNING
+	  	true
+	`;
+}
+
+query insert_merge_pages_tsv_utf8(brr.udig, merge_pages_tsv_utf8.exit_status)
+  when
+  	#  Note: hack to get around lack of <command>.invoked bool
+  	merge_pages_tsv_utf8.exit_status != 256
+;
