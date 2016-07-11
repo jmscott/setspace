@@ -37,7 +37,7 @@ main(int argc, char **argv)
 	/*
 	 *  Stat the file to get the size.
 	 */
-	if (stat(path, &st) < 0)
+	if (stat(path, &st) != 0)
 		die3(EXIT_BAD_STAT, path, "stat() failed", strerror(errno));
 
 	/*
