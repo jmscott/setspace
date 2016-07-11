@@ -323,9 +323,12 @@ static char *
 ulltoa(unsigned long long ull, char *digits)
 { 
 	char const digit[] = "0123456789";
-	char* p = digits, *end_p;
+	char* p, *end_p;
 	unsigned long long power = ull;
 
+	//  find the end of the formated ascii string
+
+	p = digits;
 	do
 	{
 		++p;
@@ -333,6 +336,8 @@ ulltoa(unsigned long long ull, char *digits)
 
 	} while (power);
 	end_p = p;
+
+	//  in reverse order, replace byte with the ascii chars
 
 	do
 	{
