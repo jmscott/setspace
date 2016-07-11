@@ -305,6 +305,11 @@ sql exec delete_extract_pages_utf8_pending
 	`;
 }
 
+#
+#  Note:
+#	wrong.
+#	must delete when merge_pages_text_utf8 exits for any condition.
+#
 query delete_extract_pages_utf8_pending(brr.udig)
   when
 	merge_extract_pages_utf8.exit_status == 0
@@ -524,6 +529,12 @@ sql exec delete_merge_pages_tsv_utf8_pending
 	  	blob = $1::udig
 	`;
 }
+
+#
+#  Note:
+#	wrong.
+#	must delete when merge_pages_tsv_utf8 exits for any condition.
+#
 
 query delete_merge_pages_tsv_utf8_pending(brr.udig)
   when
