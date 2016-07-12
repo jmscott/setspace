@@ -5,6 +5,7 @@
 #
 
 PROG=flowd-stat
+STALE_MMIN=2
 
 die()
 {
@@ -24,9 +25,24 @@ do_stat()
 
 	echo $1: $TODAY_LOG
 
-	test -e $LOG || return
+	#  does the log file exist?
+
+	if [ ! -e $LOG ];  then
+		echo "	No log file - is flowd $1 running?"
+		return
+	fi
 	test -r $LOG || die "flowd log not readable: $LOG"
-	echo
+
+	#  has the log been touched recenty?
+
+	IS_STALE=$(find $LOG -mmin -$STALE_MMIN)
+	test $? || die "find $LOG failed: exit status=$?"
+	if [ "$IS_STALE" = '' ];  then
+		echo "	Log not changed in $STALE_MMIN minutes - "	\
+		     "is flowd $1 running?"
+		return
+	fi
+
 	egrep ': (ERROR|WARN): ' $LOG | while read L;  do
 		echo "	$L"
 	done
