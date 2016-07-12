@@ -17,14 +17,31 @@ cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed: exit status=$?"
 . etc/profile
 
 TODAY_LOG=$(echo flowd-$(date +%a)).log
-find-schema | while read SCH;  do
-	LOG=schema/$SCH/log/$TODAY_LOG
 
-	test -e $LOG || continue
+do_stat()
+{
+	LOG=schema/$1/log/$TODAY_LOG
+
+	echo $1: $TODAY_LOG
+
+	test -e $LOG || return
 	test -r $LOG || die "flowd log not readable: $LOG"
 	echo
-	echo $SCH: $TODAY_LOG
 	egrep ': (ERROR|WARN): ' $LOG | while read L;  do
 		echo "	$L"
 	done
-done
+}
+
+case $# in
+0)
+	find-schema | while read SCH;  do
+		do_stat $SCH
+	done
+	;;
+*)
+	while [ -n "$1" ];  do
+		do_stat $1
+		shift
+	done
+	;;
+esac
