@@ -7,8 +7,8 @@
 
 boot
 {
-	brr_capacity = 16;
-	flow_worker_count = 8;
+	brr_capacity = 8;
+	flow_worker_count = 4;
 	os_exec_worker_count = 4;
 	os_exec_capacity = 4;
 
