@@ -1,6 +1,7 @@
 /*
  *  Synopsis:
  *	Atomatically flip either a fifo->regular or regular->fifo files
+ *
  *  Usage:
  *  	flip-tail file spool/route/file_mime_pdf			\
  *  					spool/route/file_mime_pdf.12345
