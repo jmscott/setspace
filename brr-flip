@@ -3,19 +3,15 @@
 #  Synopsis:
 #	Flip an active blob request log file for a particular schema.
 #  Usage:
-#	flip-brr-file <schema>
-#	flip-brr-file setspace
+#	brr-flip <schema>
+#	brr-flip setspace
 #  See:
 #	flip-tail.c
 #  Exit Status:
 #	0	all active brr files have been flipped
-#	1	unknown error, flowd may not have started
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
-#  Note:
-#	Might be nice to wait until the reader of the brr file closes,
-#	via fuser.
+#	1	unknown error
+#  See:
+#	flip-tail.c
 #
 
 PROG=$(basename $0)

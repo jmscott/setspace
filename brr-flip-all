@@ -41,7 +41,6 @@ cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
 
 find-schema | while read SCHEMA;  do
 	log "schema: $SCHEMA"
-	flip-brr-file $SCHEMA ||
-			die "flip-brr-file $SCHEMA failed: exit status=$?"
+	brr-flip $SCHEMA || die "brr-flip $SCHEMA failed: exit status=$?"
 done
 exit 0

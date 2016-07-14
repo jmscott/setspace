@@ -57,6 +57,8 @@ install: all
 				-d $(SETSPACE_PREFIX)/tmp
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		boot-flowd						\
+		brr-flip						\
+		brr-flip-all						\
 		brr-stat						\
 		cron-pg_dump-mutable					\
 		cron-reboot						\
@@ -66,8 +68,6 @@ install: all
 		find-brr						\
 		find-rolled-brr						\
 		find-schema						\
-		flip-all-brr-file					\
-		flip-brr-file						\
 		flowd-stat						\
 		kill-all-flowd						\
 		kill-flowd						\
