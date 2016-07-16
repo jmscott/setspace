@@ -60,7 +60,7 @@ SELECT
 		AND
 		ppt.page_number = ep.page_number
 	)
-  where
+  WHERE
   	ep.pdf_blob = '$PDF_UDIG'
 	AND
 	ppt.pdf_blob IS NULL
