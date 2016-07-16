@@ -19,6 +19,8 @@
 #	BLOBIO_SERVICE
 #	BLOBIO_GET_SERVICE
 #	TMPDIR
+#  Note:
+#	Can this script be replaced with an SQL in insert in pdfbox2.flow?
 #  
 PROG=merge-pages_tsv_utf8
 
