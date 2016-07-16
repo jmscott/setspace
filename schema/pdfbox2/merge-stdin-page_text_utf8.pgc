@@ -19,6 +19,8 @@
  *	8	sql warning
  *	9	blob too small
  *	10	blob too large
+ *  Note:
+ *	Empty page blob not handled correctly
  */
 
 static char progname[] = "merge-stdin-page_text_utf8";
@@ -36,13 +38,14 @@ static char progname[] = "merge-stdin-page_text_utf8";
 #define EXIT_BLOB_BIG	10
 
 #define COMMON_NEED_READ_BLOB
+#define COMMON_NEED_A2UI31
 #include "../../common.c"
 
 #define COMMON_ECPG_NEED_SQL_WARNING
 #define COMMON_ECPG_NEED_SQL_ERROR
 #include "../../common-ecpg.c"
 
-#include <stdlib.h>
+//  ignore these sql warnings
 
 static struct _ecpg_sql_state_fault no_warns[] =
 {
@@ -78,30 +81,16 @@ EXEC SQL END DECLARE SECTION;
 	//  parse the pdf page number from argv[2]
 
 	pn = argv[2];
-	len = strlen(pn);
-	if (len < 1 || len > 19)
-		die2(EXIT_BAD_PAGEN, "page number not > 0 and < 20 chars", pn);
-
-	//  need to validate that all chars are decimal digits
-
-	page_number = atoi(pn);
-	if (page_number <= 0)
-		die2(EXIT_BAD_PAGEN, "atoi(page size) <= 0", pn);
+	page_number = a2ui31(pn, "page number", EXIT_BAD_PAGEN);
+	if (page_number == 0)
+		die2(EXIT_BAD_PAGEN, "pdf page number is 0", pn);
 
 	//  parse the page blob size as argv[3]
 
 	sz = argv[3];
-	len = strlen(sz);
-	if (len < 1 || len > 19)
-		die2(EXIT_BAD_SIZE, "blob page size not > 0 and < 20 chars",sz);
+	stdin_size = a2ui31(sz, "page blob input size", EXIT_BAD_SIZE);
 
-	//  need to validate that all chars are decimal digits
-
-	stdin_size = atoi(sz);
-	if (stdin_size <= 0)
-		die2(EXIT_BAD_SIZE, "atoi(stdin page size) <= 0", sz);
-
-	//  allocate the utf8 buffer plus null byte
+	//  allocate the buffer to hold entire blob read from stdin
 
 	page_txt = malloc(stdin_size + 1);
 	if (page_txt == NULL)

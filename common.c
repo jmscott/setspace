@@ -14,12 +14,13 @@
  *  See:
  *	flip-tail and c programs in schema directories.
  *  Note:
- *	Rename common.c to unistd.c?
+ *	Rename common.c to unistd.c or common-cli.c?
  */
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
 #include <strings.h>
+#include <stdlib.h>
 
 //  Note: should be PIPE_BUF or MAX_MSG_SIZE?
 
@@ -43,6 +44,10 @@
 
 #if defined(COMMON_NEED_READ_BLOB)
 #define COMMON_NEED_READ
+#endif
+
+#if defined(COMMON_NEED_A2UI31)
+#define COMMON_NEED_DIE3
 #endif
 
 /*
@@ -346,6 +351,51 @@ ulltoa(unsigned long long ull, char *digits)
 
 	} while (ull);
 	return end_p;
+}
+
+#endif
+
+#ifdef COMMON_NEED_A2UI31
+
+/*
+ *  Strictly parse an ascii string representing an unsigned int in the range
+ *  0 <= 2147483647.  Any non digit char is fatal.
+ */
+int
+a2ui31(char *src, char *what, int die_status)
+{
+	int len = 0; 
+	char *p = src, c;
+	long ll;
+
+	/*
+	 *  Note:
+	 *	Should be a compile time, not run time!
+	 */
+	if (sizeof (long int) < 8)
+		die(255, "sizeof (long int) < 8");
+
+	//  verify source is <= 10 digits
+
+	while ((c = *p++)) {
+		if ('0' < c||c > '9')
+			die3(die_status, what, "not a cardinal number", src);
+		if (len++ > 10)
+			die3(die_status, what, "cardinal > 10 digits", src);
+	}
+
+	//  build the long long int number
+
+	ll = 0;
+	p = src;
+	while ((c = *p++))
+		ll = ll * 10 + (c - '0');
+
+	//  is the number too big?
+
+	if (ll >  2147483647)
+		die2(die_status, what, ">2147483647");
+	return (int)ll;
 }
 
 #endif
