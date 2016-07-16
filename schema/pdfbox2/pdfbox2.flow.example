@@ -305,14 +305,11 @@ sql exec delete_extract_pages_utf8_pending
 	`;
 }
 
-#
-#  Note:
-#	wrong.
-#	must delete when merge_pages_text_utf8 exits for any condition.
-#
 query delete_extract_pages_utf8_pending(brr.udig)
   when
-	merge_extract_pages_utf8.exit_status == 0
+  	#  Note: hack to get around lack of <command>.invoked bool
+	#
+	merge_extract_pages_utf8.exit_status != 256
 ;
 
 command extract_pages_utf8_exists
@@ -397,6 +394,10 @@ query insert_merge_pages_text_utf8_pending(brr.udig)
 command merge_pages_text_utf8
 {
 	path = "sbin/merge-pages_text_utf8";
+	exit_status is OK when in {
+		0,	#  ok, all pages merged
+		1	#  at least one page blob does not exist
+	};
 }
 
 call merge_pages_text_utf8(brr.udig)
@@ -438,6 +439,7 @@ sql exec insert_merge_pages_text_utf8
 query insert_merge_pages_text_utf8(brr.udig, merge_pages_text_utf8.exit_status)
   when
   	#  Note: hack to get around lack of <command>.invoked bool
+
   	merge_pages_text_utf8.exit_status != 256
 ;
 
@@ -514,6 +516,10 @@ command merge_pages_tsv_utf8
 	argv = (
 		"english"
 	);
+	exit_status is OK when in {
+		0,	#  ok, all pages merged
+		1	#  at least one page blob does not exist
+	};
 }
 
 call merge_pages_tsv_utf8(brr.udig)
@@ -538,7 +544,7 @@ sql exec delete_merge_pages_tsv_utf8_pending
 
 query delete_merge_pages_tsv_utf8_pending(brr.udig)
   when
-  	merge_pages_tsv_utf8.exit_status == 0
+  	merge_pages_tsv_utf8.exit_status != 256
 ;
 
 sql exec insert_merge_pages_tsv_utf8
