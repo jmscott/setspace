@@ -361,6 +361,7 @@ DROP TABLE IF EXISTS pdfbox2.merge_pages_text_utf8 CASCADE;
 CREATE TABLE pdfbox2.merge_pages_text_utf8
 (
 	blob		udig
+				references pdfbox2.pddocument(blob)
 				primary key,
 	stderr_blob	udig,
 	exit_status	smallint check (
@@ -370,30 +371,6 @@ CREATE TABLE pdfbox2.merge_pages_text_utf8
 			) not null
 );
 
-COMMENT ON TABLE pdfbox2.merge_pages_text_utf8 IS
-  'Exit Status of merge-pages_text_utf8 script'
-;
-
-DROP TABLE IF EXISTS pdfbox2.merge_pages_text_utf8 cascade;
-CREATE TABLE pdfbox2.merge_pages_text_utf8
-(
-	blob		udig
-				PRIMARY KEY,
-
-	/*
-	 *  Note:
-	 *	stderr_blob currently ignored.
-	 *	eventually hoq will flow stdout/stderr of executed process,
-	 *	instead of just flowing the exit_status.
-	 */
-
-	stderr_blob	udig,
-	exit_status	smallint check (
-				exit_status >= 0
-				and
-				exit_status <= 255
-			) not null
-);
 COMMENT ON TABLE pdfbox2.merge_pages_text_utf8 IS
   'Exit Status of merge-pages_text_utf8 script'
 ;
@@ -412,7 +389,7 @@ COMMENT ON TABLE pdfbox2.merge_pages_text_utf8_pending IS
 ;
 
 /*
- *  Text of individual pages of a pdf blob
+ *  Text Search Vector of individual pages of a pdf blob
  */
 DROP TABLE IF EXISTS pdfbox2.page_tsv_utf8 CASCADE;
 CREATE TABLE pdfbox2.page_tsv_utf8
@@ -449,6 +426,7 @@ DROP TABLE IF EXISTS pdfbox2.merge_pages_tsv_utf8 CASCADE;
 CREATE TABLE pdfbox2.merge_pages_tsv_utf8
 (
 	blob		udig
+				references pdfbox2.pddocument(blob)
 				primary key,
 	stderr_blob	udig,
 	exit_status	smallint check (
@@ -466,6 +444,7 @@ DROP TABLE IF EXISTS pdfbox2.merge_pages_tsv_utf8 cascade;
 CREATE TABLE pdfbox2.merge_pages_tsv_utf8
 (
 	blob		udig
+				references pdfbox2.pddocument(blob)
 				PRIMARY KEY,
 
 	/*
