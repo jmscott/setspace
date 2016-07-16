@@ -46,7 +46,7 @@
 #define COMMON_NEED_READ
 #endif
 
-#if defined(COMMON_NEED_A2UI31)
+#if defined(COMMON_NEED_A2UI32)
 #define COMMON_NEED_DIE3
 #endif
 
@@ -326,7 +326,7 @@ _fchmod(int fd, int mode)
  */
 static char *
 ulltoa(unsigned long long ull, char *digits)
-{ 
+{
 	char const digit[] = "0123456789";
 	char* p, *end_p;
 	unsigned long long power = ull;
@@ -355,14 +355,17 @@ ulltoa(unsigned long long ull, char *digits)
 
 #endif
 
-#ifdef COMMON_NEED_A2UI31
+#ifdef COMMON_NEED_A2UI32
 
 /*
- *  Strictly parse an ascii string representing an unsigned int in the range
- *  0 <= 2147483647.  Any non digit char is fatal.
+ *  Synopsis:
+ *	Strictly parse an ascii string representing an unsigned 32 bit intt
+ *	in the range 0 <= 4294967295.  die() upon error.
+ *  Usage:
+ *	blob_size = a2ui32(argv[1], "blob size", 1);
  */
-int
-a2ui31(char *src, char *what, int die_status)
+unsigned int
+a2ui32(char *src, char *what, int die_status)
 {
 	int len = 0; 
 	char *p = src, c;
@@ -370,7 +373,7 @@ a2ui31(char *src, char *what, int die_status)
 
 	/*
 	 *  Note:
-	 *	Should be a compile time, not run time!
+	 *	Must be a compile time option!
 	 */
 	if (sizeof (long int) < 8)
 		die(255, "sizeof (long int) < 8");
@@ -393,9 +396,9 @@ a2ui31(char *src, char *what, int die_status)
 
 	//  is the number too big?
 
-	if (ll >  2147483647)
-		die2(die_status, what, ">2147483647");
-	return (int)ll;
+	if (ll > 4294967295)
+		die2(die_status, what, "> 4294967295");
+	return (unsigned int)ll;
 }
 
 #endif

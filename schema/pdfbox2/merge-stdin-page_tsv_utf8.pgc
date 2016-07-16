@@ -38,7 +38,7 @@ static char progname[] = "merge-stdin-page_tsv_utf8";
 #define EXIT_BLOB_BIG	10
 
 #define COMMON_NEED_READ_BLOB
-#define COMMON_NEED_A2UI31
+#define COMMON_NEED_A2UI32
 #include "../../common.c"
 
 #define COMMON_ECPG_NEED_SQL_WARNING
@@ -87,14 +87,14 @@ EXEC SQL END DECLARE SECTION;
 	//  parse the pdf page number from argv[3]
 
 	pn = argv[3];
-	page_number = a2ui31(pn, "page number", EXIT_BAD_PAGEN);
+	page_number = a2ui32(pn, "page number", EXIT_BAD_PAGEN);
 	if (page_number == 0)
 		die2(EXIT_BAD_PAGEN, "pdf page number is 0", pn);
 
 	//  parse the page blob size as argv[3]
 
 	sz = argv[4];
-	stdin_size = a2ui31(sz, "page blob input size", EXIT_BAD_SIZE);
+	stdin_size = a2ui32(sz, "page blob input size", EXIT_BAD_SIZE);
 
 	//  allocate the utf8 buffer plus null byte
 

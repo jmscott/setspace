@@ -49,7 +49,7 @@ static char progname[] = "merge-stdin-pddocument_information_metadata";
 #define EXIT_BLOB_BIG	9
 
 #define COMMON_NEED_READ_BLOB
-#define COMMON_NEED_A2UI31
+#define COMMON_NEED_A2UI32
 #include "../../common.c"
 
 #define COMMON_ECPG_NEED_SQL_WARNING
@@ -159,7 +159,7 @@ EXEC SQL END DECLARE SECTION;
 	//  Note: need to move this code to ../../common.c
 
 	sz = argv[3];
-	input_size = a2ui31(sz, "input pdf blob size", EXIT_BAD_SIZE);
+	input_size = a2ui32(sz, "input pdf blob size", EXIT_BAD_SIZE);
 
 	//  allocate the mime fields buffer plus null byte
 
