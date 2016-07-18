@@ -49,7 +49,7 @@ CREATE TABLE pdfbox2.pddocument
 
 	exit_status	smallint check (
 				exit_status >= 0
-				and
+				AND
 				exit_status <= 255
 			)
 			not null,
@@ -155,7 +155,7 @@ CREATE TABLE pdfbox2.extract_page_utf8
 
 	page_number	int check (
 				page_number > 0
-				and
+				AND
 
 				-- Note: why 2603538?  see
 				-- http://tex.stackexchange.com/questions/97071
@@ -226,10 +226,10 @@ CREATE TABLE pdfbox2.pddocument_information
 					PRIMARY KEY,
 	exit_status		smallint check (
 					exit_status >= 0
-					and
+					AND
 					exit_status <= 255
 				)
-				not null,
+				NOT NULL,
 
 	title			text check (
 					length(title) < 32768
@@ -292,7 +292,7 @@ CREATE TABLE pdfbox2.pddocument_information_metadata
 					PRIMARY KEY,
 	exit_status		smallint check (
 					exit_status >= 0
-					and
+					AND
 					exit_status <= 255
 				)
 );
@@ -312,20 +312,20 @@ CREATE TABLE pdfbox2.pddocument_information_metadata_custom
 				ON DELETE CASCADE,
 	key		text check (
 				length(key) > 0
-				and
+				AND
 				length(key) < 256
-				and
+				AND
 				position(': ' in key) < 1
-				and
+				AND
 				position(E'\n' in key) < 1
 			),
 	value		text check (
 				position(E'\n' in value) < 1
-				and
+				AND
 				length(value) < 32768
 			) not null,
 
-	primary key	(blob, key)
+	PRIMARY KEY	(blob, key)
 );
 
 /*
@@ -337,7 +337,7 @@ CREATE TABLE pdfbox2.page_text_utf8
 	pdf_blob	udig,
 	page_number	int check (
 				page_number > 0
-				and
+				AND
 
 				-- Note: why 2603538?  see
 				-- http://tex.stackexchange.com/questions/97071
@@ -345,13 +345,14 @@ CREATE TABLE pdfbox2.page_text_utf8
 				page_number <= 2603538
 			) NOT NULL,
 	txt		text
-				not null,
+				NOT NULL,
 	PRIMARY KEY	(pdf_blob, page_number),
 	FOREIGN KEY	(pdf_blob, page_number)
 				REFERENCES pdfbox2.extract_page_utf8(
 					pdf_blob,
 					page_number
 				)
+				ON DELETE CASCADE
 );
 COMMENT ON TABLE pdfbox2.page_text_utf8 IS
   'Individual Pages of UTF8 Text extracted from a pdf blob'
@@ -361,12 +362,13 @@ DROP TABLE IF EXISTS pdfbox2.merge_pages_text_utf8 CASCADE;
 CREATE TABLE pdfbox2.merge_pages_text_utf8
 (
 	blob		udig
-				references pdfbox2.pddocument(blob)
-				primary key,
+				REFERENCES pdfbox2.pddocument(blob)
+				ON DELETE CASCADE
+				PRIMARY KEY,
 	stderr_blob	udig,
 	exit_status	smallint check (
 				exit_status >= 0
-				and
+				AND
 				exit_status <= 255
 			) not null
 );
@@ -381,8 +383,8 @@ CREATE TABLE pdfbox2.merge_pages_text_utf8_pending
 	blob		udig
 				PRIMARY KEY,
 	insert_time	timestamptz
-				default now()
-				not null
+				DEFAULT now()
+				NOT NULL
 );
 COMMENT ON TABLE pdfbox2.merge_pages_text_utf8_pending IS
   'Pending merge-pages_text_utf8 jobs'
@@ -397,7 +399,7 @@ CREATE TABLE pdfbox2.page_tsv_utf8
 	pdf_blob	udig,
 	page_number	int check (
 				page_number > 0
-				and
+				AND
 
 				-- Note: why 2603538?  see
 				-- http://tex.stackexchange.com/questions/97071
@@ -410,13 +412,14 @@ CREATE TABLE pdfbox2.page_tsv_utf8
 				ts_conf = ts_conf::regconfig::text
 			),
 	tsv		text
-				not null,
+				NOT NULL,
 	PRIMARY KEY	(pdf_blob, page_number),
 	FOREIGN KEY	(pdf_blob, page_number)
 				REFERENCES pdfbox2.extract_page_utf8(
 					pdf_blob,
 					page_number
 				)
+				ON DELETE CASCADE
 );
 COMMENT ON TABLE pdfbox2.page_tsv_utf8 IS
   'Individual Pages of UTF8 Text extracted from a pdf blob'
@@ -426,14 +429,15 @@ DROP TABLE IF EXISTS pdfbox2.merge_pages_tsv_utf8 CASCADE;
 CREATE TABLE pdfbox2.merge_pages_tsv_utf8
 (
 	blob		udig
-				references pdfbox2.pddocument(blob)
-				primary key,
+				REFERENCES pdfbox2.pddocument(blob)
+				ON DELETE CASCADE
+				PRIMARY KEY,
 	stderr_blob	udig,
 	exit_status	smallint check (
 				exit_status >= 0
-				and
+				AND
 				exit_status <= 255
-			) not null
+			) NOT NULL
 );
 
 COMMENT ON TABLE pdfbox2.merge_pages_tsv_utf8 IS
@@ -444,9 +448,9 @@ DROP TABLE IF EXISTS pdfbox2.merge_pages_tsv_utf8 cascade;
 CREATE TABLE pdfbox2.merge_pages_tsv_utf8
 (
 	blob		udig
-				references pdfbox2.pddocument(blob)
+				REFERENCES pdfbox2.pddocument(blob)
+				ON DELETE CASCADE
 				PRIMARY KEY,
-
 	/*
 	 *  Note:
 	 *	stderr_blob currently ignored.
@@ -457,7 +461,7 @@ CREATE TABLE pdfbox2.merge_pages_tsv_utf8
 	stderr_blob	udig,
 	exit_status	smallint check (
 				exit_status >= 0
-				and
+				AND
 				exit_status <= 255
 			) not null
 );
@@ -471,8 +475,8 @@ CREATE TABLE pdfbox2.merge_pages_tsv_utf8_pending
 	blob		udig
 				PRIMARY KEY,
 	insert_time	timestamptz
-				default now()
-				not null
+				DEFAULT now()
+				NOT NULL
 );
 COMMENT ON TABLE pdfbox2.merge_pages_tsv_utf8_pending IS
   'Pending merge-pages_tsv_utf8 jobs'
