@@ -55,6 +55,7 @@ CREATE TABLE jsonorg.jsonb_255
 			NOT NULL
 );
 
+DROP FUNCTION IF EXISTS jsonorg.check_jsonability();
 CREATE OR REPLACE FUNCTION jsonorg.check_jsonability() RETURNS TRIGGER
   AS $$
 	DECLARE
@@ -87,7 +88,7 @@ CREATE TRIGGER check_jsonability AFTER INSERT
   ON
   	jsonorg.jsonb_255
   FOR EACH ROW EXECUTE PROCEDURE
-  	check_jsonability()
+  	jsonorg.check_jsonability()
 ;
 
 COMMENT ON TABLE jsonorg.jsonb_255 IS
