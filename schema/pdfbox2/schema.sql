@@ -425,25 +425,6 @@ COMMENT ON TABLE pdfbox2.page_tsv_utf8 IS
   'Individual Pages of UTF8 Text extracted from a pdf blob'
 ;
 
-DROP TABLE IF EXISTS pdfbox2.merge_pages_tsv_utf8 CASCADE;
-CREATE TABLE pdfbox2.merge_pages_tsv_utf8
-(
-	blob		udig
-				REFERENCES pdfbox2.pddocument(blob)
-				ON DELETE CASCADE
-				PRIMARY KEY,
-	stderr_blob	udig,
-	exit_status	smallint check (
-				exit_status >= 0
-				AND
-				exit_status <= 255
-			) NOT NULL
-);
-
-COMMENT ON TABLE pdfbox2.merge_pages_tsv_utf8 IS
-  'Exit Status of merge-pages_tsv_utf8 script'
-;
-
 DROP TABLE IF EXISTS pdfbox2.merge_pages_tsv_utf8 cascade;
 CREATE TABLE pdfbox2.merge_pages_tsv_utf8
 (
