@@ -59,7 +59,7 @@ DROP FUNCTION IF EXISTS jsonorg.check_jsonability();
 CREATE OR REPLACE FUNCTION jsonorg.check_jsonability() RETURNS TRIGGER
   AS $$
 	DECLARE
-		my_blob udig;
+		my_blob public.udig;
 	BEGIN
 
 	SELECT
