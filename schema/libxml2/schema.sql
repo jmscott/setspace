@@ -37,7 +37,7 @@ CREATE TABLE libxml2.xmllint
 CREATE OR REPLACE FUNCTION libxml2.check_lintablity() RETURNS TRIGGER
   AS $$
 	DECLARE
-		my_blob udig;
+		my_blob public.udig;
 	BEGIN
 
 	SELECT
