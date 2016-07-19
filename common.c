@@ -381,7 +381,7 @@ a2ui32(char *src, char *what, int die_status)
 	//  verify source is <= 10 digits
 
 	while ((c = *p++)) {
-		if ('0' < c||c > '9')
+		if (c < '0' || c > '9')
 			die3(die_status, what, "not a cardinal number", src);
 		if (len++ > 10)
 			die3(die_status, what, "cardinal > 10 digits", src);
