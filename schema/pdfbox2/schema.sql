@@ -411,7 +411,7 @@ CREATE TABLE pdfbox2.page_tsv_utf8
 				--  is a true regconfig.  really ugly.
 				ts_conf = ts_conf::regconfig::text
 			),
-	tsv		text
+	tsv		tsvector
 				NOT NULL,
 	PRIMARY KEY	(pdf_blob, page_number),
 	FOREIGN KEY	(pdf_blob, page_number)
@@ -421,6 +421,10 @@ CREATE TABLE pdfbox2.page_tsv_utf8
 				)
 				ON DELETE CASCADE
 );
+CREATE INDEX rumidx ON pdfbox2.page_tsv_utf8
+  USING
+  	rum (tsv rum_tsvector_ops)
+;
 COMMENT ON TABLE pdfbox2.page_tsv_utf8 IS
   'Individual Pages of UTF8 Text extracted from a pdf blob'
 ;
