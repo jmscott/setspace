@@ -3,7 +3,12 @@
 #  Synopsis:
 #	Simple keyword query of PDF blobs and associated titles.
 #  Usage:
-#	pdf-keyq 'word1 word2 ...' [limit] | more
+#	pdfq 'suffix tree ...' | more
+#	pdfq 'word1 word2 ...' 100
+#	pdfq 'word1 word2 ...' 10 20
+#
+#	# default limit is 10 and offset is 0
+#	pdfq <keywords> [limit [offset]]
 #  Exit Status:
 #	0	Matching count and tuples written to standard output
 #	1	psql internal error (e.g., out of memory)
@@ -16,6 +21,8 @@
 #  Depends:
 #	Schema pgtexts
 #	$PDFBOX2_ROOT/lib/pdfq-keyword.sql	
+#  Note:
+#	Eventually rewritten in go or rasql
 #
 PROG=pdfq
 LIMIT=10

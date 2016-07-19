@@ -14,10 +14,7 @@
  *  }
  *
  *  Usage:
- *	psql -f keyword.sql						\
- *		--set keywords="'$KEYWORDS'"				\
- *		--set limit=10						\
- *		--set offset=0
+ *	psql --set keywords="'$KEYWORDS'" --set limit=10 --set offset=0
  *  Note:
  *	The match_union still renders multiple blobs, since the union
  *	is across the full tuple.  Can probably be fixed with a window
@@ -34,11 +31,13 @@
 \echo Keywords are :keywords, Result is :limit rows, offset :offset
 \echo
 
-with pdf_match as (
+\x off
+explain with pdf_match as (
   select
 	pp.pdf_blob as blob,
 	count(pp.page_blob)::float8 as match_page_count,
-	sum(ts_rank_cd(tsv.doc, q, 14))::float8 as page_rank_sum
+	-- sum(ts_rank_cd(tsv.doc, q, 14))::float8 as page_rank_sum
+	sum(tsv.doc <-> q)::float8 as page_rank_sum
   from
 	pdfbox2.extract_page_utf8 pp
   	  inner join pgtexts.tsv_utf8 tsv on (tsv.blob = pp.page_blob),
@@ -49,6 +48,10 @@ with pdf_match as (
 	tsv.ts_conf = 'english'
   group by
   	1
+  order by
+  	3 desc
+  limit
+  	:limit
 ),
   pdf_page_count as (
     select
@@ -63,13 +66,18 @@ with pdf_match as (
   select
 	t.blob,
 	1,
-	ts_rank_cd(t.value_tsv, q, 14),
+	-- ts_rank_cd(t.value_tsv, q, 14),
+	t.value_tsv <-> q,
 	1::float8
   from
   	my_title t,
 	plainto_tsquery('english', :keywords) as q
   where
   	t.value_tsv @@ q
+  order by
+  	3 desc
+  limit
+  	:limit
 ), match_union as (
   select
   	*
@@ -109,7 +117,8 @@ with pdf_match as (
 	--  headline for highest ranking page within the document
 	(with max_page as (
 	    select
-	    	ts_rank_cd(tsv.doc, q, 14),
+	    	--ts_rank_cd(tsv.doc, q, 14),
+	    	tsv.doc <-> q,
 		pp.page_number,
 		pp.page_blob
 	    from
@@ -151,5 +160,3 @@ with pdf_match as (
   order by
   	rank desc
 ;
-
-\q
