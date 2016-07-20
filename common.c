@@ -359,7 +359,7 @@ ulltoa(unsigned long long ull, char *digits)
 
 /*
  *  Synopsis:
- *	Strictly parse an ascii string representing an unsigned 32 bit intt
+ *	Strictly parse an ascii string representing an unsigned 32 bit int
  *	in the range 0 <= 4294967295.  die() upon error.
  *  Usage:
  *	blob_size = a2ui32(argv[1], "blob size", 1);
