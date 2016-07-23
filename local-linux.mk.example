@@ -1,6 +1,11 @@
 #
 #  Synopsis:
 #	Example of a GNU Makefile template for typical Linux 2.6 distro.
+#  Usage:
+#  	cd ~/dev/setspace/trunk
+#  	cp local-linux.mk.example local.mk
+#  	... edit local.mk
+#  	make all
 #  Note:
 #	The execution PATH must include the PostgreSQL C precompile 'ecpg'
 #	for schema/drblob.  See schema/drblob/Makefile.
