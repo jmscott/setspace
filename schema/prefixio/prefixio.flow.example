@@ -61,14 +61,14 @@ command append_pdfbox2_brr
 }
 
 #
-#  The prefix of blob matches '^%PDF'
+#  The prefix of blob matches '^%PDF-'
 #
 sql query prefix_is_percentPDF row
 {
 	statement = `
 
 	SELECT
-		substring(prefix, 1, 4) = '\x25504446'	-- %PDF
+		substring(prefix, 1, 5) = '\x255044462d'  -- %PDF
 	  from
 	  	setspace.byte_prefix_32
 	  where
