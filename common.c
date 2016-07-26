@@ -402,3 +402,123 @@ a2ui32(char *src, char *what, int die_status)
 }
 
 #endif
+
+#ifdef COMMON_NEED_HEXDUMP
+
+#include <ctype.h>
+#include <stdio.h>
+
+/*
+ *  Ye'ol hex dump.
+ *
+ *  Derived from a hexdump written by Andy Fullford, eons ago.
+ *
+ *  	https://github.com/akfullfo
+ */
+void
+hexdump(int fd, unsigned char *src, int src_size, char direction)
+{
+	char *t;
+	unsigned char *s, *s_end;
+	int need;
+	char tbuf[64 * 1024], *tgt;
+	int tgt_size;
+	char buf[1024];
+
+	if (src_size == 0) {
+		static char zero[] = "hexdump: 0 bytes in source buffer\n";
+		write(fd, zero, sizeof zero - 1);
+		return;
+	}
+
+	tgt = tbuf;
+	tgt_size = sizeof tbuf;
+
+	static char hexchar[] = "0123456789abcdef";
+
+	/*
+	 *  Insure we have plenty of room in the target buffer.
+	 *
+	 *  Each line of ascii output formats up to 16 bytes in the source
+	 *  buffer, so the number of lines is the ceiling(src_size/16).
+	 *  The number of characters per line is 76 characters plus the 
+	 *  trailing new line.
+	 *
+	 *	((src_size - 1) / 16 + 1) * (76 + 1) + 1
+	 *
+	 *  with the entire ascii string terminated with a null byte.
+	 */
+	need = ((src_size - 1) / 16 + 1) * (76 + 1) + 1;
+
+	/*
+	 *  Not enough space in the target buffer ... probably ought
+	 *  to truncate instead of punting.
+	 */
+	if (need > tgt_size) {
+		snprintf(tgt, tgt_size,
+			"hexdump: source bigger than target: %d > %d\n", need,
+				tgt_size);
+		write(fd, tgt, strlen(tgt));
+		return;
+	}
+
+	s = src;
+	s_end = s + src_size;
+	t = tgt;
+
+	while (s < s_end) {
+		int i;
+
+		/*
+		 *  Start of line in the target.
+		 */
+		char *l = t;
+
+		/*
+		 *  Write the offset into the source buffer.
+		 */
+		sprintf(l, "%6lu", (long unsigned)(s - src));
+
+		/*
+		 *  Write direction of flow
+		 */
+		l[6] = l[7] = ' ';
+		l[8] = direction;
+		l[9] = ' ';
+
+		/*
+		 *  Format up to next 16 bytes from the source.
+		 */
+		for (i = 0;  s < s_end && i < 16;  i++) {
+			l[10 + i * 3] = ' ';
+			l[10 + i * 3 + 1] = hexchar[(*s >> 4) & 0x0F];
+			l[10 + i * 3 + 2] = hexchar[*s & 0x0F];
+			if (isprint(*s))
+				l[60 + i] = *s;
+			else
+				l[60 + i] = '.';
+			s++;
+		}
+		/*
+		 *  Pad out last line with white space.
+		 */
+		while (i < 16) {
+			l[10 + i * 3] =
+			l[10 + i * 3 + 1] =
+			l[10 + i * 3 + 2] = ' ';
+			l[60 + i] = ' ';
+			i++;
+		}
+		l[58] = l[59] = ' ';
+		l[76] = '\n';
+		t = l + 77;
+	}
+	tgt[need - 1] = 0;
+
+	snprintf(buf, sizeof buf, "\ndump of %d bytes\n", src_size);
+	write(fd, buf, strlen(buf));
+	write(fd, tgt, strlen(tgt));
+	write(fd, "\n", 1);
+}
+
+#endif
