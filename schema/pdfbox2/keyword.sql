@@ -1,27 +1,17 @@
 /*
  *  Synopsis:
- *	Keyword query of PDF blobs on pages and titles, sorting by relavence.
- *  Command Line Arguments: {
- *	"keywords": {
- *		"type":	"text"
- *	},
- *	"limit": {
- *		"type":	"uint16"
- *	},
- *	"offset": {
- *		"type":	"ubigint"
- *	}
+ *	Keyword query of PDF pages pages, sorting by relavence.
+ *
+ *  Command Line Variables: {
+ *	keywords::text
+ *	limit::uint16
+ *	offset::ubigint
+ *	ts_conf::text
  *  }
  *
  *  Usage:
- *	psql --set keywords="'$KEYWORDS'" --set limit=10 --set offset=0
- *  Note:
- *	The match_union still renders multiple blobs, since the union
- *	is across the full tuple.  Can probably be fixed with a window
- *	function.
- *
- *	Need to investigate stripping the tsvector in the count query.  Also 
- *	need to investigate indexing on strip(tsvector).
+ *	psql --set keywords="'$KEYWORDS'" --set limit=10 --set offset=0     \
+ *		--file keyword.sql
  */
 \set ON_ERROR_STOP on
 \timing on
@@ -32,7 +22,7 @@
 \echo
 
 \x off
-explain with pdf_match as (
+with pdf_match as (
   select
 	pp.pdf_blob as blob,
 	count(pp.page_blob)::float8 as match_page_count,
