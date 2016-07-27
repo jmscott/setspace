@@ -18,21 +18,20 @@
 
 \echo 
 \echo Keywords are :keywords, Result is :limit rows, offset :offset
+\echo Text Search Configuration is :ts_conf
 \echo
 
-\x off
-with pdf_match as (
+\x on
+with pdf_page_match as (
   select
-	pp.pdf_blob as blob,
-	count(pp.page_blob)::float8 as match_page_count,
-	-- sum(ts_rank_cd(tsv.doc, q, 14))::float8 as page_rank_sum
-	sum(tsv.doc <-> q)::float8 as page_rank_sum
+	tsv.pdf_blob as blob,
+	count(tsv.pdf_blob)::float8 as match_page_count,
+	sum(tsv.tsv <-> q)::float8 as page_rank_sum
   from
-	pdfbox2.extract_page_utf8 pp
-  	  inner join pgtexts.tsv_utf8 tsv on (tsv.blob = pp.page_blob),
+	pdfbox2.page_tsv_utf8 tsv,
 	plainto_tsquery(:ts_conf, :keywords) as q
   where
-  	tsv.doc @@ q
+  	tsv.tsv @@ q
 	and
 	tsv.ts_conf = :ts_conf
   group by
@@ -41,111 +40,61 @@ with pdf_match as (
   	3 desc
   limit
   	:limit
-),
-  pdf_page_count as (
-    select
-  	pm.blob,
-	pm.match_page_count,
-	pm.page_rank_sum,
-  	pd.number_of_pages::float8 as "document_page_count"
-    from
-    	pdf_match pm
-	  join pdfbox2.pddocument pd using (blob)
-), title_match as (
-  select
-	t.blob,
-	1,
-	-- ts_rank_cd(t.value_tsv, q, 14),
-	t.value_tsv <-> q,
-	1::float8
-  from
-  	my_title t,
-	plainto_tsquery(:ts_conf, :keywords) as q
-  where
-  	t.value_tsv @@ q
-  order by
-  	3 desc
-  limit
-  	:limit
-), match_union as (
-  select
-  	*
-    from
-    	pdf_page_count
-  union
-  select
-  	*
-    from
-    	title_match
-), ranked_match as (
-  select
-  	blob,
-  	max(page_rank_sum * (match_page_count / document_page_count)) as rank
-  from
-  	match_union u
-  group by
-  	blob
-  order by
-  	rank desc
-  	-- page_rank_sum desc
-  limit
-  	:limit
   offset
   	:offset
 )
   select
-  	(
-	  select
-	  	t.value
-	    from
-	    	my_title t
-	    where
-	    	t.blob = rm.blob
-	) as "Title",
+  	pd.blob,
+	/*
+	 *  Note:
+	 *	Unfortunately the schema allows number_of_pages == 0,
+	 *	so this code could break!
+	 */
+  	max(page_rank_sum * (match_page_count / pd.number_of_pages)) as rank,
 
 	--  headline for highest ranking page within the document
-	(with max_page as (
+
+	(with max_ranked_tsv as (
 	    select
-	    	--ts_rank_cd(tsv.doc, q, 14),
-	    	tsv.doc <-> q,
-		pp.page_number,
-		pp.page_blob
+	    	tsv.tsv <-> q,
+		tsv.page_number
 	    from
-		pdfbox2.extract_page_utf8 pp
-  	  	  inner join pgtexts.tsv_utf8 tsv on (tsv.blob = pp.page_blob),
+		pdfbox2.page_tsv_utf8 tsv,
 		plainto_tsquery(:ts_conf, :keywords) as q
 	    where
-  		tsv.doc @@ q
+  		tsv.tsv @@ q
 		and
 		tsv.ts_conf = :ts_conf
 		and
-		pp.pdf_blob = rm.blob
+		tsv.pdf_blob = pd.blob
 	    order by
 	    	--  order by rank, then page number
 	    	1 desc, 2 asc
-	    --  Note: ought to order by page number
 	    limit
 	    	1
 	  ) select
 	  	ts_headline(
 			:ts_conf::regconfig,
 			(select
-				txt.doc
-			  from
-			  	pgtexts.text_utf8 txt,
-				max_page
-			  where
-			  	txt.blob = max_page.page_blob
+				maxtxt.txt
+			    from
+			    	pdfbox2.page_text_utf8 maxtxt
+			    where
+			    	maxtxt.pdf_blob = pd.blob
+				and
+				maxtxt.page_number = maxts.page_number
 			),
 			q
-		) || ' @ Page #' || max_page.page_number
+		) || ' @ Page #' || maxts.page_number
 	    from
 	    	plainto_tsquery(:ts_conf, :keywords) as q,
-		max_page
-	) as "Snippet",
-	rm.blob
+		max_ranked_tsv maxts
+	) as "Snippet"
   from
-  	ranked_match rm
+  	pdfbox2.pddocument pd
+	  join pdf_page_match pp on (pp.blob = pd.blob)
+  group by
+  	pd.blob
   order by
   	rank desc
 ;
