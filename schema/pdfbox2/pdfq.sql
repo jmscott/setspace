@@ -25,8 +25,8 @@
 with pdf_page_match as (
   select
 	tsv.pdf_blob as blob,
-	count(tsv.pdf_blob)::float8 as match_page_count,
-	sum(tsv.tsv <-> q)::float8 as page_rank_sum
+	sum(tsv.tsv <-> q)::float8 as page_rank_sum,
+	count(tsv.pdf_blob)::float8 as match_page_count
   from
 	pdfbox2.page_tsv_utf8 tsv,
 	plainto_tsquery(:ts_conf, :keywords) as q
@@ -37,7 +37,8 @@ with pdf_page_match as (
   group by
   	1
   order by
-  	3 desc
+  	page_rank_sum desc,
+	match_page_count desc
   limit
   	:limit
   offset
@@ -45,6 +46,7 @@ with pdf_page_match as (
 )
   select
   	pd.blob,
+	match_page_count,
 	/*
 	 *  Note:
 	 *	Unfortunately the schema allows number_of_pages == 0,
@@ -94,7 +96,9 @@ with pdf_page_match as (
   	pdfbox2.pddocument pd
 	  join pdf_page_match pp on (pp.blob = pd.blob)
   group by
-  	pd.blob
+  	pd.blob,
+	match_page_count
   order by
-  	rank desc
+  	rank desc,
+	match_page_count desc
 ;
