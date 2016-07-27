@@ -11,6 +11,9 @@
  *  Usage:
  *	psql --set keywords="'$KEYWORDS'" --set limit=10 --set offset=0     \
  *		--file keyword.sql
+ *  Note:
+ *	Unfortunately pddocument.number_of_pages == 0, so the weighted
+ *	sort could (rarely) break.
  */
 \set ON_ERROR_STOP on
 \timing on

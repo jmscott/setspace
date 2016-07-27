@@ -19,14 +19,16 @@
 #	PDFBOX2_ROOT
 #	PostgreSQL PG* variables
 #  Depends:
-#	Schema pgtexts
-#	$PDFBOX2_ROOT/lib/pdfq-keyword.sql	
+#	$PDFBOX2_ROOT/lib/pdfq.sql	
+#	$PDFBOX2_ROOT/lib/pdfq-phrase.sql	
 #  Note:
 #	Eventually rewritten in go or rasql
 #
 PROG=pdfq
 LIMIT=10
 OFFSET=0
+SQL_FILE=pdfq.sql
+Q_VAR=keywords
 
 die()
 {
@@ -38,14 +40,14 @@ test -n "$PDFBOX2_ROOT" || die 'environment not defined: PDFBOX2_ROOT'
 
 case $# in
 1)
-	KEYWORDS="$1"
+	Q="$1"
 	;;
 2)
-	KEYWORDS="$1"
+	Q="$1"
 	LIMIT=$2
 	;;
 3)
-	KEYWORDS="$1"
+	Q="$1"
 	LIMIT=$2
 	OFFSET=$3
 	;;
@@ -54,11 +56,21 @@ case $# in
 	;;
 esac
 
+#  is the query a phrase query?
+
+case "$Q" in
+phrase:*)
+	Q=$(echo "$Q" | sed 's/^phrase://')
+	Q_VAR=phrase
+	SQL_FILE=pdfq-phrase.sql
+	;;
+esac
+
 psql	--quiet								\
 	--no-psqlrc 							\
-	--file $PDFBOX2_ROOT/lib/pdfq.sql				\
+	--file $PDFBOX2_ROOT/lib/$SQL_FILE				\
 	--set ts_conf="'english'"					\
-	--set keywords="'$KEYWORDS'"					\
+	--set $Q_VAR="'$Q'"						\
 	--set limit="$LIMIT" 						\
 	--set offset="$OFFSET" 						||
 		die "psql failed: exit status=$?" $?

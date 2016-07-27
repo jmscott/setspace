@@ -73,6 +73,7 @@ install: all
 		pdfbox2.flow.example					\
 		pdfbox2.rasql.example					\
 		pdfq.sql						\
+		pdfq-phrase.sql						\
 		profile.example						\
 		rummy.sql						\
 		schema.sql						\
