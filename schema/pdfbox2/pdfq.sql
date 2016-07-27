@@ -2,12 +2,11 @@
  *  Synopsis:
  *	Keyword query of PDF pages pages, sorting by relavence.
  *
- *  Command Line Variables: {
- *	keywords::text
- *	limit::uint16
- *	offset::ubigint
- *	ts_conf::text
- *  }
+ *  Command Line Variables:
+ *	keywords	text
+ *	limit		uint16
+ *	offset		ubigint
+ *	ts_conf		text
  *
  *  Usage:
  *	psql --set keywords="'$KEYWORDS'" --set limit=10 --set offset=0     \
@@ -31,11 +30,11 @@ with pdf_match as (
   from
 	pdfbox2.extract_page_utf8 pp
   	  inner join pgtexts.tsv_utf8 tsv on (tsv.blob = pp.page_blob),
-	plainto_tsquery('english', :keywords) as q
+	plainto_tsquery(:ts_conf, :keywords) as q
   where
   	tsv.doc @@ q
 	and
-	tsv.ts_conf = 'english'
+	tsv.ts_conf = :ts_conf
   group by
   	1
   order by
@@ -61,7 +60,7 @@ with pdf_match as (
 	1::float8
   from
   	my_title t,
-	plainto_tsquery('english', :keywords) as q
+	plainto_tsquery(:ts_conf, :keywords) as q
   where
   	t.value_tsv @@ q
   order by
@@ -114,11 +113,11 @@ with pdf_match as (
 	    from
 		pdfbox2.extract_page_utf8 pp
   	  	  inner join pgtexts.tsv_utf8 tsv on (tsv.blob = pp.page_blob),
-		plainto_tsquery('english', :keywords) as q
+		plainto_tsquery(:ts_conf, :keywords) as q
 	    where
   		tsv.doc @@ q
 		and
-		tsv.ts_conf = 'english'
+		tsv.ts_conf = :ts_conf
 		and
 		pp.pdf_blob = rm.blob
 	    order by
@@ -129,7 +128,7 @@ with pdf_match as (
 	    	1
 	  ) select
 	  	ts_headline(
-			'english'::regconfig,
+			:ts_conf::regconfig,
 			(select
 				txt.doc
 			  from
@@ -141,7 +140,7 @@ with pdf_match as (
 			q
 		) || ' @ Page #' || max_page.page_number
 	    from
-	    	plainto_tsquery('english', :keywords) as q,
+	    	plainto_tsquery(:ts_conf, :keywords) as q,
 		max_page
 	) as "Snippet",
 	rm.blob

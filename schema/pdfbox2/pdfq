@@ -56,7 +56,8 @@ esac
 
 psql	--quiet								\
 	--no-psqlrc 							\
-	--file $PDFBOX2_ROOT/lib/keyword.sql				\
+	--file $PDFBOX2_ROOT/lib/pdfq.sql				\
+	--set ts_conf="'english'"					\
 	--set keywords="'$KEYWORDS'"					\
 	--set limit="$LIMIT" 						\
 	--set offset="$OFFSET" 						||
