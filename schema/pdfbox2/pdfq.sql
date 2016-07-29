@@ -32,7 +32,7 @@ with pdf_page_match as (
 	count(tsv.pdf_blob)::float8 as match_page_count
   from
 	pdfbox2.page_tsv_utf8 tsv,
-	plainto_tsquery(:ts_conf, :keywords) as q
+	plainto_tsquery('english', :keywords) as q
   where
   	tsv.tsv @@ q
 	and
@@ -65,7 +65,7 @@ with pdf_page_match as (
 		tsv.page_number
 	    from
 		pdfbox2.page_tsv_utf8 tsv,
-		plainto_tsquery(:ts_conf, :keywords) as q
+		plainto_tsquery('english', :keywords) as q
 	    where
   		tsv.tsv @@ q
 		and
@@ -92,7 +92,7 @@ with pdf_page_match as (
 			q
 		) || ' @ Page #' || maxts.page_number
 	    from
-	    	plainto_tsquery(:ts_conf, :keywords) as q,
+	    	plainto_tsquery('english', :keywords) as q,
 		max_ranked_tsv maxts
 	) as "Snippet"
   from

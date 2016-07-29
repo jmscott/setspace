@@ -79,7 +79,7 @@ with pdf_page_match as (
 	    	1
 	  ) select
 	  	ts_headline(
-			:ts_conf::regconfig,
+			:ts_conf,
 			(select
 				maxtxt.txt
 			    from
