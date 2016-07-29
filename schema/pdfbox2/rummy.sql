@@ -1,6 +1,8 @@
 /*
  *  Synopsis:
  *	Find unresolved pddocument and extract_pages_ut8 blobs
+ *  Command Line Variables:
+ *	since	text
  *  Usage:
  *	psql -f rummy.sql --set since="'-1 week'"
  */
@@ -27,7 +29,10 @@ WITH pdf_prefix_candidate AS (
 
   	substring(pre.prefix, 1, 4) = '\x25504446'
 	AND
-	s.discover_time between (now() + :since) and (now() + '-1 minute')
+	s.discover_time BETWEEN
+		now() + :since::interval
+		AND
+		now() + '-1 minute'
 	AND
 	pdp.blob is NULL
 	AND
