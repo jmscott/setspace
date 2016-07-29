@@ -4,11 +4,8 @@
 	"rest-path-prefix":	"/pdfbox2",
 
 	"sql-query-set": {
-		"keyword": {
-			"source-path":	"keyword.sql"
-		},
-		"keyword-count": {
-			"source-path":	"keyword-count.sql"
+		"pdfq": {
+			"source-path":	"pdfq.sql"
 		}
 	},
 	"http-query-arg-set": {
@@ -23,6 +20,10 @@
 		"offset": {
 			"default": "0",
 			"sql-alias": "offset"
+		},
+		"tsv": {
+			"default": "english",
+			"sql-alias": "ts_conf"
 		}
 	},
 	"warn-slow-sql-query-duration": 5
