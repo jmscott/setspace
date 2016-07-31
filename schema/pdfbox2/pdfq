@@ -1,25 +1,30 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Simple keyword query of PDF blobs and associated titles.
+#	Engligh phrase or keyword query of tables in pdfbox2 schema.
 #  Usage:
-#	pdfq 'suffix tree ...' | more
-#	pdfq 'word1 word2 ...' 100
-#	pdfq 'word1 word2 ...' 10 20
-#
 #	# default limit is 10 and offset is 0
-#	pdfq <keywords> [limit [offset]]
+#	pdfq type:'words' [limit [offset]]
+#
+#	pdfq phrase:'suffix tree ...' | more
+#	pdfq p:'suffix tree ...' | more
+#
+#	pdfq keyword:'trump putin' 100
+#	pdfq key:'trump putin' 100 200
+#	pdfq k:'trump putin' 100
+#	pdfq keywords:'trump putin' 100
+#
 #  Exit Status:
 #	0	Matching count and tuples written to standard output
 #	1	psql internal error (e.g., out of memory)
 #	2	bad database connection
 #	3	error in sql script with ON_ERROR_STOP set
-#	10	wrong command line arguments
+#	10	incorrect command line argument
 #  Environment:
 #	PDFBOX2_ROOT
 #	PostgreSQL PG* variables
-#  Depends:
-#	$PDFBOX2_ROOT/lib/pdfq.sql	
+#  See Also:
+#	$PDFBOX2_ROOT/lib/pdfq-keyword.sql	
 #	$PDFBOX2_ROOT/lib/pdfq-phrase.sql	
 #  Note:
 #	Eventually rewritten in go or rasql
@@ -27,8 +32,9 @@
 PROG=pdfq
 LIMIT=10
 OFFSET=0
-SQL_FILE=pdfq.sql
-Q_VAR=keywords
+SQL_FILE=
+Q_VAR=
+TS_CONF=english
 
 die()
 {
@@ -36,19 +42,31 @@ die()
 	exit $2
 }
 
+arg_is_number()
+{
+	case "$2" in
+	[0-9]*)
+		;;
+	*)
+		die "$1 is not a number: $2"
+		;;
+	esac
+}
+
 test -n "$PDFBOX2_ROOT" || die 'environment not defined: PDFBOX2_ROOT'
 
 case $# in
 1)
-	Q="$1"
 	;;
 2)
-	Q="$1"
+	arg_is_number limit "$2" || exit 10
 	LIMIT=$2
 	;;
 3)
-	Q="$1"
+	arg_is_number limit "$2" || exit 10
 	LIMIT=$2
+
+	arg_is_number offset "$2" || exit 10
 	OFFSET=$3
 	;;
 *)
@@ -56,20 +74,43 @@ case $# in
 	;;
 esac
 
-#  is the query a phrase query?
+#  basic checking ot
+case "$1" in
+*:*)
+	Q="$1"
+	;;
+*)
+	die "query prefix 'key:' or 'phrase:' must prefix query terms" 10
+	;;
+esac
+
+#  parse the query prefix and words from $1
 
 case "$Q" in
-phrase:*)
-	Q=$(echo "$Q" | sed 's/^phrase://')
+
+keyword:*|keywords:*|key:*|k:*)
+	Q=$(echo "$Q" | sed 's/^k[^:]*://')
+	Q_VAR=keywords
+	SQL_FILE=pdfq-keyword.sql
+	;;
+
+phrase:*|p:)
+	Q=$(echo "$Q" | sed 's/^p[^:]*://')
 	Q_VAR=phrase
 	SQL_FILE=pdfq-phrase.sql
+	;;
+:*)
+	die 'no query type before colon' 10
+	;;
+*)
+	die "unknown query type: $(echo "$Q" | sed 's/:.*//')"
 	;;
 esac
 
 psql	--quiet								\
 	--no-psqlrc 							\
 	--file $PDFBOX2_ROOT/lib/$SQL_FILE				\
-	--set ts_conf="'english'"					\
+	--set ts_conf="'$TS_CONF'"					\
 	--set $Q_VAR="'$Q'"						\
 	--set limit="$LIMIT" 						\
 	--set offset="$OFFSET" 						||
