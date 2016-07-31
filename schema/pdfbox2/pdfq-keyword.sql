@@ -50,6 +50,7 @@ with pdf_page_match as (
   select
   	pd.blob,
 	match_page_count,
+	pd.number_of_pages as pdf_page_count,
 	/*
 	 *  Note:
 	 *	Unfortunately the schema allows number_of_pages == 0,
