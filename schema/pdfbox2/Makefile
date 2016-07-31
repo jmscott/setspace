@@ -72,7 +72,7 @@ install: all
 		keyword-count.sql					\
 		pdfbox2.flow.example					\
 		pdfbox2.rasql.example					\
-		pdfq.sql						\
+		pdfq-keyword.sql					\
 		pdfq-phrase.sql						\
 		profile.example						\
 		rummy.sql						\
