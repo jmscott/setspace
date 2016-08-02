@@ -28,7 +28,7 @@
 with pdf_page_match as (
   select
 	tsv.pdf_blob as blob,
-	sum(tsv.tsv <-> q)::float8 as page_rank_sum,
+	sum(tsv.tsv <=> q)::float8 as page_rank_sum,
 	count(tsv.pdf_blob)::float8 as match_page_count
   from
 	pdfbox2.page_tsv_utf8 tsv,
@@ -62,7 +62,7 @@ with pdf_page_match as (
 
 	(with max_ranked_tsv as (
 	    select
-	    	tsv.tsv <-> q,
+	    	tsv.tsv <=> q,
 		tsv.page_number
 	    from
 		pdfbox2.page_tsv_utf8 tsv,
