@@ -17,18 +17,16 @@
  */
 \set ON_ERROR_STOP on
 \timing on
-\x on
 
 \echo 
 \echo Phrase is :phrase, Result is :limit rows, offset :offset
 \echo Text Search Configuration is :ts_conf
 \echo
 
-\x on
 with pdf_page_match as (
   select
 	tsv.pdf_blob as blob,
-	sum(tsv.tsv <-> q)::float8 as page_rank_sum,
+	sum(tsv.tsv <=> q)::float8 as page_rank_sum,
 	count(tsv.pdf_blob)::float8 as match_page_count
   from
 	pdfbox2.page_tsv_utf8 tsv,
@@ -62,7 +60,7 @@ with pdf_page_match as (
 
 	(with max_ranked_tsv_per_pdf as (
 	    select
-	    	tsv.tsv <-> q as page_rank,
+	    	tsv.tsv <=> q as page_rank,
 		tsv.page_number
 	    from
 		pdfbox2.page_tsv_utf8 tsv,
