@@ -35,8 +35,10 @@ with pdf_page_match as (
   	tsv.tsv @@ q
 	and
 	tsv.ts_conf = :ts_conf
+	and
+	tsv.tsv <=> q < 
   group by
-  	1
+  	tsv.pdf_blob
   order by
   	page_rank_sum desc,
 	match_page_count desc
