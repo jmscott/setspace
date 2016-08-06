@@ -4,24 +4,30 @@
 	"rest-path-prefix":	"/pdfbox2",
 
 	"sql-query-set": {
+		"pdfq-keyword": {
+			"source-path":	"pdfq-keyword.sql"
+		},
 		"pdfq-phrase": {
 			"source-path":	"pdfq-phrase.sql"
 		}
 	},
 	"http-query-arg-set": {
-		"q": {
+		"k": {
+			"sql-alias": "keyword"
+		},
+		"p": {
 			"sql-alias": "phrase"
 		},
 		"tsc": {
 			"default": "english",
 			"sql-alias": "ts_conf"
 		},
-		"limit": {
+		"lim": {
 			"default": "10",
 			"matches": "^(?:10|100|1000)$",
 			"sql-alias": "limit"
 		},
-		"offset": {
+		"ofs": {
 			"default": "0",
 			"sql-alias": "offset"
 		}
