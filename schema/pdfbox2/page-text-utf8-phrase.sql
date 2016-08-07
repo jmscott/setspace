@@ -10,8 +10,13 @@
  *	rank_norm	uint32
  *
  *  Usage:
- *	psql --set keywords="'$KEYWORDS'" --set limit=10 --set offset=0     \
- *		--file keyword.sql
+ *	psql								\
+ *	  --var phrase="'suffix tree'"					\
+ *	  --var limit=10						\
+ *	  --var offset=0						\
+ *	  --var rank_norm=14						\
+ *	  --file keyword.sql
+ *
  *  Note:
  *	Unfortunately pddocument.number_of_pages == 0, so the weighted
  *	sort could (rarely) break.
@@ -59,7 +64,10 @@ with pdf_page_match as (
 	 */
   	max(page_rank_sum * (match_page_count / pd.number_of_pages)) as rank,
 
-	--  headline for highest ranking page within the document
+	/*
+	 *  Extract a headline of matching terms from the highest ranking page
+	 *  within a particular ranked pdf blob.
+	 */
 
 	(with max_ranked_tsv as (
 	    select
@@ -98,7 +106,7 @@ with pdf_page_match as (
 	    from
 	    	phraseto_tsquery(:ts_conf, :phrase) as q,
 		max_ranked_tsv maxts
-	) as "Snippet"
+	) as "snippet"
   from
   	pdfbox2.pddocument pd
 	  join pdf_page_match pp on (pp.blob = pd.blob)

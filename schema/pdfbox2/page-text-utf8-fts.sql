@@ -10,12 +10,16 @@
  *	rank_norm	uint32
  *
  *  Usage:
- *	psql --set ts_query="'$QUERY'" --set limit=10 --set offset=0     \
- *		--file fts-page-text-utf8.sql
+ *	psql								\
+ *	  --var ts_query="'(suffix | spanning) <-> tree'"		\
+ *	  --var limit=10						\
+ *	  --var offset=0						\
+ *	  --var rank_norm=14						\
+ *	  --file page-text-utf8-fts.sql
+ *
  *  Note:
- *	Unfortunately pddocument.number_of_pages == 0, so the weighted
- *	sort could (rarely) break.  Consider adding an exit status to
- *	
+ *	Unfortunately pddocument.number_of_pages == 0 is allowed, so the
+ *	weighted sort could (rarely) break.
  */
 \timing on
 \x on
@@ -59,7 +63,10 @@ with pdf_page_match as (
 	 */
   	max(page_rank_sum * (match_page_count / pd.number_of_pages)) as rank,
 
-	--  headline for highest ranking page within the document
+	/*
+	 *  Extract a headline of matching terms from the highest ranking page
+	 *  within a particular ranked pdf blob.
+	 */
 
 	(with max_ranked_tsv as (
 	    select
@@ -98,7 +105,7 @@ with pdf_page_match as (
 	    from
 	    	to_tsquery('english', :ts_query) as q,
 		max_ranked_tsv maxts
-	) as "Snippet"
+	) as "match_headline"
   from
   	pdfbox2.pddocument pd
 	  join pdf_page_match pp on (pp.blob = pd.blob)

@@ -10,12 +10,15 @@
  *	rank_norm	uint32
  *
  *  Usage:
- *	psql --set keywords="'$KEYWORDS'" --set limit=10 --set offset=0     \
- *		--file keyword.sql
+ *	psql								\
+ *	  --var keywords="'$KEYWORDS'"					\
+ *	  --var limit=10						\
+ *	  --var offset=0						\
+ *	  --var rank_norm=14						\
+ *	  --file page-text-utf8-keyword.sql
  *  Note:
- *	The
- *	Unfortunately pddocument.number_of_pages == 0, so the weighted
- *	sort could (rarely) break.
+ *	Unfortunately pddocument.number_of_pages == 0 is allowed, so the
+ *	weighted sort could (rarely) break.
  */
 \set ON_ERROR_STOP on
 \timing on
@@ -60,7 +63,10 @@ with pdf_page_match as (
 	 */
   	max(page_rank_sum * (match_page_count / pd.number_of_pages)) as rank,
 
-	--  headline for highest ranking page within the document
+	/*
+	 *  Extract a headline of matching terms from the highest ranking page
+	 *  within a particular ranked pdf blob.
+	 */
 
 	(with max_ranked_tsv as (
 	    select
