@@ -9,8 +9,8 @@
  *	ts_conf		text
  *
  *  Usage:
- *	psql --set keywords="'$KEYWORDS'" --set limit=10 --set offset=0     \
- *		--file keyword.sql
+ *	psql --set phrase="'$PHRASE'" --set limit=10 --set offset=0     \
+ *		--file pdfq-phrase.sql
  *  Note:
  *	Unfortunately pddocument.number_of_pages == 0, so the weighted
  *	sort could (rarely) break.
