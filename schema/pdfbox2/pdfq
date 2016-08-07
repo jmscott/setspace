@@ -3,18 +3,28 @@
 #  Synopsis:
 #	Engligh fulltext, phrase or keyword query of tables in pdfbox2 schema.
 #  Usage:
-#	# default limit is 10 and offset is 0
-#	pdfq <type>:'query' [limit [offset]]
+#	pdfq <action> <type>:'query' [limit [offset [rank_norm]]]
 #
-#	pdfq fts:'(suffix | spanning) <-> tree'
+#	#  <action> is in {page, page/count}
+#	#  <type> is in {fts, phrase, p, keyword, key, k}
 #
-#	pdfq phrase:'suffix tree ...' | more
-#	pdfq p:'suffix tree ...' | more
+#	#  defaults:
+#	#	result row limit: 10
+#	#	result row offset: 0
+#	#	text search config: 'english'
+#	#	page level rank normalization: 14
 #
-#	pdfq keyword:'trump putin' 100
-#	pdfq key:'trump putin' 100 200
-#	pdfq k:'trump putin' 100
-#	pdfq keywords:'trump putin' 100
+#	pdfq page fts:'(suffix | spanning) <-> tree'
+#	pdfq page/count fts:'(suffix | spanning) <-> tree'
+#
+#	pdfq page phrase:'suffix tree ...'
+#	pdfq page p:'suffix tree ...'
+#	pdfq page/count p:'suffix tree ...'
+#
+#	pdfq page keyword:'trump putin' 100
+#	pdfq page key:'trump putin' 100 200
+#	pdfq page k:'trump putin' 100
+#	pdfq page keywords:'trump putin' 100
 #
 #  Exit Status:
 #	0	Matching count and tuples written to standard output
@@ -26,17 +36,25 @@
 #	PDFBOX2_ROOT
 #	PostgreSQL PG* variables
 #  See Also:
-#	$PDFBOX2_ROOT/lib/page-text-utf8-fts.sql
-#	$PDFBOX2_ROOT/lib/page-text-utf8-phrase.sql
-#	$PDFBOX2_ROOT/lib/page-text-utf8-keyword.sql
+#	$PDFBOX2_ROOT/lib/page-text-utf8-fts[-count].sql
+#	$PDFBOX2_ROOT/lib/page-text-utf8-phrase[-count].sql
+#	$PDFBOX2_ROOT/lib/page-text-utf8-keyword[-count].sql
+#  Note:
+#	Text search config ought to be pulled from either the command line or
+#	the environment
 #
 PROG=pdfq
+RANK_NORM=14
 LIMIT=10
 OFFSET=0
+TS_CONF=english
+
+Q=
 SQL_FILE=
 RANK_NORM=14
 Q_VAR=
-TS_CONF=english
+
+PSQL_OPTS='--quiet --no-psqlrc'
 
 die()
 {
@@ -55,66 +73,99 @@ arg_is_number()
 	esac
 }
 
+#  parse/extract <type>:'query words' from the second argument
+
+parse_query()
+{
+	QARG="$1"
+	case "$QARG" in
+
+	keyword:*|keywords:*|key:*|k:*)
+		Q=$(echo "$QARG" | sed 's/^k[^:]*://')
+		Q_VAR=keyword
+		SQL_FILE=page-text-utf8-keyword.sql
+		;;
+
+	phrase:*|p:*)
+		Q=$(echo "$QARG" | sed 's/^p[^:]*://')
+		Q_VAR=phrase
+		SQL_FILE=page-text-utf8-phrase.sql
+		;;
+
+	fts:*)
+		Q=$(echo "$QARG" | sed 's/^fts[^:]*://')
+		Q_VAR=ts_query
+		SQL_FILE=page-text-utf8-fts.sql
+		;;
+	'')
+		die 'empty query type prefix' 4
+		;;
+	:*)
+		die 'no query type before colon' 4
+		;;
+	*:*)
+		die "unknown query type: $(echo "$Q" | sed 's/:.*//')" 4
+		;;
+	*)
+		die "missing query type prefix: $QARG" 4
+		;;
+	esac
+	return 0
+}
+
 test -n "$PDFBOX2_ROOT" || die 'environment not defined: PDFBOX2_ROOT'
-
-case $# in
-1)
-	;;
-2)
-	arg_is_number limit "$2" || exit 4
-	LIMIT=$2
-	;;
-3)
-	arg_is_number limit "$2" || exit 4
-	LIMIT=$2
-
-	arg_is_number offset "$2" || exit 4
-	OFFSET=$3
-	;;
-*)
-	die 'wrong number of command line arguments' 4
-	;;
-esac
-
-#  basic checking ot
+test $# -gt 1 || die 'wrong number of arguments' 4
 
 case "$1" in
-*:*)
-	Q="$1"
+page)
+	;;
+
+page/count|pc|pagec|page-count)
+	test $# = 2 || die 'wrong number of arguments' 4
+	parse_query "$2" || exit 4
+
+	#  query the count version of the sql file
+	SQL_FILE=$(
+		echo $SQL_FILE						|
+		sed 's/-\([^-]*\)\.sql$/-count-\1.sql/'
+	)
+
+	psql $PSQL_OPTS							\
+	  --file $PDFBOX2_ROOT/lib/$SQL_FILE				\
+	  --set ts_conf="'$TS_CONF'"					\
+	  --set $Q_VAR="'$Q'"						||
+		die "psql $1 failed: exit status=$?" 3
+	exit 0
 	;;
 *)
-	die "query prefix missing: expected {fts,keyword,phrase}:" 4
+	die "unknown action: $1" 4
 	;;
 esac
 
-#  parse the query prefix and words from $1
+test $# -lt 5 || die 'wrong number of arguments' 4
 
-case "$Q" in
+parse_query "$2" || exit 4
 
-keyword:*|keywords:*|key:*|k:*)
-	Q=$(echo "$Q" | sed 's/^k[^:]*://')
-	Q_VAR=keyword
-	SQL_FILE=page-text-utf8-keyword.sql
-	;;
+#  extract optional result row limit
 
-phrase:*|p:*)
-	Q=$(echo "$Q" | sed 's/^p[^:]*://')
-	Q_VAR=phrase
-	SQL_FILE=page-text-utf8-phrase.sql
-	;;
-fts:*)
-	Q=$(echo "$Q" | sed 's/^fts[^:]*://')
-	Q_VAR=ts_query
-	SQL_FILE=page-text-utf8-fts.sql
-	;;
+if [ $# -ge 3 ];  then
+	arg_is_number limit "$3" || exit 4
+	LIMIT=$3
+fi
 
-:*)
-	die 'no query type before colon' 4
-	;;
-*)
-	die "unknown query type: $(echo "$Q" | sed 's/:.*//')"
-	;;
-esac
+#  extract optional result row offset
+
+if [ $# -ge 4 ];  then
+	arg_is_number offset "$4" || exit 4
+	OFFSET=$4
+fi
+
+if [ $# -eq 5 ];  then
+	arg_is_number rank_norm "$5" || exit 4
+	RANK_NORM=$5
+fi
+
+#  parse page level ranking normalization facor
 
 psql	--quiet								\
 	--no-psqlrc 							\
@@ -124,4 +175,4 @@ psql	--quiet								\
 	--set limit="$LIMIT" 						\
 	--set offset="$OFFSET" 						\
 	--set rank_norm=$RANK_NORM					||
-		die "psql failed: exit status=$?" $?
+		die "psql failed: exit status=$?" 3
