@@ -54,6 +54,13 @@ CREATE TABLE pdfbox2.pddocument
 			)
 			not null,
 
+	/*
+	 *  Note:
+	 *	Specs says number_of_pages is a signed integer,
+	 *	which screws up code needing number_of_pages to be
+	 *	> 0.  Instead, consider added a exit_status to indicate when
+	 *	number_of_pages is <= 0 and set number_of_pages to null.
+	 */
 	number_of_pages int CHECK (
 				/*
 				 *  Can a PDF have 0 pages?

@@ -22,6 +22,8 @@
  *	3	unexpected java exception.
  *  Note:
  *	Need to frisk the string values.  See out putPDDocument* classes.
+ *
+ *	Consider adding an exit code to indicate when number_of_pages == 0.
  */
 import org.apache.pdfbox.pdmodel.PDDocument;
 

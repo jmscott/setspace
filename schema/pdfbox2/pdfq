@@ -1,10 +1,12 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Engligh phrase or keyword query of tables in pdfbox2 schema.
+#	Engligh fulltext, phrase or keyword query of tables in pdfbox2 schema.
 #  Usage:
 #	# default limit is 10 and offset is 0
-#	pdfq type:'words' [limit [offset]]
+#	pdfq <type>:'query' [limit [offset]]
+#
+#	pdfq fts:'(suffix | spanning) <-> tree'
 #
 #	pdfq phrase:'suffix tree ...' | more
 #	pdfq p:'suffix tree ...' | more
@@ -19,20 +21,20 @@
 #	1	psql internal error (e.g., out of memory)
 #	2	bad database connection
 #	3	error in sql script with ON_ERROR_STOP set
-#	10	incorrect command line argument
+#	4	incorrect command line argument
 #  Environment:
 #	PDFBOX2_ROOT
 #	PostgreSQL PG* variables
 #  See Also:
-#	$PDFBOX2_ROOT/lib/pdfq-keyword.sql	
-#	$PDFBOX2_ROOT/lib/pdfq-phrase.sql	
-#  Note:
-#	Eventually rewritten in go or rasql
+#	$PDFBOX2_ROOT/lib/page-text-utf8-fts.sql
+#	$PDFBOX2_ROOT/lib/page-text-utf8-phrase.sql
+#	$PDFBOX2_ROOT/lib/page-text-utf8-keyword.sql
 #
 PROG=pdfq
 LIMIT=10
 OFFSET=0
 SQL_FILE=
+RANK_NORM=14
 Q_VAR=
 TS_CONF=english
 
@@ -59,28 +61,29 @@ case $# in
 1)
 	;;
 2)
-	arg_is_number limit "$2" || exit 10
+	arg_is_number limit "$2" || exit 4
 	LIMIT=$2
 	;;
 3)
-	arg_is_number limit "$2" || exit 10
+	arg_is_number limit "$2" || exit 4
 	LIMIT=$2
 
-	arg_is_number offset "$2" || exit 10
+	arg_is_number offset "$2" || exit 4
 	OFFSET=$3
 	;;
 *)
-	die 'wrong number of command line arguments' 10
+	die 'wrong number of command line arguments' 4
 	;;
 esac
 
 #  basic checking ot
+
 case "$1" in
 *:*)
 	Q="$1"
 	;;
 *)
-	die "query prefix 'key:' or 'phrase:' must prefix query terms" 10
+	die "query prefix missing: expected {fts,keyword,phrase}:" 4
 	;;
 esac
 
@@ -90,17 +93,23 @@ case "$Q" in
 
 keyword:*|keywords:*|key:*|k:*)
 	Q=$(echo "$Q" | sed 's/^k[^:]*://')
-	Q_VAR=keywords
-	SQL_FILE=pdfq-keyword.sql
+	Q_VAR=keyword
+	SQL_FILE=page-text-utf8-keyword.sql
 	;;
 
-phrase:*|p:)
+phrase:*|p:*)
 	Q=$(echo "$Q" | sed 's/^p[^:]*://')
 	Q_VAR=phrase
-	SQL_FILE=pdfq-phrase.sql
+	SQL_FILE=page-text-utf8-phrase.sql
 	;;
+fts:*)
+	Q=$(echo "$Q" | sed 's/^fts[^:]*://')
+	Q_VAR=ts_query
+	SQL_FILE=page-text-utf8-fts.sql
+	;;
+
 :*)
-	die 'no query type before colon' 10
+	die 'no query type before colon' 4
 	;;
 *)
 	die "unknown query type: $(echo "$Q" | sed 's/:.*//')"
@@ -113,5 +122,6 @@ psql	--quiet								\
 	--set ts_conf="'$TS_CONF'"					\
 	--set $Q_VAR="'$Q'"						\
 	--set limit="$LIMIT" 						\
-	--set offset="$OFFSET" 						||
+	--set offset="$OFFSET" 						\
+	--set rank_norm=$RANK_NORM					||
 		die "psql failed: exit status=$?" $?

@@ -69,11 +69,11 @@ install: all
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=r		\
 		$(JCOMPILED)						\
-		keyword-count.sql					\
+		page-text-utf8-fts.sql					\
+		page-text-utf8-keyword.sql				\
+		page-text-utf8-phrase.sql				\
 		pdfbox2.flow.example					\
 		pdfbox2.rasql.example					\
-		pdfq-keyword.sql					\
-		pdfq-phrase.sql						\
 		profile.example						\
 		rummy.sql						\
 		schema.sql						\
