@@ -69,6 +69,9 @@ install: all
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=r		\
 		$(JCOMPILED)						\
+		page-text-utf8-count-fts.sql				\
+		page-text-utf8-count-keyword.sql			\
+		page-text-utf8-count-phrase.sql				\
 		page-text-utf8-fts.sql					\
 		page-text-utf8-keyword.sql				\
 		page-text-utf8-phrase.sql				\
