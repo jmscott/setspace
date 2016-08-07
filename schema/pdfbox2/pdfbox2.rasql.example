@@ -4,11 +4,14 @@
 	"rest-path-prefix":	"/pdfbox2",
 
 	"sql-query-set": {
-		"pdfq-keyword": {
-			"source-path":	"pdfq-keyword.sql"
+		"page-text-utf8-keyword": {
+			"source-path":	"page-text-utf8-keyword.sql"
 		},
-		"pdfq-phrase": {
-			"source-path":	"pdfq-phrase.sql"
+		"page-text-utf8-phrase": {
+			"source-path":	"page-text-utf8-phrase.sql"
+		},
+		"page-text-utf8-fts": {
+			"source-path":	"page-text-utf8-fts.sql"
 		}
 	},
 	"http-query-arg-set": {
@@ -17,6 +20,9 @@
 		},
 		"p": {
 			"sql-alias": "phrase"
+		},
+		"q": {
+			"sql-alias": "ts_query"
 		},
 		"tsc": {
 			"default": "english",
@@ -30,6 +36,10 @@
 		"ofs": {
 			"default": "0",
 			"sql-alias": "offset"
+		},
+		"rn": {
+			"default": "14",
+			"sql-alias": "rank_norm"
 		}
 	},
 	"warn-slow-sql-query-duration": 5

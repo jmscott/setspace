@@ -38,7 +38,7 @@ with pdf_page_match as (
   where
   	tsv.tsv @@ q
 	and
-	tsv.ts_conf = :ts_conf
+	tsv.ts_conf = :ts_conf::text
   group by
   	1
   order by
@@ -72,7 +72,7 @@ with pdf_page_match as (
 	    where
   		tsv.tsv @@ q
 		and
-		tsv.ts_conf = :ts_conf
+		tsv.ts_conf = :ts_conf::text
 		and
 		tsv.pdf_blob = pd.blob
 	    group by
