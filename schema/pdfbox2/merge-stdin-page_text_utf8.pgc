@@ -62,7 +62,7 @@ main(int argc, char **argv)
 
 EXEC SQL BEGIN DECLARE SECTION;
 	char *pdf_blob;
-	char *page_txt;
+	char *txt;
 	int page_number;
 EXEC SQL END DECLARE SECTION;
 
@@ -90,14 +90,14 @@ EXEC SQL END DECLARE SECTION;
 	sz = argv[3];
 	stdin_size = a2ui32(sz, "page blob input size", EXIT_BAD_SIZE);
 
-	//  allocate the buffer to hold entire blob read from stdin
+	//  allocate buffer to hold entire text of page blob read from stdin
 
-	page_txt = malloc(stdin_size + 1);
-	if (page_txt == NULL)
+	txt = malloc(stdin_size + 1);
+	if (txt == NULL)
 		die2(EXIT_BAD_MALLOC, "malloc(page text stdin) failed", sz);
-	page_txt[stdin_size] = 0;
+	txt[stdin_size] = 0;
 
-	_read_blob(0, page_txt, stdin_size);
+	_read_blob(0, txt, stdin_size);
 
 	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error(
 		(struct _ecpg_sql_state_fault *)0
@@ -117,7 +117,7 @@ EXEC SQL END DECLARE SECTION;
 	  ) VALUES (
 		:pdf_blob::udig,
 		:page_number,
-		:page_txt
+		:txt
 	  )
   	  ON CONFLICT
   		DO NOTHING
