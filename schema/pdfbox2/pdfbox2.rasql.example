@@ -12,6 +12,15 @@
 		},
 		"page-text-utf8-fts": {
 			"source-path":	"page-text-utf8-fts.sql"
+		},
+		"page-text-utf8-count-keyword": {
+			"source-path":	"page-text-utf8-count-keyword.sql"
+		},
+		"page-text-utf8-count-phrase": {
+			"source-path":	"page-text-utf8-count-phrase.sql"
+		},
+		"page-text-utf8-count-fts": {
+			"source-path":	"page-text-utf8-count-fts.sql"
 		}
 	},
 	"http-query-arg-set": {
