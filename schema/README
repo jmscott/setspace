@@ -8,7 +8,7 @@ Schemas:
 
 	libxml2		libxml2 library for xml documents
 
-	pgtexts		postgreSQL text search
+	pgtexts		postgreSQL full text search (rename to pgfts?)
 
 	jsonorg		json as defined by the program JSON_checker at json.org
 
