@@ -3,12 +3,12 @@
 #  Synopsis:
 #	Engligh fulltext, phrase or keyword query of tables in pdfbox2 schema.
 #  Usage:
-#	pdfq <action> <type>:'query' [limit [offset [rank_norm]]]
+#	pdfq <sql> [txt-query:]'query' [limit [offset [rank_norm]]]
 #
-#	#  <action> is in {page, page/count}
-#	#  <type> is in {fts, phrase, p, keyword, key, k}
+#	#  <sql> 	is in {page, page/count, p2q}
+#	#  [txt-query]	is in {fts, phrase, p, keyword, key, k}
 #
-#	#  defaults:
+#	#  query defaults:
 #	#	result row limit: 10
 #	#	result row offset: 0
 #	#	text search config: 'english'
@@ -25,6 +25,8 @@
 #	pdfq page key:'trump putin' 100 200
 #	pdfq page k:'trump putin' 100
 #	pdfq page keywords:'trump putin' 100
+#
+#	pdfq p2q 'Compact Proofs of Retrievability'
 #
 #  Exit Status:
 #	0	Matching count and tuples written to standard output
@@ -75,6 +77,11 @@ arg_is_number()
 
 #  parse/extract <type>:'query words' from the second argument
 
+escape_sql_var()
+{
+	echo "$1" | sed "s/'/''/g" | sed 's/\\/\\\\/g'
+}
+
 parse_query()
 {
 	QARG="$1"
@@ -110,6 +117,11 @@ parse_query()
 		die "missing query type prefix: $QARG" 4
 		;;
 	esac
+
+	#  escape quotes and backslash
+
+	Q=$(escape_sql_var "$Q")
+
 	return 0
 }
 
@@ -118,6 +130,20 @@ test $# -gt 1 || die 'wrong number of arguments' 4
 
 case "$1" in
 page)
+	;;
+p2q|p2tsv|phrase2tsv|phrase2tsquery)
+	test $# = 2 || die 'wrong number of arguments' 4
+	Q=$(escape_sql_var "$2")
+
+	#  query the count version of the sql file
+	SQL_FILE=phraseto_tsquery.sql
+
+	psql $PSQL_OPTS							\
+	  --file $PDFBOX2_ROOT/lib/$SQL_FILE				\
+	  --set ts_conf="'$TS_CONF'"					\
+	  --set phrase="'$Q'"						||
+		die "psql $1 failed: exit status=$?" 3
+	exit 0
 	;;
 
 page/count|pc|pagec|page-count)

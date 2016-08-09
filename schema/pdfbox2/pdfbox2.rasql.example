@@ -21,6 +21,9 @@
 		},
 		"page-text-utf8-count-fts": {
 			"source-path":	"page-text-utf8-count-fts.sql"
+		},
+		"phraseto_tsquery": {
+			"source-path":	"phraseto_tsquery.sql"
 		}
 	},
 	"http-query-arg-set": {

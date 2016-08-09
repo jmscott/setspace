@@ -77,6 +77,7 @@ install: all
 		page-text-utf8-phrase.sql				\
 		pdfbox2.flow.example					\
 		pdfbox2.rasql.example					\
+		phraseto_tsquery.sql					\
 		profile.example						\
 		rummy.sql						\
 		schema.sql						\
