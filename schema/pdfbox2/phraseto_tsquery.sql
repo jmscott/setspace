@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Convert phrase words to parasble tsquery via function phraseto_tsquery()
+ *	Convert phrase words to parsable tsquery via function phraseto_tsquery()
  *
  *  Command Line Variables:
  *	phrase		text
