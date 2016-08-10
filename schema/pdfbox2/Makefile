@@ -78,6 +78,7 @@ install: all
 		pdfbox2.flow.example					\
 		pdfbox2.rasql.example					\
 		phraseto_tsquery.sql					\
+		plainto_tsquery.sql					\
 		profile.example						\
 		rummy.sql						\
 		schema.sql						\

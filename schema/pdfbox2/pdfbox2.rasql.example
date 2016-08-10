@@ -24,6 +24,9 @@
 		},
 		"phraseto_tsquery": {
 			"source-path":	"phraseto_tsquery.sql"
+		},
+		"plainto_tsquery": {
+			"source-path":	"plainto_tsquery.sql"
 		}
 	},
 	"http-query-arg-set": {
