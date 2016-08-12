@@ -1,0 +1,13 @@
+#!/usr/bin/perl
+#
+#  Synopsis:
+#	Bust a text search request from a user interface into and'able chunks
+#  Example:
+#	$ fts-bust-uiq hello world '"good bye, cruel world"'
+#	plain: hello world
+#	phrase: good bye, cruel world
+#
+
+my $query = join(' ', @ARGV);
+
+print $query, "\n";
