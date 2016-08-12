@@ -10,4 +10,7 @@
 
 my $query = join(' ', @ARGV);
 
-print $query, "\n";
+if ($query =~ /^[^"]*$/) {
+	print 'plain: ', $query, "\n";
+	exit 0;
+}

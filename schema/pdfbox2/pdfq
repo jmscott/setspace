@@ -45,6 +45,9 @@
 #	Text search config ought to be pulled from either the command line or
 #	the environment
 #
+#  Note:
+#	Add --help options.
+#
 PROG=pdfq
 RANK_NORM=14
 LIMIT=10
