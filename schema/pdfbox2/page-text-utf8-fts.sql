@@ -37,7 +37,7 @@ with pdf_page_match as (
 	count(tsv.pdf_blob)::float8 as match_page_count
   from
 	pdfbox2.page_tsv_utf8 tsv,
-	to_tsquery('english', :ts_query) as q
+	to_tsquery(:ts_conf, :ts_query) as q
   where
   	tsv.tsv @@ q
 	and
@@ -74,7 +74,7 @@ with pdf_page_match as (
 		tsv.page_number
 	    from
 		pdfbox2.page_tsv_utf8 tsv,
-		to_tsquery('english', :ts_query) as q
+		to_tsquery(:ts_conf, :ts_query) as q
 	    where
   		tsv.tsv @@ q
 		and
