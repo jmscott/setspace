@@ -12,17 +12,14 @@
 #
 
 ########################  BEGIN SECTION OF VARIABLES TO CHANGE
+#
+#  Note:
+#  	Probably only need to change INSTALL_PREFIX and postgres PG variables.
+#
 
 #  during development change INSTALL_PREFIX to dir in $HOME, like $(HOME)/opt
 
 INSTALL_PREFIX=/usr/local
-
-SETSPACE_PREFIX=$(INSTALL_PREFIX)/setspace
-
-#  during development change to your user or group id
-
-SETSPACE_USER=$(USER)
-SETSPACE_GROUP=$(USER)
 
 #  where are postgres includes & libraries?
 
@@ -34,9 +31,10 @@ PGLIB=$(PGHOME)/lib
 
 PATH:=$(PGHOME)/bin:$(PATH)
 
-#  strict compilation of C code
+#  Location of go language distribution
+#  Some of us don't put go in our PATH.
 
-CFLAGS=-Wall -Wextra -Werror
+GODIST=/usr/local/go
 
 #  location of pdfbox jar file, version 2
 #
@@ -45,8 +43,16 @@ CFLAGS=-Wall -Wextra -Werror
 #
 PDFBOX_APP2_JAR:=/usr/local/lib/pdfbox-app-2.jar
 
-#  Location of go language distribution
+SETSPACE_PREFIX=$(INSTALL_PREFIX)/setspace
 
-GODIST=/usr/local/go
+#  during development change to your user or group id
+
+SETSPACE_USER=$(USER)
+SETSPACE_GROUP=$(USER)
+
+#  strict compilation of C code.
+#  if compilation fails then post issue to github.
+
+CFLAGS=-Wall -Wextra -Werror
 
 ########################  END SECTION OF VARIABLES TO CHANGE
