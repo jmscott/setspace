@@ -5,28 +5,28 @@
 
 	"sql-query-set": {
 		"page-text-utf8-keyword": {
-			"source-path":	"page-text-utf8-keyword.sql"
+			"source-path":	"lib/page-text-utf8-keyword.sql"
 		},
 		"page-text-utf8-phrase": {
-			"source-path":	"page-text-utf8-phrase.sql"
+			"source-path":	"lib/page-text-utf8-phrase.sql"
 		},
 		"page-text-utf8-fts": {
-			"source-path":	"page-text-utf8-fts.sql"
+			"source-path":	"lib/page-text-utf8-fts.sql"
 		},
 		"page-text-utf8-count-keyword": {
-			"source-path":	"page-text-utf8-count-keyword.sql"
+			"source-path":	"lib/page-text-utf8-count-keyword.sql"
 		},
 		"page-text-utf8-count-phrase": {
-			"source-path":	"page-text-utf8-count-phrase.sql"
+			"source-path":	"lib/page-text-utf8-count-phrase.sql"
 		},
 		"page-text-utf8-count-fts": {
-			"source-path":	"page-text-utf8-count-fts.sql"
+			"source-path":	"lib/page-text-utf8-count-fts.sql"
 		},
 		"phraseto_tsquery": {
-			"source-path":	"phraseto_tsquery.sql"
+			"source-path":	"lib/phraseto_tsquery.sql"
 		},
 		"plainto_tsquery": {
-			"source-path":	"plainto_tsquery.sql"
+			"source-path":	"lib/plainto_tsquery.sql"
 		}
 	},
 	"http-query-arg-set": {
