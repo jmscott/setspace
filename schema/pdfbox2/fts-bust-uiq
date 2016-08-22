@@ -9,8 +9,26 @@
 #
 
 my $query = join(' ', @ARGV);
+$query =~ s/\s/ /g;
 
-if ($query =~ /^[^"]*$/) {
+#  count the " characters
+my $quote_count =()= ($query =~ m/"/g);
+
+#  query has no phrases, so just plain text
+if ($quote_count <= 1) {
 	print 'plain: ', $query, "\n";
 	exit 0;
+}
+
+#  zap the final quote character
+$query =~ s/"([^"]*)$/\1/ if $quote_count % 2 == 1;
+
+my $type = 'plain';
+for (split('"', $query)) {
+	print "$type: $_\n" if m/\S/;
+	if ($type eq 'plain') {
+		$type = 'phrase';
+	} else {
+		$type = 'plain';
+	}
 }
