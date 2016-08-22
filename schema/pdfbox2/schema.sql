@@ -416,6 +416,12 @@ CREATE TABLE pdfbox2.page_tsv_utf8
 	ts_conf		text check (
 				--  verify the text ts_conf value is indeed
 				--  is a true regconfig.  really ugly.
+				--
+				--  Note:
+				--	Why does
+				--	   select ts_conf::regconfig::text
+				--	not return the schema qualified name?
+				--
 				ts_conf = ts_conf::regconfig::text
 			),
 	tsv		tsvector
