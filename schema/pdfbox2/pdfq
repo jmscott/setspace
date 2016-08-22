@@ -42,17 +42,15 @@
 #	$PDFBOX2_ROOT/lib/page-text-utf8-phrase[-count].sql
 #	$PDFBOX2_ROOT/lib/page-text-utf8-keyword[-count].sql
 #  Note:
-#	Text search config ought to be pulled from either the command line or
-#	the environment
-#
-#  Note:
-#	Add --help options.
+#	Option process is broken!!  For example, no way to specify
+#	the text search.  Need to rewrite script for [--options]
 #
 PROG=pdfq
 RANK_NORM=14
 LIMIT=10
 OFFSET=0
-TS_CONF=english
+
+TS_CONF=english			#  Note: ought to be pg_catalog.english?
 
 Q=
 SQL_FILE=
