@@ -45,6 +45,8 @@
 #	Option process is broken!!  For example, no way to specify
 #	the text search.  Need to rewrite script for [--options]
 #
+#	Special gripe when $2 ~~ '.*:.*'
+#
 PROG=pdfq
 RANK_NORM=14
 LIMIT=10
