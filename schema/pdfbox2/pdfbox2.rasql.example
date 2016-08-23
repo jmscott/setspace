@@ -7,9 +7,10 @@
 		"page-text-utf8-keyword": {
 			"source-path":	"lib/page-text-utf8-keyword.sql"
 		},
-		"page-text-utf8-keyword-dist": {
+
+		"page-keyword-dist": {
 			"source-path":
-				"lib/page-text-utf8-keyword-dist.sql"
+				"lib/page-keyword-dist.sql"
 		},
 
 		"page-text-utf8-phrase": {

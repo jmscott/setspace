@@ -74,7 +74,7 @@ install: all
 		page-text-utf8-count-phrase.sql				\
 		page-text-utf8-fts.sql					\
 		page-text-utf8-keyword.sql				\
-		page-text-utf8-keyword-dist.sql				\
+		page-keyword-dist.sql					\
 		page-text-utf8-phrase.sql				\
 		pdfbox2.flow.example					\
 		pdfbox2.rasql.example					\
