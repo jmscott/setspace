@@ -93,19 +93,19 @@ parse_query()
 	keyword:*|keywords:*|key:*|k:*)
 		Q=$(echo "$QARG" | sed 's/^k[^:]*://')
 		Q_VAR=keyword
-		SQL_FILE=page-text-utf8-keyword.sql
+		SQL_FILE=page-keyword.sql
 		;;
 
 	phrase:*|p:*)
 		Q=$(echo "$QARG" | sed 's/^p[^:]*://')
 		Q_VAR=phrase
-		SQL_FILE=page-text-utf8-phrase.sql
+		SQL_FILE=page-phrase.sql
 		;;
 
 	fts:*)
 		Q=$(echo "$QARG" | sed 's/^fts[^:]*://')
 		Q_VAR=ts_query
-		SQL_FILE=page-text-utf8-fts.sql
+		SQL_FILE=page-fts.sql
 		;;
 	'')
 		die 'empty query type prefix' 4

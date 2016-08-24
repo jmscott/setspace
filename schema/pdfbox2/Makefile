@@ -69,13 +69,13 @@ install: all
 
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER) -m ug=r		\
 		$(JCOMPILED)						\
-		page-text-utf8-count-fts.sql				\
-		page-text-utf8-count-keyword.sql			\
-		page-text-utf8-count-phrase.sql				\
-		page-text-utf8-fts.sql					\
-		page-text-utf8-keyword.sql				\
+		page-count-fts.sql					\
+		page-count-keyword.sql					\
+		page-count-phrase.sql					\
+		page-fts.sql						\
+		page-keyword.sql					\
 		page-keyword-dist.sql					\
-		page-text-utf8-phrase.sql				\
+		page-phrase.sql						\
 		pdfbox2.flow.example					\
 		pdfbox2.rasql.example					\
 		phraseto_tsquery.sql					\
