@@ -48,6 +48,14 @@
 #	Special gripe when $2 ~~ '.*:.*'
 #
 PROG=pdfq
+
+#
+#  RANK_NORM = 2 | 4 | 8
+#
+#	2 divides the rank by the document length
+#	4 divides the rank by the mean harmonic distance between extents
+#	8 divides the rank by the number of unique words in document
+#
 RANK_NORM=14
 LIMIT=10
 OFFSET=0
