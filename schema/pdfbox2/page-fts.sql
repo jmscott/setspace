@@ -18,8 +18,10 @@
  *	  --file page-text-utf8-fts.sql
  *
  *  Note:
- *	Unfortunately pddocument.number_of_pages == 0 is allowed, so the
- *	weighted sort could (rarely) break.
+ *	The headline fails for the pdfq query
+ *
+ *		pdfq page fts:'(partition <2> integers) & caching'
+ *		for pdf blob sha:628414538bcb0963ef304dffbe7a00c940aa154d
  */
 \timing on
 \x on
@@ -32,7 +34,7 @@
 \x on
 with pdf_page_match as (
   select
-	tsv.pdf_blob as blob,
+	tsv.pdf_blob,
 	sum(ts_rank_cd(tsv.tsv, q, :rank_norm))::float8 as page_rank_sum,
 	count(tsv.pdf_blob)::float8 as match_page_count
   from
@@ -53,7 +55,7 @@ with pdf_page_match as (
   	:offset
 )
   select
-  	pd.blob,
+  	pd.blob as pdf_blob,
 	match_page_count,
 	pd.number_of_pages as pdf_page_count,
 	/*
@@ -103,12 +105,12 @@ with pdf_page_match as (
 			q
 		) || ' @ Page #' || maxts.page_number
 	    from
-	    	to_tsquery('english', :ts_query) as q,
+	    	to_tsquery(:ts_conf, :ts_query) as q,
 		max_ranked_tsv maxts
 	) as "match_headline"
   from
   	pdfbox2.pddocument pd
-	  join pdf_page_match pp on (pp.blob = pd.blob)
+	  join pdf_page_match pp on (pp.pdf_blob = pd.blob)
   group by
   	pd.blob,
 	match_page_count
