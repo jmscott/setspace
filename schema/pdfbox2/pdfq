@@ -122,7 +122,7 @@ parse_query()
 		die 'no query type before colon' 4
 		;;
 	*:*)
-		die "unknown query type: $(echo "$Q" | sed 's/:.*//')" 4
+		die "unknown query type: $(echo "$QARG" | sed 's/:.*//')" 4
 		;;
 	*)
 		die "missing query type prefix: $QARG" 4
