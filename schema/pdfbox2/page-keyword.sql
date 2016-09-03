@@ -53,7 +53,7 @@ with pdf_page_match as (
   	:offset
 )
   select
-  	pd.blob,
+  	pd.blob as pdf_blob,
 	match_page_count,
 	pd.number_of_pages as pdf_page_count,
 	/*
