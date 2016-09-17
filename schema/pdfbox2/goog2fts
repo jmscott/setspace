@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 #
 #  Synopsis:
-#	Bust a text search request from a user interface into and'able chunks
+#	Convert a google style search query to postgres full text search
 #  Example:
-#	$ fts-bust-uiq hello world '"good bye, cruel world"'
+#	$ goog2fts hello world '"good bye, cruel world"'
 #	plain: hello world
 #	phrase: good bye, cruel world
 #
