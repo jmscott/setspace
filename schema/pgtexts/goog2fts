@@ -1,0 +1,34 @@
+#!/usr/bin/perl
+#
+#  Synopsis:
+#	Convert a google style search query to postgres full text search
+#  Example:
+#	$ goog2fts hello world '"good bye, cruel world"'
+#	plain: hello world
+#	phrase: good bye, cruel world
+#
+
+my $query = join(' ', @ARGV);
+$query =~ s/\s/ /g;
+
+#  count the " characters
+my $quote_count =()= ($query =~ m/"/g);
+
+#  query has no phrases, so just plain text
+if ($quote_count <= 1) {
+	print 'plain: ', $query, "\n";
+	exit 0;
+}
+
+#  zap the final quote character
+$query =~ s/"([^"]*)$/\1/ if $quote_count % 2 == 1;
+
+my $type = 'plain';
+for (split('"', $query)) {
+	print "$type: $_\n" if m/\S/;
+	if ($type eq 'plain') {
+		$type = 'phrase';
+	} else {
+		$type = 'plain';
+	}
+}

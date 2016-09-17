@@ -50,6 +50,8 @@ install: all
 	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
 		-d $(PGTEXTS_PREFIX)/sbin
 	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
+		-d $(PGTEXTS_PREFIX)/bin
+	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
 		-d $(PGTEXTS_PREFIX)/src
 	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
 		-d $(PGTEXTS_PREFIX)/log
@@ -73,6 +75,10 @@ install: all
 
 	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER) -m u=rx		\
 		$(PROGS)						\
+		$(PGTEXTS_PREFIX)/sbin
+
+	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER) -m u=rx		\
+		goog2fts						\
 		$(PGTEXTS_PREFIX)/sbin
 
 	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER) -m ug=rx		\
