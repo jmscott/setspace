@@ -90,7 +90,7 @@ install: all
 		append-page-pgtexts-brr					\
 		append-pgtexts-brr					\
 		cron-append-pgtexts-brr					\
-		fts-bust-uiq						\
+		uiq2fts						\
 		merge-extract_pages_utf8				\
 		merge-pages_text_utf8					\
 		merge-pages_tsv_utf8					\
