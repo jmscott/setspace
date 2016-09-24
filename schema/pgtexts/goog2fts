@@ -2,19 +2,10 @@
 #
 #  Synopsis:
 #	Convert a google style search query to postgres full text search
-#  Description:
-#	Convert a googlish text search query into a parsable format.
-#	For example,
-#		$ goog2fts hello, world
-#		plain: hello, world
-#
-#		$ goog2fts hello, world '"good bye, cruel world"'
-#		plain: hello, world 
-#		phrase: good bye, cruel world
-#
-#		$ goog2fts hello, world '-"good bye, cruel world"'
-#		plain: hello, world
-#		-phrase: good bye, cruel world
+#  Example:
+#	$ goog2fts hello world '"good bye, cruel world"'
+#	plain: hello world
+#	phrase: good bye, cruel world
 #
 
 my $query = join(' ', @ARGV);
