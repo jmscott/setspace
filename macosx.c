@@ -10,7 +10,7 @@
  *
  *	http://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
  */
-#ifdef __APPLE__
+#if __APPLE__ == 1 && __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 101200
 
 #pragma weak clock_gettime
 
