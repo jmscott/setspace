@@ -21,13 +21,13 @@
 \echo
 
 \x on
-select
-	count(distinct pdf_blob) as matching_pdf_count
-  from
+SELECT
+	count(distinct pdf_blob) AS matching_pdf_count
+  FROM
 	pdfbox2.page_tsv_utf8,
 	phraseto_tsquery(:ts_conf, :phrase) q
-  where
+  WHERE
   	tsv @@ q
-	and
+	AND
 	ts_conf = :ts_conf::text
 ;

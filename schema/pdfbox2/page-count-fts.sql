@@ -20,13 +20,13 @@
 \echo Full text search :ts_query, Text Search Configuration is :ts_conf
 \echo
 
-select
-	count(distinct pdf_blob) as matching_pdf_count
-  from
+SELECT
+	count(DISTINCT pdf_blob) AS matching_pdf_count
+  FROM
 	pdfbox2.page_tsv_utf8,
 	to_tsquery(:ts_conf, :ts_query) q
-  where
+  WHERE
   	tsv @@ q
-	and
+	AND
 	ts_conf = :ts_conf::text
 ;

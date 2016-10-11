@@ -30,89 +30,89 @@
 \echo
 
 \x on
-with pdf_page_match as (
-  select
-	tsv.pdf_blob as blob,
-	sum(ts_rank_cd(tsv.tsv, q, :rank_norm))::float8 as page_rank_sum,
-	count(tsv.pdf_blob)::float8 as match_page_count
-  from
+WITH pdf_page_match AS (
+  SELECT
+	tsv.pdf_blob AS blob,
+	sum(ts_rank_cd(tsv.tsv, q, :rank_norm))::float8 AS page_rank_sum,
+	count(tsv.pdf_blob)::float8 AS match_page_count
+  FROM
 	pdfbox2.page_tsv_utf8 tsv,
-	plainto_tsquery(:ts_conf, :keyword) as q
-  where
+	plainto_tsquery(:ts_conf, :keyword) AS q
+  WHERE
   	tsv.tsv @@ q
-	and
+	AND
 	tsv.ts_conf = :ts_conf::text
-  group by
+  GROUP BY
   	1
-  order by
+  ORDER BY
   	page_rank_sum desc,
 	match_page_count desc
-  limit
+  LIMIT
   	:limit
-  offset
+  OFFSET
   	:offset
 )
-  select
-  	pd.blob as pdf_blob,
+  SELECT
+  	pd.blob AS pdf_blob,
 	match_page_count,
-	pd.number_of_pages as pdf_page_count,
+	pd.number_of_pages AS pdf_page_count,
 	/*
 	 *  Note:
 	 *	Unfortunately the schema allows number_of_pages == 0,
 	 *	so this code could break!
 	 */
-  	max(page_rank_sum * (match_page_count / pd.number_of_pages)) as rank,
+  	max(page_rank_sum * (match_page_count / pd.number_of_pages)) AS rank,
 
 	/*
 	 *  Extract a headline of matching terms from the highest ranking page
 	 *  within a particular ranked pdf blob.
 	 */
 
-	(with max_ranked_tsv as (
-	    select
+	(WITH max_ranked_tsv AS (
+	    SELECT
 	    	sum(ts_rank_cd(tsv.tsv, q, :rank_norm))::float8,
 		tsv.page_number
-	    from
+	      FROM
 		pdfbox2.page_tsv_utf8 tsv,
-		plainto_tsquery(:ts_conf, :keyword) as q
-	    where
+		plainto_tsquery(:ts_conf, :keyword) AS q
+	      WHERE
   		tsv.tsv @@ q
-		and
+		AND
 		tsv.ts_conf = :ts_conf::text
-		and
+		AND
 		tsv.pdf_blob = pd.blob
-	    group by
+	      GROUP BY
 	    	tsv.page_number
-	    order by
+	      ORDER BY
 	    	--  order by rank, then page number
 	    	1 desc, 2 asc
-	    limit
+	      LIMIT
 	    	1
-	  ) select
+	  ) SELECT
 	  	ts_headline(
 			:ts_conf::regconfig,
-			(select
+			(SELECT
 				maxtxt.txt
-			    from
+			    FROM
 			    	pdfbox2.page_text_utf8 maxtxt
-			    where
+			    WHERE
 			    	maxtxt.pdf_blob = pd.blob
-				and
+				AND
 				maxtxt.page_number = maxts.page_number
 			),
 			q
 		) || ' @ Page #' || maxts.page_number
-	    from
-	    	plainto_tsquery(:ts_conf, :keyword) as q,
+	    FROM
+	    	plainto_tsquery(:ts_conf, :keyword) AS q,
 		max_ranked_tsv maxts
-	) as "Snippet"
-  from
+	) AS "Snippet"
+  FROM
   	pdfbox2.pddocument pd
-	  join pdf_page_match pp on (pp.blob = pd.blob)
-  group by
+	  JOIN pdf_page_match pp ON (pp.blob = pd.blob)
+  GROUP BY
   	pd.blob,
 	match_page_count
-  order by
-  	rank desc,
-	match_page_count desc
+  ORDER BY
+  	rank DESC,
+	match_page_count DESC
 ;

@@ -22,6 +22,6 @@
 \echo Keyword is :keyword, Text Search Configuration is :ts_conf
 \echo
 
-select
+SELECT
 	plainto_tsquery(:ts_conf, :keyword)
 ;

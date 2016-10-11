@@ -29,29 +29,29 @@
 \echo
 
 \x on
-with pdf_page_match as (
-  select
-	tsv.pdf_blob as blob,
-	min(tsv.tsv <=> q) as page_distance_min,
-	count(tsv.pdf_blob)::float8 as match_page_count
-  from
+WITH pdf_page_match AS (
+  SELECT
+	tsv.pdf_blob AS blob,
+	min(tsv.tsv <=> q) AS page_distance_min,
+	count(tsv.pdf_blob)::float8 AS match_page_count
+  FROM
 	pdfbox2.page_tsv_utf8 tsv,
-	plainto_tsquery(:ts_conf, :keyword) as q
-  where
+	plainto_tsquery(:ts_conf, :keyword) AS q
+  WHERE
   	tsv.tsv @@ q
-	and
+	AND
 	tsv.ts_conf = :ts_conf::text
-  group by
+  GROUP BY
   	tsv.pdf_blob
-  order by
-  	page_distance_min asc,
-	match_page_count desc
-  limit
+  ORDER BY
+  	page_distance_min ASC,
+	match_page_count DESC
+  LIMIT
   	:limit
-  offset
+  OFFSET
   	:offset
 )
-  select
+  SELECT
   	pd.blob,
 	match_page_count,
 	pd.number_of_pages as pdf_page_count,
@@ -62,53 +62,53 @@ with pdf_page_match as (
 	 *  the page that is "closest" to the query.
 	 */
 
-	(with closest_page as (
-	    select
+	(WITH closest_page AS (
+	    SELECT
 		tsv.page_number,
-		min(tsv.tsv <=> q) as page_distance
-	    from
+		min(tsv.tsv <=> q) AS page_distance
+	      FROM
 		pdfbox2.page_tsv_utf8 tsv,
 		plainto_tsquery(:ts_conf, :keyword) as q
-	    where
+	      where
   		tsv.tsv @@ q
-		and
+		AND
 		tsv.ts_conf = :ts_conf::text
-		and
+		AND
 		tsv.pdf_blob = pd.blob
-	    group by
+	    GROUP BY
 	    	tsv.page_number
-	    order by
+	    ORDER BY
 	    	--  order by distance, then page number
-	    	page_distance asc,
-		page_number asc
-	    limit
+	    	page_distance ASC,
+		page_number ASC
+	    LIMIT
 	    	1
-	  ) select
+	  ) SELECT
 	  	ts_headline(
 			:ts_conf::regconfig,
-			(select
+			(SELECT
 				maxtxt.txt
-			    from
+			    FROM
 			    	pdfbox2.page_text_utf8 maxtxt
-			    where
+			    WHERE
 			    	maxtxt.pdf_blob = pd.blob
-				and
+				AND
 				maxtxt.page_number = near_tsv.page_number
 			),
 			q
 		) || ' @ Page #' || near_tsv.page_number
 	    from
-	    	plainto_tsquery(:ts_conf, :keyword) as q,
+	    	plainto_tsquery(:ts_conf, :keyword) AS q,
 		closest_page near_tsv
-	) as "Snippet"
-  from
+	) AS "Snippet"
+  FROM
   	pdfbox2.pddocument pd
-	  join pdf_page_match pp on (pp.blob = pd.blob)
-  group by
+	  JOIN pdf_page_match pp ON (pp.blob = pd.blob)
+  GROUP BY
   	pd.blob,
 	pp.page_distance_min,
 	pp.match_page_count
-  order by
-  	pp.page_distance_min asc,
+  ORDER BY
+  	pp.page_distance_min ASC,
 	match_page_count / pd.number_of_pages desc
 ;

@@ -22,6 +22,6 @@
 \echo Phrase are :phrase, Text Search Configuration is :ts_conf
 \echo
 
-select
+SELECT
 	phraseto_tsquery(:ts_conf, :phrase)
 ;
