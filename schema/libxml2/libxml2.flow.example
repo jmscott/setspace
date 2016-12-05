@@ -223,7 +223,11 @@ query in_is_pg_well_formed_table(brr.udig)
 command get_is_pg_well_formed
 {
 	path = "sbin/get-is-pg-well-formed";
-	exit_status is OK when in {0, 1};
+	exit_status is OK when in {
+		0,		#  is well formed
+		1,		#  is not well formed
+		2		#  blob does not exist
+	};
 }
 
 call get_is_pg_well_formed (brr.udig, brr.blob_size)
