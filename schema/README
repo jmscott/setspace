@@ -38,3 +38,6 @@ Possible Schemas:
 	jhove - Open Preservation Project
 	nistrand - entropy toolkit from USA National Institute of Standards
 	arxiv - Published, free scientific documents on arxiv.org
+	yummly - Recipe API from Yummley.com
+	jpedal - pdf image extraction library
+	jdeli - pdf manipulation library
