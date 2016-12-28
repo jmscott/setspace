@@ -29,7 +29,7 @@ sql database setspace
 	driver_name = "postgres";
 	data_source_name = "sslmode=disable";
 	max_idle_conns = 1;
-	max_open_conns = 16;
+	max_open_conns = 4;
 }
 
 sql query in_is_xmlwf_table row
