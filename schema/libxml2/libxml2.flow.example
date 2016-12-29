@@ -25,7 +25,8 @@ boot
 sql database setspace
 {
 	driver_name = "postgres";
-	data_source_name = "sslmode=disable";
+	data_source_name =
+		"fallback_application_name=libxml2.flow sslmode=disable";
 	max_idle_conns = 0;
 	max_open_conns = 4;
 }
