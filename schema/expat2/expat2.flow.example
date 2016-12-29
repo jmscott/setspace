@@ -29,7 +29,7 @@ sql database setspace
 	driver_name = "postgres";
 	data_source_name =
 		"fallback_application_name=expat2.flow sslmode=disable";
-	max_idle_conns = 1;
+	max_idle_conns = 0;
 	max_open_conns = 4;
 }
 
