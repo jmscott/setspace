@@ -13,8 +13,11 @@
 #  	jmscott@setspace.com
 #  	setspace@gmail.com
 #  Note:
+#	Stale pid files could break boot.  Need to write a script to remove
+#	pid files on reboot.
+#
 #	Ought to wait for postgres and biod servers to start.
-#	systemd might solve this problem.  Or just starting from
+#	systemd might solve this problem.  Or just start sequentially from
 #	/etc/rc.local
 #
 
