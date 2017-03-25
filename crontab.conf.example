@@ -2,27 +2,35 @@ SETSPACE_ROOT=/usr/local/setspace
 
 #
 #  What:
-#	"Get" blobs discovered within a day and with known unknown facts.
+#	"Get" blobs discovered within an hour and with known unknown facts.
 #  When:
 #	Every minute
 #
-* * * * * $SETSPACE_ROOT/sbin/cron-rummy '1 day' >>$SETSPACE_ROOT/log/cron-rummy.log 2>&1
+* * * * * $SETSPACE_ROOT/sbin/cron-rummy '1 hour' >>$SETSPACE_ROOT/log/cron-rummy.log 2>&1
+
+#
+#  What:
+#	"Get" blobs discovered within a day and with known unknown facts.
+#  When:
+#	24 minutes after every hour
+#
+24 * * * * $SETSPACE_ROOT/sbin/cron-rummy '1 day' >>$SETSPACE_ROOT/log/cron-rummy.log 2>&1
 
 #
 #  What:
 #	"Get" blobs discovered within a week and with known unknown facts.
 #  When:
-#	24 minutes after every hour
+#	2:32am every morning
 #
-24 * * * * $SETSPACE_ROOT/sbin/cron-rummy '1 week' >>$SETSPACE_ROOT/log/cron-rummy.log 2>&1
+32 2 * * * $SETSPACE_ROOT/sbin/cron-rummy '1 week' >>$SETSPACE_ROOT/log/cron-rummy.log 2>&1
 
 #
 #  What:
 #	"Get" blobs discovered within a month and with known unknown facts.
 #  When:
-#	4:01am, every day
+#	4:01am, every Sunday
 #
-01 4 * * * $SETSPACE_ROOT/sbin/cron-rummy '1 month' >>$SETSPACE_ROOT/log/cron-rummy.log 2>&1
+01 4 * * Sun $SETSPACE_ROOT/sbin/cron-rummy '1 month' >>$SETSPACE_ROOT/log/cron-rummy.log 2>&1
 
 #
 #  What:
