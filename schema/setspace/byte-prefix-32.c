@@ -37,7 +37,7 @@ read_prefix(void *p)
 {
 	ssize_t nb, nread = 0;
 
-	again:
+again:
 
 	nb = _read(0, p + nread, 32 - nread);
 	nread += nb;
