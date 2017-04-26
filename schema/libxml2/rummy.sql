@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Find expat2 xml blobs with known unknowns in schema "xmlorg".
+ *	Find  libxml2 blobs with known unknowns in schema "linxml2".
  */
 WITH xml_candidate AS (
   SELECT
