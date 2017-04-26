@@ -10,7 +10,7 @@
 #  	jmscott@setspace.com
 #  	setspace@gmail.com
 #  Note:
-#	Think about overriding name of SETSPACE_ROOT my consulting a variable
+#	Think about overriding name of SETSPACE_ROOT by consulting a variable
 #	named SETSPACE_ROOT_NAME.  Will be helpfull for non setspace
 #	schemas that wish to manage flowd process.
 #
