@@ -107,7 +107,7 @@ install: all
 		macosx.c						\
 		spin-wait-blob.pgc					\
 		$(SETSPACE_PREFIX)/src
-	cd schema && make install
+	cd schema && $(MAKE) $(MAKEFLAGS) install
 
 append-brr: append-brr.c common.c
 	cc $(CFLAGS) -o append-brr append-brr.c
@@ -140,9 +140,15 @@ spin-wait-blob:								\
 	rm spin-wait-blob.c
 
 distclean:
-	cd schema && make distclean
+	cd schema && $(MAKE) $(MAKEFLAGS) distclean
 	rm -rf $(SETSPACE_PREFIX)/bin
 	rm -rf $(SETSPACE_PREFIX)/sbin
 	rm -rf $(SETSPACE_PREFIX)/lib
 	rm -rf $(SETSPACE_PREFIX)/src
 	rm -rf $(SETSPACE_PREFIX)/sbin
+
+world:
+	$(MAKE) $(MAKEFLAGS) clean
+	$(MAKE) $(MAKEFLAGS) all
+	$(MAKE) $(MAKEFLAGS) distclean
+	$(MAKE) $(MAKEFLAGS) install
