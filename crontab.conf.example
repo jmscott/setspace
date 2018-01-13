@@ -54,4 +54,4 @@ SETSPACE_ROOT=/usr/local/setspace
 #  When:
 #	OS System revoot
 #
-@reboot sleep 10; $SETSPACE_ROOT/sbin/cron-reboot >>$SETSPACE_ROOT/log/cron-reboot.log 2>&1
+#PAUSE#@reboot sleep 30; $SETSPACE_ROOT/sbin/cron-reboot >>$SETSPACE_ROOT/log/cron-reboot.log 2>&1
