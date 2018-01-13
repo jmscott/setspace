@@ -67,7 +67,8 @@ install: all
 		schema.sql						\
 		rummy.sql						\
 		$(LIBXML2_PREFIX)/lib
-	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m a=r	\
+	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m a=r		\
+		is-pg-well-formed.pgc					\
 		merge-stdin-xml_doc.pgc					\
 		$(LIBXML2_PREFIX)/src
 
