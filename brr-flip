@@ -66,7 +66,10 @@ fi
 cd $SPOOL || die "cd $SPOOL failed: exit status=$?"
 
 log 'finding active blob request log files ...'
-ls *.brr | grep -v '[-][0-9][0-9]*.*[.]brr$' | while read BRR;  do
+find . -name '*.brr' -type f -maxdepth 1				|
+	grep -v '[-][0-9][0-9]*.*[.]brr$'				|
+
+	while read BRR;  do
 	NEW_BRR=$(basename $BRR .brr)-$(date +%s).brr
 	log "flip $BRR -> $NEW_BRR"
 	flip-tail file $BRR $NEW_BRR ||
