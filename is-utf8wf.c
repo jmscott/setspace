@@ -19,8 +19,17 @@
  *	       http://lists.w3.org/Archives/Public/www-archive/2009Apr/0001.html
  *	       http://bjoern.hoehrmann.de/utf-8/decoder/dfa/
  *
- *	SInce this program is byte/stream oriented, the above algorithms would
+ *	Since this program is byte/stream oriented, the above algorithms would
  *	need to be modified if used here.
+ *
+ *	A vectorized assembly version of validation has been written by Daniel
+ *	Lemire:
+ *
+ *		https://github.com/lemire/fastvalidate-utf-8
+ *		https://lemire.me/blog/2018/05/09/how-quickly-can-you-check-that-a-string-is-valid-unicode-utf-8/
+ *
+ *	The vectorized version appears to be about 8 time quicker than the
+ *	fastest C state machine.
  *
  *	And, while you are exploring, be sure to read perl's mighty
  *	unicode/set spanner packages that built the decoders described above:
