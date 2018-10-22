@@ -11,7 +11,6 @@ See Also:
 		https://www.youtube.com/watch?v=-6BsiVyC1kM
 
 Example Schemas:
-	exiv2		generale c++ metadata extractor
 	jsonorg		json as defined by the program JSON_checker at json.org
 
 	pdfbox2		pdfbox.apache.org tables, version 2
