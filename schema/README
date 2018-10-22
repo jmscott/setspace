@@ -32,6 +32,7 @@ See:
 	https://github.com/openpreserve
 
 Possible Schemas:
+	exiv2 - generale c++ metadata extractor
 	scrapy - python web scraping framework
 	exiftool - File metadata extraction tool, oriented around digital media
 	gdelt - World News Project
