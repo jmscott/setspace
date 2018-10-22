@@ -16,7 +16,7 @@ Schemas:
 
 	expat2		xml libexpat, version 2
 
-	exif		exif tool, version 10
+	exiftool	exif tool, version 11
 
 	fffile		well known Unix "Fine Free File" command
 
