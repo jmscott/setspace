@@ -43,6 +43,7 @@ COMMENT ON TABLE service IS
 	'Blobs known to exist'
 ;
 CREATE INDEX service_discover_time ON service(discover_time);
+CREATE INDEX service_blob ON service USING hash(blob);
 
 DROP TABLE IF EXISTS setspace.byte_count cascade;
 CREATE TABLE byte_count
@@ -57,6 +58,10 @@ CREATE TABLE byte_count
 				)
 				NOT NULL
 );
+COMMENT ON TABLE byte_count IS
+	'How Many Bytes are in the Blob'
+;
+CREATE INDEX byte_count_blob ON byte_count USING hash(blob);
 
 /*
  *  Is the blob a well formed UTF-8 sequence?
@@ -72,6 +77,10 @@ CREATE TABLE is_utf8wf
 	is_utf8		boolean
 				NOT NULL
 );
+COMMENT ON TABLE is_utf8wf IS
+	'How Many Bytes (Octets) are in the Blob'
+;
+CREATE INDEX is_utf8wf_blob ON is_utf8wf USING hash(blob);
 
 /*
  *  256 Bitmap of existing bytes in blob.
@@ -87,6 +96,10 @@ CREATE TABLE byte_bitmap
 	bitmap		bit(256)
 				NOT NULL
 );
+COMMENT ON TABLE byte_bitmap IS
+	'A Bitmap of Existing Bytes in the Blob'
+;
+CREATE INDEX byte_bitmap_blob ON byte_bitmap USING hash(blob);
 
 /*
  *  First 32 bytes of the blob.
@@ -106,18 +119,10 @@ CREATE TABLE byte_prefix_32
 				NOT NULL
 );
 COMMENT ON TABLE byte_prefix_32 IS
-	'First 32 bytes in a blob'
+	'First 32 bytes in a Blob'
 ;
+CREATE INDEX byte_prefix_32_blob ON byte_prefix_32 USING hash(blob);
 CREATE INDEX byte_prefix_32_prefix ON byte_prefix_32(prefix);
-
---  Note: move index byte_prefix_32_4 to schema prefixio?
-
-CREATE INDEX byte_prefix_32_4 ON byte_prefix_32
-		(substring(prefix from 1 for 4))
-;
-COMMENT ON INDEX byte_prefix_32_4 IS
-	'Index first 4 bytes of byte prefix'
-;
 
 DROP TABLE IF EXISTS setspace.new_line_count CASCADE;
 CREATE TABLE new_line_count
@@ -132,10 +137,10 @@ CREATE TABLE new_line_count
 			)
 			NOT NULL
 );
-
 COMMENT ON TABLE new_line_count IS
-	'The Count of New-Lines bytes in a Blob'
+	'Count of NewLine Byte (0xA) in Blob'
 ;
+CREATE INDEX new_line_count_blob ON new_line_count USING hash(blob);
 
 DROP TABLE IF EXISTS setspace.is_udigish CASCADE;
 CREATE TABLE is_udigish
@@ -150,6 +155,7 @@ CREATE TABLE is_udigish
 COMMENT ON TABLE is_udigish IS
 	'Blob might contain a udig'
 ;
+CREATE INDEX is_udigish_blob ON is_udigish USING hash(blob);
 
 /*
  *  Does blob contain json leading object or array bracket chars?
@@ -167,6 +173,12 @@ CREATE TABLE has_byte_json_bracket
 COMMENT ON TABLE has_byte_json_bracket IS
 	'Blob Framed by White Space [ ... ] or { ... }, White Space'
 ;
+CREATE INDEX has_byte_json_bracket_blob
+  ON
+  	has_byte_json_bracket
+  USING
+  	hash(blob)
+;
 
 /*
  *  Does blob contain xml leading angle brackets?
@@ -183,6 +195,12 @@ CREATE TABLE has_byte_xml_bracket
 );
 COMMENT ON TABLE has_byte_xml_bracket IS
 	'Blob Framed by White Space < ... > the White Space'
+;
+CREATE INDEX has_byte_xml_bracket_blob
+  ON
+  	has_byte_xml_bracket
+  USING
+  	hash(blob)
 ;
 
 /*
@@ -204,6 +222,7 @@ CREATE TABLE byte_suffix_32
 COMMENT ON TABLE byte_suffix_32 IS
 	'First 32 bytes in a blob'
 ;
+CREATE INDEX byte_suffix_32_blob ON byte_suffix_32 USING hash(blob);
 CREATE INDEX byte_suffix_32_suffix ON byte_suffix_32(suffix);
 
 COMMIT;
