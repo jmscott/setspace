@@ -7,6 +7,8 @@
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
  *  Note:
+ *	Need to add hash index to all tables!
+ *
  *	A view is_printable_unix?  See file setspace.flow.example.
  *
  *	add sql comments!
@@ -16,194 +18,192 @@
 \set ON_ERROR_STOP on
 \timing
 
-begin;
-drop schema if exists setspace cascade;
+BEGIN;
+DROP SCHEMA IF EXISTS setspace CASCADE;
 
-create schema setspace;
+SET search_path TO setspace,public;
+
+CREATE SCHEMA setspace;
+COMMENT ON SCHEMA setspace IS
+	'Core setspace tables for common blob facts'
+;
 
 --  blobs "in service", i.e., all facts are known
 
-drop table if exists setspace.service cascade;
-create table setspace.service
+DROP TABLE IF EXISTS setspace.service CASCADE;
+CREATE TABLE service
 (
 	blob		udig
-				primary key,
+				PRIMARY KEY,
 	discover_time	timestamptz
-				default now()
-				not null
+				DEFAULT now()
+				NOT NULL
 );
-create index service_discover_time on setspace.service(discover_time);
+COMMENT ON TABLE service IS
+	'Blobs known to exist'
+;
+CREATE INDEX service_discover_time ON service(discover_time);
 
-drop table if exists setspace.byte_count cascade;
-create table setspace.byte_count
+DROP TABLE IF EXISTS setspace.byte_count cascade;
+CREATE TABLE byte_count
 (
 	blob		udig
-				references setspace.service
-				on delete cascade
-				primary key,
+				REFERENCES service
+				ON DELETE CASCADE
+				PRIMARY KEY,
 	byte_count	bigint
-				check (
+				CHECK (
 					byte_count >= 0
 				)
-				not null
+				NOT NULL
 );
 
 /*
  *  Is the blob a well formed UTF-8 sequence?
  *  The empty blob is NOT utf8
  */
-drop table if exists setspace.is_utf8wf cascade;
-create table setspace.is_utf8wf
+DROP TABLE IF EXISTS setspace.is_utf8wf CASCADE;
+CREATE TABLE is_utf8wf
 (
 	blob		udig
-				references setspace.service
-				on delete cascade
-				primary key,
+				REFERENCEs service
+				ON DELETE CASCADE
+				PRIMARY KEY,
 	is_utf8		boolean
-				not null
+				NOT NULL
 );
 
 /*
  *  256 Bitmap of existing bytes in blob.
  */
-drop table if exists setspace.byte_bitmap cascade;
-create table setspace.byte_bitmap
+DROP TABLE IF EXISTS setspace.byte_bitmap CASCADE;
+CREATE TABLE byte_bitmap
 (
 	blob		udig
-				references setspace.service
-				on delete cascade
-				primary key,
+				REFERENCES service
+				ON DELETE CASCADE
+				PRIMARY KEY,
 
 	bitmap		bit(256)
-				not null
+				NOT NULL
 );
-
---  Note: must exclude the empty blob
-
-drop view if exists setspace.ascii;
-create view setspace.ascii as
-  select
-  	blob
-    from
-    	setspace.byte_bitmap
-    where
-	--  bits 255->127 are all 0
-    	bitmap::bit(128) = B'0'::bit(128)
-;
 
 /*
  *  First 32 bytes of the blob.
  */
-drop table if exists setspace.byte_prefix_32 cascade;
-create table setspace.byte_prefix_32
+DROP TABLE IF EXISTS setspace.byte_prefix_32 CASCADE;
+CREATE TABLE byte_prefix_32
 (
 	blob		udig
-				references setspace.service
-				on delete cascade
-				primary key,
+				REFERENCES service
+				ON DELETE CASCADE
+				PRIMARY KEY,
 
 	prefix		bytea
-				check (
+				CHECK (
 					octet_length(prefix) <= 32
 				)
-				not null
+				NOT NULL
 );
-comment on table setspace.byte_prefix_32 is
+COMMENT ON TABLE byte_prefix_32 IS
 	'First 32 bytes in a blob'
 ;
-create index byte_prefix_32_prefix on setspace.byte_prefix_32(prefix);
+CREATE INDEX byte_prefix_32_prefix ON byte_prefix_32(prefix);
 
 --  Note: move index byte_prefix_32_4 to schema prefixio?
 
-create index byte_prefix_32_4 on setspace.byte_prefix_32
+CREATE INDEX byte_prefix_32_4 ON byte_prefix_32
 		(substring(prefix from 1 for 4))
 ;
+COMMENT ON INDEX byte_prefix_32_4 IS
+	'Index first 4 bytes of byte prefix'
+;
 
-drop table if exists setspace.new_line_count cascade;
-create table setspace.new_line_count
+DROP TABLE IF EXISTS setspace.new_line_count CASCADE;
+CREATE TABLE new_line_count
 (
 	blob		udig
-				references setspace.service
-				on delete cascade
-				primary key,
+				REFERENCES service
+				ON DELETE CASCADE
+				PRIMARY KEY,
 
-	line_count	bigint check (
+	line_count	bigint CHECK (
 				line_count >= 0
 			)
-			not null
+			NOT NULL
 );
 
-comment on table setspace.new_line_count is
+COMMENT ON TABLE new_line_count IS
 	'The Count of New-Lines bytes in a Blob'
 ;
 
-drop table if exists setspace.is_udigish cascade;
-create table setspace.is_udigish
+DROP TABLE IF EXISTS setspace.is_udigish CASCADE;
+CREATE TABLE is_udigish
 (
 	blob	udig
-			references setspace.service
-			on delete cascade
-			primary key,
+			REFERENCES service
+			ON DELETE CASCADE
+			PRIMARY KEY,
 	udigish	bool
-			not null
+			NOT NULL
 );
-comment on table setspace.is_udigish is
+COMMENT ON TABLE is_udigish IS
 	'Blob might contain a udig'
 ;
 
 /*
  *  Does blob contain json leading object or array bracket chars?
  */
-drop table if exists setspace.has_byte_json_bracket cascade;
-create table setspace.has_byte_json_bracket
+DROP Table if exists setspace.has_byte_json_bracket cascade;
+CREATE TABLE has_byte_json_bracket
 (
 	blob	udig
-			references setspace.service
-			on delete cascade
-			primary key,
+			REFERENCES service
+			ON DELETE CASCADE
+			PRIMARY KEY,
 	has_bracket	bool
-			not null
+			NOT NULL
 );
-comment on table setspace.has_byte_json_bracket is
-	'Blob Might be Framed by [...] or {...}'
+COMMENT ON TABLE has_byte_json_bracket IS
+	'Blob Framed by White Space [ ... ] or { ... }, White Space'
 ;
 
 /*
  *  Does blob contain xml leading angle brackets?
  */
-drop table if exists setspace.has_byte_xml_bracket cascade;
-create table setspace.has_byte_xml_bracket
+DROP TABLE IF EXISTS setspace.has_byte_xml_bracket CASCADE;
+CREATE TABLE has_byte_xml_bracket
 (
 	blob	udig
-			references setspace.service
-			on delete cascade
-			primary key,
+			REFERENCES service
+			ON DELETE CASCADE
+			PRIMARY KEY,
 	has_bracket	bool
-			not null
+			NOT NULL
 );
-comment on table setspace.has_byte_xml_bracket is
-	'Blob Might be Framed by <.*>'
+COMMENT ON TABLE has_byte_xml_bracket IS
+	'Blob Framed by White Space < ... > the White Space'
 ;
 
 /*
  *  Final 32 bytes of the blob.
  */
-drop table if exists setspace.byte_suffix_32 cascade;
-create table setspace.byte_suffix_32
+DROP TABLE IF EXISTS setspace.byte_suffix_32 CASCADE;
+CREATE TABLE byte_suffix_32
 (
 	blob		udig
-				references setspace.service
-				on delete cascade
-				primary key,
+				REFERENCES service
+				ON DELETE CASCADE
+				PRIMARY KEY,
 	suffix		bytea
-				check (
+				CHECK (
 					octet_length(suffix) <= 32
 				)
-				not null
+				NOT NULL
 );
-comment on table setspace.byte_suffix_32 is
+COMMENT ON TABLE byte_suffix_32 IS
 	'First 32 bytes in a blob'
 ;
-create index byte_suffix_32_suffix on setspace.byte_suffix_32(suffix);
+CREATE INDEX byte_suffix_32_suffix ON byte_suffix_32(suffix);
 
-commit;
+COMMIT;
