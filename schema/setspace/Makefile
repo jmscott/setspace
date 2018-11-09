@@ -20,7 +20,6 @@ COMPILED=								\
 	byte-suffix-32							\
 	has-byte-json-bracket						\
 	has-byte-xml-bracket						\
-	is-byte-hex-40							\
 	is-sha-udigish							\
 	is-udigish							\
 	new-line-count
@@ -78,7 +77,6 @@ ifdef SETSPACE_SCHEMA_PREFIX
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
 		byte-bitmap.c						\
 		byte-count.c						\
-		is-byte-hex-40.c					\
 		byte-prefix-32.c					\
 		byte-suffix-32.c					\
 		has-byte-json-bracket.c					\
@@ -124,8 +122,11 @@ has-byte-json-bracket: has-byte-json-bracket.c ../../common.c
 has-byte-xml-bracket: has-byte-xml-bracket.c ../../common.c
 	cc -o has-byte-xml-bracket $(CFLAGS) has-byte-xml-bracket.c
 
-is-byte-hex-40: is-byte-hex-40.c ../../common.c
-	cc -o is-byte-hex-40 $(CFLAGS) is-byte-hex-40.c
-
 is-sha-udigish: is-sha-udigish.c ../../common.c
 	cc -o is-sha-udigish $(CFLAGS) is-sha-udigish.c
+
+world:
+	$(MAKE) $(MFLAGS) clean
+	$(MAKE) $(MFLAGS) all
+	$(MAKE) $(MFLAGS) distclean
+	$(MAKE) $(MFLAGS) install
