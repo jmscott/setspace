@@ -20,7 +20,6 @@ COMPILED=								\
 	byte-suffix-32							\
 	has-byte-json-bracket						\
 	has-byte-xml-bracket						\
-	is-sha-udigish							\
 	is-udigish							\
 	new-line-count
 
@@ -52,7 +51,6 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		byte-count						\
 		byte-prefix-32						\
 		byte-suffix-32						\
-		eat-zombie						\
 		get-bool-command					\
 		get-is-utf8wf						\
 		has-byte-json-bracket					\
@@ -81,7 +79,6 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		byte-suffix-32.c					\
 		has-byte-json-bracket.c					\
 		has-byte-xml-bracket.c					\
-		is-sha-udigish.c					\
 		is-udigish.c						\
 		Makefile						\
 		new-line-count.c					\
@@ -121,9 +118,6 @@ has-byte-json-bracket: has-byte-json-bracket.c ../../common.c
 
 has-byte-xml-bracket: has-byte-xml-bracket.c ../../common.c
 	cc -o has-byte-xml-bracket $(CFLAGS) has-byte-xml-bracket.c
-
-is-sha-udigish: is-sha-udigish.c ../../common.c
-	cc -o is-sha-udigish $(CFLAGS) is-sha-udigish.c
 
 world:
 	$(MAKE) $(MFLAGS) clean
