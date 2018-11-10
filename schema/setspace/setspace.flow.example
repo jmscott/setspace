@@ -65,12 +65,12 @@ sql query in_service_table row
 
 	statement = `
 
-	SELECT exists (
-	  select
+	SELECT EXISTS (
+	  SELECT
 		blob
-	    from
+	    FROM
 		setspace.service
-	    where
+	    WHERE
 		blob = $1::udig
 	);
 
@@ -92,12 +92,12 @@ sql exec merge_service
 
 	statement = `
 
-	INSERT into setspace.service(
+	INSERT INTO setspace.service(
 		blob
 	  ) VALUES(
 	  	$1::udig
 	  ) ON CONFLICT
-	  	do nothing
+	  	DO NOTHING
 	;
 
 	`;
@@ -157,7 +157,13 @@ command is_zombie_alive
 {
 	#  typically in $SETSPACE_ROOT/sbin
 
-	path = "sbin/eat-zombie";
+	path = "bin/blobio";
+	argv = (
+		"eat",
+		"--service",
+		"bio4:127.0.0.1:1797",
+		"--udig"
+	);
 	exit_status is OK when in {0, 1};
 }
 
@@ -165,7 +171,7 @@ sql exec delete_blob
 {
 	statement = `
 
-	DELETE from
+	DELETE FROM
 	  	setspace.service
 	  WHERE
 	  	blob = $1::udig
@@ -226,12 +232,12 @@ sql query in_byte_count_table row
 
 	statement = `
 
-	SELECT exists (
-	  select
+	SELECT EXISTS (
+	  SELECT
 		blob
-	    from
+	    FROM
 		setspace.byte_count
-	    where
+	    WHERE
 		blob = $1::udig
 	);
 
@@ -266,12 +272,12 @@ sql query in_byte_bitmap_table row
 
 	statement = `
 
-	SELECT exists (
-	  select
+	SELECT EXISTS (
+	  SELECT
 		blob
-	    from
+	    FROM
 		setspace.byte_bitmap
-	    where
+	    WHERE
 		blob = $1::udig
 	);
 	
@@ -322,21 +328,19 @@ sql query in_is_utf8wf_table row
 
 	statement = `
 
-	SELECT
-	  exists (
-	    select
+	SELECT EXISTS (
+	  SELECT
 		blob
-	      from
+	    FROM
 		setspace.is_utf8wf
-	      where
+	    WHERE
 		blob = $1::udig
 	  ),
-	 (
-	    select
+	 (SELECt
 	  	is_utf8
-	      from
+	    FROM
 	    	setspace.is_utf8wf
-	      where
+	    WHERE
 	    	blob = $1::udig
 	 );
 
@@ -359,18 +363,18 @@ sql query merge_is_utf8wf row
 	#  Note: does the insert return a value upon conflict?
 	statement = `
 
-	INSERT into setspace.is_utf8wf(
+	INSERT INTO setspace.is_utf8wf(
 		blob,
 		is_utf8
-	  ) SELECT
+	) SELECT
 		$1::udig,
-		case $2 
-	  		when '0' then true
-	  		when '1' then false
-	  		when '2' then false
-		end
+		CASE $2 
+	  		WHEN '0' THEN true
+	  		WHEN '1' THEN false
+	  		WHEN '2' THEN false
+		END
   	  ON CONFLICT
-  		do nothing
+  		DO NOTHING
   	  RETURNING
   		is_utf8
 	;
@@ -397,14 +401,14 @@ sql query has_char_0xff row {
 	  	setspace.byte_bitmap bm,
 
 		--  all zero bits
-		coalesce(
+		COALESCE(
 			B'0'::bit(256)
-		) as all_zero,
+		) AS all_zero,
 
-		coalesce(
+		COALESCE(
 			B'1'::bit(256)
-		) as char_0xff
-	  where
+		) AS char_0xff
+	  WHERE
 	  	bm.blob = $1::udig
 	;
 	
