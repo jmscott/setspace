@@ -484,11 +484,11 @@ sql query in_byte_prefix_32_table row
 	statement = `
 
 	SELECT exists (
-	  select
+	  SELECT
 		blob
-	    from
+	    FROM
 		setspace.byte_prefix_32
-	    where
+	    WHERE
 		blob = $1::udig
 	);
 	
@@ -524,11 +524,11 @@ sql query in_byte_suffix_32_table row
 	statement = `
 
 	SELECT exists (
-	  select
+	  SELECT
 		blob
-	    from
+	    FROM
 		setspace.byte_suffix_32
-	    where
+	    WHERE
 		blob = $1::udig
 	);
 	
@@ -624,22 +624,22 @@ sql query is_printable_unix row
 		bm.bitmap::bit(128) = B'0'::bit(128)
 
 		--  length > 0
-		and
+		AND
 		bm.bitmap != all_zero
-		and
+		AND
 		(forbidden_control & bm.bitmap) = all_zero
 	  FROM
 		setspace.byte_bitmap bm,
 
 		--  all zero bits
-		coalesce(
+		COALESCE(
 			B'0'::bit(256)
-		) as all_zero,
+		) AS all_zero,
 
 		--  forbidden chars in typical printable ascii unix file
 		--  notice tab and newline are not forbidden.
 
-		coalesce(
+		COALESCE(
 		  --  first 9 control characters: decimal 0-8: NUL -> BS
 		  (B'1111111111'::bit(256) >> 247)		|
 
@@ -648,7 +648,7 @@ sql query is_printable_unix row
 
 		  --  del char - decimal 127
 		  (B'1'::bit(256) >> 128)
-		) as forbidden_control
+		) AS forbidden_control
 	  WHERE
 		bm.blob = $1::udig
 	;`;
@@ -689,9 +689,9 @@ sql query is_drblob row
 		(required_char & bm.bitmap) = required_char
 
 		--  no forbidden chars
-		and
+		AND
 		(forbidden_char & bm.bitmap) = all_zero
-		and
+		AND
 
 		--  and prefix matches time stamp ^YYYY-MM-DDThh:mm:ss.nsec
 		escaped_prefix ~ (
@@ -724,30 +724,30 @@ sql query is_drblob row
 		)
 	  FROM
 		setspace.byte_prefix_32 p32
-		  natural join setspace.byte_bitmap bm,
-		  lateral encode(p32.prefix, 'escape') escaped_prefix,
+		  NATURAL JOIN setspace.byte_bitmap bm,
+		  LATERAL encode(p32.prefix, 'escape') escaped_prefix,
 
 		  --  all of these chars must be in any drblob tuple
-		  coalesce(
+		  COALESCE(
 			--  new-line character - decimal 10
 			(B'1'::bit(256) >> 245)		|
 
 			--  tab character
 			(B'1'::bit(256) >> 246)
 
-		  ) as required_char,
+		  ) AS required_char,
 
 		  -- forbidden chars in drblob tuple
-		  coalesce(
+		  COALESCE(
 			--  space character
 			(B'1'::bit(256) >> 224)
 
-		  ) as forbidden_char,
+		  ) AS forbidden_char,
 
 		  --  all zero bits
-		  coalesce(
+		  COALESCE(
 			  (B'0'::bit(256))
-		  ) as all_zero
+		  ) AS all_zero
 	  WHERE
 		 p32.blob = $1::udig
 	`;
@@ -788,11 +788,11 @@ sql query in_new_line_count_table row
 	statement = `
 
 	SELECT exists (
-	  select
+	  SELECT
 	  	blob
-	    from
+	    FROM
 	    	setspace.new_line_count
-	    where
+	    WHERE
 	    	blob = $1::udig
 	);
 
@@ -836,20 +836,19 @@ sql query in_is_udigish_table row
 	statement = `
 
 	SELECT
-	  exists (
-	    select
+	  EXISTS (
+	    SELECT
 		blob
-	      from
+	      FROM
 		setspace.is_udigish
-	      where
+	      WHERE
 		blob = $1::udig
 	  ),
-	 (
-	    select
+	 (SELECT
 	  	udigish
-	      from
+	   FROM
 	    	setspace.is_udigish
-	      where
+	   WHERE
 	    	blob = $1::udig
 	 );
 
@@ -941,20 +940,19 @@ sql query in_has_byte_json_bracket_table row
 	statement = `
 
 	SELECT
-	  exists (
-	    select
+	  EXISTS (
+	    SELECT
 		blob
-	      from
+	      FROM
 		setspace.has_byte_json_bracket
-	      where
+	      WHERE
 		blob = $1::udig
 	  ),
-	 (
-	    select
+	 (SELECT
 	  	has_bracket
-	      from
+	   FROM
 	    	setspace.has_byte_json_bracket
-	      where
+	   WHERE
 	    	blob = $1::udig
 	 );
 
@@ -971,13 +969,13 @@ sql query merge_has_byte_json_bracket row
 		has_bracket
 	  ) SELECT
 		$1::udig,
-		case $2 
-	  		when '0' then true
-	  		when '1' then false
-	  		when '2' then false
-		end
+		CASE $2 
+	  		WHEN '0' THEN true
+	  		WHEN '1' THEN false
+	  		WHEN '2' THEN false
+		END
   	  ON CONFLICT
-  		do nothing
+  		DO NOTHING
 	  RETURNING
 	  	has_bracket
 	;
@@ -1088,20 +1086,19 @@ sql query in_has_byte_xml_bracket_table row
 	statement = `
 
 	SELECT
-	  exists (
-	    select
+	  EXISTS (
+	    SELECT
 		blob
-	      from
+	      FROM
 		setspace.has_byte_xml_bracket
-	      where
+	      WHERE
 		blob = $1::udig
 	  ),
-	 (
-	    select
+	 (SELECT
 	  	has_bracket
-	      from
+	   FROM
 	    	setspace.has_byte_xml_bracket
-	      where
+	   WHERE
 	    	blob = $1::udig
 	 );
 
@@ -1118,13 +1115,13 @@ sql query merge_has_byte_xml_bracket row
 		has_bracket
 	  ) SELECT
 		$1::udig,
-		case $2 
-	  		when '0' then true
-	  		when '1' then false
-	  		when '2' then false
+		CASE $2 
+	  		WHEN '0' THEN true
+	  		WHEN '1' THEN false
+	  		WHEN '2' THEN false
 		end
   	  ON CONFLICT
-  		do nothing
+  		DO NOTHING
   	  RETURNING
   		has_bracket
 	;
