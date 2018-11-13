@@ -11,12 +11,13 @@
 #  	Probably only need to change INSTALL_PREFIX and postgres PG variables
 #
 
-#  in dev environment overide to $(HOME)/local or $(HOME)/opt
+#  in dev environment overide to, say, $(HOME)/local or $(HOME)/opt
 INSTALL_PREFIX=/usr/local
+#INSTALL_PREFIX=$(HOME)/opt
 
 #  where are postgres 9.6+ includes & libraries?
 
-PGHOME=/usr/local/pgsql
+PGHOME=$(INSTALL_PREFIX)/pgsql
 PGINC=$(PGHOME)/include
 PGLIB=$(PGHOME)/lib
 
@@ -32,7 +33,7 @@ SETSPACE_GROUP:=staff
 #  Note: be carefull installing underneath $(INSTALL_PREFIX),
 #        since a 'make distclean' will remove the jar file.
 #
-PDFBOX_APP2_JAR:=/usr/local/lib/pdfbox-app-2.jar
+PDFBOX_APP2_JAR:=$(INSTALL_PREFIX)/lib/pdfbox-app-2.jar
 
 #  strict compilation of C code.
 #  if compilation fails then post issue to github.
