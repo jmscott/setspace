@@ -155,9 +155,7 @@ query in_service_table(brr.udig);
 #
 command is_zombie_alive
 {
-	#  typically in $SETSPACE_ROOT/sbin
-
-	path = "bin/blobio";
+	path = "blobio";
 	argv = (
 		"eat",
 		"--service",
