@@ -32,16 +32,16 @@ dev-links:
 	test -e run || ln -s . run
 
 putPDDocument.class:  putPDDocument.java
-	javac -cp $(PDFBOX2_APP_JAR) putPDDocument.java
+	javac -cp $(PDFBOX_APP2_JAR) putPDDocument.java
 
 putPDDocumentInformation.class:  putPDDocumentInformation.java
-	javac -cp $(PDFBOX2_APP_JAR) putPDDocumentInformation.java
+	javac -cp $(PDFBOX_APP2_JAR) putPDDocumentInformation.java
 
 putPDDocumentInformationMetadata.class:  putPDDocumentInformationMetadata.java
-	javac -cp $(PDFBOX2_APP_JAR) putPDDocumentInformationMetadata.java
+	javac -cp $(PDFBOX_APP2_JAR) putPDDocumentInformationMetadata.java
 
 ExtractPagesUTF8.class:  ExtractPagesUTF8.java
-	javac -cp $(PDFBOX2_APP_JAR) ExtractPagesUTF8.java
+	javac -cp $(PDFBOX_APP2_JAR) ExtractPagesUTF8.java
 
 install: all
 	install -g $(PDFBOX2_GROUP) -o $(PDFBOX2_USER)			\

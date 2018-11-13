@@ -43,9 +43,6 @@ PDFBOX2_PREFIX=$(PDFBOX2_ROOT)
 PDFBOX2_USER=$(SETSPACE_USER)
 PDFBOX2_GROUP=$(SETSPACE_GROUP)
 
-#  Note: please redefine conditionally!!
-PDFBOX2_APP_JAR=/usr/local/lib/pdfbox-app-2.jar
-
 #  Variables for pgtexts schema for all utf8 files
 PGTEXTS_ROOT=$(SETSPACE_PREFIX)/schema/pgtexts
 PGTEXTS_PREFIX=$(PGTEXTS_ROOT)
