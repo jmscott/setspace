@@ -6,6 +6,10 @@
 #  See:
 #  	schema/setspace/schema.sql
 #  Note:
+#	Certain actions only occur when the row already exists in table
+#	is_utf8wf and not trigger when first tuple is first inserted into
+#	is_utf8wf.  For example, see query in_new_line_count_table.
+#
 #	Add jsonorg test for first four bytes matching, where xx is ascii
 #	(and probably a limited ascii set)
 #
