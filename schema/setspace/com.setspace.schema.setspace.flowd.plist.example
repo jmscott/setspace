@@ -20,7 +20,7 @@
   <key>EnvironmentVariables</key>
   <dict>
   	<key>PATH</key>
-	<string>/Users/jmscott/opt/setspace/schema/setspace/sbin:/Users/jmscott/opt/setspace/sbin:/Users/jmscott/opt/setspace/bin:/Users/jmscott/opt/blobio/bin:/Users/jmscott/opt/pgsql/bin:/usr/bin:/bin</string>
+	<string>/Users/jmscott/opt/setspace/schema/setspace/sbin:/Users/jmscott/opt/setspace/sbin:/Users/jmscott/opt/setspace/bin:/Users/jmscott/opt/blobio/bin:/Users/jmscott/opt/pgsql/bin:/Users/jmscott/opt/bin:/opt/local/bin:/usr/bin:/bin</string>
 
 	<key>SETSPACE_ROOT</key>
 	<string>/Users/jmscott/opt/setspace</string>
