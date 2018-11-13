@@ -661,7 +661,8 @@ sql query is_printable_unix row
 
 }
 
-#  Note: unfortunatly attributes and global names share a name space! 
+#  Note: unfortunatly attributes and global names share a name space,
+#        so append _ to end of name.
 #
 command is_utf8_
 {
@@ -670,7 +671,7 @@ command is_utf8_
 
 call is_utf8_()
   when
-  	in_is_utf8wf_table.is_utf8 == true
+	in_is_utf8wf_table.is_utf8 == true
 	or
 	merge_is_utf8wf.is_utf8 == true
 ;
@@ -822,6 +823,8 @@ command merge_new_line_count
 call merge_new_line_count(brr.udig)
   when
   	in_new_line_count_table.answer == false
+	and
+  	is_utf8_.exit_status == 0
 ;
 
 #
@@ -884,13 +887,7 @@ sql exec merge_is_udigish
 
 query in_is_udigish_table(brr.udig)
   when
-	(
-		in_is_utf8wf_table.answer == true
-		and
-		in_is_utf8wf_table.is_utf8 == true
-	)
-	or
-	merge_is_utf8wf.is_utf8 == true
+	is_utf8_.exit_status == 0
 ;
 
 command get_is_udigish
