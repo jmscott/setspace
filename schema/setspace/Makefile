@@ -66,6 +66,7 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		$(SETSPACE_SCHEMA_PREFIX)/sbin
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+		com.setspace.schema.setspace.flowd.plist.example	\
 		profile.example						\
 		rummy.sql						\
 		schema.sql						\
