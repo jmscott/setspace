@@ -41,8 +41,13 @@ with recent_service as (
   	setspace.is_utf8wf u8
 	  inner join recent_service rs on (rs.blob = u8.blob)
 	  left outer join setspace.is_udigish ud on (ud.blob = rs.blob)
+	  left outer join setspace.new_line_count nc on (nc.blob = rs.blob)
     where
   	u8.is_utf8 = true
 	and
-	ud.blob is null
+	(
+		ud.blob is null
+		or
+		nc.blob is null
+	)
 )
