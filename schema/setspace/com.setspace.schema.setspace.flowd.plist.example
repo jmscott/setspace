@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-/Apple/DTD PLIST 1.0/EN" "http:/www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
   <key>Label</key>
@@ -20,13 +20,13 @@
   <key>EnvironmentVariables</key>
   <dict>
   	<key>PATH</key>
-	<string>/Users/jmscott/opt/setspace/schema/setspace/sbin:/Users/jmscott/opt/setspace/sbin:/Users/jmscott/opt/setspace/bin:/Users/jmscott/opt/blobio/bin:/Users/jmscott/opt/pgsql/bin:/Users/jmscott/opt/bin:/opt/local/bin:/usr/bin:/bin</string>
+	<string>/usr/local/setspace/schema/setspace/sbin:/usr/local/setspace/sbin:/usr/local/setspace/bin:/usr/local/blobio/bin:/usr/local/pgsql/bin:/usr/local/bin:/opt/local/bin:/usr/bin:/bin</string>
 
 	<key>SETSPACE_ROOT</key>
-	<string>/Users/jmscott/opt/setspace</string>
+	<string>/usr/local/setspace</string>
 
 	<key>BLOBIO_ROOT</key>
-	<string>/Users/jmscott/opt/blobio</string>
+	<string>/usr/local/blobio</string>
 
 	<key>BLOBIO_ALGORITHM</key>
 	<string>bc160</string>
@@ -35,7 +35,7 @@
 	<string>bio4:127.0.0.1:1797</string>
 
 	<key>BLOBIO_GET_SERVICE</key>
-	<string>fs:/Users/jmscott/opt/blobio</string>
+	<string>fs:/usr/local/blobio</string>
 
 	<key>PGHOST</key>
 	<string>/tmp</string>
@@ -44,7 +44,7 @@
 	<string>5432</string>
 
 	<key>PGUSER</key>
-	<string>jmscott</string>
+	<string>postgres</string>
 
 	<key>PGPASSWORD</key>
 	<string></string>
@@ -55,7 +55,7 @@
 
   <key>ProgramArguments</key>
   <array>
-	<string>/Users/jmscott/sbin/launchd-log</string>
+	<string>/usr/local/sbin/launchd-log</string>
 	<string>flowd</string>
 	<!-- Note:
 		ps-title hack must first argument in order to change what
@@ -69,19 +69,19 @@
   <false/>
 
   <key>UserName</key>
-  <string>jmscott</string>
+  <string>setspace</string>
 
   <key>GroupName</key>
   <string>staff</string>
 
   <key>WorkingDirectory</key>
-  <string>/Users/jmscott/opt/setspace/schema/setspace</string>
+  <string>/usr/local/setspace/schema/setspace</string>
 
   <key>StandardErrorPath</key>
-  <string>/Users/jmscott/opt/setspace/log/launchd-setspace-flowd.log</string>
+  <string>/usr/local/setspace/schema/setspace/log/launchd-flowd.log</string>
 
   <key>StandardOutPath</key>
-  <string>/Users/jmscott/opt/setspace/log/launchd-setspace-flowd.log</string>
+  <string>/usr/local/setspace/schema/setspace/log/launchd-flowd.log</string>
 
 </dict>
 </plist>
