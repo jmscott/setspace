@@ -42,3 +42,4 @@ Possible Schemas:
 	yummly - Recipe API from Yummley.com
 	jpedal - pdf image extraction library
 	jdeli - pdf manipulation library
+	utf8proc - UTF8 transformation library 
