@@ -70,7 +70,7 @@ EXEC SQL END DECLARE SECTION;
 	blob = argv[1];
 	len = strlen(blob);
 	if (len < 34 || len > 255 || strchr(blob, ':') == NULL)
-		die2(EXIT_BAD_UDIG, "syntax error in xml udig", blob);
+		die2(EXIT_BAD_UDIG, "syntax error in json udig", blob);
 
 	//  parse the blob size as argv[2]
 	sz = argv[2];
