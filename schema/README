@@ -34,6 +34,8 @@ See:
 Possible Schemas:
 	w3valid - w3 validator of flavors of html
 	exiv2 - generale c++ metadata extractor
+	simdjson - Optimized json verifier from Daniel Lemire
+	hypersc - Hyper Scan Fast Regular expression library from Intel
 	scrapy - python web scraping framework
 	exiftool - File metadata extraction tool, oriented around digital media
 	gdelt - World News Project
