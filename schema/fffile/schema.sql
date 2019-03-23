@@ -6,6 +6,7 @@
  */
 
 \set ON_ERROR_STOP on
+SET search_path TO fffile,public;
 
 BEGIN;
 
@@ -18,8 +19,8 @@ COMMENT ON SCHEMA fffile IS
 /*
  *  Output of 'file --brief' command on blob.
  */
-DROP TABLE IF EXISTS fffile.file CASCADE;
-CREATE TABLE fffile.file
+DROP TABLE IF EXISTS file CASCADE;
+CREATE TABLE file
 (
 	blob		udig
 				REFERENCES setspace.service(blob)
@@ -30,49 +31,52 @@ CREATE TABLE fffile.file
 	--  trailing new-lines have been trimmed
 	file_type	text
 );
-COMMENT ON TABLE fffile.file IS
+COMMENT ON TABLE file IS
   'Output of file --brief command on blob'
 ;
+CREATE INDEX file_blob ON file USING hash(blob);
 
 /*
  *  Output of 'file --mime-type --brief' command on blob.
  */
-DROP TABLE IF EXISTS fffile.file_mime_type CASCADE;
-CREATE TABLE fffile.file_mime_type
+DROP TABLE IF EXISTS file_mime_type CASCADE;
+CREATE TABLE file_mime_type
 (
 	blob		udig
 				REFERENCES setspace.service(blob)
 				ON DELETE CASCADE
-				primary key,
+				PRIMARY KEY,
 	--  null indicates file produces non-utf8 output and exit status == 0
 	mime_type	text
 );
-COMMENT ON TABLE fffile.file_mime_type IS
+COMMENT ON TABLE file_mime_type IS
   'Output of file --mime-type --brief command on blob'
 ;
+CREATE INDEX file_mime_type_blob ON file_mime_type USING hash(blob);
 
 /*
  *  Output of 'file --mime-encoding --brief' command on blob.
  */
-DROP TABLE IF EXISTS fffile.file_mime_encoding CASCADE;
-CREATE TABLE fffile.file_mime_encoding
+DROP TABLE IF EXISTS file_mime_encoding CASCADE;
+CREATE TABLE file_mime_encoding
 (
 	blob		udig
 				REFERENCES setspace.service(blob)
 				ON DELETE CASCADE
-				primary key,
+				PRIMARY KEY,
 	--  null indicates file produces non-utf8 output and exit status == 0
 	mime_encoding	text
 );
-COMMENT ON TABLE fffile.file_mime_encoding IS
+COMMENT ON TABLE file_mime_encoding IS
   'Output of file --mime-encoding --brief command on blob'
 ;
+CREATE INDEX file_mime_encoding_blob ON file_mime_encoding USING hash(blob);
 
 /*
  *  Track very rare failures in various file commands defined in flowd.
  */
-DROP TABLE IF EXISTS fffile.fault;
-CREATE TABLE fffile.fault
+DROP TABLE IF EXISTS fault;
+CREATE TABLE fault
 (
 	blob		udig,
 	command_name	text CHECK (
@@ -92,7 +96,7 @@ CREATE TABLE fffile.fault
 				NOT NULL,
 	PRIMARY KEY	(blob, command_name)
 );
-COMMENT ON TABLE fffile.fault IS
+COMMENT ON TABLE fault IS
   'Track failures in file commands'
 ;
 
