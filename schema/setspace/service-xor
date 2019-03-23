@@ -44,11 +44,11 @@ psql							\
 	--no-psqlrc					\
 	--command 					\
 "
-select
+SELECT
 	blob::text
-  from
+  FROM
   	blobio.service
-  order by
+  ORDER BY
   	1 asc
 ")							\
 <(
@@ -59,10 +59,10 @@ psql							\
 	--no-psqlrc					\
 	--command 					\
 "
-select
+SELECT
 	blob::text
-  from
+  FROM
   	setspace.service
-  order by
+  ORDER BY
   	1 asc
 ")

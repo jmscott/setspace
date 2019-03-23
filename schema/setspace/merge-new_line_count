@@ -15,6 +15,9 @@
 #	BLOBIO_SERVICE
 #	BLOBIO_GET_SERVICE
 #	PG* variables
+#	TMPDIR
+#  Note:
+#	Consider pipelining blobs to eliminate dependence on TMPDIR.
 #
 PROG=merge-new_line_count
 BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
@@ -57,14 +60,14 @@ COUNT=$(new-line-count <$TMP_BLOB)
 test $? = 0 || die "new-line-count failed: exit status=$?" 4
 
 psql --quiet --no-psqlrc <<END
-insert into setspace.new_line_count(
+INSERT INTO setspace.new_line_count (
 	blob,
 	line_count
-  ) values (
+  ) VALUES (
   	'$BLOB'::udig,
 	$COUNT
-  ) on conflict
-  	do nothing
+  ) ON CONFLICT
+  	DO NOTHING
 ;
 END
 test $? = 0 || die "psql insert failed: exit status=$?" 5

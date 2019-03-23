@@ -15,6 +15,9 @@
 #	BLOBIO_SERVICE
 #	BLOBIO_GET_SERVICE
 #	PG* variables
+#	TMPDIR
+#  Note:
+#	Consider pipelining blobs to eliminate dependence on TMPDIR.
 #
 
 PROG=merge-byte_suffix_32
@@ -59,14 +62,14 @@ test $? = 0 || die "byte-suffix-32 failed: exit status=$?" 4
 
 #  merge new record
 psql --quiet --no-psqlrc <<END
-insert into setspace.byte_suffix_32(
+INSERT INTO setspace.byte_suffix_32 (
 	blob,
 	suffix
-  ) values (
+  ) VALUES (
   	'$BLOB'::udig,
 	E'\\\\x$PREFIX'
-  ) on conflict
-  	do nothing
+  ) ON CONFLICT
+  	DO NOTHING
 ;
 END
 test $? = 0 || die "psql insert failed: exit status=$?" 5
