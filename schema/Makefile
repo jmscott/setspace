@@ -10,6 +10,8 @@ include schema.mk
 
 DRBLOB_ROOT=$(SETSPACE_PREFIX)/schema/drblob
 
+createdb:
+	createdb setspace --encoding=UTF8 --template template0
 all:
 	cd setspace && $(MAKE) all
 	cd drblob && $(MAKE) all
