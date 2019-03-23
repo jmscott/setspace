@@ -17,11 +17,7 @@ COMPILED=								\
 	byte-bitmap							\
 	byte-count							\
 	byte-prefix-32							\
-	byte-suffix-32							\
-	has-byte-json-bracket						\
-	has-byte-xml-bracket						\
-	is-udigish							\
-	new-line-count
+	byte-suffix-32
 
 all: $(COMPILED)
 
@@ -53,15 +49,10 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		byte-suffix-32						\
 		get-bool-command					\
 		get-is-utf8wf						\
-		has-byte-json-bracket					\
-		has-byte-xml-bracket					\
-		is-udigish						\
 		merge-byte_bitmap					\
 		merge-byte_count					\
 		merge-byte_prefix_32					\
 		merge-byte_suffix_32					\
-		merge-new_line_count					\
-		new-line-count						\
 		service-xor						\
 		$(SETSPACE_SCHEMA_PREFIX)/sbin
 
@@ -78,11 +69,7 @@ ifdef SETSPACE_SCHEMA_PREFIX
 		byte-count.c						\
 		byte-prefix-32.c					\
 		byte-suffix-32.c					\
-		has-byte-json-bracket.c					\
-		has-byte-xml-bracket.c					\
-		is-udigish.c						\
 		Makefile						\
-		new-line-count.c					\
 		$(SETSPACE_SCHEMA_PREFIX)/src
 endif
 
@@ -107,18 +94,6 @@ byte-prefix-32: byte-prefix-32.c ../../common.c
 
 byte-suffix-32: byte-suffix-32.c ../../common.c
 	cc -o byte-suffix-32 $(CFLAGS) byte-suffix-32.c
-
-is-udigish: is-udigish.c ../../common.c
-	cc -o is-udigish $(CFLAGS) is-udigish.c
-
-newline-count: newline-count.c ../../common.c
-	cc -o newline-count $(CFLAGS) newline-count.c
-
-has-byte-json-bracket: has-byte-json-bracket.c ../../common.c
-	cc -o has-byte-json-bracket $(CFLAGS) has-byte-json-bracket.c
-
-has-byte-xml-bracket: has-byte-xml-bracket.c ../../common.c
-	cc -o has-byte-xml-bracket $(CFLAGS) has-byte-xml-bracket.c
 
 world:
 	$(MAKE) $(MFLAGS) clean

@@ -5,30 +5,6 @@
 #  	flowd server setspace.conf
 #  See:
 #  	schema/setspace/schema.sql
-#  Note:
-#	Certain actions only occur when the row already exists in table
-#	is_utf8wf and not trigger when first tuple is first inserted into
-#	is_utf8wf.  For example, see query in_new_line_count_table.
-#
-#	Add jsonorg test for first four bytes matching, where xx is ascii
-#	(and probably a limited ascii set)
-#
-#		00 00 00 xx  UTF-32BE
-#		00 xx 00 xx  UTF-16BE
-#		xx 00 00 00  UTF-32LE
-#		xx 00 xx 00  UTF-16LE
-#		xx xx xx xx  UTF-8
-#
-#	taken from rfc4627, section 3
-#
-#	Note: in_has_byte_json_bracket_table is testing non-utf8 blobs.
-#	      should only utf8 blobs be presented?  same is true for xml.
-#
-#	"put" requests are not being pushed to prefixio.  in particular,
-#	trace the blob sha:d25703b4a1178064390a517d43c5fb1f6f370ce6
-#
-#	Does core_exists() need to test for proper existence in
-#	new_line_count?
 #
 
 boot
