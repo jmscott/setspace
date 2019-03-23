@@ -59,6 +59,7 @@ ifdef SETSPACE_SCHEMA_PREFIX
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		com.setspace.schema.setspace.flowd.plist.example	\
 		profile.example						\
+		psqlrc.example						\
 		rummy.sql						\
 		schema.sql						\
 		setspace.flow.example					\
