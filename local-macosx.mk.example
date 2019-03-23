@@ -17,7 +17,7 @@ INSTALL_PREFIX=/usr/local
 
 #  where are postgres 9.6+ includes & libraries?
 
-PGHOME=$(INSTALL_PREFIX)/pgsql
+PGHOME=/usr/local/pgsql
 PGINC=$(PGHOME)/include
 PGLIB=$(PGHOME)/lib
 
