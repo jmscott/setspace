@@ -33,7 +33,7 @@ SETSPACE_GROUP:=staff
 #  Note: be carefull installing underneath $(INSTALL_PREFIX),
 #        since a 'make distclean' will remove the jar file.
 #
-PDFBOX_APP2_JAR:=$(INSTALL_PREFIX)/lib/pdfbox-app-2.jar
+PDFBOX_APP2_JAR:=/usr/local/lib/pdfbox-app-2.jar
 
 #  strict compilation of C code.
 #  if compilation fails then post issue to github.
