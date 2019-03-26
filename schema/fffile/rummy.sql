@@ -11,12 +11,12 @@ SELECT
 	  LEFT OUTER JOIN fffile.file_mime_encoding fe ON (fe.blob = s.blob)
   WHERE
   	(
-		f.blob is null
-		or
-		ft.blob is null
-		or
-		fe.blob is null
+		f.blob IS NULL
+		OR
+		ft.blob IS NULL
+		OR
+		fe.blob IS NULL
 	)
 	AND
-	s.discover_time BETWEEN (now() + :since) AND (now() + '-1 minute')
+	s.discover_time between (now() + :since) AND (now() + '-1 minute')
 ;
