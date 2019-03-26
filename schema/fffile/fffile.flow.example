@@ -97,7 +97,7 @@ command merge_file
 	exit_status is OK when in {
 		0,
 		1,
-		5		#  uggh
+		2		#  file type is not utf8
 	};
 }
 
@@ -172,7 +172,7 @@ command merge_file_mime_type
 	exit_status is OK when in {
 		0,
 		1,
-		5		#  ughh
+		2		#  file mime type is not utf8
 	};
 }
 
@@ -228,7 +228,7 @@ command merge_file_mime_encoding
 	exit_status is OK when in {
 		0,
 		1,
-		5		#  ughh
+		2		#  file mime encoding is not utf8
 	};
 }
 
