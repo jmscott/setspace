@@ -46,4 +46,6 @@ Possible Schemas:
 	jpedal - pdf image extraction library
 	jdeli - pdf manipulation library
 	utf8proc - UTF8 transformation library 
+	ghidra - nsa reverse engineering toolkit
+	idpro - commercial reverse engineering toolkit
 	forensic - http://www.capstone-engine.org/showcase.html
