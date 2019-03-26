@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Frisk out rare wierd rows produced by the well knwon "file" command.
+#  Usage:
+#	cat >>file.row <<END
+#	sha:5b3247f8e4b7aecdbb9a4af5b1b3d54230538efb\tASCII text, with CR, LF line terminators
+#	END
+#	frisk-row <file.row >file-frisk.row
+#	psql <<END
+#	create temp table f(blob udig, f text);
+#	\copy f from file-frisk.row
+#	insert into file select * from file on conflict do nothing;
+#	END
+#  See:
+#	https://github.com/jmscott/play/blob/master/utf8-frisk.c
+#  Note:
+#	Should this script be in $SETSPACE_ROOT/bin?
+#
+utf8-frisk 								|
+	#  tab in file descriptions
+	grep -v '	.*	'					|
+
+	#  \. confuses psql \copy command
+	fgrep -v '\.'							|
+
+	#  carriage return confused psql command
+	fgrep -v ''
