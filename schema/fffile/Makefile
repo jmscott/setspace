@@ -5,7 +5,7 @@
 include ../schema.mk
 include ../../local.mk
 
-SBIN_PROG=								\
+SBINs=								\
 	merge-file							\
 	merge-file_mime_encoding					\
 	merge-file_mime_type						\
@@ -13,7 +13,7 @@ SBIN_PROG=								\
 	merge-stdin-file_mime_encoding					\
 	merge-stdin-file_mime_type
 
-all: $(SBIN_PROG)
+all: $(SBINs)
 
 clean:
 	rm -f								\
@@ -39,9 +39,10 @@ install: all
 	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
 				-d $(FFFILE_PREFIX)/tmp
 	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) -m u=rx,go=	\
-		$(SBIN_PROG) 						\
+		$(SBINs) 						\
 		$(FFFILE_PREFIX)/sbin
 	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) -m a=r		\
+		com.setspace.schema.fffile.flowd.plist.example		\
 		fffile.flow.example					\
 		profile.example						\
 		psqlrc.example						\
