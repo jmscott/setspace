@@ -53,6 +53,46 @@ tail brr
 	path = "spool/setspace.brr";
 }
 
+#  Is the utf8 blob framed with json object or array chars?
+sql query is_json_object_or_array row
+{
+	statement = `
+SELECT EXISTS (
+  SELECT
+	u8.blob
+  FROM
+  	setspace.is_utf8wf u8
+	  JOIN setspace.byte_prefix_32 p32 ON (p32.blob = u8.blob)
+	  JOIN setspace.byte_suffix_32 s32 ON (s32.blob = u8.blob)
+  WHERE
+  	u8.is_utf8 IS TRUE
+	AND
+	u8.blob = 'bc160:6fdf7e269d82e9f70abf895cb786c4f8a6b9803f'
+	AND
+	(
+		(	--  utf8 framed with {}
+
+			convert_from(p32.prefix, 'UTF-8') ~ '^\s*'
+			AND
+			convert_from(s32.suffix, 'UTF-8') ~ '}\s*$'
+		)
+		OR
+		(	--  utf8 framed with []
+
+			convert_from(p32.prefix, 'UTF-8') ~ '^\s*[[]'
+			AND
+			convert_from(s32.suffix, 'UTF-8') ~ ']\s*$'
+		)
+	)
+)
+;
+	`;
+
+	result row is (
+		answer bool
+	);
+}
+
 command append_pdfbox2_brr
 {
 	path = "append-brr";
