@@ -13,6 +13,9 @@
 BEGIN;
 DROP SCHEMA IF EXISTS jsonorg cascade;
 CREATE SCHEMA JSONORG;
+COMMENT ON SCHEMA jsonorg IS
+	'JSON blobs parseable by code from the site json.org'
+;
 
 ALTER DEFAULT PRIVILEGES FOR ROLE jmscott IN SCHEMA
 	jsonorg
