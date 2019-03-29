@@ -54,6 +54,11 @@ tail brr
 }
 
 #  Is the utf8 blob framed with json object or array chars?
+#
+#  Note:
+#	We only consult 32 bytes of prefix and suffix of the blob.
+#
+
 sql query is_json_object_or_array row
 {
 	statement = `
@@ -92,6 +97,26 @@ SELECT EXISTS (
 		answer bool
 	);
 }
+
+command append_jsonorg_brr
+{
+	path = "append-brr";
+	argv = (
+		"../jsonorg/spool/prefixio.brr"
+	);
+}
+
+call append_jsonorg_brr(
+	brr.start_time,
+	brr.netflow,
+	brr.verb,
+	brr.udig,
+	brr.chat_history,
+	brr.blob_size,
+	brr.wall_duration
+) when
+	is_json_object_or_array.answer == true
+;
 
 command append_pdfbox2_brr
 {
