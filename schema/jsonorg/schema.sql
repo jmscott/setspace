@@ -1,11 +1,6 @@
 /*
  *  Synopsis:
  *	Classifiy json as defined by the checker at json.org.
- *  Blame:
- *  	jmscott@setspace.com
- *  Note:
- *	Having problems revoking update privileges for owner.
- *	alter default seems to fail, as well.
  */
 \set ON_ERROR_STOP on
 \timing
@@ -15,11 +10,6 @@ DROP SCHEMA IF EXISTS jsonorg cascade;
 CREATE SCHEMA JSONORG;
 COMMENT ON SCHEMA jsonorg IS
 	'JSON blobs parseable by code from the site json.org'
-;
-
-ALTER DEFAULT PRIVILEGES FOR ROLE jmscott IN SCHEMA
-	jsonorg
-  REVOKE UPDATE ON TABLES FROM jmscott;
 ;
 
 /*
@@ -38,7 +28,7 @@ CREATE TABLE jsonorg.checker_255
 			not null
 );
 COMMENT ON TABLE jsonorg.checker_255 IS
-  'The json blob passes the checker at json.org, with max nesting of 255 levels'
+  'The json blob passes the checker at json.org, with nesting up to 255 levels'
 ;
 
 /*
@@ -57,6 +47,9 @@ CREATE TABLE jsonorg.jsonb_255
 	doc	jsonb
 			NOT NULL
 );
+COMMENT ON TABLE jsonorg.jsonb_255 IS
+  'A queryable, jsonb internal version of the blob' 
+;
 
 DROP FUNCTION IF EXISTS jsonorg.check_jsonability();
 CREATE OR REPLACE FUNCTION jsonorg.check_jsonability() RETURNS TRIGGER
