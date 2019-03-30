@@ -25,7 +25,7 @@ CREATE TABLE jsonorg.checker_255
 			ON DELETE CASCADE
 			PRIMARY KEY,
 	is_json	bool
-			not null
+			NOT NULL
 );
 COMMENT ON TABLE jsonorg.checker_255 IS
   'The json blob passes the checker at json.org, with nesting up to 255 levels'
