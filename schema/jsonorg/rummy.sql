@@ -39,4 +39,13 @@ SELECT
 	)
 	AND
 	js.blob IS NULL
+UNION (
+  SELECT
+  	js.blob
+    FROM
+    	jsonorg.checker_255 js
+	  LEFT OUTER JOIN jsonorg.jsonb_255 jb ON (jb.blob = js.blob)
+    WHERE
+    	jb.blob IS NULL
+)
 ;
