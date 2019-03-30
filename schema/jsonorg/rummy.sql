@@ -1,4 +1,10 @@
-\timing
+/*
+ *  Synopsis:
+ *	Find candidate blobs for json analysis.
+ *  Note:
+ *	The regular expressions are assumed to be extended, allowing
+ *	logical or.  Need to investigate forcing the RE to be extended.
+ */
 
 WITH utf8wf AS (
   SELECT
@@ -19,15 +25,16 @@ SELECT
 	(
 		(	--  utf8 framed with {}
 
-			convert_from(p32.prefix, 'UTF-8') ~ '^\s*'
+			p32.prefix::text ~ '^\\x(09|0a|20|0d)*7b'
 			AND
-			convert_from(s32.suffix, 'UTF-8') ~ '}\s*$'
+			s32.suffix::text ~ '^\\x.*7d(09|0a|20|0d)*$'
 		)
 		OR
 		(	--  utf8 framed with []
-			convert_from(p32.prefix, 'UTF-8') ~ '^\s*[[]'
+
+			p32.prefix::text ~ '^\\x(09|0a|20|0d)*5b'
 			AND
-			convert_from(s32.suffix, 'UTF-8') ~ ']\s*$'
+			s32.suffix::text ~ '^\\x.*5d(09|0a|20|0d)*$'
 		)
 	)
 	AND
