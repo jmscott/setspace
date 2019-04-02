@@ -15,7 +15,7 @@ export SETSPACE_ROOT=$HOME/opt/setspace
 export BLOBIO_ROOT=$HOME/opt/blobio
 export BLOBIO_SERVICE=bio4:localhost:1796
 export BLOBIO_GET_SERVICE=fs:$BLOBIO_ROOT
-export BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=sha}
+export BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=bc160}
 
 PS1='sets@opt> '
 
