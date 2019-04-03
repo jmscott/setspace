@@ -26,6 +26,8 @@ install: all
 				-d $(FFFILE_PREFIX)
 	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
 				-d $(FFFILE_PREFIX)/etc
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+				-d $(FFFILE_PREFIX)/run
 	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) -m u=wrx,go=	\
 				-d $(FFFILE_PREFIX)/sbin
 	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
