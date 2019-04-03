@@ -108,12 +108,10 @@ call brr_off_network()
 call brr_on_network()
   when
   (
-        (
-		brr.verb == "put"
+  	(
+		brr.verb == "eat"
 		or
 		brr.verb == "get"
-		or
-		brr.verb == "eat"
 		or
 		brr.verb == "wrap"
 		or
@@ -121,10 +119,18 @@ call brr_on_network()
 	)
 	and
 	brr.chat_history == "ok"
-  ) or (
-	brr.verb == "give"
+  )
+  or
+  (
+  	brr.verb == "put"
 	and
 	brr.chat_history == "ok,ok"
+  )
+  or
+  (
+  	brr.verb == "give"
+	and
+	brr.chat_history == "ok,ok,ok"
   )
 ;
 
