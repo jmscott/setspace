@@ -16,7 +16,3 @@ touch $BRR
 chmod u=rw,g=w,o= $BRR
 
 PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
-
-#  Point to installed Fine Free File Command.
-
-test -d /usr/local/fffile/bin && PATH=/usr/local/fffile/bin:$PATH
