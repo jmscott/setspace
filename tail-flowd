@@ -1,25 +1,14 @@
 #!/bin/bash
 
 #  Synopsis:
-#	Tail (gnu) all the schema/*/log/flowd-Dow.log files
+#	Tail (gnu) all the schema/*/log/flowd-<Dow>.log files
 #  Usage:
 #	tail-flowd
-#	tail-flowd drblob
-#
-#	SETSPACE_SCHEMA_ROOT=/home/pdfbox/schema tail-flowd
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
+#	tail-flowd jsonorg prefixio 
 #  Note:
 #	Only works up until midnight of local day.
 #
-#	Think about overriding name of SETSPACE_ROOT by consulting a variable
-#	named SETSPACE_ROOT_NAME.  Will be helpfull for non setspace
-#	schemas that wish to manage flowd process.
-#
-#	tail-flowd needs to detect a missing file run/<schema>.pid
-#
-#	Better error message for non-existent schema. 
+#	Only works if schemas in dir $SETSPACE_ROOT/schema.
 #
 
 die()
@@ -30,21 +19,25 @@ die()
 
 test -n "$SETSPACE_ROOT" || die "env var not defined: SETSPACE_ROOT"
 
-SCHEMA_ROOT=${SETSPACE_SCHEMA_ROOT:=$SETSPACE_ROOT/schema}
+SCHEMA=$SETSPACE_ROOT/schema
 
-test -e $SCHEMA_ROOT || die "directory does not exist: $SCHEMA_ROOT"
-cd $SCHEMA_ROOT || die "cd $SCHEMA_ROOT failed: exit status=$?"
+test -e $SCHEMA || die "directory does not exist: $SCHEMA"
+cd $SCHEMA || die "cd $SCHEMA failed: exit status=$?"
 
 if [ $# = 0 ];  then
-	DIR=.
+	DIRs=.
 	DEPTH=1
 else
-	DIR=$@
+	#  insure all schema directories exist
+	for D in $@;  do
+		test -d $D || die "schema directory does not exist: $(pwd)/$D"
+	done
+	DIRs=$@
 	DEPTH=0
 fi
 
 SCHEMAS=$(
-	find $DIR -mindepth $DEPTH -maxdepth $DEPTH -type d -print	|
+	find $DIRs -mindepth $DEPTH -maxdepth $DEPTH -type d -print	|
 	sort								|
 	sed 's/^\.\///'
 )
