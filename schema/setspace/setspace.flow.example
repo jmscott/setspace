@@ -628,3 +628,23 @@ call append_fffile_brr(
 ) when
   	core_exists.exit_status == 0
 ;
+
+command append_prefixio_brr
+{
+	path = "append-brr";
+	argv = (
+		"../prefixio/spool/setspace.brr"
+	);
+}
+
+call append_prefixio_brr(
+	brr.start_time,
+	"fs~schema=prefixio",
+	brr.verb,
+	brr.udig,
+	brr.chat_history,
+	brr.blob_size,
+	brr.wall_duration
+) when
+  	core_exists.exit_status == 0
+;
