@@ -16,6 +16,8 @@
 #  	flowd server prefixio.conf
 #  See:
 #  	schema.sql
+#  Note:
+#	Only need to append requests that proof existence.
 #
 
 boot
