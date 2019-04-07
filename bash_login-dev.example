@@ -11,30 +11,24 @@
 #	lib/profile.example
 #
 export SETSPACE_ROOT=$HOME/opt/setspace
-
 export BLOBIO_ROOT=$HOME/opt/blobio
-export BLOBIO_SERVICE=bio4:localhost:1796
-export BLOBIO_GET_SERVICE=fs:$BLOBIO_ROOT
-export BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=bc160}
-
-PS1='sets@opt> '
 
 cd $SETSPACE_ROOT || exit 1
-
-#  set postgresql variables
-
-export PGUSER=$USER
-export PGPASSWORD=
-export PGDATABASE=$USER
+PS1='sets@opt> '
 
 #  clear out runtime variables and reset from $SETSPACE_ROOT/etc/profile
 
-unset $(env | grep '^SETSPACE_' | grep -v '^SETSPACE_ROOT=' | cut -d= -f1)
+unset $(
+	env								|
+	egrep '^(PG|SETSPACE_)'						|
+	grep -v '^SETSPACE_ROOT='					|
+	cut -d= -f1
+)
 . etc/profile
 
 #  prefered bash history defaults of jmscott.  change at will.
 
 export HISTFILE=$SETSPACE_ROOT/.bash_history
-export HISTSIZE=1000
+export HISTSIZE=10000
 export HISTFILESIZE=100000
 HISTCONTROL=ignoreboth
