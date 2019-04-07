@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	List running flowd servers based upin schema/*/run/flowd.pid
+#  Usage:
+#	ls-flowd
+#  Exit Status:
+#	0	flowd servers are running
+#	2	unexpected error
+#
+
+die()
+{
+	echo "ERROR: $@" >&2
+	exit 2
+}
+
+test $# = 0 || die "wrong number of arguments: got $#, expected 0"
+test -n "$SETSPACE_ROOT" || die 'env var not defined: SETSPACE_ROOT'
+
+SCHEMA=$SETSPACE_ROOT/schema
+cd $SCHEMA || die "cd $SCHEMA failed: exit status=$?"
+
+find . -type d -maxdepth 1 | while read SC;  do
+	echo $SC
+	test -e $SC/run/flowd.pid && echo $SC
+done
+
+exit 0
