@@ -22,7 +22,7 @@ SCHEMA=$SETSPACE_ROOT/schema
 cd $SCHEMA || die "cd $SCHEMA failed: exit status=$?"
 
 find . -type d -maxdepth 1 | while read SC;  do
-	test -e $SC/run/flowd.pid && echo $SC
+	test -e $SC/run/flowd.pid && echo $(basename $SC)
 done
 
 exit 0
