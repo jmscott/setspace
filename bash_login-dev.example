@@ -26,6 +26,10 @@ unset $(
 )
 . etc/profile
 
+#  force using untrusted service during development
+
+unset BLOBIO_GET_SERVICE
+
 #  prefered bash history defaults of jmscott.  change at will.
 
 export HISTFILE=$SETSPACE_ROOT/.bash_history

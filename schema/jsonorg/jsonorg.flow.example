@@ -75,22 +75,24 @@ command brr_has_size
 }
 
 call brr_has_size()
- when
- 	(
-		(
-			brr.verb == "get"
-			or
-			brr.verb == "put"
-		)
-		and
-		brr.chat_history == "ok"
-	)
-	or
-	(
-		brr.verb == "give"
-		and
-		brr.chat_history == "ok,ok"
-	)
+  when
+  (
+	brr.verb == "get"
+	and
+	brr.chat_history == "ok"
+  )
+  or
+  (
+	brr.verb == "put"
+	and
+	brr.chat_history == "ok,ok"
+  )
+  or
+  (
+	brr.verb == "give"
+	and
+	brr.chat_history == "ok,ok,ok"
+  )
 ;
 
 query is_in_checker_255_table(brr.udig);
@@ -166,7 +168,7 @@ sql query in_jsonb_255_table row
 	);
 }
 
-query in_jsonb_255_table(brr.udig)
+query in_jsonb_255_table (brr.udig)
   when
   	is_in_checker_255_table.is_json == true
 	or
@@ -178,7 +180,7 @@ command merge_jsonb_255
 	path = "sbin/merge-jsonb_255";
 }
 
-call merge_jsonb_255(brr.udig, brr.blob_size)
+call merge_jsonb_255 (brr.udig, brr.blob_size)
   when
   	in_jsonb_255_table.answer == false
 	and
