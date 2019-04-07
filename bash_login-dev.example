@@ -36,3 +36,5 @@ export HISTFILE=$SETSPACE_ROOT/.bash_history
 export HISTSIZE=10000
 export HISTFILESIZE=100000
 HISTCONTROL=ignoreboth
+
+export PSQLRC=$SETSPACE_ROOT/etc/psqlrc
