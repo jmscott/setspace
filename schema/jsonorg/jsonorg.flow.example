@@ -39,7 +39,7 @@ sql database setspace
 
 tail brr
 {
-	path = "spool/setspace.brr";
+	path = "spool/prefixio.brr";
 }
 
 sql query is_in_checker_255_table row
