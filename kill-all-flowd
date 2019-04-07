@@ -48,7 +48,7 @@ cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
 
 . etc/profile
 
-find-schema | while read SCHEMA;  do
+ls-flowd | while read SCHEMA;  do
 	log "killing flowd process for schema: $SCHEMA"
 	kill-flowd $SCHEMA
 	STATUS=$?
