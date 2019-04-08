@@ -24,44 +24,11 @@
 
 	<key>SETSPACE_ROOT</key>
 	<string>/usr/local/setspace</string>
-
-	<key>BLOBIO_ROOT</key>
-	<string>/usr/local/blobio</string>
-
-	<key>BLOBIO_ALGORITHM</key>
-	<string>bc160</string>
-
-	<key>BLOBIO_SERVICE</key>
-	<string>bio4:127.0.0.1:1797</string>
-
-	<key>BLOBIO_GET_SERVICE</key>
-	<string>fs:/usr/local/blobio</string>
-
-	<key>PGHOST</key>
-	<string>/tmp</string>
-
-	<key>PGPORT</key>
-	<string>5432</string>
-
-	<key>PGUSER</key>
-	<string>postgres</string>
-
-	<key>PGPASSWORD</key>
-	<string></string>
-
-	<key>PGDATABASE</key>
-	<string>setspace</string>
   </dict>
 
   <key>ProgramArguments</key>
   <array>
-	<string>/usr/local/bin/launchd-log</string>
-	<string>flowd</string>
-	<!-- Note:
-		ps-title hack must first argument in order to change what
-		appears in the process table.
-	-->
-	<string>server</string>
+	<string>/usr/local/setspace/sbin/launchd-flowd</string>
 	<string>etc/fffile.flow</string>
   </array>
 
