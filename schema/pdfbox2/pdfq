@@ -42,6 +42,8 @@
 #	$PDFBOX2_ROOT/lib/page-text-utf8-phrase[-count].sql
 #	$PDFBOX2_ROOT/lib/page-text-utf8-keyword[-count].sql
 #  Note:
+#	Rename script 'pdfq' to pdfbox2q.
+#
 #	Option process is broken!!  For example, no way to specify
 #	the text search.  Need to rewrite script for [--options]
 #
