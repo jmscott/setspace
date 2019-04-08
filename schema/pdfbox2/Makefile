@@ -73,14 +73,15 @@ install: all
 		page-count-keyword.sql					\
 		page-count-phrase.sql					\
 		page-fts.sql						\
-		page-keyword.sql					\
 		page-keyword-dist.sql					\
+		page-keyword.sql					\
 		page-phrase.sql						\
 		pdfbox2.flow.example					\
 		pdfbox2.rasql.example					\
 		phraseto_tsquery.sql					\
 		plainto_tsquery.sql					\
 		profile.example						\
+		psqlrc.example						\
 		rummy.sql						\
 		schema.sql						\
 		$(PDFBOX2_PREFIX)/lib
