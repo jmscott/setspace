@@ -3,7 +3,6 @@
  *	Schema of the pdfbox.apache.org version 2 api
  *  See:
  *	https://pdfbox.apache.org
- *	http://semver.org/	
  */
 
 \set ON_ERROR_STOP on
@@ -13,27 +12,7 @@ BEGIN;
 DROP SCHEMA IF EXISTS pdfbox2 CASCADE;
 CREATE SCHEMA pdfbox2;
 COMMENT ON SCHEMA pdfbox2 IS
-  'Text and metadata extracted by pdfbox.apache.org, version 2'
-;
-
-/*
- *  Pending pddocument jobs.
- *
- *  Note:
- *	Notice no fk reference to setspace.service(blob).
- *	Sudden termination may leave stale entries.
- */
-DROP TABLE IF EXISTS pdfbox2.pddocument_pending CASCADE;
-CREATE TABLE pdfbox2.pddocument_pending
-(
-	blob		udig
-				PRIMARY KEY,
-	insert_time	timestamptz
-				DEFAULT now()
-				NOT NULL
-);
-COMMENT ON TABLE pdfbox2.pddocument_pending IS
-  'Pending putPDDocument java processes'
+  'Text and metadata extracted by java classes of pdfbox.apache.org, version 2'
 ;
 
 /*
@@ -47,78 +26,19 @@ CREATE TABLE pdfbox2.pddocument
 				ON DELETE CASCADE
 				PRIMARY KEY,
 
-	exit_status	smallint check (
-				exit_status >= 0
-				AND
-				exit_status <= 255
-			)
-			not null,
-
-	/*
-	 *  Note:
-	 *	Specs says number_of_pages is a signed integer,
-	 *	which screws up code needing number_of_pages to be
-	 *	> 0.  Instead, consider added a exit_status to indicate when
-	 *	number_of_pages is <= 0 and set number_of_pages to null.
-	 */
-	number_of_pages int CHECK (
-				/*
-				 *  Can a PDF have 0 pages?
-				 */
-				number_of_pages >= 0
-			),
+	number_of_pages int,
 
 	document_id	bigint,		-- is document_id always > 0
 
-	version		float check (
-				version > 0
-			),
-
-	--  Record any unexpected stderr produced by blob.
-	--  Helpful for debugging the many quirks in pdfbox2.
-
-	stderr_blob	udig,
+	version		float,
 
 	is_all_security_to_be_removed	bool,
-	is_encrypted			bool,
+	is_encrypted			bool
 
-	--  Track both successful and failed putPDDocument invocations
-	--  number_of_pages is not null implies valid pdf;  otherwise
-	--  pdf is not loadable.
-
-	CONSTRAINT exec_status CHECK ((
-
-		--  putPDDocument succeeded, all fields null
-
-		exit_status = 0
-		AND
-		number_of_pages IS NOT NULL
-		AND
-		version IS NOT NULL	--  do all pdf's have a version?
-		AND
-		is_all_security_to_be_removed IS NOT NULL
-		AND
-		is_encrypted IS NOT NULL
-	) OR (
-		--  putPDDocument failed, all fields null
-
-		exit_status != 0
-		AND
-		number_of_pages IS NULL
-		AND
-		version IS NULL	--  do all pdf's have a version?
-		AND
-		document_id IS NULL
-		AND
-		is_all_security_to_be_removed IS NULL
-		AND
-		is_encrypted IS NULL
-	))
 );
 COMMENT ON TABLE pdfbox2.pddocument IS
   'PDDocument scalar fields from Java Object'
 ;
-
 
 /*
  *  Status of extraction process for utf8 text.
@@ -181,46 +101,6 @@ CREATE INDEX extract_page_utf8_page on pdfbox2.extract_page_utf8(
 );
 
 /*
- *  Pending extract_pages_utf8 jobs.
- *
- *  Note:
- *	Notice no fk reference to setspace.service(blob).
- *	Sudden termination may leave stale entries.
- */
-DROP TABLE IF EXISTS pdfbox2.extract_pages_utf8_pending CASCADE;
-CREATE TABLE pdfbox2.extract_pages_utf8_pending
-(
-	blob		udig
-				PRIMARY KEY,
-	insert_time	timestamptz
-				DEFAULT now()
-				NOT NULL
-);
-COMMENT ON TABLE pdfbox2.extract_pages_utf8_pending IS
-  'Actively running extract_pages_utf8 java processes'
-;
-
-/*
- *  Pending pddocument_information jobs.
- *
- *  Note:
- *	Notice no fk reference to setspace.service(blob).
- *	Sudden termination may leave stale entries.
- */
-DROP TABLE IF EXISTS pdfbox2.pddocument_information_pending CASCADE;
-CREATE TABLE pdfbox2.pddocument_information_pending
-(
-	blob		udig
-				PRIMARY KEY,
-	insert_time	timestamptz
-				DEFAULT now()
-				NOT NULL
-);
-COMMENT ON TABLE pdfbox2.pddocument_information_pending IS
-  'Pending putPDDocumentInformation java processes'
-;
-
-/*
  *  PDDocumentInformation scalar fields from Java Object
  */
 
@@ -265,26 +145,6 @@ CREATE TABLE pdfbox2.pddocument_information
 );
 COMMENT ON TABLE pdfbox2.pddocument_information IS
   'PDDocumentInformation scalar fields from Java Object'
-;
-
-/*
- *  Pending pddocument_information_metadata jobs.
- *
- *  Note:
- *	Notice no fk reference to setspace.service(blob).
- *	Sudden termination may leave stale entries.
- */
-DROP TABLE IF EXISTS pdfbox2.pddocument_information_metadata_pending CASCADE;
-CREATE TABLE pdfbox2.pddocument_information_metadata_pending
-(
-	blob		udig
-				PRIMARY KEY,
-	insert_time	timestamptz
-				DEFAULT now()
-				NOT NULL
-);
-COMMENT ON TABLE pdfbox2.pddocument_information_metadata_pending IS
-  'Pending putPDDocumentInformation metadata java processes'
 ;
 
 /*
@@ -384,19 +244,6 @@ COMMENT ON TABLE pdfbox2.merge_pages_text_utf8 IS
   'Exit Status of merge-pages_text_utf8 script'
 ;
 
-DROP TABLE IF EXISTS pdfbox2.merge_pages_text_utf8_pending cascade;
-CREATE TABLE pdfbox2.merge_pages_text_utf8_pending
-(
-	blob		udig
-				PRIMARY KEY,
-	insert_time	timestamptz
-				DEFAULT now()
-				NOT NULL
-);
-COMMENT ON TABLE pdfbox2.merge_pages_text_utf8_pending IS
-  'Pending merge-pages_text_utf8 jobs'
-;
-
 /*
  *  Text Search Vector of individual pages of a pdf blob
  */
@@ -465,19 +312,6 @@ CREATE TABLE pdfbox2.merge_pages_tsv_utf8
 );
 COMMENT ON TABLE pdfbox2.merge_pages_tsv_utf8 IS
   'Exit Status of merge-pages_tsv_utf8 script'
-;
-
-DROP TABLE IF EXISTS pdfbox2.merge_pages_tsv_utf8_pending cascade;
-CREATE TABLE pdfbox2.merge_pages_tsv_utf8_pending
-(
-	blob		udig
-				PRIMARY KEY,
-	insert_time	timestamptz
-				DEFAULT now()
-				NOT NULL
-);
-COMMENT ON TABLE pdfbox2.merge_pages_tsv_utf8_pending IS
-  'Pending merge-pages_tsv_utf8 jobs'
 ;
 
 COMMIT;
