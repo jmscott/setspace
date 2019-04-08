@@ -71,6 +71,7 @@ install: all
 		flowd-stat						\
 		kill-all-flowd						\
 		kill-flowd						\
+		launchd-flowd						\
 		ls-flowd						\
 		rummy							\
 		tail-flowd						\

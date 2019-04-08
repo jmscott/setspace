@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Synchonously start flowd server for a schema from Mac OS/X launchd.
+#  Usage:
+#	<key>ProgramArguments</key>
+#	  <array>
+#	    <string>/usr/local/setspace/sbin/launchd-flowd</string>
+#	    <string>fffile.flow</string>
+#	  </array>
+#	<key>WorkingDirectory</key>
+#	<string>/usr/local/setspace/schema/fffile</string>
+#
+
+log()
+{
+	echo "$(date +'%Y/%m/%d %H:%M:%S'): $@"
+}
+
+die()
+{
+	echo "ERROR: $@" >&2
+	exit 2
+}
+
+leave()
+{
+	log 'good bye, cruel world'
+}
+
+test $# = 1 || die 'wrong number of arguments'
+FLOW=$1
+
+log 'hello, world'
+trap leave EXIT
+
+test -n "$SETSPACE_ROOT" ||
+			die "environment variable not defined: SETSPACE_ROOT"
+
+log "SETSPACE_ROOT=$SETSPACE_ROOT"
+log "flow file: $FLOW"
+
+#  source in $SETSPACE_ROOT/etc/profile
+
+PROFILE=$SETSPACE_ROOT/etc/profile
+test -r $PROFILE || die "can not read setspace profile: $PROFILE"
+. $PROFILE || die "sourcing setspace profile failed: $PROFILE"
+
+#  source in schema profile
+
+test -r etc/profile || die "can not read schema profile: $(pwd)/etc/profile"
+. $PROFILE || die "sourcing schema profile failed: $PROFILE"
+
+rm -f run/flowd.pid || die "rm run/flowd.pid failed: exist status=$?"
+flowd server $FLOW
