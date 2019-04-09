@@ -1,19 +1,17 @@
 #
 #  Synopsis:
-#	Profile for typical drblob server
+#	Profile for typical prefixio server
 #  Usage:
 #	. $SETSPACE_ROOT/etc/profile
 #  Blame:
 #  	jmscott@setspace.com
 #  	setspace@gmail.com
 #
-SCHEMA_ROOT=$SETSPACE_ROOT/schema/prefixio
-export TMPDIR=$SCHEMA_ROOT/tmp
+export TMPDIR=$SETSPACE_ROOT/schema/prefixio/tmp
 mkdir -p $TMPDIR || exit 1
 
 #  create the spool file so tail doesn't abort.
-#  Note: got to be a better way. perhaps flowd.tail ought to create the file.
+#  Note:
+#	got to be a better way.  Prehaps flowd outgh to create.
 
-touch $SCHEMA_ROOT/spool/setspace.brr
-
-PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
+touch $SETSPACE_ROOT/schema/prefixio/spool/setspace.brr || exit 1
