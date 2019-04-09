@@ -89,9 +89,8 @@ case "$PID" in
 	#  does the flowd.pid file still exist?
 	#  if so, then nuke the process
 
-	if [ -d $FLOWD_PID ];  then
+	if [ -e $FLOWD_PID ];  then
 		WARN "flowd pid file still exists: $FLOWD_PID"
-		WARN "flowd may not restart"
 
 		#  forcible remove the pid file
 		rm -f $FLOWD_PID ||
