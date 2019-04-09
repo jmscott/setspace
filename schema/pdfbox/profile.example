@@ -1,0 +1,22 @@
+#
+#  Synopsis:
+#	Profile for typical pdfbox server
+#  Usage:
+#	. $SETSPACE_ROOT/schema/pdfbox/etc/profile
+#  Note:
+#	Contemplate replacing env variable SCHEMA_ROOT with SETSPACE_SCHEMA
+#
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/pdfbox
+export TMPDIR=$SCHEMA_ROOT/tmp
+
+export PDFBOX_ROOT=${PDFBOX_ROOT:=$SCHEMA_ROOT}
+
+#  create the spool file so tail doesn't abort.
+#  Note: got to be a better way. perhaps flowd.tail ought to create the file.
+touch $SCHEMA_ROOT/spool/prefixio.brr
+chmod u=rw,g=w,o= $SCHEMA_ROOT/spool/prefixio.brr
+
+PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
+
+export PDFBOX_APP_JAR=${PDFBOX_APP_JAR:=/usr/local/lib/pdfbox-app-2.jar}
+export CLASSPATH=$PDFBOX_ROOT/lib:$PDFBOX_APP_JAR:$CLASSPATH

@@ -1,0 +1,176 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Extract the PDDocument scalars from PDF and merge into PostgreSQL
+#  Usage:
+#	merge-pddocument <udig>
+#  Exit Status:
+#	0	ok, extracted pddocument info and stored into PostgreSQL
+#	1	pdf load failed (but still stored in PG)
+#	2	blob does not exist
+#	3	wrong number of arguments
+#	4	unexpected blobio error
+#	5	unexpected java putPDDocument failed
+#	6	pg database error
+#  Environment:
+#	BLOBIO_ALGORITHM
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
+#	TMPDIR
+#  Note:
+#	How do we know the output of putPDDocument is always UTF-8?
+#
+
+PROG=merge-pddocument
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
+
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.pdf
+TMP_ERR=${TMPDIR:=/tmp}/$PROG-$$.err
+TMP_ROW=${TMPDIR:=/tmp}/$PROG-$$.row
+
+leave()
+{
+	rm -f $TMP_BLOB $TMP_ERR $TMP_ROW
+}
+trap leave EXIT
+
+die()
+{
+	STATUS=$2
+	echo "$PROG: ERROR: $1" >&2
+	exit $STATUS
+}
+
+ERROR()
+{
+	echo "$PROG: ERROR: $@" >&2
+}
+
+test $# = 1 || die 'wrong number of arguments' 3
+UDIG=$1
+
+#  fetch the pdf blob
+
+blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_GET_SERVICE
+STATUS=$?
+case $STATUS in
+0)
+	;;
+1)
+	exit 2
+	;;
+*)
+	die 'blobio get failed' 4
+	;;
+esac
+
+#  execute the java extract.  although we expect only 0 and no stderr,
+#  0 with stderr is normal.  an exit status of 1 indicates a failed load
+#  of the pdf file.
+
+java -cp $CLASSPATH putPDDocument <$TMP_BLOB >$TMP_ROW 2>$TMP_ERR
+EXIT_STATUS=$?
+case $EXIT_STATUS in
+0)
+	#  pdf loaded and scalars extracted
+	#  Note: are we reading UTF-8?
+
+	read								\
+		NUMBER_OF_PAGES						\
+		DOCUMENT_ID						\
+		VERSION							\
+		IS_ALL_SECURITY_TO_BE_REMOVED				\
+		IS_ENCRYPTED						\
+	<$TMP_ROW
+	;;
+1)
+	#  pdf load failed, but we merge a tuple anyway
+
+	NUMBER_OF_PAGES=null
+	DOCUMENT_ID=null
+	VERSION=null
+	IS_ALL_SECURITY_TO_BE_REMOVED=null
+	IS_ENCRYPTED=null
+	;;
+*)
+	#  unexpected java fault
+
+	if [ -s $TMP_ERR ];  then
+		ERROR 'java stderr follows ...'
+		cat $TMP_ERR
+	else
+		ERROR 'missing expected stderr from java'
+	fi
+	die "java putPDDocument failed: exit status=$EXIT_STATUS" 5
+	;;
+esac
+
+#  pddocument succeeded (although pdf may be unloadable),
+#  so a tuple will be merged into PostgreSQL.
+#  log any stderr to our stderr for easy debugging.
+
+if [ -s $TMP_ERR ];  then
+	ERROR 'java pdf load failed (ok), stderr follows'
+	cat $TMP_ERR
+
+	#  get the digest of stderr output file
+
+	D=$(
+		blobio eat						\
+			--algorithm $BLOBIO_ALGORITHM			\
+			--input-path $TMP_ERR
+	)
+	test $? = 0 || die "blobio eat stderr failed: exit status=$?" 4
+
+	#  put the standard error blob
+
+	UD=$BLOBIO_ALGORITHM:$D
+	blobio put --udig $UD --input-path $TMP_ERR --service $BLOBIO_SERVICE
+	test $? = 0 || die "blobio put stderr failed: exit status=$?" 4
+
+	#  record for the write to the table.
+	STDERR_BLOB="\"$UD\""
+	ERROR "stderr blob: $UD"
+	SQL_STDERR_BLOB="'$UD'"
+else
+	STDERR_BLOB=null
+	SQL_STDERR_BLOB=null
+fi
+
+#  merge the new tuple into the database
+
+psql --no-psqlrc --quiet <<EOF || die "psql insert failed: exit status=$?" 7
+
+\\set ON_ERROR_STOP on
+
+BEGIN TRANSACTION;
+
+INSERT INTO
+  pdfbox.pddocument(
+  	blob,
+	exit_status,
+	number_of_pages,
+	version,
+	is_all_security_to_be_removed,
+	is_encrypted,
+	stderr_blob
+    ) VALUES (
+    	'$UDIG',
+	$EXIT_STATUS,
+	$NUMBER_OF_PAGES,
+	$VERSION,
+	$IS_ALL_SECURITY_TO_BE_REMOVED,
+	$IS_ENCRYPTED,
+	$SQL_STDERR_BLOB
+    ) ON CONFLICT
+    	DO NOTHING
+;
+DELETE FROM pdfbox.pddocument_pending
+  WHERE
+  	blob = '$UDIG'
+;
+END TRANSACTION;
+
+EOF
+
+exit $EXIT_STATUS

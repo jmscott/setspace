@@ -1,0 +1,572 @@
+#
+#  Synopsis:
+#	Populate a PostgreSQL schema with the facts extracted by Apache pdfbox 
+#  See:
+#	schema.sql
+#
+
+boot
+{
+	brr_capacity = 8;
+	flow_worker_count = 4;
+	os_exec_worker_count = 4;
+	os_exec_capacity = 4;
+
+	xdr_roll_duration = "24h";
+	fdr_roll_duration = "24h";
+	qdr_roll_duration = "24h";
+
+	heartbeat_duration = "10s";
+}
+
+sql database setspace
+{
+	driver_name = "postgres";
+	data_source_name =
+		"fallback_application_name=pdfbox.flow sslmode=disable";
+	max_idle_conns = 0;
+	max_open_conns = 8;
+}
+
+tail brr
+{
+	path = "spool/prefixio.brr";
+}
+
+command brr_on_network
+{
+	path = "true";
+}
+
+call brr_on_network()
+  when
+  (
+        (
+		brr.verb == "put"
+		or
+		brr.verb == "get"
+		or
+		brr.verb == "eat"
+		or
+		brr.verb == "wrap"
+		or
+		brr.verb == "roll"
+	)
+	and
+	brr.chat_history == "ok"
+  ) or (
+	brr.verb == "give"
+	and
+	brr.chat_history == "ok,ok"
+  )
+;
+
+sql query in_service_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	setspace.service
+	    WHERE
+	    	blob = $1::udig
+	);
+	`;
+
+	result row is (
+		answer bool
+	);
+}
+
+query in_service_table(brr.udig)
+  when
+  	brr_on_network.exit_status == 0
+;
+
+sql query in_pddocument_table row
+{
+	statement = `
+
+	SELECT
+		EXISTS (
+		  SELECT
+		  	blob
+		    FROM
+		    	pdfbox.pddocument
+		    WHERE
+		    	blob = $1::udig
+		),
+		(
+		  SELECT
+		  	exit_status = 0
+		    FROM
+		    	pdfbox.pddocument
+		    WHERE
+		    	blob = $1::udig
+		)
+	;
+	`;
+
+	result row is (
+		answer bool,
+		is_pdf bool
+	);
+
+}
+
+query in_pddocument_table(brr.udig)
+  when
+  	in_service_table.answer == true
+;
+
+sql query in_pddocument_pending_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	pdfbox.pddocument_pending
+	    WHERE
+		blob = $1::udig
+	  )
+	;
+	`;
+
+	result row is (
+		answer bool
+	);
+
+}
+
+query in_pddocument_pending_table(brr.udig)
+  when
+  	in_pddocument_table.answer == false
+;
+
+sql query merge_pddocument_pending row
+{
+	statement = `
+
+	INSERT INTO
+	  pdfbox.pddocument_pending(
+		blob
+	  ) VALUES(
+	  	$1::udig
+ 	  )  ON CONFLICT
+	  	DO NOTHING
+	  RETURNING
+	  	true
+	`;
+
+	result row is (
+		inserted bool
+	);
+
+}
+
+query merge_pddocument_pending(brr.udig)
+  when
+  	in_pddocument_pending_table.answer == false
+;
+
+command merge_pddocument
+{
+	path = "sbin/merge-pddocument";
+	exit_status is OK when in {
+		0,	#  ok, extracted pddocument info and stored into PG
+		1,	#  pdf load failed (but still tuple stored in PG)
+		2	#  blob does not exist
+	};
+}
+
+call merge_pddocument(brr.udig)
+  when
+  	merge_pddocument_pending.inserted == true
+;
+
+command pddocument_exists
+{
+	path = "true";
+}
+
+call pddocument_exists(brr.udig)
+  when
+  	in_pddocument_table.is_pdf == true
+  	or
+  	merge_pddocument.exit_status == 0
+;
+
+sql query in_extract_pages_utf8_table row
+{
+	statement = `
+
+	SELECT
+		EXISTS (
+		  SELECT
+			blob
+		  FROM
+			pdfbox.extract_pages_utf8
+		  WHERE
+			blob = $1::udig
+		),
+		(
+		  SELECT
+			exit_status = 0
+		    FROM
+			pdfbox.extract_pages_utf8
+		    WHERE
+			blob = $1::udig
+		)
+	`;
+
+	result row is (
+		answer bool,
+		extracted bool
+	);
+}
+
+query in_extract_pages_utf8_table(brr.udig)
+  when
+	pddocument_exists.exit_status == 0
+;
+
+sql query in_extract_pages_utf8_pending_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+		blob
+	    FROM
+		pdfbox.extract_pages_utf8_pending
+	    WHERE
+		blob = $1::udig
+	  )
+	;
+	`;
+
+	result row is (
+		answer bool
+	);
+
+}
+
+query in_extract_pages_utf8_pending_table(brr.udig)
+  when
+	in_extract_pages_utf8_table.answer == false
+;
+
+sql query merge_extract_pages_utf8_pending row
+{
+	statement = `
+
+	INSERT INTO
+	  pdfbox.extract_pages_utf8_pending(
+		blob
+	  ) VALUES(
+		$1::udig
+	  )  ON CONFLICT
+		DO NOTHING
+	  RETURNING
+		true
+	`;
+
+	result row is (
+		inserted bool
+	);
+
+}
+
+query merge_extract_pages_utf8_pending(brr.udig)
+  when
+	in_extract_pages_utf8_pending_table.answer == false
+;
+
+command merge_extract_pages_utf8
+{
+	path = "sbin/merge-extract_pages_utf8";
+}
+
+call merge_extract_pages_utf8(brr.udig)
+  when
+	merge_extract_pages_utf8_pending.inserted == true
+;
+
+sql exec delete_extract_pages_utf8_pending
+{
+	statement = `
+
+	DELETE FROM pdfbox.extract_pages_utf8_pending
+	  WHERE
+		blob = $1::udig
+	`;
+}
+
+query delete_extract_pages_utf8_pending(brr.udig)
+  when
+  	#  Note: hack to get around lack of <command>.invoked bool
+	#
+	merge_extract_pages_utf8.exit_status != 256
+;
+
+command extract_pages_utf8_exists
+{
+	path = "true";
+}
+
+call extract_pages_utf8_exists(brr.udig)
+  when
+  	delete_extract_pages_utf8_pending.rows_affected == 1
+	or
+	in_extract_pages_utf8_table.answer == true
+;
+
+sql query in_merge_pages_text_utf8_table row
+{
+	statement = `
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	pdfbox.merge_pages_text_utf8
+	    WHERE
+	    	blob = $1::udig
+	)
+	`;
+	result row is (
+		answer bool
+	);
+}
+
+query in_merge_pages_text_utf8_table(brr.udig)
+  when
+  	extract_pages_utf8_exists.exit_status == 0
+;
+
+sql query in_merge_pages_text_utf8_pending_table row
+{
+	statement = `
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	pdfbox.merge_pages_text_utf8_pending
+	    WHERE
+	    	blob = $1::udig
+	)
+	`;
+	result row is (
+		answer bool
+	);
+}
+
+query in_merge_pages_text_utf8_pending_table(brr.udig)
+  when
+  	in_merge_pages_text_utf8_table.answer == false
+;
+
+sql query insert_merge_pages_text_utf8_pending row
+{
+	statement = `
+	INSERT INTO pdfbox.merge_pages_text_utf8_pending(
+		blob
+	  ) VALUES(
+	  	$1::udig
+	  )
+	  ON CONFLICT
+	  	DO NOTHING
+	  RETURNING
+	  	true
+	`;
+	result row is (
+		inserted bool
+	);
+}
+
+query insert_merge_pages_text_utf8_pending(brr.udig)
+  when
+	in_merge_pages_text_utf8_pending_table.answer == false
+;
+
+command merge_pages_text_utf8
+{
+	path = "sbin/merge-pages_text_utf8";
+	exit_status is OK when in {
+		0,	#  ok, all pages merged
+		1	#  at least one page blob does not exist
+	};
+}
+
+call merge_pages_text_utf8(brr.udig)
+  when
+  	insert_merge_pages_text_utf8_pending.inserted == true
+;
+
+sql exec delete_merge_pages_text_utf8_pending
+{
+	statement = `
+	DELETE FROM pdfbox.merge_pages_text_utf8_pending
+	  WHERE
+	  	blob = $1::udig
+	`;
+}
+
+query delete_merge_pages_text_utf8_pending(brr.udig)
+  when
+  	merge_pages_text_utf8.exit_status == 0
+;
+
+sql exec insert_merge_pages_text_utf8
+{
+	statement = `
+	INSERT INTO pdfbox.merge_pages_text_utf8(
+		blob,
+		exit_status
+	  ) VALUES(
+	  	$1::udig,
+		$2::int
+	  )
+	  ON CONFLICT
+	  	DO NOTHING
+	  RETURNING
+	  	true
+	`;
+}
+
+query insert_merge_pages_text_utf8(brr.udig, merge_pages_text_utf8.exit_status)
+  when
+  	#  Note: hack to get around lack of <command>.invoked bool
+
+  	merge_pages_text_utf8.exit_status != 256
+;
+
+sql query in_merge_pages_tsv_utf8_table row
+{
+	statement = `
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	pdfbox.merge_pages_tsv_utf8
+	    WHERE
+	    	blob = $1::udig
+	)
+	`;
+	result row is (
+		answer bool
+	);
+}
+
+query in_merge_pages_tsv_utf8_table(brr.udig)
+  when
+  	extract_pages_utf8_exists.exit_status == 0
+;
+
+sql query in_merge_pages_tsv_utf8_pending_table row
+{
+	statement = `
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	pdfbox.merge_pages_tsv_utf8_pending
+	    WHERE
+	    	blob = $1::udig
+	)
+	`;
+	result row is (
+		answer bool
+	);
+}
+
+query in_merge_pages_tsv_utf8_pending_table(brr.udig)
+  when
+  	in_merge_pages_tsv_utf8_table.answer == false
+;
+
+sql query insert_merge_pages_tsv_utf8_pending row
+{
+	statement = `
+	INSERT INTO pdfbox.merge_pages_tsv_utf8_pending(
+		blob
+	  ) VALUES(
+	  	$1::udig
+	  )
+	  ON CONFLICT
+	  	DO NOTHING
+	  RETURNING
+	  	true
+	`;
+	result row is (
+		inserted bool
+	);
+}
+
+query insert_merge_pages_tsv_utf8_pending(brr.udig)
+  when
+	in_merge_pages_tsv_utf8_pending_table.answer == false
+;
+
+command merge_pages_tsv_utf8
+{
+	path = "sbin/merge-pages_tsv_utf8";
+	argv = (
+		"english"
+	);
+	exit_status is OK when in {
+		0,	#  ok, all pages merged
+		1	#  at least one page blob does not exist
+	};
+}
+
+call merge_pages_tsv_utf8(brr.udig)
+  when
+  	insert_merge_pages_tsv_utf8_pending.inserted == true
+;
+
+sql exec delete_merge_pages_tsv_utf8_pending
+{
+	statement = `
+	DELETE FROM pdfbox.merge_pages_tsv_utf8_pending
+	  WHERE
+	  	blob = $1::udig
+	`;
+}
+
+#
+#  Note:
+#	wrong.
+#	must delete when merge_pages_tsv_utf8 exits for any condition.
+#
+
+query delete_merge_pages_tsv_utf8_pending(brr.udig)
+  when
+  	merge_pages_tsv_utf8.exit_status != 256
+;
+
+sql exec insert_merge_pages_tsv_utf8
+{
+	statement = `
+	INSERT INTO pdfbox.merge_pages_tsv_utf8(
+		blob,
+		exit_status
+	  ) VALUES(
+	  	$1::udig,
+		$2::int
+	  )
+	  ON CONFLICT
+	  	DO NOTHING
+	  RETURNING
+	  	true
+	`;
+}
+
+query insert_merge_pages_tsv_utf8(brr.udig, merge_pages_tsv_utf8.exit_status)
+  when
+  	#  Note: hack to get around lack of <command>.invoked bool
+  	merge_pages_tsv_utf8.exit_status != 256
+;

@@ -1,0 +1,191 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Extract all pages from pdf and merge into tables extract_page[s]_utf8.
+#  Usage:
+#	merge-extract_pages_utf8 <pdf blob>
+#  Exit Status
+#	0	pages merged ok
+#	1	pdf blob not found
+#	2	wrong number of command line arguments
+#	3	error accessing temporary work directory
+#	4	unexpected blobio error
+#	5	ExtractPagesUTF8.class failed
+#	6	unexpected error during sql merge 
+#  Environment:
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
+#	TMPDIR
+#  Note:
+#	Upon error page blobs may be orphaned.
+#	Interesting problem.  Since blobio has no notion of a link count,
+#	difficult to simply remove the blob upon error, since another data
+#	structure may be dependent the blob.
+#
+
+PROG=merge-extract_pages_utf8
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
+WORK_DIR=${TMPDIR:=/tmp}/$PROG.$$
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
+
+die()
+{
+	STATUS=$2
+	echo "$PROG: ERROR: $1" >&2
+	exit $STATUS
+}
+
+leave()
+{
+	rm -rf $WORK_DIR
+	false
+}
+
+trap leave EXIT SIGQUIT SIGTERM
+
+test $# = 1 || die 'wrong number of command line arguments' 2
+PDF_UDIG=$1
+
+mkdir -p $WORK_DIR || die "mkdir work $WORK_DIR failed: exit status=$?" 3
+cd $WORK_DIR || die "cd work $WORK_DIR failed: exit status=$?" 3
+
+#  fetch the pdf blob into work directory
+
+PDF=$PDF_UDIG.pdf
+blobio get --udig $PDF_UDIG --output-path $PDF --service $BLOBIO_GET_SERVICE
+STATUS=$?
+
+case $STATUS in
+0)
+	;;
+1)
+	exit 1
+	;;
+*)
+	die "blobio get failed: exit status=$?" 4
+	;;
+esac
+
+#  extract individual pages into files 0000001.txt ... 0<number-pages>.txt
+
+java 									\
+	-cp $CLASSPATH							\
+	-Dapple.awt.UIElement="true"					\
+	ExtractPagesUTF8						\
+	<$PDF 2>STDERR
+
+STATUS=$?
+case $STATUS in
+0)
+	EXIT_STATUS=0
+	;;
+1|2)
+	#  load failed or permission denied to extract
+	EXIT_STATUS=$STATUS
+	;;
+*)
+	if [ -s STDERR ];  then
+		cat STDERR
+	else
+		echo "$PROG: ERROR: unexpected empty stderr output" >&2
+	fi
+	die "ExtractPagesUTF8 failed: exit status=$STATUS" 5
+	;;
+esac
+
+if [ -s STDERR ];  then
+	STDERR_UDIG=$BLOBIO_ALGORITHM:$(
+		blobio eat --algorithm $BLOBIO_ALGORITHM --input-path STDERR
+	)
+	STATUS=$?
+	test $STATUS = 0 ||
+		die "blobio eat stderr failed: exit status=$STATUS" 4
+	blobio put 							\
+		--udig $STDERR_UDIG					\
+		--input-path STDERR					\
+		--service $BLOBIO_SERVICE				|| \
+		die "blobio put STDERR failed: exit status=$?"
+	STDERR_UDIG="'$STDERR_UDIG'"
+else
+	#  Note: ought to be the empty digest, not null!
+
+	STDERR_UDIG=null
+fi
+
+#  build the sql merge statements
+
+cat >merge.sql <<END || die "cat sql extract failed: exit status=$?" 6
+\\set ON_ERROR_STOP 1
+BEGIN;
+INSERT INTO pdfbox.extract_pages_utf8 (
+	blob,
+	exit_status,
+	stderr_blob
+) VALUES (
+	'$PDF_UDIG',
+	$EXIT_STATUS,
+	$STDERR_UDIG
+) ON CONFLICT
+	DO NOTHING
+;
+END
+
+#
+#  Put the individual page blobs and build the sql script.
+#
+#  Note:
+#	Upon error the page blobs might become orphaned.
+#
+
+PAGE_NUMBER=0
+find . -name '*.txt' -print | sort | while read TXT;  do
+	PAGE_BLOB=$BLOBIO_ALGORITHM:$(
+		blobio eat --algorithm $BLOBIO_ALGORITHM --input-path $TXT
+	)
+	STATUS=$?
+	test $STATUS = 0 || die "blobio eat txt failed: exit status=$STATUS" 4
+
+	blobio put							\
+		--input-path $TXT					\
+		--udig $PAGE_BLOB					\
+		--service $BLOBIO_SERVICE
+	STATUS=$?
+	test $STATUS = 0 || die "blobio put txt failed: exit status=$STATUS" 4
+
+	PAGE_NUMBER=$(expr $PAGE_NUMBER + 1)
+	cat >>merge.sql <<END || die "cat sql txt failed: exit status=$?" 6
+INSERT INTO pdfbox.extract_page_utf8 (
+	pdf_blob,
+	page_blob,
+	page_number
+) VALUES (
+	'$PDF_UDIG',
+	'$PAGE_BLOB',
+	$PAGE_NUMBER
+) ON CONFLICT
+	DO NOTHING
+;
+END
+test $? || die "find/merge txt failed" 6
+done
+
+cat >>merge.sql <<END || die "cat sql commit failed: exit status=$?" 6
+COMMIT;
+END
+
+#  merge pdf blob and individual pages
+
+psql --file merge.sql --quiet --no-psqlrc 2>PSQL_ERR
+STATUS=$?
+if [ $STATUS != 0 ];  then
+	test -s PSQL_ERR && cat PSQL_ERR
+	die "psql failed: exit status=$STATUS" 6
+fi
+	
+if [ -s PSQL_ERR ];  then
+	echo "$PROG: ERROR: psql merge failed: stderr follows"
+	cat PSQL_ERR >&2
+	exit 6
+fi
+
+exit 0
