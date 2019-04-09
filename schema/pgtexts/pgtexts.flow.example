@@ -32,7 +32,7 @@ sql database setspace
 
 tail brr
 {
-	path = "spool/pdfbox2.brr";
+	path = "spool/pdfbox.brr";
 }
 
 command brr_has_size

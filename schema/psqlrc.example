@@ -11,7 +11,7 @@ set search_path to
 	jsonorg,
 	libxml2,
 	nistrand,
-	pdfbox2,
+	pdfbox,
 	pgtexts,
 	prefixio,
 	setspace,

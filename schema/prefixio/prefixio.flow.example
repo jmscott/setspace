@@ -134,11 +134,11 @@ call append_jsonorg_brr(
 	is_json_object_or_array.answer == true
 ;
 
-command append_pdfbox2_brr
+command append_pdfbox_brr
 {
 	path = "append-brr";
 	argv = (
-		"../pdfbox2/spool/prefixio.brr"
+		"../pdfbox/spool/prefixio.brr"
 	);
 }
 
@@ -164,7 +164,7 @@ sql query prefix_is_percentPDF row
 
 query prefix_is_percentPDF(brr.udig);
 
-call append_pdfbox2_brr(
+call append_pdfbox_brr(
 	brr.start_time,
 	brr.netflow,
 	brr.verb,

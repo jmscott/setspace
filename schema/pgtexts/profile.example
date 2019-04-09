@@ -15,7 +15,7 @@ export TMPDIR=$SCHEMA_ROOT/tmp
 export PGTEXTS_ROOT=${PGTEXTS_ROOT:=$SCHEMA_ROOT}
 
 #  create the spool file so tail doesn't abort.
-touch $SCHEMA_ROOT/spool/pdfbox2.brr
-chmod u=rw,g=w,o= $SCHEMA_ROOT/spool/pdfbox2.brr
+touch $SCHEMA_ROOT/spool/pdfbox.brr
+chmod u=rw,g=w,o= $SCHEMA_ROOT/spool/pdfbox.brr
 
 PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
