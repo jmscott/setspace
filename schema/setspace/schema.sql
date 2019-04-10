@@ -146,4 +146,12 @@ COMMENT ON TABLE byte_suffix_32 IS
 CREATE INDEX byte_suffix_32_blob ON byte_suffix_32 USING hash(blob);
 CREATE INDEX byte_suffix_32_suffix ON byte_suffix_32(suffix);
 
+CREATE DOMAIN unix_process_exit_status AS int2
+  CHECK (
+        value >= 0
+        AND
+        value <= 255
+  )
+;
+
 COMMIT;
