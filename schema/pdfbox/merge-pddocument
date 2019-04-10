@@ -24,13 +24,15 @@ PROG=merge-pddocument
 BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 TMPDIR=${TMPDIR:=/tmp}
 PSQL='psql --no-psqlrc --quiet'
+ALGORITHM=${BLOBIO_ALGORITHM:=bc160}
 
 TMP_BLOB=$TMPDIR/$PROG-$$.pdf
 TMP_ROW=$TMPDIR/$PROG-$$.row
+TMP_STDERR=$TMPDIR/$PROG-stderr.$$.out
 
 leave()
 {
-	rm -f $TMP_BLOB $TMP_ROW
+	rm -f $TMP_BLOB $TMP_ROW $TMP_STDERR
 }
 trap leave EXIT
 
@@ -68,7 +70,7 @@ esac
 #  0 with stderr is normal.  an exit status of 1 indicates a failed load
 #  of the pdf file.
 
-java -cp $CLASSPATH putPDDocument <$TMP_BLOB >$TMP_ROW
+java -cp $CLASSPATH putPDDocument <$TMP_BLOB >$TMP_ROW 2>$TMP_STDERR
 EXIT_STATUS=$?
 case $EXIT_STATUS in
 0)
@@ -93,8 +95,32 @@ case $EXIT_STATUS in
 	IS_ENCRYPTED=null
 	;;
 *)
-	#  unexpected java fault
+	#  a fault occured executing the java vm.
+	#  record the fault in the table fault_pddocument
+	test -e $TMP_STDERR || die "write to temp failed: $TMP_STDERR"
 
+	#  take the digest of the stderr
+	STDERR_UDIG=$ALGORITHM:$(
+		blobio eat						\
+			--algorithm $ALGORITHM				\
+			--input-path $TMP_STDERR
+	)
+	STATUS=$?
+	test $STATUS = 0 || die "blobio eat stderr failed: exit status=$STATUS"
+	$PSQL <<END || die "psql insert fault failed: exit status=$?" 7
+INSERT INTO fault_pddocument(
+	blob,
+	exit_status,
+	stderr
+  ) VALUES (
+  	'$UDIG',
+	$EXIT_STATUS,
+	'$STDERR_UDIG'
+  )
+  ON CONFLICT
+  	DO NOTHING
+;
+END
 	die "java putPDDocument failed: exit status=$EXIT_STATUS" 5
 	;;
 esac

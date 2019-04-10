@@ -28,7 +28,6 @@ CREATE TABLE pddocument
 				REFERENCES setspace.service(blob)
 				ON DELETE CASCADE
 				PRIMARY KEY,
-
 	/*
 	 *  Note:
 	 *	Spec not clear about number of pa
@@ -104,6 +103,7 @@ CREATE OR REPLACE FUNCTION is_pddocument_disjoint() RETURNS TRIGGER
 	IF NOT FOUND THEN
 		RAISE EXCEPTION 'blob in both pddocument and fault_pddocument';
 	END IF;
+	RETURN NEW;
   END $$
   LANGUAGE plpgsql
 ;
