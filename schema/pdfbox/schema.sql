@@ -10,44 +10,122 @@
 BEGIN;
 
 DROP SCHEMA IF EXISTS pdfbox CASCADE;
+
 CREATE SCHEMA pdfbox;
 COMMENT ON SCHEMA pdfbox IS
   'Text and metadata extracted by java classes of pdfbox.apache.org, version 2'
 ;
 
+SET search_path to pdfbox,public;
+
 /*
  *  PDDocument scalar fields from Java Object
  */
-DROP TABLE IF EXISTS pdfbox.pddocument CASCADE;
-CREATE TABLE pdfbox.pddocument
+DROP TABLE IF EXISTS pddocument CASCADE;
+CREATE TABLE pddocument
 (
 	blob		udig
 				REFERENCES setspace.service(blob)
 				ON DELETE CASCADE
 				PRIMARY KEY,
 
-	number_of_pages int,
+	/*
+	 *  Note:
+	 *	Spec not clear about number of pa
+	 *	which screws up code needing number_of_pages to be
+	 *	> 0.  Instead, consider added a exit_status to indicate when
+	 *	number_of_pages is <= 0 and set number_of_pages to null.
+	 */
+	number_of_pages int CHECK (
+				/*
+				 *  Can a PDF have 0 pages?
+				 */
+				number_of_pages >= 0
+			) NOT NULL,
 
 	document_id	bigint,		-- is document_id always > 0
 
-	version		float,
+	version		float CHECK (
+				version > 0
+			) NOT NULL,
 
-	is_all_security_to_be_removed	bool,
-	is_encrypted			bool
-
+	is_all_security_to_be_removed	bool NOT NULL,
+	is_encrypted			bool NOT NULL
 );
-COMMENT ON TABLE pdfbox.pddocument IS
+COMMENT ON TABLE pddocument IS
   'PDDocument scalar fields from Java Object'
+;
+REVOKE UPDATE ON pddocument FROM public;
+
+CREATE TABLE fault_pddocument
+(
+	blob	udig
+			REFERENCES setspace.service(blob)
+			ON DELETE CASCADE
+			PRIMARY KEY,
+	exit_status	setspace.unix_process_exit_status CHECK (
+				exit_status > 0
+			)
+			NOT NULL,
+	stderr_blob	udig CHECK (
+				blob != stderr_blob
+			)
+);
+COMMENT ON TABLE fault_pddocument IS
+  'Track process faults for java PDDocument calls' 
+;
+REVOKE UPDATE ON PDDOCUMENT FROM public;
+
+CREATE OR REPLACE FUNCTION is_pddocument_disjoint() RETURNS TRIGGER
+  AS $$ BEGIN
+
+	WITH pddocument_count AS (
+	  SELECT
+		count(*) AS count
+	  FROM
+		pdfbox.pddocument
+	  WHERE
+		blob = new.blob
+  	), fault_pddocument_count AS (
+	  SELECT
+		count(*) AS count
+	    FROM
+		pdfbox.fault_pddocument
+	    WHERE
+		blob = new.blob
+	  ) SELECT
+		true
+	      FROM
+		pddocument_count p,
+		fault_pddocument_count f
+	      WHERE
+		(p.count + f.count) < 2
+	;
+	IF NOT FOUND THEN
+		RAISE EXCEPTION 'blob in both pddocument and fault_pddocument';
+	END IF;
+  END $$
+  LANGUAGE plpgsql
+;
+COMMENT ON FUNCTION is_pddocument_disjoint IS
+  'Check the blob is not in both table pddocument and fault_pddocument'
+;
+
+CREATE TRIGGER is_pddocument_disjoint AFTER INSERT ON pddocument
+  FOR EACH ROW EXECUTE PROCEDURE is_pddocument_disjoint()
+;
+CREATE TRIGGER is_pddocument_disjoint AFTER INSERT ON fault_pddocument
+  FOR EACH ROW EXECUTE PROCEDURE is_pddocument_disjoint()
 ;
 
 /*
  *  Status of extraction process for utf8 text.
  */
-DROP TABLE IF EXISTS pdfbox.extract_pages_utf8 CASCADE;
-CREATE TABLE pdfbox.extract_pages_utf8
+DROP TABLE IF EXISTS extract_pages_utf8 CASCADE;
+CREATE TABLE extract_pages_utf8
 (
 	blob		udig
-				REFERENCES pdfbox.pddocument(blob)
+				REFERENCES pddocument(blob)
 				ON DELETE CASCADE
 				PRIMARY KEY,
 
@@ -64,18 +142,18 @@ CREATE TABLE pdfbox.extract_pages_utf8
 		blob != stderr_blob
 	)
 );
-COMMENT ON TABLE pdfbox.extract_pages_utf8 IS
+COMMENT ON TABLE extract_pages_utf8 IS
   'Status of extraction process for utf8 text'
 ;
 
 /*
  *  Track individual pages in a pdf blob
  */
-DROP TABLE IF EXISTS pdfbox.extract_page_utf8 CASCADE;
-CREATE TABLE pdfbox.extract_page_utf8
+DROP TABLE IF EXISTS extract_page_utf8 CASCADE;
+CREATE TABLE extract_page_utf8
 (
 	pdf_blob	udig
-				REFERENCES pdfbox.extract_pages_utf8(blob)
+				REFERENCES extract_pages_utf8(blob)
 				ON DELETE CASCADE,
 	page_blob	udig
 				NOT NULL,
@@ -93,10 +171,10 @@ CREATE TABLE pdfbox.extract_page_utf8
 	PRIMARY KEY	(pdf_blob, page_number)
 
 );
-COMMENT ON TABLE pdfbox.extract_pages_utf8 IS
+COMMENT ON TABLE extract_pages_utf8 IS
   'Individual Pages of UTF8 Text extracted from parent pdf blob'
 ;
-CREATE INDEX extract_page_utf8_page on pdfbox.extract_page_utf8(
+CREATE INDEX extract_page_utf8_page on extract_page_utf8(
 	page_blob
 );
 
@@ -104,8 +182,8 @@ CREATE INDEX extract_page_utf8_page on pdfbox.extract_page_utf8(
  *  PDDocumentInformation scalar fields from Java Object
  */
 
-DROP TABLE IF EXISTS pdfbox.pddocument_information CASCADE;
-CREATE TABLE pdfbox.pddocument_information
+DROP TABLE IF EXISTS pddocument_information CASCADE;
+CREATE TABLE pddocument_information
 (
 	blob			udig
 					REFERENCES setspace.service(blob)
@@ -143,15 +221,15 @@ CREATE TABLE pdfbox.pddocument_information
 					length(trapped) < 32768
 				)
 );
-COMMENT ON TABLE pdfbox.pddocument_information IS
+COMMENT ON TABLE pddocument_information IS
   'PDDocumentInformation scalar fields from Java Object'
 ;
 
 /*
  *  Job status of extraction process for of Pddocument Information Metadata.
  */
-DROP TABLE IF EXISTS pdfbox.pddocument_information_metadata CASCADE;
-CREATE TABLE pdfbox.pddocument_information_metadata
+DROP TABLE IF EXISTS pddocument_information_metadata CASCADE;
+CREATE TABLE pddocument_information_metadata
 (
 	blob			udig
 					REFERENCES setspace.service(blob)
@@ -163,19 +241,19 @@ CREATE TABLE pdfbox.pddocument_information_metadata
 					exit_status <= 255
 				)
 );
-COMMENT ON TABLE pdfbox.pddocument_information_metadata IS
+COMMENT ON TABLE pddocument_information_metadata IS
   'PDDocumentInformation metadata extraction job status'
 ;
 
 /*
  *  PDDocumentInformation custom metadata fields string fields from Java Object
  */
-DROP TABLE IF EXISTS pdfbox.pddocument_information_metadata_custom CASCADE;
-CREATE TABLE pdfbox.pddocument_information_metadata_custom
+DROP TABLE IF EXISTS pddocument_information_metadata_custom CASCADE;
+CREATE TABLE pddocument_information_metadata_custom
 (
 	blob		udig
 				REFERENCES
-				   pdfbox.pddocument_information_metadata(blob)
+				   pddocument_information_metadata(blob)
 				ON DELETE CASCADE,
 	key		text check (
 				length(key) > 0
@@ -198,8 +276,8 @@ CREATE TABLE pdfbox.pddocument_information_metadata_custom
 /*
  *  Text of individual pages of a pdf blob
  */
-DROP TABLE IF EXISTS pdfbox.page_text_utf8 CASCADE;
-CREATE TABLE pdfbox.page_text_utf8
+DROP TABLE IF EXISTS page_text_utf8 CASCADE;
+CREATE TABLE page_text_utf8
 (
 	pdf_blob	udig,
 	page_number	int check (
@@ -215,21 +293,21 @@ CREATE TABLE pdfbox.page_text_utf8
 				NOT NULL,
 	PRIMARY KEY	(pdf_blob, page_number),
 	FOREIGN KEY	(pdf_blob, page_number)
-				REFERENCES pdfbox.extract_page_utf8(
+				REFERENCES extract_page_utf8(
 					pdf_blob,
 					page_number
 				)
 				ON DELETE CASCADE
 );
-COMMENT ON TABLE pdfbox.page_text_utf8 IS
+COMMENT ON TABLE page_text_utf8 IS
   'Individual Pages of UTF8 Text extracted from a pdf blob'
 ;
 
-DROP TABLE IF EXISTS pdfbox.merge_pages_text_utf8 CASCADE;
-CREATE TABLE pdfbox.merge_pages_text_utf8
+DROP TABLE IF EXISTS merge_pages_text_utf8 CASCADE;
+CREATE TABLE merge_pages_text_utf8
 (
 	blob		udig
-				REFERENCES pdfbox.pddocument(blob)
+				REFERENCES pddocument(blob)
 				ON DELETE CASCADE
 				PRIMARY KEY,
 	stderr_blob	udig,
@@ -240,15 +318,15 @@ CREATE TABLE pdfbox.merge_pages_text_utf8
 			) not null
 );
 
-COMMENT ON TABLE pdfbox.merge_pages_text_utf8 IS
+COMMENT ON TABLE merge_pages_text_utf8 IS
   'Exit Status of merge-pages_text_utf8 script'
 ;
 
 /*
  *  Text Search Vector of individual pages of a pdf blob
  */
-DROP TABLE IF EXISTS pdfbox.page_tsv_utf8 CASCADE;
-CREATE TABLE pdfbox.page_tsv_utf8
+DROP TABLE IF EXISTS page_tsv_utf8 CASCADE;
+CREATE TABLE page_tsv_utf8
 (
 	pdf_blob	udig,
 	page_number	int check (
@@ -275,25 +353,25 @@ CREATE TABLE pdfbox.page_tsv_utf8
 				NOT NULL,
 	PRIMARY KEY	(pdf_blob, page_number),
 	FOREIGN KEY	(pdf_blob, page_number)
-				REFERENCES pdfbox.extract_page_utf8(
+				REFERENCES extract_page_utf8(
 					pdf_blob,
 					page_number
 				)
 				ON DELETE CASCADE
 );
-CREATE INDEX rumidx ON pdfbox.page_tsv_utf8
+CREATE INDEX rumidx ON page_tsv_utf8
   USING
   	rum (tsv rum_tsvector_ops)
 ;
-COMMENT ON TABLE pdfbox.page_tsv_utf8 IS
+COMMENT ON TABLE page_tsv_utf8 IS
   'Individual Pages of UTF8 Text extracted from a pdf blob'
 ;
 
-DROP TABLE IF EXISTS pdfbox.merge_pages_tsv_utf8 cascade;
-CREATE TABLE pdfbox.merge_pages_tsv_utf8
+DROP TABLE IF EXISTS merge_pages_tsv_utf8 cascade;
+CREATE TABLE merge_pages_tsv_utf8
 (
 	blob		udig
-				REFERENCES pdfbox.pddocument(blob)
+				REFERENCES pddocument(blob)
 				ON DELETE CASCADE
 				PRIMARY KEY,
 	/*
@@ -310,7 +388,7 @@ CREATE TABLE pdfbox.merge_pages_tsv_utf8
 				exit_status <= 255
 			) not null
 );
-COMMENT ON TABLE pdfbox.merge_pages_tsv_utf8 IS
+COMMENT ON TABLE merge_pages_tsv_utf8 IS
   'Exit Status of merge-pages_tsv_utf8 script'
 ;
 
