@@ -4,21 +4,12 @@
 #  Usage:
 #	#  in crontab
 #	SETSPACE_ROOT=/usr/local/setspace
-#	@reboot $SETSPACE_ROOTsbin/cron-reboot 				\
-#		>>$SETSPACE_ROOT/log/cron-reboot.log 2>&1
+#	LOG=$SETSPACE_ROOT/log/cron-reboot.log
+#
+#	@reboot $SETSPACE_ROOTsbin/cron-reboot >>$LOG 2>&1
 #  Exit Status:
 #	0	all flowd process rebooted
 #	1	unknown error, processes may not have rebooted
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
-#  Note:
-#	Stale pid files could break boot.  Need to write a script to remove
-#	pid files on reboot.
-#
-#	Ought to wait for postgres and biod servers to start.
-#	systemd might solve this problem.  Or just start sequentially from
-#	/etc/rc.local
 #
 
 PROG=$(basename $0)
@@ -62,23 +53,9 @@ kill-all-flowd || die "kill-all-flowd failed: exit status=$?"
 #  schema/$SCHEMA/etc/$SCHEMA.flow
 
 log 'finding schemas for bootable flowd ...'
-while read SCHEMA;  do
+ls-boot-flowd | while read SCHEMA;  do
 	log "schema: $SCHEMA"
-	boot-flowd $SCHEMA
-	STATUS=$?
-	case $STATUS in
-	0)
-		log 'flowd booted'
-		;;
-	1)
-		log "WARN: no profile or $SCHEMA.flow file, so no boot (ok)"
-		;;
-	*)
-		die "boot-flowd $SCHEMA failed: exit status=$STATUS"
-		;;
-	esac 
-  done <<END
-$(find-schema)
-END
+	boot-flowd $SCHEMA || die "boot-flowd $SCHEMA failed: exit status=$?"
+done
 
 log 'all flowds started'

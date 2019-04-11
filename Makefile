@@ -72,6 +72,7 @@ install: all
 		kill-all-flowd						\
 		kill-flowd						\
 		launchd-flowd						\
+		ls-boot-flowd						\
 		ls-flowd						\
 		rummy							\
 		tail-flowd						\
