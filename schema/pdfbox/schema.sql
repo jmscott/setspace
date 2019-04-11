@@ -35,21 +35,32 @@ CREATE TABLE pddocument
 	 *	> 0.  Instead, consider added a exit_status to indicate when
 	 *	number_of_pages is <= 0 and set number_of_pages to null.
 	 */
-	number_of_pages int CHECK (
-				/*
-				 *  Can a PDF have 0 pages?
-				 */
-				number_of_pages >= 0
-			) NOT NULL,
+	number_of_pages int,
 
 	document_id	bigint,		-- is document_id always > 0
 
-	version		float CHECK (
-				version > 0
-			) NOT NULL,
+	version		float,
 
-	is_all_security_to_be_removed	bool NOT NULL,
-	is_encrypted			bool NOT NULL
+	is_all_security_to_be_removed	bool,
+	is_encrypted			bool,
+
+	CHECK  ((
+		number_of_pages >= 0
+		AND
+		version > 0
+		AND
+		is_all_security_to_be_removed IS NOT NULL
+		AND
+		is_encrypted IS NOT NULL
+	) OR (
+		number_of_pages IS NULL
+		AND
+		version IS NULL
+		AND
+		is_all_security_to_be_removed IS NULL
+		AND
+		is_encrypted IS NULL
+	))
 );
 COMMENT ON TABLE pddocument IS
   'PDDocument scalar fields from Java Object'
