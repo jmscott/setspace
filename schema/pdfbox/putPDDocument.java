@@ -17,9 +17,9 @@
  *	java putPDDocument <file.pdf
  *  Exit Status:
  *	0	extracted the scalar data and wrote to stdout
- *	1	load of pdf failed
- *	2	wrong number of command line arguments
- *	3	unexpected java exception.
+ *	2	load of pdf failed
+ *	3	invocation error
+ *	4	unexpected java exception.
  *  Note:
  *	Need to frisk the string values.  See out putPDDocument* classes.
  *
@@ -35,7 +35,7 @@ public class putPDDocument
 			System.err.println("ERROR: " +
 						putPDDocument.class.getName() +
 				   ": wrong number of arguments");
-			System.exit(2);
+			System.exit(3);
 		}
 
 		PDDocument doc = null;
@@ -52,7 +52,7 @@ public class putPDDocument
 				System.err.println("ERROR: " +
 					putPDDocument.class.getName() +
 								": " + el);
-				System.exit(1);
+				System.exit(2);
 			}
 
 			Long did = doc.getDocumentId();
@@ -80,7 +80,7 @@ public class putPDDocument
 			System.err.println("ERROR: " +
 					putPDDocument.class.getName() +
 				   	": " + e);
-			System.exit(3);
+			System.exit(4);
 
 		} finally {
 			if (doc != null)
