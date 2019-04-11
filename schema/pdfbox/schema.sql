@@ -76,9 +76,12 @@ COMMENT ON TABLE fault_pddocument IS
 REVOKE UPDATE ON PDDOCUMENT FROM public;
 
 CREATE OR REPLACE FUNCTION is_pddocument_disjoint() RETURNS TRIGGER
-  AS $$ BEGIN
+  AS $$
+  DECLARE
+	in_both bool;
+  BEGIN
 
-	PERFORM (WITH pddocument_count AS (
+	WITH pddocument_count AS (
 	  SELECT
 		count(*) AS count
 	  FROM
@@ -92,15 +95,13 @@ CREATE OR REPLACE FUNCTION is_pddocument_disjoint() RETURNS TRIGGER
 		pdfbox.fault_pddocument
 	    WHERE
 		blob = new.blob
-	  ) SELECT
-		true
+	  ) SELECT INTO in_both
+		(p.count + f.count) = 2
 	      FROM
 		pddocument_count p,
 		fault_pddocument_count f
-	      WHERE
-		(p.count + f.count) < 2
-	);
-	IF NOT FOUND THEN
+	;
+	IF in_both THEN
 		RAISE EXCEPTION 'blob in both pddocument and fault_pddocument';
 	END IF;
 	RETURN new;
