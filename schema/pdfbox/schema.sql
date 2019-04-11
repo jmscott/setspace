@@ -78,7 +78,7 @@ REVOKE UPDATE ON PDDOCUMENT FROM public;
 CREATE OR REPLACE FUNCTION is_pddocument_disjoint() RETURNS TRIGGER
   AS $$ BEGIN
 
-	WITH pddocument_count AS (
+	PERFORM (WITH pddocument_count AS (
 	  SELECT
 		count(*) AS count
 	  FROM
@@ -99,11 +99,11 @@ CREATE OR REPLACE FUNCTION is_pddocument_disjoint() RETURNS TRIGGER
 		fault_pddocument_count f
 	      WHERE
 		(p.count + f.count) < 2
-	;
+	);
 	IF NOT FOUND THEN
 		RAISE EXCEPTION 'blob in both pddocument and fault_pddocument';
 	END IF;
-	RETURN NEW;
+	RETURN new;
   END $$
   LANGUAGE plpgsql
 ;
