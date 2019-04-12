@@ -53,6 +53,7 @@ COMMENT ON TABLE pddocument IS
 ;
 REVOKE UPDATE ON pddocument FROM public;
 
+DROP TABLE IF EXISTS fault_pddocument CASCADE;
 CREATE TABLE fault_pddocument
 (
 	blob	udig
@@ -116,6 +117,20 @@ CREATE TRIGGER is_pddocument_disjoint AFTER INSERT ON fault_pddocument
   FOR EACH ROW EXECUTE PROCEDURE is_pddocument_disjoint()
 ;
 
+DROP DOMAIN IF EXISTS dval32 CASCADE;
+CREATE DOMAIN dval32 AS text 
+  CHECK (
+  	length(value) < 32768
+	AND
+	value !~ '\n'
+	AND
+	value !~ '\r'
+  )
+;
+COMMENT ON DOMAIN dval32 IS
+  'PDF Dictionary value < 32768 chars, with not carriage-return or line-feed'
+;
+
 /*
  *  PDDocumentInformation scalar fields from Java Object
  */
@@ -126,35 +141,23 @@ CREATE TABLE pddocument_information
 					REFERENCES setspace.service(blob)
 					ON DELETE CASCADE
 					PRIMARY KEY,
-	title			text CHECK (
-					length(title) < 32768
-				),
-	author			text CHECK (
-					length(author) < 32768
-				),
+	title			dval32,
+	author			dval32,
 	creation_date		timestamptz,
-	creator			text CHECK (
-					length(creator) < 32768
-				),
+	creator			dval32,
 
-	keywords		text CHECK (
-					length(keywords) < 32768
-				),
+	keywords		dval32,
 	modification_date	timestamptz,
-	producer		text CHECK (
-					length(producer) < 32768
-				),
-	subject			text CHECK (
-					length(subject) < 32768
-				),
-	trapped			text CHECK (
-					length(trapped) < 32768
-				)
+	producer		dval32,
+	subject			dval32,
+	trapped			dval32
 );
 COMMENT ON TABLE pddocument_information IS
   'PDDocumentInformation scalar fields from Java Object'
 ;
 REVOKE UPDATE ON TABLE pddocument_information FROM public;
+
+DROP TABLE IF EXISTS fault_pddocument_information;
 CREATE TABLE fault_pddocument_information
 (
 	blob	udig
@@ -173,8 +176,51 @@ COMMENT ON TABLE fault_pddocument_information IS
   'Track process faults for java PDDocumentInformation calls' 
 ;
 REVOKE UPDATE ON fault_pddocument_information FROM public;
+CREATE OR REPLACE FUNCTION is_pddocument_information_disjoint() RETURNS TRIGGER
+  AS $$
+  DECLARE
+	in_both bool;
+  BEGIN
 
-\q
+	WITH pddocument_information_count AS (
+	  SELECT
+		count(*) AS count
+	  FROM
+		pdfbox.pddocument_information
+	  WHERE
+		blob = new.blob
+  	), fault_pddocument_information_count AS (
+	  SELECT
+		count(*) AS count
+	    FROM
+		pdfbox.fault_pddocument_information
+	    WHERE
+		blob = new.blob
+	  ) SELECT INTO in_both
+		(p.count + f.count) = 2
+	      FROM
+		pddocument_information_count p,
+		fault_pddocument_information_count f
+	;
+	IF in_both THEN
+		RAISE EXCEPTION 'blob in both pddocument_information and fault_pddocument_information';
+	END IF;
+	RETURN new;
+  END $$
+  LANGUAGE plpgsql
+;
+COMMENT ON FUNCTION is_pddocument_information_disjoint IS
+  'Check the blob is not in both table pddocument_information and fault_pddocument_information'
+;
+
+CREATE TRIGGER is_pddocument_information_disjoint
+  AFTER INSERT ON pddocument_information
+  FOR EACH ROW EXECUTE PROCEDURE is_pddocument_information_disjoint()
+;
+CREATE TRIGGER is_fault_pddocument_information_disjoint
+  AFTER INSERT ON fault_pddocument_information
+  FOR EACH ROW EXECUTE PROCEDURE is_pddocument_information_disjoint()
+;
 
 /*
  *  Status of extraction process for utf8 text.
