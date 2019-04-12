@@ -4,7 +4,7 @@
  *  Description:
  *	putPDDocumentInformation extracts the scalar values from the 
  *	java object org.apache.pdfbox.pdmodel.PDDocumentInformation.
- *	The scalar values are written in a mimeish format like:
+ *	The scalar values MUST be written in a mimeish format like:
  *
  *		Author: <author>
  *		Subject: <subject>
@@ -31,12 +31,6 @@
  *	3	load of pdf failed
  *	4	invocation error
  *	5	unexpected java exception.
- *  Note:
- *	Consider framing the mime headers with Begin/End:
- *
- *		Begin:
- *		...
- *		End:
  */
 import java.util.Calendar;
 import java.util.TimeZone;
