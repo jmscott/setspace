@@ -2,7 +2,7 @@
  *  Synopsis:
  *  	Merge the output of the putPDDocumentInformation into the database
  *  Usage:
- *	merge-stdin-file 
+ *	merge-stdin-pddocument_information
  *  Arguments:
  *  	1	udig of the blob that file command analyzed
  *	2	exit status of java putPDDocumentInformation.class
@@ -126,6 +126,7 @@ scan(
 	*is_null = 0;
 
 	peek_len = -1;
+write(2, "WTF3\n", 5);
 }
 
 int
@@ -168,7 +169,7 @@ EXEC SQL BEGIN DECLARE SECTION;
 
 EXEC SQL END DECLARE SECTION;
 
-	if (argc != 4)
+	if (argc != 3)
 		die(EXIT_BAD_ARGC, "wrong number of arguments");
 
 	close(1);
@@ -177,15 +178,13 @@ EXEC SQL END DECLARE SECTION;
 
 	blob = argv[1];
 	len = strlen(blob);
-	if (len < 34 || len > 264 || strchr(blob, ':') == NULL)
+	if (len < 34 || len > 130 || strchr(blob, ':') == NULL)
 		die2(EXIT_BAD_UDIG, "syntax error in pdf udig", blob);
-
-	exit_status = argv[2];
 
 	//  scan the input blob size.
 	//  Note: need to move this code to ../../common.c
 
-	sz = argv[3];
+	sz = argv[2];
 	input_size = a2ui32(sz, "input pdf blob size", EXIT_BAD_SIZE);
 
 	//  allocate the mime fields buffer plus null byte
@@ -197,6 +196,7 @@ EXEC SQL END DECLARE SECTION;
 	input_limit = input + input_size;
 
 	_read_blob(0, input, input_size);
+write(2, "WTF1\n", 5);
 
 	scan("Title", title.arr, &title.len, &title_ind);
 	scan("Author", author.arr, &author.len, &author_ind);
@@ -209,6 +209,7 @@ EXEC SQL END DECLARE SECTION;
 	scan("Modification Date", modification_date.arr, &modification_date.len,
 					&modification_date_ind);
 	scan("Trapped", trapped.arr, &trapped.len, &trapped_ind);
+write(2, "WTF2\n", 5);
 
 	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error(
 		(struct _ecpg_sql_state_fault *)0);

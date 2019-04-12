@@ -7,7 +7,7 @@
  *	The scalar values are written in a mimeish format like:
  *
  *		Author: <author>
- *		Subject: <subecj>
+ *		Subject: <subject>
  *		Keywords: <keywords>
  *		Creator: <creator>
  *		Producer: <producer>
@@ -27,10 +27,10 @@
  *	pdfbox-app.jar, version 2
  *  Exit Status:
  *	0	wrote all metadata to stdout
- *	1	wrote all but at least on violating metadata to standard out
- *	2	load of pdf failed
- *	3	wrong number of command line arguments
- *	4	unexpected java exception.
+ *	2	loaded ok but violation of database constraints
+ *	3	load of pdf failed
+ *	4	invocation error
+ *	5	unexpected java exception.
  *  Note:
  *	Consider framing the mime headers with Begin/End:
  *
@@ -50,6 +50,10 @@ public class putPDDocumentInformation
 {
 	static int violates_constraint = 0;
 
+	/*
+	 *  The constraints are inherited from the database schema
+	 *  for the table pdfbox.pddocument_information.
+	 */
 	private static String frisk(String s)
 	{
 		if (s == null)
@@ -112,7 +116,7 @@ public class putPDDocumentInformation
 			df.parse(d);
 
 		} catch (java.text.ParseException e) {
-			violates_constraint = 1;
+			violates_constraint = 2;
 			return;
 		}
 
@@ -125,7 +129,7 @@ public class putPDDocumentInformation
 			System.err.println("ERROR: " +
 				putPDDocumentInformation.class.getName() +
 				   ": wrong number of arguments");
-			System.exit(3);
+			System.exit(4);
 		}
 
 		PDDocument doc = null;
@@ -146,7 +150,7 @@ public class putPDDocumentInformation
 				System.err.println("ERROR: load: " +
 				      putPDDocumentInformation.class.getName() +
 								": " + el);
-				System.exit(2);
+				System.exit(3);
 			}
 			info = doc.getDocumentInformation();
 
@@ -166,7 +170,7 @@ public class putPDDocumentInformation
 			System.err.println("ERROR: get: " +
 				putPDDocumentInformation.class.getName() +
 				   	": " + e);
-			System.exit(4);
+			System.exit(5);
 
 		} finally {
 			if (doc != null)
