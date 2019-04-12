@@ -72,7 +72,7 @@ esac
 
 java -cp $CLASSPATH putPDDocument <$TMP_BLOB >$TMP_ROW 2>$TMP_STDERR
 EXIT_STATUS=$?
-test -e $TMP_STDERR || die "write to temp failed: $TMP_STDERR"
+test -e $TMP_STDERR || die "write to temp failed: $TMP_STDERR" 5
 cat $TMP_STDERR >&2
 
 if [ $EXIT_STATUS != 0 ];  then
@@ -83,7 +83,7 @@ if [ $EXIT_STATUS != 0 ];  then
 		--udig $STDERR_UDIG					\
 		--input-path $TMP_STDERR				\
 		--service $BLOBIO_SERVICE				||
-		die "blobio put stderr failed: exit status=$?"
+		die "blobio put stderr failed: exit status=$?" 4
 
 	$PSQL <<END || die "psql insert fault failed: exit status=$?" 6
 INSERT INTO pdfbox.fault_pddocument (
