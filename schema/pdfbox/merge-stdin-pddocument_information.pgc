@@ -125,10 +125,7 @@ scan(
 
 		peek_len = q - peek_arr;
 		input = ++p;
-write(2, "WTF: peek_field=", 16);  write(2, peek_field_name, strlen(peek_field_name));  write(2, "\n", 1);
-write(2, "WTF: peek_arr=", 14);  write(2, peek_arr, strlen(peek_arr)); write(2, "\n", 1);
 	}
-write(2, "WTF: field_name=", 16);  write(2, field_name, strlen(field_name)); write(2, "\n", 1);
 
 	//  is this the field we are looking for?
 
@@ -140,8 +137,6 @@ write(2, "WTF: field_name=", 16);  write(2, field_name, strlen(field_name)); wri
 	*is_null = 0;
 
 	peek_len = -1;
-
-write(2, "WTF: copied\n", 11);
 }
 
 int
