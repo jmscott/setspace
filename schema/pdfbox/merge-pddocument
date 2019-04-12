@@ -6,7 +6,7 @@
 #	merge-pddocument <udig>
 #  Exit Status:
 #	0	ok, extracted pddocument info and stored into PostgreSQL
-#	1	pdf load failed (but still stored in PG)
+#	1	pdf load failed
 #	2	blob does not exist
 #	3	script invocation error 
 #	4	unexpected blobio error
@@ -21,7 +21,7 @@
 #
 
 PROG=merge-pddocument
-BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
+GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 TMPDIR=${TMPDIR:=/tmp}
 PSQL='psql --no-psqlrc --quiet'
 ALGORITHM=${BLOBIO_ALGORITHM:=bc160}
@@ -53,7 +53,7 @@ UDIG=$1
 
 #  fetch the pdf blob
 
-blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_GET_SERVICE
+blobio get --udig $UDIG --output-path $TMP_BLOB --service $GET_SERVICE
 STATUS=$?
 case $STATUS in
 0)
@@ -72,59 +72,46 @@ esac
 
 java -cp $CLASSPATH putPDDocument <$TMP_BLOB >$TMP_ROW 2>$TMP_STDERR
 EXIT_STATUS=$?
-case $EXIT_STATUS in
-0)
-	#  pdf loaded and scalars extracted
-	#  Note: are we reading UTF-8?
+test -e $TMP_STDERR || die "write to temp failed: $TMP_STDERR"
+cat $TMP_STDERR >&2
 
-	read								\
-		NUMBER_OF_PAGES						\
-		DOCUMENT_ID						\
-		VERSION							\
-		IS_ALL_SECURITY_TO_BE_REMOVED				\
-		IS_ENCRYPTED						\
-	<$TMP_ROW
-	;;
-2)
-	#  pdf load failed, but we merge a tuple anyway
-
-	EXIT_STATUS=1
-	NUMBER_OF_PAGES=null
-	DOCUMENT_ID=null
-	VERSION=null
-	IS_ALL_SECURITY_TO_BE_REMOVED=null
-	IS_ENCRYPTED=null
-	;;
-*)
-	#  a fault occured executing the java vm.
-	#  record the fault in the table fault_pddocument
-	test -e $TMP_STDERR || die "write to temp failed: $TMP_STDERR"
-
-	#  take the digest of the stderr
+if [ $EXIT_STATUS != 0 ];  then
 	STDERR_UDIG=$ALGORITHM:$(
-		blobio eat						\
-			--algorithm $ALGORITHM				\
-			--input-path $TMP_STDERR
+		blobio eat --algorithm $ALGORITHM --input-path $TMP_STDERR
 	)
-	STATUS=$?
-	test $STATUS = 0 || die "blobio eat stderr failed: exit status=$STATUS"
-	$PSQL <<END || die "psql insert fault failed: exit status=$?" 7
-INSERT INTO fault_pddocument(
+	blobio put							\
+		--udig $STDERR_UDIG					\
+		--input-path $TMP_STDERR				\
+		--service $BLOBIO_SERVICE				||
+		die "blobio put stderr failed: exit status=$?"
+
+	$PSQL <<END || die "psql insert fault failed: exit status=$?" 6
+INSERT INTO pdfbox.fault_pddocument (
 	blob,
 	exit_status,
-	stderr
-  ) VALUES (
-  	'$UDIG',
+	stderr_blob
+) VALUES (
+	'$UDIG',
 	$EXIT_STATUS,
 	'$STDERR_UDIG'
-  )
-  ON CONFLICT
-  	DO NOTHING
+) ON CONFLICT
+	DO NOTHING
 ;
 END
-	die "java putPDDocument failed: exit status=$EXIT_STATUS" 5
-	;;
-esac
+	test $EXIT_STATUS != 2 || die "java failed: exit status=$?" 5
+	exit 1
+fi
+
+#  pdf loaded and scalars extracted
+#  Note: are we reading UTF-8?
+
+read								\
+	NUMBER_OF_PAGES						\
+	DOCUMENT_ID						\
+	VERSION							\
+	IS_ALL_SECURITY_TO_BE_REMOVED				\
+	IS_ENCRYPTED						\
+<$TMP_ROW
 
 $PSQL <<EOF || die "psql insert failed: exit status=$?" 7
 
@@ -149,4 +136,4 @@ INSERT INTO
 
 EOF
 
-exit $EXIT_STATUS
+exit 0

@@ -35,32 +35,18 @@ CREATE TABLE pddocument
 	 *	> 0.  Instead, consider added a exit_status to indicate when
 	 *	number_of_pages is <= 0 and set number_of_pages to null.
 	 */
-	number_of_pages int,
+	number_of_pages int CHECK (
+				number_of_pages >= 0
+			) NOT NULL,
 
 	document_id	bigint,		-- is document_id always > 0
 
-	version		float,
+	version		float CHECK (
+				version > 0	
+			) NOT NULL,
 
-	is_all_security_to_be_removed	bool,
-	is_encrypted			bool,
-
-	CHECK  ((
-		number_of_pages >= 0
-		AND
-		version > 0
-		AND
-		is_all_security_to_be_removed IS NOT NULL
-		AND
-		is_encrypted IS NOT NULL
-	) OR (
-		number_of_pages IS NULL
-		AND
-		version IS NULL
-		AND
-		is_all_security_to_be_removed IS NULL
-		AND
-		is_encrypted IS NULL
-	))
+	is_all_security_to_be_removed	bool NOT NULL,
+	is_encrypted			bool NOT NULL
 );
 COMMENT ON TABLE pddocument IS
   'PDDocument scalar fields from Java Object'
@@ -84,7 +70,7 @@ CREATE TABLE fault_pddocument
 COMMENT ON TABLE fault_pddocument IS
   'Track process faults for java PDDocument calls' 
 ;
-REVOKE UPDATE ON PDDOCUMENT FROM public;
+REVOKE UPDATE ON fault_pddocument FROM public;
 
 CREATE OR REPLACE FUNCTION is_pddocument_disjoint() RETURNS TRIGGER
   AS $$
@@ -129,6 +115,66 @@ CREATE TRIGGER is_pddocument_disjoint AFTER INSERT ON pddocument
 CREATE TRIGGER is_pddocument_disjoint AFTER INSERT ON fault_pddocument
   FOR EACH ROW EXECUTE PROCEDURE is_pddocument_disjoint()
 ;
+
+/*
+ *  PDDocumentInformation scalar fields from Java Object
+ */
+DROP TABLE IF EXISTS pddocument_information CASCADE;
+CREATE TABLE pddocument_information
+(
+	blob			udig
+					REFERENCES setspace.service(blob)
+					ON DELETE CASCADE
+					PRIMARY KEY,
+	title			text CHECK (
+					length(title) < 32768
+				),
+	author			text CHECK (
+					length(author) < 32768
+				),
+	creation_date		timestamptz,
+	creator			text CHECK (
+					length(creator) < 32768
+				),
+
+	keywords		text CHECK (
+					length(keywords) < 32768
+				),
+	modification_date	timestamptz,
+	producer		text CHECK (
+					length(producer) < 32768
+				),
+	subject			text CHECK (
+					length(subject) < 32768
+				),
+	trapped			text CHECK (
+					length(trapped) < 32768
+				)
+);
+COMMENT ON TABLE pddocument_information IS
+  'PDDocumentInformation scalar fields from Java Object'
+;
+REVOKE UPDATE ON TABLE pddocument_information FROM public;
+CREATE TABLE fault_pddocument_information
+(
+	blob	udig
+			REFERENCES setspace.service(blob)
+			ON DELETE CASCADE
+			PRIMARY KEY,
+	exit_status	setspace.unix_process_exit_status CHECK (
+				exit_status > 0
+			)
+			NOT NULL,
+	stderr_blob	udig CHECK (
+				blob != stderr_blob
+			)
+);
+COMMENT ON TABLE fault_pddocument_information IS
+  'Track process faults for java PDDocumentInformation calls' 
+;
+REVOKE UPDATE ON fault_pddocument_information FROM public;
+
+\q
 
 /*
  *  Status of extraction process for utf8 text.
@@ -190,52 +236,6 @@ CREATE INDEX extract_page_utf8_page on extract_page_utf8(
 	page_blob
 );
 
-/*
- *  PDDocumentInformation scalar fields from Java Object
- */
-
-DROP TABLE IF EXISTS pddocument_information CASCADE;
-CREATE TABLE pddocument_information
-(
-	blob			udig
-					REFERENCES setspace.service(blob)
-					ON DELETE CASCADE
-					PRIMARY KEY,
-	exit_status		smallint check (
-					exit_status >= 0
-					AND
-					exit_status <= 255
-				)
-				NOT NULL,
-
-	title			text check (
-					length(title) < 32768
-				),
-	author			text check (
-					length(author) < 32768
-				),
-	creation_date		timestamptz,
-	creator			text check (
-					length(creator) < 32768
-				),
-
-	keywords		text check (
-					length(keywords) < 32768
-				),
-	modification_date	timestamptz,
-	producer		text check (
-					length(producer) < 32768
-				),
-	subject			text check (
-					length(subject) < 32768
-				),
-	trapped			text check (
-					length(trapped) < 32768
-				)
-);
-COMMENT ON TABLE pddocument_information IS
-  'PDDocumentInformation scalar fields from Java Object'
-;
 
 /*
  *  Job status of extraction process for of Pddocument Information Metadata.
