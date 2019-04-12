@@ -106,6 +106,7 @@ install: all
 		merge-pages_text_utf8					\
 		merge-pages_tsv_utf8					\
 		merge-pddocument					\
+		merge-pddocument_information				\
 		$(PDFBOX_PREFIX)/sbin
 
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m u=rx		\
