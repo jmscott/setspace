@@ -28,11 +28,11 @@ PROG=					\
 	spin-wait-blob
 
 all: $(PROG) $(CGI) 
-	cd schema;  $(MAKE) all
+	cd schema && $(MAKE) all
 
 clean:
 	rm -f $(PROG) $(CGI) spin-wait-blob.c
-	cd schema;  $(MAKE) clean
+	cd schema && $(MAKE) clean
 
 install: all
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
@@ -110,7 +110,7 @@ install: all
 		macosx.c						\
 		spin-wait-blob.pgc					\
 		$(SETSPACE_PREFIX)/src
-	cd schema && $(MAKE) $(MAKEFLAGS) install
+	cd schema && $(MAKE) install
 
 append-brr: append-brr.c common.c
 	cc $(CFLAGS) -o append-brr append-brr.c
@@ -143,7 +143,7 @@ spin-wait-blob:								\
 	rm spin-wait-blob.c
 
 distclean:
-	cd schema && $(MAKE) $(MAKEFLAGS) distclean
+	cd schema && $(MAKE) distclean
 	rm -rf $(SETSPACE_PREFIX)/bin
 	rm -rf $(SETSPACE_PREFIX)/sbin
 	rm -rf $(SETSPACE_PREFIX)/lib
@@ -151,7 +151,7 @@ distclean:
 	rm -rf $(SETSPACE_PREFIX)/sbin
 
 world:
-	$(MAKE) $(MAKEFLAGS) clean
-	$(MAKE) $(MAKEFLAGS) all
-	$(MAKE) $(MAKEFLAGS) distclean
-	$(MAKE) $(MAKEFLAGS) install
+	$(MAKE) clean
+	$(MAKE) all
+	$(MAKE) distclean
+	$(MAKE) install
