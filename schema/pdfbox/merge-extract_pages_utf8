@@ -27,6 +27,7 @@ PROG=merge-extract_pages_utf8
 BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 WORK_DIR=${TMPDIR:=/tmp}/$PROG.$$
 BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
+PSQL='--quiet --no-psqlrc'
 
 die()
 {
@@ -37,13 +38,14 @@ die()
 
 leave()
 {
+	#  uggh.  ok in modern unix to remove occupied directory.
 	rm -rf $WORK_DIR
 	false
 }
 
-trap leave EXIT SIGQUIT SIGTERM
+trap leave EXIT
 
-test $# = 1 || die 'wrong number of command line arguments' 2
+test $# = 1 || die "wrong number of arguments: got $#, expected 1" 2
 PDF_UDIG=$1
 
 mkdir -p $WORK_DIR || die "mkdir work $WORK_DIR failed: exit status=$?" 3
@@ -117,17 +119,6 @@ fi
 cat >merge.sql <<END || die "cat sql extract failed: exit status=$?" 6
 \\set ON_ERROR_STOP 1
 BEGIN;
-INSERT INTO pdfbox.extract_pages_utf8 (
-	blob,
-	exit_status,
-	stderr_blob
-) VALUES (
-	'$PDF_UDIG',
-	$EXIT_STATUS,
-	$STDERR_UDIG
-) ON CONFLICT
-	DO NOTHING
-;
 END
 
 #
@@ -175,7 +166,7 @@ END
 
 #  merge pdf blob and individual pages
 
-psql --file merge.sql --quiet --no-psqlrc 2>PSQL_ERR
+$PSQL --file merge.sql 2>PSQL_ERR
 STATUS=$?
 if [ $STATUS != 0 ];  then
 	test -s PSQL_ERR && cat PSQL_ERR
