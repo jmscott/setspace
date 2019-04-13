@@ -6,16 +6,12 @@
  *	defined in schema.mk.
  */
 set search_path to 
-	drblob,
+	setspace,
 	expat2,
 	jsonorg,
 	libxml2,
-	nistrand,
 	pdfbox,
-	pgtexts,
 	prefixio,
-	setspace,
-	udigset,
 	fffile,
 	public
 ;
