@@ -153,5 +153,7 @@ CREATE DOMAIN unix_process_exit_status AS int2
         value <= 255
   )
 ;
-
+COMMENT ON DOMAIN unix_process_exit_status IS
+  	'Exit status of Unix process'
+;
 COMMIT;
