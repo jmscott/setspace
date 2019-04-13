@@ -176,6 +176,7 @@ COMMENT ON TABLE fault_pddocument_information IS
   'Track process faults for java PDDocumentInformation calls' 
 ;
 REVOKE UPDATE ON fault_pddocument_information FROM public;
+
 CREATE OR REPLACE FUNCTION is_pddocument_information_disjoint() RETURNS TRIGGER
   AS $$
   DECLARE
@@ -203,7 +204,8 @@ CREATE OR REPLACE FUNCTION is_pddocument_information_disjoint() RETURNS TRIGGER
 		fault_pddocument_information_count f
 	;
 	IF in_both THEN
-		RAISE EXCEPTION 'blob in both pddocument_information and fault_pddocument_information';
+		RAISE EXCEPTION
+		'blob in both tables [fault_]pddocument_information';
 	END IF;
 	RETURN new;
   END $$
@@ -223,46 +225,18 @@ CREATE TRIGGER is_fault_pddocument_information_disjoint
 ;
 
 /*
- *  Status of extraction process for utf8 text.
- */
-DROP TABLE IF EXISTS extract_pages_utf8 CASCADE;
-CREATE TABLE extract_pages_utf8
-(
-	blob		udig
-				REFERENCES pddocument(blob)
-				ON DELETE CASCADE
-				PRIMARY KEY,
-
-	exit_status	smallint CHECK (
-				exit_status >= 0
-				AND
-				exit_status <= 255
-			),
-
-	stderr_blob	udig,
-
-	--  no quines
-	CONSTRAINT stderr_not_blob CHECK (
-		blob != stderr_blob
-	)
-);
-COMMENT ON TABLE extract_pages_utf8 IS
-  'Status of extraction process for utf8 text'
-;
-
-/*
  *  Track individual pages in a pdf blob
  */
 DROP TABLE IF EXISTS extract_page_utf8 CASCADE;
 CREATE TABLE extract_page_utf8
 (
 	pdf_blob	udig
-				REFERENCES extract_pages_utf8(blob)
+				REFERENCES pddocument(blob)
 				ON DELETE CASCADE,
 	page_blob	udig
 				NOT NULL,
 
-	page_number	int check (
+	page_number	int CHECK (
 				page_number > 0
 				AND
 
@@ -273,15 +247,81 @@ CREATE TABLE extract_page_utf8
 			) NOT NULL,
 
 	PRIMARY KEY	(pdf_blob, page_number)
-
 );
-COMMENT ON TABLE extract_pages_utf8 IS
+COMMENT ON TABLE extract_page_utf8 IS
   'Individual Pages of UTF8 Text extracted from parent pdf blob'
 ;
 CREATE INDEX extract_page_utf8_page on extract_page_utf8(
 	page_blob
 );
 
+DROP TABLE IF EXISTS fault_extract_page_utf8 CASCADE;
+CREATE TABLE fault_extract_page_utf8
+(
+	blob	udig
+			REFERENCES setspace.service(blob)
+			ON DELETE CASCADE
+			PRIMARY KEY,
+	exit_status	setspace.unix_process_exit_status CHECK (
+				exit_status > 0
+			)
+			NOT NULL,
+	stderr_blob	udig CHECK (
+				blob != stderr_blob
+			)
+);
+COMMENT ON TABLE fault_extract_page_utf8 IS
+  'Track process faults for java ExtractPagesUTF8 calls' 
+;
+REVOKE UPDATE ON fault_extract_page_utf8 FROM public;
+
+CREATE OR REPLACE FUNCTION is_extract_page_utf8_disjoint()
+  RETURNS TRIGGER
+  AS $$
+  DECLARE
+	in_both bool;
+  BEGIN
+
+	WITH extract_page_utf8_count AS (
+	  SELECT
+		count(*) AS count
+	  FROM
+		pdfbox.extract_page_utf8
+	  WHERE
+		blob = new.blob
+  	), fault_extract_page_utf8_count AS (
+	  SELECT
+		count(*) AS count
+	    FROM
+		pdfbox.fault_extract_page_utf8_count
+	    WHERE
+		blob = new.blob
+	  ) SELECT INTO in_both
+		(p.count + f.count) = 2
+	      FROM
+		extract_page_utf8_count p,
+		fault_extract_page_utf8_count f
+	;
+	IF in_both THEN
+		RAISE EXCEPTION
+			'blob in both tables [fault_]extract_page_utf8_count';
+	END IF;
+	RETURN new;
+  END $$
+  LANGUAGE plpgsql
+;
+COMMENT ON FUNCTION is_extract_page_utf8_disjoint IS
+  'Check the pdf is not in both tables [fault_]extract_page_utf8_count'
+;
+
+CREATE TRIGGER is_extract_page_utf8_disjoint
+  AFTER INSERT ON extract_page_utf8
+  FOR EACH ROW EXECUTE PROCEDURE is_extract_page_utf8_disjoint()
+;
+CREATE TRIGGER is_fault_extract_page_utf8_disjoint
+  AFTER INSERT ON fault_extract_page_utf8
+  FOR EACH ROW EXECUTE PROCEDURE is_extract_page_utf8_disjoint()
+;
 
 /*
  *  Job status of extraction process for of Pddocument Information Metadata.
