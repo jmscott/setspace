@@ -62,7 +62,7 @@ case $STATUS in
 	exit 2
 	;;
 *)
-	die 'blobio get failed' 4
+	die "blobio get pdf failed: exit status=$?" 4
 	;;
 esac
 
@@ -76,15 +76,20 @@ test -e $TMP_STDERR || die "write to temp failed: $TMP_STDERR" 5
 cat $TMP_STDERR >&2
 
 if [ $EXIT_STATUS != 0 ];  then
-	STDERR_UDIG=$ALGORITHM:$(
-		blobio eat --algorithm $ALGORITHM --input-path $TMP_STDERR
-	)
-	blobio put							\
-		--udig $STDERR_UDIG					\
-		--input-path $TMP_STDERR				\
-		--service $BLOBIO_SERVICE				||
-		die "blobio put stderr failed: exit status=$?" 4
-
+	if [ -s $TMP_STDERR ];  then
+		STDERR_UDIG=$ALGORITHM:$(
+			blobio eat 					\
+				-algorithm $ALGORITHM			\
+				--input-path $TMP_STDERR
+		)
+		blobio put						\
+			--udig $STDERR_UDIG				\
+			--input-path $TMP_STDERR			\
+			--service $BLOBIO_SERVICE			||
+			die "blobio put stderr failed: exit status=$?" 4
+	else
+		STDERR_UDIG=$(blobio empty --algorithm $ALGORITHM)
+	fi
 	$PSQL <<END || die "psql insert fault failed: exit status=$?" 6
 INSERT INTO pdfbox.fault_pddocument (
 	blob,
