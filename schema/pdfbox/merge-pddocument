@@ -70,7 +70,7 @@ esac
 #  0 with stderr is normal.  an exit status of 1 indicates a failed load
 #  of the pdf file.
 
-java -cp $CLASSPATH putPDDocument <$TMP_BLOB >$TMP_ROW 2>$TMP_STDERR
+java -server -cp $CLASSPATH putPDDocument <$TMP_BLOB >$TMP_ROW 2>$TMP_STDERR
 EXIT_STATUS=$?
 test -e $TMP_STDERR || die "write to temp failed: $TMP_STDERR" 5
 cat $TMP_STDERR >&2

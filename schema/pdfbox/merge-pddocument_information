@@ -71,8 +71,8 @@ esac
 #  0 with stderr is normal.  an exit status of 1 indicates a failed load
 #  of the pdf file.
 
-java <$TMP_BLOB							\
-	--server							\
+java <$TMP_BLOB								\
+	-server								\
 	-cp $CLASSPATH putPDDocumentInformation 			\
 	>$TMP_ROW 2>$TMP_STDERR
 EXIT_STATUS=$?
