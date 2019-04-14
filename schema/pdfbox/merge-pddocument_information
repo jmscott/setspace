@@ -34,7 +34,9 @@ TMP_ROW=${TMPDIR:=/tmp}/$PROG-$$.row
 
 leave()
 {
-	exit #rm -f $TMP_BLOB $TMP_STDERR $TMP_ROW
+	STATUS=$?
+	rm -f $TMP_BLOB $TMP_STDERR $TMP_ROW
+	exit $STATUS
 }
 trap leave EXIT
 
