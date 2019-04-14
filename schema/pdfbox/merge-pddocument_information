@@ -1,9 +1,9 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Extract the PDDocumentInformation scalars from PDF and merge into PG
+#	Extract and merge the PDDocumentInformation scalars from PDF.
 #  Usage:
-#	merge-pddocument <udig>
+#	merge-pddocument_information <udig>
 #  Exit Status:
 #	0	ok, extracted pddocument info and stored into PostgreSQL
 #	1	pdf load failed
@@ -63,7 +63,7 @@ case $STATUS in
 	exit 2
 	;;
 *)
-	die 'blobio get failed' 4
+	die "blobio get pdf failed: exit status=$?" 4
 	;;
 esac
 
@@ -71,20 +71,30 @@ esac
 #  0 with stderr is normal.  an exit status of 1 indicates a failed load
 #  of the pdf file.
 
-java -cp $CLASSPATH putPDDocumentInformation <$TMP_BLOB >$TMP_ROW 2>$TMP_STDERR
+java <$TMP_BLOB							\
+	--server							\
+	-cp $CLASSPATH putPDDocumentInformation 			\
+	>$TMP_ROW 2>$TMP_STDERR
 EXIT_STATUS=$?
 test -e $TMP_STDERR || die "java write to stderr failed" 5
 cat $TMP_STDERR >&2
 
+#  log the fault of the java invocation, including stderr.
 if [ $EXIT_STATUS != 0 ];  then
-	STDERR_UDIG=$ALGORITHM:$(
-		blobio eat --algorithm $ALGORITHM --input-path $TMP_STDERR
-	)
-	blobio put							\
-		--udig $STDERR_UDIG					\
-		--input-path $TMP_STDERR				\
-		--service $BLOBIO_SERVICE				||
-		die "blobio put stderr failed: exit status=$?" 4
+	if [ -s $TMP_STDERR ];  then
+		STDERR_UDIG=$ALGORITHM:$(
+			blobio eat					\
+				--algorithm $ALGORITHM			\
+				--input-path $TMP_STDERR
+		)
+		blobio put						\
+			--udig $STDERR_UDIG				\
+			--input-path $TMP_STDERR			\
+			--service $BLOBIO_SERVICE			||
+			die "blobio put stderr failed: exit status=$?" 4
+	else
+		STDERR_UDIG=$ALGORITHM:$(blobio empty --algorithm $ALGORITHM)
+	fi
 	$PSQL <<END || die "psql insert fault failed: exit status=$?" 6
 INSERT INTO pdfbox.fault_pddocument_information (
 	blob,
@@ -94,7 +104,9 @@ INSERT INTO pdfbox.fault_pddocument_information (
 	'$UDIG',
 	$EXIT_STATUS,
 	'$STDERR_UDIG'
-)
+  ON CONFLICT
+  	DO NOTHING
+);
 END
 	test $EXIT_STATUS = 2 || die "java failed: exit status=$EXIT_STATUS" 5
 	exit 1
