@@ -23,6 +23,7 @@
 #
 
 PROG=merge-pddocument_information
+PSQL='psql --no-psqlrc --quiet'
 BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 ALGORITHM=${BLOBIO_ALGORITHM:=bc160}
 
