@@ -6,13 +6,14 @@
 #	merge-pddocument_information <udig>
 #  Exit Status:
 #	0	ok, extracted pddocument info and stored into PostgreSQL
-#	1	pdf load failed
-#	2	blob does not exist
-#	3	invocation error
-#	4	unexpected blobio error
-#	5	unexpected java putPDDocument failed
-#	6	pg database error
-#	7	infomation data violates database constraint
+#	1	pdf load ok but some fields do satify database constraints.
+#	2	pdf load failed
+#	3	blob does not exist
+#	4	script invocation error
+#	5	unexpected blobio error
+#	6	unexpected java putPDDocument failed
+#	7	pg database error
+#	8	infomation data violates database constraint
 #  Environment:
 #	BLOBIO_ALGORITHM
 #	BLOBIO_SERVICE
@@ -33,8 +34,7 @@ TMP_ROW=${TMPDIR:=/tmp}/$PROG-$$.row
 
 leave()
 {
-	rm -f $TMP_BLOB $TMP_STDERR $TMP_ROW
-	true
+	exit #rm -f $TMP_BLOB $TMP_STDERR $TMP_ROW
 }
 trap leave EXIT
 
@@ -50,7 +50,7 @@ ERROR()
 	echo "$PROG: ERROR: $@" >&2
 }
 
-test $# = 1 || die "wrong number of arguments: got $#, expected 1" 3
+test $# = 1 || die "wrong number of arguments: got $#, expected 1" 4
 UDIG=$1
 
 #  fetch the pdf blob
@@ -64,7 +64,7 @@ case $STATUS in
 	exit 2
 	;;
 *)
-	die "blobio get pdf failed: exit status=$?" 4
+	die "blobio get pdf failed: exit status=$?" 5
 	;;
 esac
 
@@ -77,7 +77,7 @@ java <$TMP_BLOB								\
 	-cp $CLASSPATH putPDDocumentInformation 			\
 	>$TMP_ROW 2>$TMP_STDERR
 EXIT_STATUS=$?
-test -e $TMP_STDERR || die "java write to stderr failed" 5
+test -e $TMP_STDERR || die "java write to stderr failed" 6
 cat $TMP_STDERR >&2
 
 #  log the fault of the java invocation, including stderr.
@@ -92,11 +92,11 @@ if [ $EXIT_STATUS != 0 ];  then
 			--udig $STDERR_UDIG				\
 			--input-path $TMP_STDERR			\
 			--service $BLOBIO_SERVICE			||
-			die "blobio put stderr failed: exit status=$?" 4
+			die "blobio put stderr failed: exit status=$?" 5
 	else
 		STDERR_UDIG=$ALGORITHM:$(blobio empty --algorithm $ALGORITHM)
 	fi
-	$PSQL <<END || die "psql insert fault failed: exit status=$?" 6
+	$PSQL <<END || die "psql insert fault failed: exit status=$?" 7
 INSERT INTO pdfbox.fault_pddocument_information (
 	blob,
 	exit_status,
@@ -109,12 +109,11 @@ INSERT INTO pdfbox.fault_pddocument_information (
   	DO NOTHING
 ;
 END
-	test $EXIT_STATUS = 2 || die "java failed: exit status=$EXIT_STATUS" 5
+	test $EXIT_STATUS = 2 || die "java failed: exit status=$EXIT_STATUS" 6
 	exit 1
 fi
 
 merge-stdin-pddocument_information 					\
 	$UDIG								\
 	$(file-stat-size $TMP_ROW) <$TMP_ROW				||
-	die "merge-stdin-pddocument_information failed: exit status=$?" 6
-exit 0
+	die "merge-stdin-pddocument_information failed: exit status=$?" 7

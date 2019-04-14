@@ -11,8 +11,8 @@
  *		Keywords: <keywords>
  *		Creator: <creator>
  *		Producer: <producer>
- *		Creation Date: <creation date>
- *		Modification Date: <modification date>
+ *		Creation Date String: <creation date>
+ *		Modification Date String: <modification date>
  *		Trapped: <trapped>
  *
  *	The absence of a field implies a null value.
@@ -56,7 +56,7 @@ public class putPDDocumentInformation
 		    s.length() >= 32768				||
 		    s.indexOf("\0") > -1
 		) {
-			violates_constraint = 1;
+			violates_constraint = 2;
 			return null;
 		}
 		return s;
@@ -73,48 +73,9 @@ public class putPDDocumentInformation
 	{
 		if (cal == null)
 			return;
-
-		String timezone = "";
-
-		TimeZone tz = cal.getTimeZone();
-		if (tz != null) {
-			if (timezone == null || timezone == "unknown")
-				timezone = " UTC";
-			else
-				timezone = " " + timezone;
-		}
-
-		//  assemble reasonable YYYY/MM/DD hh:mm:ss z
-
-		String d = String.format(
-			"%4d/%02d/%02d %02d:%02d:%02d%s",
-			cal.get(Calendar.YEAR),
-			cal.get(Calendar.MONTH),
-			cal.get(Calendar.DAY_OF_MONTH),
-			cal.get(Calendar.HOUR_OF_DAY),
-			cal.get(Calendar.MINUTE),
-			cal.get(Calendar.SECOND),
-			timezone
-		);
-		if (frisk(d) == null )
-			return;
-
-		//  validate the date by reparsing the string
-		//  with a new non-linient DateParse Object.
-
-		SimpleDateFormat df = new SimpleDateFormat(
-						"yyyy/MM/dd HH:mm:ss z");
-		df.setLenient(false);
-		try
-		{
-			df.parse(d);
-
-		} catch (java.text.ParseException e) {
-			violates_constraint = 2;
-			return;
-		}
-
-		System.out.printf("%s Date: %s\n", what, d);
+		String val = cal.getTime().toString();
+		if (val != null)
+			System.out.printf("%s: %s\n", what, val);
 	}
 
 	public static void main(String[] args) throws Exception
@@ -155,8 +116,9 @@ public class putPDDocumentInformation
 			put("Creator", info.getCreator());
 			put("Producer", info.getProducer());
 
-			put("Creation", info.getCreationDate());
-			put("Modification", info.getModificationDate());
+			put("Creation Date String", info.getCreationDate());
+			put("Modification Date String",
+						info.getModificationDate());
 
 			put("Trapped", info.getTrapped());
 

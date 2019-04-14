@@ -8,7 +8,7 @@
  *  	2	number of bytes to read on the standard input
  *  Exit Status:
  *  	0	ok, tuple was merged
- *  	1	wrong number of arguments
+ *  	1	invocation error
  *  	2	can not parse input blob size
  *  	3	malloc() of input blob buffer failed
  *	4	read() of standard input failed
@@ -28,8 +28,8 @@
  *		Keywords: <keywords>
  *		Creator: <creator>
  *		Producer: <producer>
- *		Creation Date: <creation date>
- *		Modification Date: <modification date>
+ *		Creation Date String: <creation date>
+ *		Modification Date String: <modification date>
  *		Trapped: <trapped>
  *
  *	Any deviation from this order will causes unpredicatable
@@ -42,7 +42,7 @@
 static char progname[] = "merge-stdin-pddocument_information";
 
 #define EXIT_OK		0
-#define EXIT_BAD_ARGC	1
+#define EXIT_BAD_INVO	1
 #define EXIT_BAD_SIZE	2
 #define EXIT_BAD_MALLOC 3
 #define EXIT_BAD_READ	4
@@ -81,8 +81,8 @@ static char *input_limit = NULL;
  *	Keywords: <keywords>
  *	Creator: <creator>
  *	Producer: <producer>
- *	Creation Date: <creation date>
- *	Modification Date: <modification date>
+ *	Creation Date String: <creation date>
+ *	Modification Date String: <modification date>
  *	Trapped: <trapped>
  */
 static void
@@ -179,7 +179,7 @@ EXEC SQL BEGIN DECLARE SECTION;
 EXEC SQL END DECLARE SECTION;
 
 	if (argc != 3)
-		die(EXIT_BAD_ARGC, "wrong number of arguments");
+		die(EXIT_BAD_INVO, "wrong number of arguments");
 
 	close(1);
 
@@ -214,10 +214,10 @@ EXEC SQL END DECLARE SECTION;
 	scan("Keywords", keywords.arr, &keywords.len, &keywords_ind);
 	scan("Creator", creator.arr, &creator.len, &creator_ind);
 	scan("Producer", producer.arr, &producer.len, &producer_ind);
-	scan("Creation Date", creation_date.arr, &creation_date.len,
+	scan("Creation Date String", creation_date.arr, &creation_date.len,
 					&creation_date_ind);
-	scan("Modification Date", modification_date.arr, &modification_date.len,
-					&modification_date_ind);
+	scan("Modification Date String", modification_date.arr,
+				&modification_date.len, &modification_date_ind);
 	scan("Trapped", trapped.arr, &trapped.len, &trapped_ind);
 
 	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error(
@@ -234,10 +234,10 @@ EXEC SQL END DECLARE SECTION;
 		blob,
 		title,
 		author,
-		creation_date,
+		creation_date_string,
 		creator,
 		keywords,
-		modification_date,
+		modification_date_string,
 		producer,
 		subject,
 		trapped

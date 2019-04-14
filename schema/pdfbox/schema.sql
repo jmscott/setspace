@@ -143,11 +143,12 @@ CREATE TABLE pddocument_information
 					PRIMARY KEY,
 	title			dval32,
 	author			dval32,
-	creation_date		timestamptz,
+	creation_date_string	dval32,
 	creator			dval32,
 
 	keywords		dval32,
-	modification_date	timestamptz,
+	modification_date_string
+				dval32,
 	producer		dval32,
 	subject			dval32,
 	trapped			dval32
