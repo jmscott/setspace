@@ -105,9 +105,9 @@ INSERT INTO pdfbox.fault_pddocument_information (
 	'$UDIG',
 	$EXIT_STATUS,
 	'$STDERR_UDIG'
-  ON CONFLICT
+  ) ON CONFLICT
   	DO NOTHING
-);
+;
 END
 	test $EXIT_STATUS = 2 || die "java failed: exit status=$EXIT_STATUS" 5
 	exit 1
