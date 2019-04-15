@@ -66,7 +66,7 @@ case $STATUS in
 	exit 2
 	;;
 *)
-	die "blobio get pdf failed: exit status=$?" 5
+	die "blobio get pdf failed: exit status=$STATUS" 5
 	;;
 esac
 
