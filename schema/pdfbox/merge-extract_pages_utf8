@@ -144,8 +144,7 @@ find . -name '*.txt' -print | sort | while read TXT;  do
 	STATUS=$?
 	test $STATUS = 0 || die "blobio put txt failed: exit status=$STATUS" 3
 
-	PAGE_NUMBER=$(expr $PAGE_NUMBER + 1)
-	cat >>merge.sql <<END || die "cat sql txt failed: exit status=$?" 2
+	echo $PAGE_UDIG >$(basename $TXT .txt).udig
 
 INSERT INTO pdfbox.extract_pages_utf8 (
 	pdf_blob,
