@@ -38,7 +38,7 @@ die()
 leave()
 {
 	STATUS=$?
-	cd .. && rm -rf $WORK_DIR
+	#cd .. && rm -rf $WORK_DIR
 	exit $STATUS
 }
 
@@ -115,6 +115,11 @@ fi
 cat >merge.sql <<END || die "cat sql extract failed: exit status=$?" 2
 \\set ON_ERROR_STOP 1
 BEGIN;
+CREATE TEMP TABLE pdf_page_text
+(
+	txt	text
+);
+
 END
 
 #
@@ -141,6 +146,7 @@ find . -name '*.txt' -print | sort | while read TXT;  do
 
 	PAGE_NUMBER=$(expr $PAGE_NUMBER + 1)
 	cat >>merge.sql <<END || die "cat sql txt failed: exit status=$?" 2
+
 INSERT INTO pdfbox.extract_pages_utf8 (
 	pdf_blob,
 	page_blob,
@@ -152,11 +158,25 @@ INSERT INTO pdfbox.extract_pages_utf8 (
   ) ON CONFLICT
 	DO NOTHING
 ;
+\\set txt \`cat $TXT\`
+
+INSERT INTO pdfbox.page_text_utf8 (
+	pdf_blob,
+	page_number,
+	txt
+) SELECT
+	'$PDF_UDIG',
+	$PAGE_NUMBER,
+	':txt'
+    FROM
+    	pdf_page_text
+;
 END
 test $? || die "find/merge txt failed" 6
 done
 
 cat >>merge.sql <<END || die "cat sql commit failed: exit status=$?" 2
+
 COMMIT;
 END
 

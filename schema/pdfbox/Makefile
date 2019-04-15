@@ -117,8 +117,7 @@ install: all
 		ExtractKeywords.java					\
 		ExtractPagesUTF8.java					\
 		Makefile						\
-		merge-stdin-page_text_utf8.pgc				\
-		merge-stdin-page_tsv_utf8.pgc				\
+		merge-all-extract_pdf_ut8.pgc				\
 		merge-stdin-pddocument_information.pgc			\
 		merge-stdin-pddocument_information_metadata.pgc		\
 		putPDDocument.java					\

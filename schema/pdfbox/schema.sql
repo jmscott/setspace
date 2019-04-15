@@ -328,54 +328,6 @@ CREATE TRIGGER is_fault_extract_pages_utf8_disjoint
 ;
 
 /*
- *  Job status of extraction process for of Pddocument Information Metadata.
- */
-DROP TABLE IF EXISTS pddocument_information_metadata CASCADE;
-CREATE TABLE pddocument_information_metadata
-(
-	blob			udig
-					REFERENCES setspace.service(blob)
-					ON DELETE CASCADE
-					PRIMARY KEY,
-	exit_status		smallint check (
-					exit_status >= 0
-					AND
-					exit_status <= 255
-				)
-);
-COMMENT ON TABLE pddocument_information_metadata IS
-  'PDDocumentInformation metadata extraction job status'
-;
-
-/*
- *  PDDocumentInformation custom metadata fields string fields from Java Object
- */
-DROP TABLE IF EXISTS pddocument_information_metadata_custom CASCADE;
-CREATE TABLE pddocument_information_metadata_custom
-(
-	blob		udig
-				REFERENCES
-				   pddocument_information_metadata(blob)
-				ON DELETE CASCADE,
-	key		text check (
-				length(key) > 0
-				AND
-				length(key) < 256
-				AND
-				position(': ' in key) < 1
-				AND
-				position(E'\n' in key) < 1
-			),
-	value		text check (
-				position(E'\n' in value) < 1
-				AND
-				length(value) < 32768
-			) not null,
-
-	PRIMARY KEY	(blob, key)
-);
-
-/*
  *  Text of individual pages of a pdf blob
  */
 DROP TABLE IF EXISTS page_text_utf8 CASCADE;
@@ -403,25 +355,6 @@ CREATE TABLE page_text_utf8
 );
 COMMENT ON TABLE page_text_utf8 IS
   'Individual Pages of UTF8 Text extracted from a pdf blob'
-;
-
-DROP TABLE IF EXISTS merge_pages_text_utf8 CASCADE;
-CREATE TABLE merge_pages_text_utf8
-(
-	blob		udig
-				REFERENCES pddocument(blob)
-				ON DELETE CASCADE
-				PRIMARY KEY,
-	stderr_blob	udig,
-	exit_status	smallint check (
-				exit_status >= 0
-				AND
-				exit_status <= 255
-			) not null
-);
-
-COMMENT ON TABLE merge_pages_text_utf8 IS
-  'Exit Status of merge-pages_text_utf8 script'
 ;
 
 /*
@@ -469,29 +402,52 @@ COMMENT ON TABLE page_tsv_utf8 IS
   'Individual Pages of UTF8 Text extracted from a pdf blob'
 ;
 
-DROP TABLE IF EXISTS merge_pages_tsv_utf8 cascade;
-CREATE TABLE merge_pages_tsv_utf8
+/*
+ *  Job status of extraction process for of Pddocument Information Metadata.
+ */
+DROP TABLE IF EXISTS pddocument_information_metadata CASCADE;
+CREATE TABLE pddocument_information_metadata
+(
+	blob			udig
+					REFERENCES setspace.service(blob)
+					ON DELETE CASCADE
+					PRIMARY KEY,
+	exit_status		smallint check (
+					exit_status >= 0
+					AND
+					exit_status <= 255
+				)
+);
+COMMENT ON TABLE pddocument_information_metadata IS
+  'PDDocumentInformation metadata extraction job status'
+;
+
+/*
+ *  PDDocumentInformation custom metadata fields string fields from Java Object
+ */
+DROP TABLE IF EXISTS pddocument_information_metadata_custom CASCADE;
+CREATE TABLE pddocument_information_metadata_custom
 (
 	blob		udig
-				REFERENCES pddocument(blob)
-				ON DELETE CASCADE
-				PRIMARY KEY,
-	/*
-	 *  Note:
-	 *	stderr_blob currently ignored.
-	 *	eventually hoq will flow stdout/stderr of executed process,
-	 *	instead of just flowing the exit_status.
-	 */
-
-	stderr_blob	udig,
-	exit_status	smallint check (
-				exit_status >= 0
+				REFERENCES
+				   pddocument_information_metadata(blob)
+				ON DELETE CASCADE,
+	key		text check (
+				length(key) > 0
 				AND
-				exit_status <= 255
-			) not null
+				length(key) < 256
+				AND
+				position(': ' in key) < 1
+				AND
+				position(E'\n' in key) < 1
+			),
+	value		text check (
+				position(E'\n' in value) < 1
+				AND
+				length(value) < 32768
+			) not null,
+
+	PRIMARY KEY	(blob, key)
 );
-COMMENT ON TABLE merge_pages_tsv_utf8 IS
-  'Exit Status of merge-pages_tsv_utf8 script'
-;
 
 COMMIT;
