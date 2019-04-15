@@ -283,6 +283,9 @@ CREATE OR REPLACE FUNCTION is_extract_pages_utf8_disjoint()
 	in_both bool;
   BEGIN
 
+	/*
+	 *  Note: rewrite extract_pages_utf8_count with EXISTS.
+	 */
 	WITH extract_pages_utf8_count AS (
 	  SELECT
 		count(distinct pdf_blob) AS count
