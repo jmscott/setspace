@@ -12,10 +12,11 @@ JCOMPILED=								\
 	putPDDocumentInformationMetadata.class
 
 ECPG_COMPILED=								\
+	merge-all-extract_pages_utf8					\
 	merge-stdin-page_text_utf8					\
 	merge-stdin-page_tsv_utf8					\
 	merge-stdin-pddocument_information				\
-	merge-stdin-pddocument_information_metadata
+	merge-stdin-pddocument_information_metadata			\
 
 COMPILED=$(JCOMPILED) $(ECPG_COMPILED)
 
@@ -117,7 +118,7 @@ install: all
 		ExtractKeywords.java					\
 		ExtractPagesUTF8.java					\
 		Makefile						\
-		merge-all-extract_pdf_ut8.pgc				\
+		merge-all-extract_pages_utf8.pgc			\
 		merge-stdin-pddocument_information.pgc			\
 		merge-stdin-pddocument_information_metadata.pgc		\
 		putPDDocument.java					\
@@ -136,6 +137,15 @@ merge-stdin-pddocument_information:					\
 	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-pddocument_information.c	\
 		-o merge-stdin-pddocument_information -L$(PGLIB) -lecpg
 	rm merge-stdin-pddocument_information.c
+
+merge-all-extract_pages_utf8:						\
+		merge-all-extract_pages_utf8.pgc			\
+		../../common.c						\
+		../../common-ecpg.c
+	ecpg merge-all-extract_pages_utf8.pgc
+	$(CC) $(CFLAGS) -I$(PGINC) merge-all-extract_pages_utf8.c	\
+		-o merge-all-extract_pages_utf8 -L$(PGLIB) -lecpg
+	rm merge-all-extract_pages_utf8.c
 
 merge-stdin-pddocument_information_metadata:				\
 		merge-stdin-pddocument_information_metadata.pgc		\
