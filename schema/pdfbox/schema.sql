@@ -228,8 +228,8 @@ CREATE TRIGGER is_fault_pddocument_information_disjoint
 /*
  *  Track individual pages in a pdf blob
  */
-DROP TABLE IF EXISTS extract_page_utf8 CASCADE;
-CREATE TABLE extract_page_utf8
+DROP TABLE IF EXISTS extract_pages_utf8 CASCADE;
+CREATE TABLE extract_pages_utf8
 (
 	pdf_blob	udig
 				REFERENCES pddocument(blob)
@@ -246,18 +246,18 @@ CREATE TABLE extract_page_utf8
 
 				page_number <= 2603538
 			) NOT NULL,
+	CONSTRAINT not_quine CHECK (
+		pdf_blob != page_blob
+	),
 
 	PRIMARY KEY	(pdf_blob, page_number)
 );
-COMMENT ON TABLE extract_page_utf8 IS
-  'Individual Pages of UTF8 Text extracted from parent pdf blob'
+COMMENT ON TABLE extract_pages_utf8 IS
+  'Individual Pages of UTF8 Text extracted by java class ExtractPagesUTF8'
 ;
-CREATE INDEX extract_page_utf8_page on extract_page_utf8(
-	page_blob
-);
 
-DROP TABLE IF EXISTS fault_extract_page_utf8 CASCADE;
-CREATE TABLE fault_extract_page_utf8
+DROP TABLE IF EXISTS fault_extract_pages_utf8 CASCADE;
+CREATE TABLE fault_extract_pages_utf8
 (
 	blob	udig
 			REFERENCES setspace.service(blob)
@@ -271,57 +271,57 @@ CREATE TABLE fault_extract_page_utf8
 				blob != stderr_blob
 			)
 );
-COMMENT ON TABLE fault_extract_page_utf8 IS
+COMMENT ON TABLE fault_extract_pages_utf8 IS
   'Track process faults for java ExtractPagesUTF8 calls' 
 ;
-REVOKE UPDATE ON fault_extract_page_utf8 FROM public;
+REVOKE UPDATE ON fault_extract_pages_utf8 FROM public;
 
-CREATE OR REPLACE FUNCTION is_extract_page_utf8_disjoint()
+CREATE OR REPLACE FUNCTION is_extract_pages_utf8_disjoint()
   RETURNS TRIGGER
   AS $$
   DECLARE
 	in_both bool;
   BEGIN
 
-	WITH extract_page_utf8_count AS (
+	WITH extract_pages_utf8_count AS (
 	  SELECT
-		count(*) AS count
+		count(distinct pdf_blob) AS count
 	  FROM
-		pdfbox.extract_page_utf8
+		pdfbox.extract_pages_utf8
 	  WHERE
-		blob = new.blob
-  	), fault_extract_page_utf8_count AS (
+		pdf_blob = new.pdf_blob
+  	), fault_extract_pages_utf8_count AS (
 	  SELECT
 		count(*) AS count
 	    FROM
-		pdfbox.fault_extract_page_utf8_count
+		pdfbox.fault_extract_pages_utf8
 	    WHERE
-		blob = new.blob
+		blob = new.pdf_blob
 	  ) SELECT INTO in_both
 		(p.count + f.count) = 2
 	      FROM
-		extract_page_utf8_count p,
-		fault_extract_page_utf8_count f
+		extract_pages_utf8_count p,
+		fault_extract_pages_utf8_count f
 	;
 	IF in_both THEN
 		RAISE EXCEPTION
-			'blob in both tables [fault_]extract_page_utf8_count';
+		    'pdf blob in both tables [fault_]extract_pages_utf8_count';
 	END IF;
 	RETURN new;
   END $$
   LANGUAGE plpgsql
 ;
-COMMENT ON FUNCTION is_extract_page_utf8_disjoint IS
-  'Check the pdf is not in both tables [fault_]extract_page_utf8_count'
+COMMENT ON FUNCTION is_extract_pages_utf8_disjoint IS
+  'Check the pdf is not in both tables [fault_]extract_pages_utf8_count'
 ;
 
-CREATE TRIGGER is_extract_page_utf8_disjoint
-  AFTER INSERT ON extract_page_utf8
-  FOR EACH ROW EXECUTE PROCEDURE is_extract_page_utf8_disjoint()
+CREATE TRIGGER is_extract_pages_utf8_disjoint
+  AFTER INSERT ON extract_pages_utf8
+  FOR EACH ROW EXECUTE PROCEDURE is_extract_pages_utf8_disjoint()
 ;
-CREATE TRIGGER is_fault_extract_page_utf8_disjoint
-  AFTER INSERT ON fault_extract_page_utf8
-  FOR EACH ROW EXECUTE PROCEDURE is_extract_page_utf8_disjoint()
+CREATE TRIGGER is_fault_extract_pages_utf8_disjoint
+  AFTER INSERT ON fault_extract_pages_utf8
+  FOR EACH ROW EXECUTE PROCEDURE is_extract_pages_utf8_disjoint()
 ;
 
 /*
@@ -392,7 +392,7 @@ CREATE TABLE page_text_utf8
 				NOT NULL,
 	PRIMARY KEY	(pdf_blob, page_number),
 	FOREIGN KEY	(pdf_blob, page_number)
-				REFERENCES extract_page_utf8(
+				REFERENCES extract_pages_utf8(
 					pdf_blob,
 					page_number
 				)
@@ -452,7 +452,7 @@ CREATE TABLE page_tsv_utf8
 				NOT NULL,
 	PRIMARY KEY	(pdf_blob, page_number),
 	FOREIGN KEY	(pdf_blob, page_number)
-				REFERENCES extract_page_utf8(
+				REFERENCES extract_pages_utf8(
 					pdf_blob,
 					page_number
 				)

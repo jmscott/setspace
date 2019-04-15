@@ -1,12 +1,11 @@
 /*
  *  Synopsis:
- *	Extract utf8 individual pages into files from a pdf read on stdin.
+ *	Extract utf8 pages into files from a loadable pdf on read on stdin.
  *  Usage:
  *	java -cp $CLASSPATH ExtractPagesUTF8 <hamlet.pdf
  *	cat 0*.txt | shasum
  *  Exit Status:
  *	0	utf8 text extracted to files 0000001.txt to [0-9]{7}.txt
- *	1	extraction failed, some [0-9]{9}.txt may exist.
  *	2	permission denied to extract the text
  *	3	wrong number of arguments
  * Note:
@@ -39,8 +38,7 @@ public final class ExtractPagesUTF8
 			System.exit(3);
 		}
 
-    		PDDocument doc = null;
-                doc = PDDocument.load(System.in, "");
+                PDDocument doc = PDDocument.load(System.in);
  
                 if (!doc.getCurrentAccessPermission().canExtractContent())
 			System.exit(2);

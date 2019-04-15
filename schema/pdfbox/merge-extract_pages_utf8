@@ -1,17 +1,16 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Extract all pages from pdf and merge into tables extract_page[s]_utf8.
+#	Extract all pages from pdf and merge into tables extract_page_utf8.
 #  Usage:
 #	merge-extract_pages_utf8 <pdf blob>
 #  Exit Status
 #	0	pages merged ok
 #	1	pdf blob not found
-#	2	wrong number of command line arguments
-#	3	error accessing temporary work directory
-#	4	unexpected blobio error
-#	5	ExtractPagesUTF8.class failed
-#	6	unexpected error during sql merge 
+#	2	program invocation or setup error
+#	3	unexpected blobio error
+#	4	java ExtractPagesUTF8.class failed
+#	5	sql error
 #  Environment:
 #	BLOBIO_SERVICE
 #	BLOBIO_GET_SERVICE
@@ -25,9 +24,9 @@
 
 PROG=merge-extract_pages_utf8
 BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
-WORK_DIR=${TMPDIR:=/tmp}/$PROG.$$
+WORK_DIR=${TMPDIR:=/tmp}/$PROG.$$.d
 BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
-PSQL='--quiet --no-psqlrc'
+PSQL='psql --quiet --no-psqlrc'
 
 die()
 {
@@ -38,9 +37,9 @@ die()
 
 leave()
 {
-	#  uggh.  ok in modern unix to remove occupied directory.
-	rm -rf $WORK_DIR
-	false
+	STATUS=$?
+	cd .. && rm -rf $WORK_DIR
+	exit $STATUS
 }
 
 trap leave EXIT
@@ -71,52 +70,49 @@ esac
 #  extract individual pages into files 0000001.txt ... 0<number-pages>.txt
 
 java 									\
+	-server								\
 	-cp $CLASSPATH							\
-	-Dapple.awt.UIElement="true"					\
 	ExtractPagesUTF8						\
 	<$PDF 2>STDERR
+EXIT_STATUS=$?
+test -e $STDERR || die "java write to stderr failed" 6
+cat STDERR >&2
 
-STATUS=$?
-case $STATUS in
-0)
-	EXIT_STATUS=0
-	;;
-1|2)
-	#  load failed or permission denied to extract
-	EXIT_STATUS=$STATUS
-	;;
-*)
-	if [ -s STDERR ];  then
-		cat STDERR
+#  log the fault of the java invocation, including stderr.
+if [ $EXIT_STATUS != 0 ];  then
+	if [ -s $STDERR ];  then
+		STDERR_UDIG=$ALGORITHM:$(
+			blobio eat					\
+				--algorithm $ALGORITHM			\
+				--input-path $STDERR
+		)
+		blobio put						\
+			--udig $STDERR_UDIG				\
+			--input-path $STDERR				\
+			--service $BLOBIO_SERVICE			||
+			die "blobio put stderr failed: exit status=$?" 5
 	else
-		echo "$PROG: ERROR: unexpected empty stderr output" >&2
+		STDERR_UDIG=$ALGORITHM:$(blobio empty --algorithm $ALGORITHM)
 	fi
-	die "ExtractPagesUTF8 failed: exit status=$STATUS" 5
-	;;
-esac
-
-if [ -s STDERR ];  then
-	STDERR_UDIG=$BLOBIO_ALGORITHM:$(
-		blobio eat --algorithm $BLOBIO_ALGORITHM --input-path STDERR
-	)
-	STATUS=$?
-	test $STATUS = 0 ||
-		die "blobio eat stderr failed: exit status=$STATUS" 4
-	blobio put 							\
-		--udig $STDERR_UDIG					\
-		--input-path STDERR					\
-		--service $BLOBIO_SERVICE				|| \
-		die "blobio put STDERR failed: exit status=$?"
-	STDERR_UDIG="'$STDERR_UDIG'"
-else
-	#  Note: ought to be the empty digest, not null!
-
-	STDERR_UDIG=null
+	$PSQL <<END || die "psql insert fault failed: exit status=$?" 5
+INSERT INTO pdfbox.fault_extract_pages_utf8 (
+	blob,
+	exit_status,
+	stderr_blob
+) VALUES (
+	'$UDIG',
+	$EXIT_STATUS,
+	'$STDERR_UDIG'
+  ) ON CONFLICT
+  	DO NOTHING
+;
+END
+	die "java ExtractPagesUTF8 failed: exit status=$EXIT_STATUS" 4
 fi
 
 #  build the sql merge statements
 
-cat >merge.sql <<END || die "cat sql extract failed: exit status=$?" 6
+cat >merge.sql <<END || die "cat sql extract failed: exit status=$?" 2
 \\set ON_ERROR_STOP 1
 BEGIN;
 END
@@ -134,18 +130,18 @@ find . -name '*.txt' -print | sort | while read TXT;  do
 		blobio eat --algorithm $BLOBIO_ALGORITHM --input-path $TXT
 	)
 	STATUS=$?
-	test $STATUS = 0 || die "blobio eat txt failed: exit status=$STATUS" 4
+	test $STATUS = 0 || die "blobio eat txt failed: exit status=$STATUS" 3
 
 	blobio put							\
 		--input-path $TXT					\
 		--udig $PAGE_BLOB					\
 		--service $BLOBIO_SERVICE
 	STATUS=$?
-	test $STATUS = 0 || die "blobio put txt failed: exit status=$STATUS" 4
+	test $STATUS = 0 || die "blobio put txt failed: exit status=$STATUS" 3
 
 	PAGE_NUMBER=$(expr $PAGE_NUMBER + 1)
-	cat >>merge.sql <<END || die "cat sql txt failed: exit status=$?" 6
-INSERT INTO pdfbox.extract_page_utf8 (
+	cat >>merge.sql <<END || die "cat sql txt failed: exit status=$?" 2
+INSERT INTO pdfbox.extract_pages_utf8 (
 	pdf_blob,
 	page_blob,
 	page_number
@@ -153,14 +149,14 @@ INSERT INTO pdfbox.extract_page_utf8 (
 	'$PDF_UDIG',
 	'$PAGE_BLOB',
 	$PAGE_NUMBER
-) ON CONFLICT
+  ) ON CONFLICT
 	DO NOTHING
 ;
 END
 test $? || die "find/merge txt failed" 6
 done
 
-cat >>merge.sql <<END || die "cat sql commit failed: exit status=$?" 6
+cat >>merge.sql <<END || die "cat sql commit failed: exit status=$?" 2
 COMMIT;
 END
 
@@ -168,15 +164,5 @@ END
 
 $PSQL --file merge.sql 2>PSQL_ERR
 STATUS=$?
-if [ $STATUS != 0 ];  then
-	test -s PSQL_ERR && cat PSQL_ERR
-	die "psql failed: exit status=$STATUS" 6
-fi
-	
-if [ -s PSQL_ERR ];  then
-	echo "$PROG: ERROR: psql merge failed: stderr follows"
-	cat PSQL_ERR >&2
-	exit 6
-fi
-
-exit 0
+cat PSQL_ERR
+test $STATUS = 0 || die "psql insert pages failed: exist status=$STATUS" 5
