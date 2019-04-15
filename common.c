@@ -16,6 +16,7 @@
  *  Note:
  *	Rename common.c to unistd.c or common-cli.c?
  */
+#include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
@@ -206,6 +207,52 @@ again:
 #endif
 
 /*
+ *  To include _slurp() add the following to source which includes
+ *  this file:
+ *
+ *	#define COMMON_NEED_SLURP
+ */
+#ifdef COMMON_NEED_SLURP
+
+/*
+ *  slurp a stable file into a buffer, dieing if the buffer is too small.
+ */
+static int
+_slurp(char *path, void *buf, ssize_t buf_size)
+{
+	struct stat st;
+	_stat(path, &st);
+	if (st.st_size > buf_size)
+		die(EXIT_BAD_SLURP, "file b
+
+	int fd = _open(path, O_RDONLY, 0);
+	int nread = 0, nr;
+again:
+	if (size - nread == 0)
+		return nread;
+	nr = _read(fd, blob + nread, size - nread);
+	if (nr == 0) {
+		if (
+		return nread;
+
+	if (nr + nread > size)
+	if (nr > 0) {
+		nread += nr;
+		if (nread < size)
+			goto again;
+	}
+	if (nread < size)
+		die(EXIT_BLOB_SMALL, "blob too small");
+	/*
+	 * Verify no bytes remain
+	 */
+	if (_read(fd, blob, 1) != 0)
+		die(EXIT_BLOB_BIG, "blob too big");
+}
+
+#endif
+
+/*
  *  To include _write() add the following to source which includes
  *  this file:
  *
@@ -271,8 +318,8 @@ _open(char *path, int oflag, int mode)
  *  To include _close() add the following to source which includes
  *  this file:
  *
- *	#define COMMON_NEED_OPEN
- *	#define EXIT_BAD_OPEN 4		//  any code is ok
+ *	#define COMMON_NEED_CLOSE
+ *	#define EXIT_BAD_CLOSE 4		//  any code is ok
  */
 #ifdef COMMON_NEED_CLOSE
 
@@ -289,6 +336,39 @@ _close(int fd)
 			goto again;
 		die2(EXIT_BAD_CLOSE, "close() failed", strerror(errno));
 	}
+}
+
+#endif
+
+/*
+ *  To include _stat() add the following to source which includes
+ *  this file:
+ *
+ *	#define COMMON_NEED_STAT
+ *	#define EXIT_BAD_STAT 4		//  any code is ok
+ */
+#ifdef COMMON_NEED_STAT
+
+#include <sys/stat.h>
+
+/*
+ *  stat() a file descriptor, abort on error.
+ *  return 1 if the file exists, 0 otherwise.
+ *  otherwise return the size of the file. 
+ */
+static int
+_stat(char *path, struct stat *st)
+{
+	again:
+
+	if (stat(path, st) < 0) {
+		if (errno == EINTR)
+			goto again;
+		if (errno == ENOENT)
+			return 0;
+		die2(EXIT_BAD_STAT, "stat() failed", strerror(errno));
+	}
+	return 1;
 }
 
 #endif
