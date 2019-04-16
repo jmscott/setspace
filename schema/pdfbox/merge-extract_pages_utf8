@@ -3,7 +3,7 @@
 #  Synopsis:
 #	Extract all pages from pdf and merge into tables extract_page_utf8.
 #  Usage:
-#	merge-extract_pages_utf8 <pdf blob>
+#	merge-extract_pages_utf8 <pdf blob> english
 #  Exit Status
 #	0	pages merged ok
 #	1	pdf blob not found
@@ -11,21 +11,27 @@
 #	3	unexpected blobio error
 #	4	java ExtractPagesUTF8.class failed
 #	5	sql error
+#
 #  Environment:
-#	BLOBIO_SERVICE
+#	BLOBIO_SERVICE		#  required
 #	BLOBIO_GET_SERVICE
+#	BLOBIO_ALGORITHM
 #	TMPDIR
+#
+#  Java Classes:
+#	import org.apache.pdfbox.io.IOUtils;
+#	import org.apache.pdfbox.pdmodel.PDDocument;
+#	import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
+#	import org.apache.pdfbox.text.PDFTextStripper;
 #  Note:
-#	Upon error page blobs may be orphaned.
-#	Interesting problem.  Since blobio has no notion of a link count,
-#	difficult to simply remove the blob upon error, since another data
-#	structure may be dependent the blob.
+#	Page blobs may be orphaned if the transaction if aborted.
+#	Perhaps a json blob summarizing the transaction should be created.
 #
 
 PROG=merge-extract_pages_utf8
-BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
+GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 WORK_DIR=${TMPDIR:=/tmp}/$PROG.$$.d
-BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
+ALGORITHM=${BLOBIO_ALGORITHM:=bc160}
 PSQL='psql --quiet --no-psqlrc'
 
 die()
@@ -44,16 +50,17 @@ leave()
 
 trap leave EXIT
 
-test $# = 1 || die "wrong number of arguments: got $#, expected 1" 2
+test $# = 2 || die "wrong number of arguments: got $#, expected 2" 2
 PDF_UDIG=$1
+TS_CONF=$2
 
-mkdir -p $WORK_DIR || die "mkdir work $WORK_DIR failed: exit status=$?" 3
-cd $WORK_DIR || die "cd work $WORK_DIR failed: exit status=$?" 3
+mkdir -p $WORK_DIR || die "mkdir work $WORK_DIR failed: exit status=$?" 2
+cd $WORK_DIR || die "cd work $WORK_DIR failed: exit status=$?" 2
 
 #  fetch the pdf blob into work directory
 
 PDF=$PDF_UDIG.pdf
-blobio get --udig $PDF_UDIG --output-path $PDF --service $BLOBIO_GET_SERVICE
+blobio get --udig $PDF_UDIG --output-path $PDF --service $GET_SERVICE
 STATUS=$?
 
 case $STATUS in
@@ -63,11 +70,12 @@ case $STATUS in
 	exit 1
 	;;
 *)
-	die "blobio get failed: exit status=$?" 4
+	die "blobio get pdf failed: exit status=$?" 3
 	;;
 esac
 
-#  extract individual pages into files 0000001.txt ... 0<number-pages>.txt
+#  let pdfbox extract individual pages into files 0000001.txt, 0000002.txt ...
+#  write digest for page in 0000001.udig, 0000002.udig
 
 java 									\
 	-server								\
@@ -75,7 +83,7 @@ java 									\
 	ExtractPagesUTF8						\
 	<$PDF 2>STDERR
 EXIT_STATUS=$?
-test -e $STDERR || die "java write to stderr failed" 6
+test -e $STDERR || die "java write to stderr failed" 
 cat STDERR >&2
 
 #  log the fault of the java invocation, including stderr.
@@ -86,11 +94,13 @@ if [ $EXIT_STATUS != 0 ];  then
 				--algorithm $ALGORITHM			\
 				--input-path $STDERR
 		)
+		test $? = 0 || die "blobio eat stderr failed: exit status=$?"
+
 		blobio put						\
 			--udig $STDERR_UDIG				\
 			--input-path $STDERR				\
 			--service $BLOBIO_SERVICE			||
-			die "blobio put stderr failed: exit status=$?" 5
+			die "blobio put stderr failed: exit status=$?" 3
 	else
 		STDERR_UDIG=$ALGORITHM:$(blobio empty --algorithm $ALGORITHM)
 	fi
@@ -110,78 +120,48 @@ END
 	die "java ExtractPagesUTF8 failed: exit status=$EXIT_STATUS" 4
 fi
 
-#  build the sql merge statements
+#  loop through the page files to put the blobs and record udigs in <page>.udig
 
-cat >merge.sql <<END || die "cat sql extract failed: exit status=$?" 2
-\\set ON_ERROR_STOP 1
-BEGIN;
-CREATE TEMP TABLE pdf_page_text
-(
-	txt	text
-);
+find . -maxdepth 1 -name '[0-9][0-9][0-9][0-9][0-9][0-9][0-9].txt' -type f   |
+  while read PAGE_PATH;  do
 
-END
+	#  calculate the digest of the page of text
 
-#
-#  Put the individual page blobs and build the sql script.
-#
-#  Note:
-#	Upon error the page blobs might become orphaned.
-#
-
-PAGE_NUMBER=0
-find . -name '*.txt' -print | sort | while read TXT;  do
-	PAGE_BLOB=$BLOBIO_ALGORITHM:$(
-		blobio eat --algorithm $BLOBIO_ALGORITHM --input-path $TXT
+	PAGE_UDIG=$ALGORITHM:$(
+		blobio eat						\
+			--input-path $PAGE_PATH				\
+			--algorithm $ALGORITHM
 	)
-	STATUS=$?
-	test $STATUS = 0 || die "blobio eat txt failed: exit status=$STATUS" 3
+	test $? = 0 || die "blobio eat page text failed: exit status=$?" 3
+
+	#  put the page of text to blob storage
 
 	blobio put							\
-		--input-path $TXT					\
-		--udig $PAGE_BLOB					\
-		--service $BLOBIO_SERVICE
-	STATUS=$?
-	test $STATUS = 0 || die "blobio put txt failed: exit status=$STATUS" 3
+		--input-path $PAGE_PATH					\
+		--udig $PAGE_UDIG					\
+		--service $BLOBIO_SERVICE				||
+		die "blobio put page failed: exit status=$?" 3
 
-	echo $PAGE_UDIG >$(basename $TXT .txt).udig
-
-INSERT INTO pdfbox.extract_pages_utf8 (
-	pdf_blob,
-	page_blob,
-	page_number
-) VALUES (
-	'$PDF_UDIG',
-	'$PAGE_BLOB',
-	$PAGE_NUMBER
-  ) ON CONFLICT
-	DO NOTHING
-;
-\\set txt \`cat $TXT\`
-
-INSERT INTO pdfbox.page_text_utf8 (
-	pdf_blob,
-	page_number,
-	txt
-) SELECT
-	'$PDF_UDIG',
-	$PAGE_NUMBER,
-	':txt'
-    FROM
-    	pdf_page_text
-;
-END
-test $? || die "find/merge txt failed" 6
+	UDIG_PATH=$(basename $PAGE_PATH .txt).udig
+	echo $PAGE_UDIG >$UDIG_PATH ||
+				die "echo udig > failed: exit status=$?" 2
 done
+STATUS=${PIPESTATUS[*]}
+case "$STATUS" in
+'0 0')
+	;;
+'0 2')
+	exit 2
+	;;
+'0 3')
+	exit 3
+	;;
+*)
+	die "find | page text failed: exit status=$STATUS" 2
+	;;
+esac
 
-cat >>merge.sql <<END || die "cat sql commit failed: exit status=$?" 2
+#  sql merge all pages, text, tsf in database in a single transaction
 
-COMMIT;
-END
-
-#  merge pdf blob and individual pages
-
-$PSQL --file merge.sql 2>PSQL_ERR
-STATUS=$?
-cat PSQL_ERR
-test $STATUS = 0 || die "psql insert pages failed: exist status=$STATUS" 5
+merge-all-extract_pages_utf8 $PDF_UDIG $TS_CONF ||
+	die "merge-all-extract_pages_utf8 failed: exit status=$?" 5

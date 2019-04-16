@@ -2,7 +2,7 @@
  *  Synopsis:
  *  	Merge pages in directory into extract_pages_utf8, page_{text,tsv}_utf8.
  *  Usage:
- *	merge-all-extract_pages_utf8 <udig> <tsv_config>
+ *	merge-all-extract_pages_utf8 <udig> <ts_conf>
  *  Arguments:
  *  	1	udig of the pdf blob
  *	2	tsv vector configuration
@@ -34,10 +34,7 @@ static char progname[] = "merge-all-extract_pages_utf8";
 #define EXIT_SQLERROR	4
 #define EXIT_SQLWARN	5
 
-#define COMMON_NEED_STAT 
-#define COMMON_NEED_READ_BLOB
-#define COMMON_NEED_OPEN
-#define COMMON_NEED_CLOSE
+#define COMMON_NEED_FILE_EXISTS
 #define COMMON_NEED_SLURP
 #define COMMON_NEED_IS_UDIG
 #include "../../common.c"
@@ -61,13 +58,13 @@ EXEC SQL BEGIN DECLARE SECTION;
 	char *pdf_blob;
 	char *txt = 0;
 	long txt_size = 0;
-	char *tsv_conf;
+	char *ts_conf;
 	char *page_udig = 0;
 	long page_udig_size = 0;
 	int page_number;
 EXEC SQL END DECLARE SECTION;
 
-	if (argc != 4)
+	if (argc != 3)
 		die(EXIT_BAD_INVO, "wrong number of arguments");
 
 	close(1);
@@ -75,14 +72,14 @@ EXEC SQL END DECLARE SECTION;
 	//  frisk the pdf udig from argv[1]
 
 	pdf_blob = argv[1];
-	if (_is_udig(pdf_blob))
+	if (!_is_udig(pdf_blob))
 		die2(EXIT_BAD_INVO, "syntax error in pdf udig", pdf_blob);
 
 	// the configuration for the text search vector
 
-	tsv_conf = argv[2];
-	if (!tsv_conf[0])
-		die(EXIT_BAD_INVO, "zero length tsv config");
+	ts_conf = argv[2];
+	if (!ts_conf[0])
+		die(EXIT_BAD_INVO, "zero length text search config");
 
 	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error(
 		(struct _ecpg_sql_state_fault *)0
@@ -101,6 +98,8 @@ EXEC SQL END DECLARE SECTION;
 		//  read the page txt into memory from, say, 0000009.txt
 
 		snprintf(path, sizeof path, "%07d.txt", page_number);
+		if (!_file_exists(path))
+			break;
 		nread = _slurp(path, (void **)&txt, &txt_size);
 		txt[nread] = 0;
 
@@ -109,33 +108,45 @@ EXEC SQL END DECLARE SECTION;
 		snprintf(path, sizeof path, "%07d.udig", page_number);
 		nread = _slurp(path, (void **)&page_udig, &page_udig_size);
 		page_udig[nread - 1] = 0;	//  terminate at new line
-		if (_is_udig(page_udig))
+		if (!_is_udig(page_udig))
 			die(EXIT_BAD_READ, "bad page text udig");
 
-		EXEC SQL
-		INSERT INTO pdfbox.extract_pages_utf8(
+		EXEC SQL INSERT INTO pdfbox.extract_pages_utf8(
 			pdf_blob,
 			page_blob,
 			page_number
-		) VALUES (
+		  ) VALUES (
 			:pdf_blob::udig,
 			:page_udig,
 			:page_number
-		) ON CONFLICT
+		  ) ON CONFLICT
 			DO NOTHING
 		;
 
-		EXEC SQL
-		INSERT INTO pdfbox.page_text_utf8(
+		EXEC SQL INSERT INTO pdfbox.page_text_utf8(
 			pdf_blob,
 			page_number,
 			txt
-	  	) VALUES (
+	  	  ) VALUES (
 			:pdf_blob::udig,
 			:page_number,
 			:txt
-	  	) ON CONFLICT
+	  	  ) ON CONFLICT
   			DO NOTHING
+		;
+
+		EXEC SQL INSERT INTO pdfbox.page_tsv_utf8(
+			pdf_blob,
+			page_number,
+			ts_conf,
+			tsv
+		  ) VALUES (
+			:pdf_blob::udig,
+			:page_number,
+			:ts_conf::regconfig,
+			to_tsvector(:ts_conf::regconfig, :txt)
+	  	  ) ON CONFLICT
+			DO NOTHING
 		;
 	}
 	EXEC SQL END TRANSACTION;
