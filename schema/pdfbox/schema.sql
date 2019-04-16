@@ -373,17 +373,18 @@ CREATE TABLE page_tsv_utf8
 
 				page_number <= 2603538
 			) NOT NULL,
-	ts_conf		text check (
-				--  verify the text ts_conf value is indeed
-				--  is a true regconfig.  really ugly.
-				--
-				--  Note:
-				--	Why does
-				--	   select ts_conf::regconfig::text
-				--	not return the schema qualified name?
-				--
+
+	ts_conf		text CHECK (
+				/*
+				 *  verify the text for ts_conf value is indeed
+				 *  a true regconfig.  horrendous.
+				 *
+				 *  Note:
+				 *	Why does select ts_conf::regconfig::text
+				 *	not return the schema qualified name?
+				 */
 				ts_conf = ts_conf::regconfig::text
-			),
+			) NOT NULL,
 	tsv		tsvector
 				NOT NULL,
 	PRIMARY KEY	(pdf_blob, page_number),
