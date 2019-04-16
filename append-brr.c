@@ -23,7 +23,7 @@
  *	setspace@gmail.com
  *  Note:
  *  	No syntax checking is done on the fields of the blob request record.
- *  	Only field sizes are checked.
+ *  	Only field sizes are checked.  In particular, use _is_udig() in common.c
  *
  *	O_CREAT must be an option on the file open, otherwise rolling the file
  *	is problemmatic.  For example, without O_CREAT, the following
