@@ -227,6 +227,10 @@ CREATE TRIGGER is_fault_pddocument_information_disjoint
 
 /*
  *  Track individual pages in a pdf blob
+ *
+ *  Note:
+ *	Consider constraint to insure pddocument.page_count matches
+ *	extracted pages.
  */
 DROP TABLE IF EXISTS extract_pages_utf8 CASCADE;
 CREATE TABLE extract_pages_utf8
