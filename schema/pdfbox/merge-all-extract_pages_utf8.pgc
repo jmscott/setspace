@@ -10,24 +10,26 @@
  *  	0	ok, all pages were merged
  *  	1	program invocation error
  *  	2	malloc() failed
- *	3	file system i/o error
+ *	3	error reading from file system
  *	4	sql error
  *	5	sql warning
  */
 
-static char progname[] = "merge-stdin-page_text_utf8";
+static char progname[] = "merge-all-extract_pages_utf8";
 
 #define EXIT_OK		0
 #define EXIT_BAD_INVO	1
 #define EXIT_BAD_MALLOC 2
 
-//  map all i/o errors into same error code
+//  map all i/o errors onto error code 3
+
 #define EXIT_BAD_OPEN	3
 #define EXIT_BAD_READ	3
 #define EXIT_BLOB_SMALL	3
 #define EXIT_BLOB_BIG	3
 #define EXIT_BAD_STAT	3
 #define EXIT_BAD_CLOSE	3
+#define EXIT_BAD_SLURP	3
 
 #define EXIT_SQLERROR	4
 #define EXIT_SQLWARN	5
@@ -36,6 +38,8 @@ static char progname[] = "merge-stdin-page_text_utf8";
 #define COMMON_NEED_READ_BLOB
 #define COMMON_NEED_OPEN
 #define COMMON_NEED_CLOSE
+#define COMMON_NEED_SLURP
+#define COMMON_NEED_IS_UDIG
 #include "../../common.c"
 
 #define COMMON_ECPG_NEED_SQL_WARNING
@@ -53,13 +57,13 @@ static struct _ecpg_sql_state_fault no_warns[] =
 int
 main(int argc, char **argv)
 {
-	size_t len;
-
 EXEC SQL BEGIN DECLARE SECTION;
 	char *pdf_blob;
-	char *txt;
-	int txt_size;
+	char *txt = 0;
+	long txt_size = 0;
 	char *tsv_conf;
+	char *page_udig = 0;
+	long page_udig_size = 0;
 	int page_number;
 EXEC SQL END DECLARE SECTION;
 
@@ -68,14 +72,14 @@ EXEC SQL END DECLARE SECTION;
 
 	close(1);
 
-	//  parse the pdf udig from argv[1]
+	//  frisk the pdf udig from argv[1]
 
 	pdf_blob = argv[1];
-	len = strlen(pdf_blob);
-	if (len < 34 || len > 137 || strchr(pdf_blob, ':') == NULL)
+	if (_is_udig(pdf_blob))
 		die2(EXIT_BAD_INVO, "syntax error in pdf udig", pdf_blob);
 
-	// the text search configuration
+	// the configuration for the text search vector
+
 	tsv_conf = argv[2];
 	if (!tsv_conf[0])
 		die(EXIT_BAD_INVO, "zero length tsv config");
@@ -90,28 +94,36 @@ EXEC SQL END DECLARE SECTION;
 	 *  Merge blob into pdfbox.page_text_utf8 table.
 	 */
 	EXEC SQL BEGIN TRANSACTION;
-	for (int page = 1;  page < 2603538;  page++) {
-		char path[12];
-		struct stat st;
+	for (page_number = 1;  page_number < 2603538;  page_number++) {
+		char path[13];
+		int nread;
 
-		//  realloc the page txt buffer, if need be.
+		//  read the page txt into memory from, say, 0000009.txt
 
-		if (_stat(path, &st) == 0)
-			break;
-		if (st.st_size + 1 > txt_size) {
-			txt = realloc(txt, st.st_size + 1);
-			if (txt == NULL)
-				die(EXIT_BAD_MALLOC, "realloc(txt) failed");
-			txt_size = st.st_size + 1;
-		}
+		snprintf(path, sizeof path, "%07d.txt", page_number);
+		nread = _slurp(path, (void **)&txt, &txt_size);
+		txt[nread] = 0;
 
-		/*  slurp up the blob into memory. */
+		//  read udig of the text page from, say,  0000009.udig 
 
-		snprintf(path, sizeof path, "%07d.txt", page);
-		int txt_fd = _open(path, O_RDONLY, 0);
-		_read_blob(txt_fd, txt, st.st_size);
-		txt[txt_size] = 0;
-		_close(txt_fd);
+		snprintf(path, sizeof path, "%07d.udig", page_number);
+		nread = _slurp(path, (void **)&page_udig, &page_udig_size);
+		page_udig[nread - 1] = 0;	//  terminate at new line
+		if (_is_udig(page_udig))
+			die(EXIT_BAD_READ, "bad page text udig");
+
+		EXEC SQL
+		INSERT INTO pdfbox.extract_pages_utf8(
+			pdf_blob,
+			page_blob,
+			page_number
+		) VALUES (
+			:pdf_blob::udig,
+			:page_udig,
+			:page_number
+		) ON CONFLICT
+			DO NOTHING
+		;
 
 		EXEC SQL
 		INSERT INTO pdfbox.page_text_utf8(
@@ -122,8 +134,7 @@ EXEC SQL END DECLARE SECTION;
 			:pdf_blob::udig,
 			:page_number,
 			:txt
-	  	)
-  	  	ON CONFLICT
+	  	) ON CONFLICT
   			DO NOTHING
 		;
 	}
