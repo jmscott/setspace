@@ -6,33 +6,20 @@
  *	java object org.apache.pdfbox.pdmodel.PDDocumentInformation.
  *	The custom values are written in a mimeish format like:
  *
- *		Begin:
- *
- *		Key 1:+ <byte count>
- *
- *		<bytes>
- *
- *		Key 2: <value>
- *		End:
- *
- *	The length of the key value and <byte count> are unsigned ints
- *	0 < and <= 2^31 - 1.
+ *		<key1>: <value1>
+ *		<key2>: <value2>
+ *		<key3>: <value3>
  *  Usage:
  *	java putPDDocumentInformationMetadata <file.pdf
  *  Depends:
  *	pdfbox-app.jar, version 2
  *  Exit Status:
  *	0	extracted all custom metadata data and wrote to stdout
- *	1	wrote all but at least on violating metadata to standard out
- *	2	exception loadIng pdf from standard input
- *	3	wrong number of command line arguments
- *	4	unexpected java exception getting custom result set
+ *	2	wrote all but at least one violating metadata to standard out
+ *	3	could not load pdf from standard input
+ *	4	program invocation or setup error
+ *	5	unexpected java exception getting custom result set
  */
-import java.util.Calendar;
-import java.util.TimeZone;
-import java.text.SimpleDateFormat;
-import java.util.logging.Logger;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 
@@ -64,9 +51,11 @@ public class putPDDocumentInformationMetadata
 		if (key.length() >= 256				||
 		    key.indexOf(": ") > -1      		||
 		    key.indexOf("\n") > -1			||
+		    key.indexOf("\r") > -1			||
 		    key.indexOf("\0") > -1			||
 		    value.length() >= 32768			||
 		    value.indexOf("\n") > -1			||
+		    value.indexOf("\r") > -1			||
 		    value.indexOf("\0") > -1
 		) {
 			violated_constraint = 1;
@@ -78,14 +67,12 @@ public class putPDDocumentInformationMetadata
 	public static void main(String[] args) throws Exception
 	{
 		if (args.length != 0)
-			die("wrong number of arguments", 2);
+			die("wrong number of arguments", 4);
 
 		PDDocument doc = null;
 		PDDocumentInformation info;
 
 		try {
-			java.util.logging.Logger.getLogger("org.apache.pdfbox").
-				setLevel(java.util.logging.Level.SEVERE);
 			/*
 			 *  Note:
 			 *	BufferedInputStream makes no difference in
@@ -95,7 +82,7 @@ public class putPDDocumentInformationMetadata
 			try {
 				doc = PDDocument.load(System.in);
 			} catch (Exception ex) {
-				die("load", ex, 2);
+				die("load", ex, 3);
 			}
 			info = doc.getDocumentInformation();
 
@@ -103,7 +90,7 @@ public class putPDDocumentInformationMetadata
 				put(key, info.getCustomMetadataValue(key));
 
 		} catch (Exception ex) {
-			die("get", ex, 4);
+			die("get", ex, 5);
 		} finally {
 			if (doc != null)
 				doc.close();
