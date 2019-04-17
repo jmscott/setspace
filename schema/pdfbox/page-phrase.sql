@@ -42,7 +42,7 @@ WITH pdf_page_match AS (
   WHERE
   	tsv.tsv @@ q
 	AND
-	tsv.ts_conf = :ts_conf::text
+	tsv.ts_conf = :ts_conf::regconfig
   GROUP BY
   	1
   ORDER BY
@@ -79,7 +79,7 @@ WITH pdf_page_match AS (
 	    WHERE
   		tsv.tsv @@ q
 		AND
-		tsv.ts_conf = :ts_conf::text
+		tsv.ts_conf = :ts_conf::regconfig
 		AND
 		tsv.pdf_blob = pd.blob
 	    GROUP BY

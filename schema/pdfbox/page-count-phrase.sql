@@ -29,5 +29,5 @@ SELECT
   WHERE
   	tsv @@ q
 	AND
-	ts_conf = :ts_conf::text
+	ts_conf = :ts_conf::regconfig
 ;

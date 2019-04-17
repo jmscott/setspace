@@ -3,7 +3,7 @@
  *	Count pdfs that match a full text search query.
  *
  *  Command Line Variables:
- *	ts_query		text
+ *	ts_query	text
  *	ts_conf		text
  *
  *  Usage:
@@ -28,5 +28,5 @@ SELECT
   WHERE
   	tsv @@ q
 	AND
-	ts_conf = :ts_conf::text
+	ts_conf = :ts_conf::regconfig
 ;
