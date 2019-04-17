@@ -33,7 +33,7 @@
 #	1	psql internal error (e.g., out of memory)
 #	2	bad database connection
 #	3	error in sql script with ON_ERROR_STOP set
-#	4	incorrect command line argument
+#	4	script invocation or setup error
 #  Environment:
 #	PDFBOX_ROOT
 #	PostgreSQL PG* variables
@@ -83,7 +83,7 @@ arg_is_number()
 	[0-9]*)
 		;;
 	*)
-		die "$1 is not a number: $2"
+		die "$1 is not a number: $2" 4
 		;;
 	esac
 }
@@ -138,7 +138,7 @@ parse_query()
 	return 0
 }
 
-test -n "$PDFBOX_ROOT" || die 'environment not defined: PDFBOX_ROOT'
+test -n "$PDFBOX_ROOT" || die 'environment not defined: PDFBOX_ROOT' 4
 test $# -gt 1 || die 'wrong number of arguments' 4
 
 case "$1" in
