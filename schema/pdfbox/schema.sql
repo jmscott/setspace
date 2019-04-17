@@ -148,7 +148,8 @@ CREATE TABLE pddocument_information
 				dval32,
 	producer		dval32,
 	subject			dval32,
-	//  Note: add constraint for 'True', 'False', or 'Unknown'?
+
+	--  Note: add constraint for 'True', 'False', or 'Unknown'?
 	trapped			dval32
 );
 COMMENT ON TABLE pddocument_information IS
@@ -448,26 +449,6 @@ COMMENT ON TABLE page_tsv_utf8 IS
 ;
 
 /*
- *  Job status of extraction process for of Pddocument Information Metadata.
- */
-DROP TABLE IF EXISTS pddocument_information_metadata CASCADE;
-CREATE TABLE pddocument_information_metadata
-(
-	blob			udig
-					REFERENCES setspace.service(blob)
-					ON DELETE CASCADE
-					PRIMARY KEY,
-	exit_status		smallint check (
-					exit_status >= 0
-					AND
-					exit_status <= 255
-				)
-);
-COMMENT ON TABLE pddocument_information_metadata IS
-  'PDDocumentInformation metadata extraction job status'
-;
-
-/*
  *  PDDocumentInformation custom metadata fields string fields from Java Object
  */
 DROP TABLE IF EXISTS pddocument_information_metadata_custom CASCADE;
@@ -475,20 +456,39 @@ CREATE TABLE pddocument_information_metadata_custom
 (
 	blob		udig
 				REFERENCES
-				   pddocument_information_metadata(blob)
+				   pddocument_information(blob)
 				ON DELETE CASCADE,
-	key		text check (
-				length(key) > 0
-				AND
+	key		dval32 check (
 				length(key) < 256
 				AND
 				position(': ' in key) < 1
-				AND
-				position(E'\n' in key) < 1
 			) NOT NULL,
 	value		dval32 NOT NULL,
 
 	PRIMARY KEY	(blob, key)
 );
+COMMENT ON TABLE pddocument_information_metadata_custom IS
+  'Key/Value metadata fetched by java class PDDocumentInformation'
+;
+
+/*
+ *  Faults for invocation of PDDocumentInformation custom metadata.
+ */
+DROP TABLE IF EXISTS fault_pddocument_information_metadata_custom CASCADE;
+CREATE TABLE fault_pddocument_information_metadata_custom
+(
+	blob		udig
+				REFERENCES
+				   pddocument_information(blob)
+				ON DELETE CASCADE
+				PRIMARY KEY,
+	exit_status	setspace.unix_process_exit_status
+				NOT NULL,
+	stderr_blob	udig
+				NOT NULL
+);
+COMMENT ON TABLE fault_pddocument_information_metadata_custom IS
+  'Faults for Key/Value metadata fetched by java class PDDocumentInformation'
+;
 
 COMMIT;
