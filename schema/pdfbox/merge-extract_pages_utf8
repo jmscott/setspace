@@ -44,7 +44,7 @@ die()
 leave()
 {
 	STATUS=$?
-	#cd .. && rm -rf $WORK_DIR
+	cd .. && rm -rf $WORK_DIR
 	exit $STATUS
 }
 
