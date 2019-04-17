@@ -113,7 +113,7 @@ INSERT INTO pdfbox.fault_extract_pages_utf8 (
 	exit_status,
 	stderr_blob
 ) VALUES (
-	'$UDIG',
+	'$PDF_UDIG',
 	$EXIT_STATUS,
 	'$STDERR_UDIG'
   ) ON CONFLICT
