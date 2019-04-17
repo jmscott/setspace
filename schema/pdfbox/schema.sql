@@ -226,11 +226,11 @@ CREATE TRIGGER is_fault_pddocument_information_disjoint
 ;
 
 /*
- *  Track individual pages in a pdf blob
+ *  Track individual pages in a pdf blob.
  *
  *  Note:
  *	Consider constraint to insure pddocument.page_count matches
- *	extracted pages.
+ *	extracted pages.  Also need a constraint to insure
  */
 DROP TABLE IF EXISTS extract_pages_utf8 CASCADE;
 CREATE TABLE extract_pages_utf8
@@ -257,7 +257,7 @@ CREATE TABLE extract_pages_utf8
 	PRIMARY KEY	(pdf_blob, page_number)
 );
 COMMENT ON TABLE extract_pages_utf8 IS
-  'Individual Pages of UTF8 Text extracted by java class ExtractPagesUTF8'
+  'Pages of UTF8 Text extracted by java class ExtractPagesUTF8'
 ;
 
 DROP TABLE IF EXISTS fault_extract_pages_utf8 CASCADE;
@@ -436,12 +436,8 @@ CREATE TABLE pddocument_information_metadata_custom
 				position(': ' in key) < 1
 				AND
 				position(E'\n' in key) < 1
-			),
-	value		text check (
-				position(E'\n' in value) < 1
-				AND
-				length(value) < 32768
-			) not null,
+			) NOT NULL,
+	value		dval32 NOT NULL,
 
 	PRIMARY KEY	(blob, key)
 );
