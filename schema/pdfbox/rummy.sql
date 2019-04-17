@@ -34,7 +34,31 @@ SELECT
 		--  not in either [fault_]pddocument
 		(pd.blob IS NULL AND fpd.blob IS NULL)
 		OR
+
 		--  not in either [fault_]pddocument_information
 		(pdi.blob IS NULL AND fpdi.blob IS NULL)
+
+		--  exists in either tables pddocument or pddocument_information
+		--  but not in extract_pages_utf8 or fault_extract_pages_utf8.
+		OR
+		(
+			(pd.blob IS NOT NULL OR pdi.blob IS NOT NULL)
+			AND
+			NOT EXISTS (
+			  SELECT
+				page.pdf_blob
+			    FROM
+				pdfbox.extract_pages_utf8 page
+			    WHERE
+				page.pdf_blob = pre.blob
+			  UNION
+			  SELECT
+				flt.blob
+			    FROM
+				pdfbox.fault_extract_pages_utf8 flt
+			    WHERE
+				flt.blob = pre.blob
+			)
+		)
 	)
 ;
