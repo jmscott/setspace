@@ -148,6 +148,7 @@ CREATE TABLE pddocument_information
 				dval32,
 	producer		dval32,
 	subject			dval32,
+	//  Note: add constraint for 'True', 'False', or 'Unknown'?
 	trapped			dval32
 );
 COMMENT ON TABLE pddocument_information IS
