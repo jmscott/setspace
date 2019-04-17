@@ -24,6 +24,9 @@
 #	import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 #	import org.apache.pdfbox.text.PDFTextStripper;
 #  Note:
+#	Only faults of java ExtractPagesUTF8 are logged.  What happens
+#	if the sql insert fails?
+#
 #	Page blobs may be orphaned if the transaction if aborted.
 #	Perhaps a json blob summarizing the transaction should be created.
 #
