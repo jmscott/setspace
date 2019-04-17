@@ -54,8 +54,8 @@ leave()
 trap leave EXIT
 
 test $# = 2 || die "wrong number of arguments: got $#, expected 2" 2
-PDF_UDIG=$1
-TS_CONF=$2
+TS_CONF=$1
+PDF_UDIG=$2
 
 mkdir -p $WORK_DIR || die "mkdir work $WORK_DIR failed: exit status=$?" 2
 cd $WORK_DIR || die "cd work $WORK_DIR failed: exit status=$?" 2
