@@ -82,9 +82,9 @@ CREATE OR REPLACE FUNCTION is_pddocument_disjoint() RETURNS TRIGGER
 	WITH pddocument_count AS (
 	  SELECT
 		count(*) AS count
-	  FROM
+	    FROM
 		pdfbox.pddocument
-	  WHERE
+	    WHERE
 		blob = new.blob
   	), fault_pddocument_count AS (
 	  SELECT
@@ -111,9 +111,6 @@ COMMENT ON FUNCTION is_pddocument_disjoint IS
 ;
 
 CREATE TRIGGER is_pddocument_disjoint AFTER INSERT ON pddocument
-  FOR EACH ROW EXECUTE PROCEDURE is_pddocument_disjoint()
-;
-CREATE TRIGGER is_pddocument_disjoint AFTER INSERT ON fault_pddocument
   FOR EACH ROW EXECUTE PROCEDURE is_pddocument_disjoint()
 ;
 
@@ -322,13 +319,64 @@ COMMENT ON FUNCTION is_extract_pages_utf8_disjoint IS
   'Check the pdf is not in both tables [fault_]extract_pages_utf8_count'
 ;
 
+DROP TRIGGER IF EXISTS is_extract_pages_utf8_disjoint
+  ON
+  	extract_pages_utf8
+;
 CREATE TRIGGER is_extract_pages_utf8_disjoint
   AFTER INSERT ON extract_pages_utf8
   FOR EACH ROW EXECUTE PROCEDURE is_extract_pages_utf8_disjoint()
 ;
+
+CREATE OR REPLACE FUNCTION is_fault_extract_pages_utf8_disjoint()
+  RETURNS TRIGGER
+  AS $$
+  DECLARE
+	in_both bool;
+  BEGIN
+
+	/*
+	 *  Note: rewrite extract_pages_utf8_count with EXISTS.
+	 */
+	WITH extract_pages_utf8_count AS (
+	  SELECT
+		count(distinct pdf_blob) AS count
+	  FROM
+		pdfbox.extract_pages_utf8
+	  WHERE
+		pdf_blob = new.blob
+  	), fault_extract_pages_utf8_count AS (
+	  SELECT
+		count(*) AS count
+	    FROM
+		pdfbox.fault_extract_pages_utf8
+	    WHERE
+		blob = new.blob
+	  ) SELECT INTO in_both
+		(p.count + f.count) = 2
+	      FROM
+		extract_pages_utf8_count p,
+		fault_extract_pages_utf8_count f
+	;
+	IF in_both THEN
+		RAISE EXCEPTION
+		    'pdf blob in both tables [fault_]extract_pages_utf8_count';
+	END IF;
+	RETURN new;
+  END $$
+  LANGUAGE plpgsql
+;
+COMMENT ON FUNCTION is_fault_extract_pages_utf8_disjoint IS
+  'Check the pdf is not in both tables [fault_]extract_pages_utf8_count'
+;
+
+DROP TRIGGER IF EXISTS is_fault_extract_pages_utf8_disjoint
+  ON
+  	fault_extract_pages_utf8
+;
 CREATE TRIGGER is_fault_extract_pages_utf8_disjoint
   AFTER INSERT ON fault_extract_pages_utf8
-  FOR EACH ROW EXECUTE PROCEDURE is_extract_pages_utf8_disjoint()
+  FOR EACH ROW EXECUTE PROCEDURE is_fault_extract_pages_utf8_disjoint()
 ;
 
 /*
