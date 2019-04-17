@@ -19,6 +19,8 @@
  *	3	could not load pdf from standard input
  *	4	program invocation or setup error
  *	5	unexpected java exception getting custom result set
+ *  Note:
+ *	Test for duplicate keys in meta dictionary?
  */
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
