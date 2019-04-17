@@ -53,6 +53,7 @@ public class putPDDocumentInformation
 		if (s == null)
 			return null;
 		if (s.indexOf("\n") > -1			||
+		    s.indexOf("\r") > -1			||
 		    s.length() >= 32768				||
 		    s.indexOf("\0") > -1
 		) {
