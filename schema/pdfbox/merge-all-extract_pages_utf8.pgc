@@ -134,21 +134,28 @@ EXEC SQL END DECLARE SECTION;
 	  	  ) ON CONFLICT
   			DO NOTHING
 		;
-
-		EXEC SQL INSERT INTO pdfbox.page_tsv_utf8(
-			pdf_blob,
-			page_number,
-			ts_conf,
-			tsv
-		  ) VALUES (
-			:pdf_blob::udig,
-			:page_number,
-			:ts_conf::regconfig,
-			to_tsvector(:ts_conf::regconfig, :txt)
-	  	  ) ON CONFLICT
-			DO NOTHING
-		;
 	}
+	/*
+	 *  Refresh the text search vectors for all pages
+	 *  in the pdf file.
+	 */
+	EXEC SQL INSERT INTO pdfbox.page_tsv_utf8(
+		pdf_blob,
+		page_number,
+		ts_conf,
+		tsv
+	  ) SELECT
+	  	pdf_blob,
+		page_number,
+		:ts_conf::regconfig,
+		to_tsvector(:ts_conf::regconfig, txt)
+	      FROM
+	      	pdfbox.page_text_utf8
+	      WHERE
+	      	pdf_blob = :pdf_blob
+	  ON CONFLICT
+	  	DO NOTHING
+	;
 	EXEC SQL END TRANSACTION;
 
 	_exit(EXIT_OK);
