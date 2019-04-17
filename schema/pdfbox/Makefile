@@ -13,8 +13,6 @@ JCOMPILED=								\
 
 ECPG_COMPILED=								\
 	merge-all-extract_pages_utf8					\
-	merge-stdin-page_text_utf8					\
-	merge-stdin-page_tsv_utf8					\
 	merge-stdin-pddocument_information				\
 	merge-stdin-pddocument_information_metadata			\
 
@@ -104,8 +102,6 @@ install: all
 		append-pgtexts-brr					\
 		cron-append-pgtexts-brr					\
 		merge-extract_pages_utf8				\
-		merge-pages_text_utf8					\
-		merge-pages_tsv_utf8					\
 		merge-pddocument					\
 		merge-pddocument_information				\
 		$(PDFBOX_PREFIX)/sbin
@@ -157,25 +153,3 @@ merge-stdin-pddocument_information_metadata:				\
 		-o merge-stdin-pddocument_information_metadata		\
 		-L$(PGLIB) -lecpg
 	rm merge-stdin-pddocument_information_metadata.c
-
-merge-stdin-page_text_utf8:				\
-		merge-stdin-page_text_utf8.pgc		\
-		../../common.c						\
-		../../common-ecpg.c
-	ecpg merge-stdin-page_text_utf8.pgc
-	$(CC) $(CFLAGS) -I$(PGINC) 					\
-		merge-stdin-page_text_utf8.c		\
-		-o merge-stdin-page_text_utf8		\
-		-L$(PGLIB) -lecpg
-	rm merge-stdin-page_text_utf8.c
-
-merge-stdin-page_tsv_utf8:				\
-		merge-stdin-page_tsv_utf8.pgc		\
-		../../common.c						\
-		../../common-ecpg.c
-	ecpg merge-stdin-page_tsv_utf8.pgc
-	$(CC) $(CFLAGS) -I$(PGINC) 					\
-		merge-stdin-page_tsv_utf8.c		\
-		-o merge-stdin-page_tsv_utf8		\
-		-L$(PGLIB) -lecpg
-	rm merge-stdin-page_tsv_utf8.c

@@ -3,15 +3,12 @@ etc
 lib
 log
 merge-all-extract_pages_utf8
-merge-stdin-page_text_utf8
-merge-stdin-page_tsv_utf8
 merge-stdin-pddocument_information
 merge-stdin-pddocument_information_metadata
 profile
 putPDDocument.class
 putPDDocumentInformation.class
 putPDDocumentInformationMetadata.class
-restd-pdfbox
 run
 sbin
 schema
