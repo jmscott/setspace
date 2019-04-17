@@ -86,22 +86,22 @@ java 									\
 	ExtractPagesUTF8						\
 	<$PDF 2>STDERR
 EXIT_STATUS=$?
-test -e $STDERR || die "java write to stderr failed" 
+test -e STDERR || die "java write to stderr failed" 
 cat STDERR >&2
 
 #  log the fault of the java invocation, including stderr.
 if [ $EXIT_STATUS != 0 ];  then
-	if [ -s $STDERR ];  then
+	if [ -s STDERR ];  then
 		STDERR_UDIG=$ALGORITHM:$(
 			blobio eat					\
 				--algorithm $ALGORITHM			\
-				--input-path $STDERR
+				--input-path STDERR
 		)
 		test $? = 0 || die "blobio eat stderr failed: exit status=$?"
 
 		blobio put						\
 			--udig $STDERR_UDIG				\
-			--input-path $STDERR				\
+			--input-path STDERR				\
 			--service $BLOBIO_SERVICE			||
 			die "blobio put stderr failed: exit status=$?" 3
 	else
