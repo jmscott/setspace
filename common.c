@@ -15,6 +15,9 @@
  *	flip-tail and c programs in schema directories.
  *  Note:
  *	Rename common.c to unistd.c or common-cli.c?
+ *
+ *	Should defined PIPE_MAX be changed to
+ *	COMMON_MSG_SIZE or COMMON_ATOMIC_MSG_SIZE?
  */
 #include <fcntl.h>
 #include <unistd.h>
@@ -23,17 +26,39 @@
 #include <strings.h>
 #include <stdlib.h>
 
-//  Note: should be PIPE_BUF or MAX_MSG_SIZE?
+//  Note:
+//	should be PIPE_BUF or COMMON_ATOMIC_MSG_SIZE
 
 #ifndef PIPE_MAX
 #define PIPE_MAX	4096
+#endif
+
+#if defined(COMMON_NEED_SLURP)
+
+#define COMMON_NEED_CLOSE
+#define COMMON_NEED_DIE2
+#define COMMON_NEED_OPEN
+#define COMMON_NEED_READ_BLOB
+#define COMMON_NEED_STAT
+
+#endif
+
+#if defined (COMMON_NEED_FILE_EXISTS)
+
+#define COMMON_NEED_STAT
+
+#endif
+
+#if defined(COMMON_NEED_READ_BLOB)
+#define COMMON_NEED_READ
 #endif
 
 #if defined(COMMON_NEED_READ)					||	\
     defined(COMMON_NEED_READ_BLOB)				||	\
     defined(COMMON_NEED_WRITE) 					||	\
     defined(COMMON_NEED_CLOSE)					||	\
-    defined(COMMON_NEED_FCHMOD)
+    defined(COMMON_NEED_FCHMOD)					||	\
+    defined(COMMON_NEED_STAT)
 
 #define COMMON_NEED_DIE2
 
@@ -41,10 +66,6 @@
 
 #if defined(COMMON_NEED_OPEN)
 #define COMMON_NEED_DIE3
-#endif
-
-#if defined(COMMON_NEED_READ_BLOB)
-#define COMMON_NEED_READ
 #endif
 
 #if defined(COMMON_NEED_A2UI32)
@@ -146,7 +167,7 @@ die3(int status, char *msg1, char *msg2, char *msg3)
 /*
  *  read() bytes from file fd, restarting on interrupt and dieing on error.
  */
-static int
+static ssize_t
 _read(int fd, void *p, ssize_t nbytes)
 {
 	ssize_t nb;
@@ -206,51 +227,6 @@ again:
 
 #endif
 
-/*
- *  To include _slurp() add the following to source which includes
- *  this file:
- *
- *	#define COMMON_NEED_SLURP
- */
-#ifdef COMMON_NEED_SLURP
-
-/*
- *  slurp a stable file into a buffer, dieing if the buffer is too small.
- */
-static int
-_slurp(char *path, void *buf, ssize_t buf_size)
-{
-	struct stat st;
-	_stat(path, &st);
-	if (st.st_size > buf_size)
-		die(EXIT_BAD_SLURP, "file b
-
-	int fd = _open(path, O_RDONLY, 0);
-	int nread = 0, nr;
-again:
-	if (size - nread == 0)
-		return nread;
-	nr = _read(fd, blob + nread, size - nread);
-	if (nr == 0) {
-		if (
-		return nread;
-
-	if (nr + nread > size)
-	if (nr > 0) {
-		nread += nr;
-		if (nread < size)
-			goto again;
-	}
-	if (nread < size)
-		die(EXIT_BLOB_SMALL, "blob too small");
-	/*
-	 * Verify no bytes remain
-	 */
-	if (_read(fd, blob, 1) != 0)
-		die(EXIT_BLOB_BIG, "blob too big");
-}
-
-#endif
 
 /*
  *  To include _write() add the following to source which includes
@@ -374,6 +350,64 @@ _stat(char *path, struct stat *st)
 #endif
 
 /*
+ *  To include _file_exists() add the following to source which includes
+ *  this file:
+ *
+ *	#define COMMON_NEED_FILE_EXISTS
+ */
+#ifdef COMMON_NEED_FILE_EXISTS
+
+/*
+ *  determine if file exists using stat() system call.
+ */
+static int
+_file_exists(char *path)
+{
+	struct stat st;
+
+	return _stat(path, &st) == 1;
+}
+
+#endif
+
+/*
+ *  To include _slurp() add the following to source which includes
+ *  this file:
+ *
+ *	#define COMMON_NEED_SLURP
+ */
+#ifdef COMMON_NEED_SLURP
+
+#include <sys/stat.h>
+
+/*
+ *  slurp a stable file into a buffer, reallocing the buffer and size as needed.
+ *  allocate an extra byte for null termination is needed.
+ *  return the number of bytes read.
+ */
+static ssize_t
+_slurp(char *path, void **buf, ssize_t *buf_size)
+{
+	struct stat st;
+
+	_stat(path, &st);
+	if (st.st_size + 1 > *buf_size) {
+		void *p = realloc(*buf, st.st_size + 1);
+		if (p == NULL)
+			die(EXIT_BAD_MALLOC, "_slurp: realloc() failed");
+		*buf = p;
+		*buf_size = st.st_size + 1;
+	}
+
+	int fd = _open(path, O_RDONLY, 0);
+	_read_blob(fd, *buf, st.st_size);
+	_close(fd);
+	return st.st_size;
+}
+
+#endif
+
+/*
  *  To include _fchmod() add the following to source which includes
  *  this file:
  *
@@ -479,6 +513,51 @@ a2ui32(char *src, char *what, int die_status)
 	if (ll > 4294967295)
 		die2(die_status, what, "> 4294967295");
 	return (unsigned int)ll;
+}
+
+#endif
+
+#ifdef COMMON_NEED_IS_UDIG
+
+#include <ctype.h>
+
+/*
+ *  Is a syntactically correct udig.
+ */
+static int
+_is_udig(char *udig)
+{
+	int len = strlen(udig);
+	if (len < 34 || len > 137)
+		return 0;
+
+	//  first char is lower case ascii alpha.
+
+	char c = *udig;
+	if (!isascii(c) || !islower(c))
+		return 0;
+
+	//  insure algorithm after second char is lower case alnum 
+	//  terminated by colon < 8 chars.
+	char *p = udig + 1, *p_end = udig + 8;
+	while (p < p_end) {
+		c = *p++;
+
+		if (c == ':')
+			break;
+		if (!isascii(c) || !(isdigit(c) || islower(c)))
+			return 0;
+	}
+
+	//  verify digest is 1 to 128 chars of ascii() isgraph() chars
+
+	p_end = udig + len;
+	while (p < p_end) {
+		c = *p++;
+		if (!isascii(c) || !isgraph(c))
+			return 0;
+	}
+	return 1;
 }
 
 #endif
