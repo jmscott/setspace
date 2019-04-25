@@ -51,6 +51,7 @@ CREATE TABLE pddocument
 COMMENT ON TABLE pddocument IS
   'PDDocument scalar fields from Java Object'
 ;
+CREATE INDEX idx_pddocument ON pddocument USING hash(blob);
 REVOKE UPDATE ON pddocument FROM public;
 
 DROP TABLE IF EXISTS fault_pddocument CASCADE;
@@ -78,31 +79,34 @@ CREATE OR REPLACE FUNCTION is_pddocument_disjoint() RETURNS TRIGGER
   DECLARE
 	in_both bool;
   BEGIN
-
-	WITH pddocument_count AS (
+	WITH ok AS (
 	  SELECT
 		count(*) AS count
-	    FROM
+	  FROM
 		pdfbox.pddocument
-	    WHERE
+	  WHERE
 		blob = new.blob
-  	), fault_pddocument_count AS (
+  	), fault AS (
 	  SELECT
 		count(*) AS count
 	    FROM
-		pdfbox.fault_pddocument
+		pdfbox.fault_process
 	    WHERE
+		table_name = 'pddocument'
+		AND
 		blob = new.blob
 	  ) SELECT INTO in_both
-		(p.count + f.count) = 2
+		(ok.count + fault.count) = 2
 	      FROM
-		pddocument_count p,
-		fault_pddocument_count f
+		ok,
+		fault
 	;
 	IF in_both THEN
-		RAISE EXCEPTION 'blob in both pddocument and fault_pddocument';
+		RAISE EXCEPTION
+		'pddocument and process_fault must be disjoint';
 	END IF;
 	RETURN new;
+
   END $$
   LANGUAGE plpgsql
 ;
@@ -155,6 +159,10 @@ CREATE TABLE pddocument_information
 COMMENT ON TABLE pddocument_information IS
   'PDDocumentInformation scalar fields from Java Object'
 ;
+CREATE INDEX idx_pddocument_information ON pddocument_information
+  USING
+  	hash(blob)
+;
 REVOKE UPDATE ON TABLE pddocument_information FROM public;
 
 DROP TABLE IF EXISTS fault_pddocument_information;
@@ -183,29 +191,31 @@ CREATE OR REPLACE FUNCTION is_pddocument_information_disjoint() RETURNS TRIGGER
 	in_both bool;
   BEGIN
 
-	WITH pddocument_information_count AS (
+	WITH ok AS (
 	  SELECT
 		count(*) AS count
 	  FROM
 		pdfbox.pddocument_information
 	  WHERE
 		blob = new.blob
-  	), fault_pddocument_information_count AS (
+  	), fault AS (
 	  SELECT
 		count(*) AS count
 	    FROM
-		pdfbox.fault_pddocument_information
+		pdfbox.fault_process
 	    WHERE
+		table_name = 'pddocument_information'
+		AND
 		blob = new.blob
 	  ) SELECT INTO in_both
-		(p.count + f.count) = 2
+		(ok.count + fault.count) = 2
 	      FROM
-		pddocument_information_count p,
-		fault_pddocument_information_count f
+		ok,
+		fault
 	;
 	IF in_both THEN
 		RAISE EXCEPTION
-		'blob in both tables [fault_]pddocument_information';
+		'pddocument_information and process_fault must be disjoint';
 	END IF;
 	RETURN new;
   END $$
@@ -285,40 +295,41 @@ CREATE OR REPLACE FUNCTION is_extract_pages_utf8_disjoint()
   DECLARE
 	in_both bool;
   BEGIN
-
 	/*
 	 *  Note: rewrite extract_pages_utf8_count with EXISTS.
 	 */
-	WITH extract_pages_utf8_count AS (
+	WITH ok AS (
 	  SELECT
 		count(distinct pdf_blob) AS count
 	  FROM
 		pdfbox.extract_pages_utf8
 	  WHERE
 		pdf_blob = new.pdf_blob
-  	), fault_extract_pages_utf8_count AS (
+  	), fault AS (
 	  SELECT
 		count(*) AS count
 	    FROM
-		pdfbox.fault_extract_pages_utf8
+		pdfbox.fault_process
 	    WHERE
+	    	table_name = 'extract_pages_utf8'
+		AND
 		blob = new.pdf_blob
 	  ) SELECT INTO in_both
-		(p.count + f.count) = 2
+		(ok.count + fault.count) = 2
 	      FROM
-		extract_pages_utf8_count p,
-		fault_extract_pages_utf8_count f
+		ok,
+		fault
 	;
 	IF in_both THEN
 		RAISE EXCEPTION
-		    'pdf blob in both tables [fault_]extract_pages_utf8_count';
+		'extract_pages_utf8 and process_fault must be disjoint';
 	END IF;
 	RETURN new;
   END $$
   LANGUAGE plpgsql
 ;
 COMMENT ON FUNCTION is_extract_pages_utf8_disjoint IS
-  'Check the pdf is not in both tables [fault_]extract_pages_utf8_count'
+  'Check the new pdf for extract_pages_utf8 is not in fault_process'
 ;
 
 DROP TRIGGER IF EXISTS is_extract_pages_utf8_disjoint
@@ -336,34 +347,36 @@ CREATE OR REPLACE FUNCTION is_fault_extract_pages_utf8_disjoint()
   DECLARE
 	in_both bool;
   BEGIN
-
 	/*
 	 *  Note: rewrite extract_pages_utf8_count with EXISTS.
 	 */
-	WITH extract_pages_utf8_count AS (
+	WITH ok AS (
 	  SELECT
 		count(distinct pdf_blob) AS count
 	  FROM
 		pdfbox.extract_pages_utf8
 	  WHERE
 		pdf_blob = new.blob
-  	), fault_extract_pages_utf8_count AS (
+  	), fault AS (
 	  SELECT
 		count(*) AS count
 	    FROM
-		pdfbox.fault_extract_pages_utf8
+		pdfbox.fault_process
 	    WHERE
+	    	table_name = 'extract_pages_utf8'
+		AND
 		blob = new.blob
 	  ) SELECT INTO in_both
-		(p.count + f.count) = 2
+		(ok.count + fault.count) = 2
 	      FROM
-		extract_pages_utf8_count p,
-		fault_extract_pages_utf8_count f
+		ok,
+		fault
 	;
 	IF in_both THEN
 		RAISE EXCEPTION
-		    'pdf blob in both tables [fault_]extract_pages_utf8_count';
+		'extract_pages_utf8 and process_fault must be disjoint';
 	END IF;
+
 	RETURN new;
   END $$
   LANGUAGE plpgsql
@@ -490,5 +503,60 @@ CREATE TABLE fault_pddocument_information_metadata_custom
 COMMENT ON TABLE fault_pddocument_information_metadata_custom IS
   'Faults for Key/Value metadata fetched by java class PDDocumentInformation'
 ;
+
+DROP TABLE IF EXISTS fault_process CASCADE;
+CREATE TABLE fault_process
+(
+	table_name	text CHECK (
+				table_name IN (
+				  'pddocument',
+				  'pddocument_information',
+				  'pddocument_information_metadata_custom',
+				  'extract_pages_utf8'
+				)
+			),
+	blob		udig
+				REFERENCES setspace.service(blob)
+				ON DELETE CASCADE,
+	exit_status	setspace.unix_process_exit_status CHECK (
+				exit_status > 0
+			)
+			NOT NULL,
+	stderr_text	text CHECK (
+				length(stderr_text) < 4096
+			),
+	stderr_blob	udig,
+	env_blob	udig,
+
+	timeout		interval CHECK (
+				timeout >= '0sec'
+				AND
+				timeout < '1week'
+			),
+	timed_out	bool,
+	comment		text CHECK (
+				length(comment) < 256
+			),
+
+	start_time	timestamptz CHECK (
+				start_time <= insert_time
+			) NOT NULL,
+	insert_time	timestamptz
+				DEFAULT now()
+				NOT NULL,
+
+	PRIMARY KEY	(table_name, blob)
+);
+COMMENT ON TABLE fault_process IS
+  'Track process faults when merging tuples into a table in pdfbox schema'
+;
+COMMENT ON COLUMN fault_process.stderr_text IS
+  'Stderr UTF-8 Text output of faulted process merging into pdfbox schema'
+;
+COMMENT ON COLUMN fault_process.stderr_blob IS
+  'Blob of stderr output of faulted process mergining into pdfbox schema'
+;
+REVOKE UPDATE ON fault_process FROM public;
+CREATE INDEX idx_fault_process_blob ON fault_process(blob);
 
 COMMIT;

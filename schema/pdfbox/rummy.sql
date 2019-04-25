@@ -15,17 +15,24 @@ SELECT
 	  --  pddocument table
 	  LEFT OUTER JOIN pdfbox.pddocument pd ON
 	  	(pd.blob = pre.blob)
-	  LEFT OUTER JOIN pdfbox.fault_pddocument fpd ON
-	  	(fpd.blob = pre.blob)
+	  LEFT OUTER JOIN pdfbox.fault_process fpd ON (
+		fpd.table_name = 'pddocument'
+		AND
+		fpd.blob = pre.blob
+	  )
 
 	  --  pddocument_information table
 	  LEFT OUTER JOIN pdfbox.pddocument_information pdi ON
 	  	(pdi.blob = pre.blob)
-	  LEFT OUTER JOIN pdfbox.fault_pddocument_information fpdi ON
-	  	(fpdi.blob = pre.blob)
+	  LEFT OUTER JOIN pdfbox.fault_process fpdi ON (
+	  	fpdi.table_name = 'pddocument_information'
+		AND
+	  	fpdi.blob = pre.blob
+	  )
     WHERE
 	--  Note: need to check all core tables in setspace, not just prefix!!
 
+	--  blob begins with 'PDF-'
   	substring(pre.prefix, 1, 4) = '\x25504446'
 	AND
 	s.discover_time >= now() + :since::interval
@@ -55,8 +62,10 @@ SELECT
 			  SELECT
 				flt.blob
 			    FROM
-				pdfbox.fault_extract_pages_utf8 flt
+				pdfbox.fault_process flt
 			    WHERE
+			    	flt.table_name = 'extract_pages_utf8'
+				AND
 				flt.blob = pre.blob
 			)
 		)
