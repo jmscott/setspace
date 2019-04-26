@@ -74,6 +74,61 @@ COMMENT ON TABLE fault_pddocument IS
 ;
 REVOKE UPDATE ON fault_pddocument FROM public;
 
+DROP TABLE IF EXISTS fault_process CASCADE;
+CREATE TABLE fault_process
+(
+	table_name	text CHECK (
+				table_name IN (
+				  'pddocument',
+				  'pddocument_information',
+				  'pddocument_information_metadata_custom',
+				  'extract_pages_utf8'
+				)
+			),
+	blob		udig
+				REFERENCES setspace.service(blob)
+				ON DELETE CASCADE,
+	exit_status	setspace.unix_process_exit_status CHECK (
+				exit_status > 0
+			)
+			NOT NULL,
+	stderr_text	text CHECK (
+				length(stderr_text) < 4096
+			),
+	stderr_blob	udig,
+	env_blob	udig,
+
+	timeout		interval CHECK (
+				timeout >= '0sec'
+				AND
+				timeout < '1week'
+			),
+	timed_out	bool,
+	comment		text CHECK (
+				length(comment) < 256
+			),
+
+	start_time	timestamptz CHECK (
+				start_time <= insert_time
+			) NOT NULL,
+	insert_time	timestamptz
+				DEFAULT now()
+				NOT NULL,
+
+	PRIMARY KEY	(table_name, blob)
+);
+COMMENT ON TABLE fault_process IS
+  'Track process faults when merging tuples into a table in pdfbox schema'
+;
+COMMENT ON COLUMN fault_process.stderr_text IS
+  'Stderr UTF-8 Text output of faulted process merging into pdfbox schema'
+;
+COMMENT ON COLUMN fault_process.stderr_blob IS
+  'Blob of stderr output of faulted process mergining into pdfbox schema'
+;
+REVOKE UPDATE ON fault_process FROM public;
+CREATE INDEX idx_fault_process_blob ON fault_process(blob);
+
 CREATE OR REPLACE FUNCTION is_pddocument_disjoint() RETURNS TRIGGER
   AS $$
   DECLARE
@@ -503,60 +558,5 @@ CREATE TABLE fault_pddocument_information_metadata_custom
 COMMENT ON TABLE fault_pddocument_information_metadata_custom IS
   'Faults for Key/Value metadata fetched by java class PDDocumentInformation'
 ;
-
-DROP TABLE IF EXISTS fault_process CASCADE;
-CREATE TABLE fault_process
-(
-	table_name	text CHECK (
-				table_name IN (
-				  'pddocument',
-				  'pddocument_information',
-				  'pddocument_information_metadata_custom',
-				  'extract_pages_utf8'
-				)
-			),
-	blob		udig
-				REFERENCES setspace.service(blob)
-				ON DELETE CASCADE,
-	exit_status	setspace.unix_process_exit_status CHECK (
-				exit_status > 0
-			)
-			NOT NULL,
-	stderr_text	text CHECK (
-				length(stderr_text) < 4096
-			),
-	stderr_blob	udig,
-	env_blob	udig,
-
-	timeout		interval CHECK (
-				timeout >= '0sec'
-				AND
-				timeout < '1week'
-			),
-	timed_out	bool,
-	comment		text CHECK (
-				length(comment) < 256
-			),
-
-	start_time	timestamptz CHECK (
-				start_time <= insert_time
-			) NOT NULL,
-	insert_time	timestamptz
-				DEFAULT now()
-				NOT NULL,
-
-	PRIMARY KEY	(table_name, blob)
-);
-COMMENT ON TABLE fault_process IS
-  'Track process faults when merging tuples into a table in pdfbox schema'
-;
-COMMENT ON COLUMN fault_process.stderr_text IS
-  'Stderr UTF-8 Text output of faulted process merging into pdfbox schema'
-;
-COMMENT ON COLUMN fault_process.stderr_blob IS
-  'Blob of stderr output of faulted process mergining into pdfbox schema'
-;
-REVOKE UPDATE ON fault_process FROM public;
-CREATE INDEX idx_fault_process_blob ON fault_process(blob);
 
 COMMIT;
