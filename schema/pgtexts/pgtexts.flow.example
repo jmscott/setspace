@@ -65,7 +65,7 @@ sql query in_service_table row
 	  SELECT
 	  	blob
 	    FROM
-	    	setspace.service
+	    	setcore.service
 	    WHERE
 	    	blob = $1::udig
 	);

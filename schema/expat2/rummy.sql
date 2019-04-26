@@ -5,8 +5,8 @@
 SELECT
 	xb.blob
   FROM
-	setspace.has_byte_xml_bracket xb
-	  INNER JOIN setspace.service s ON (s.blob = xb.blob)
+	setcore.has_byte_xml_bracket xb
+	  INNER JOIN setcore.service s ON (s.blob = xb.blob)
   WHERE
   	xb.has_bracket IS TRUE
 	AND

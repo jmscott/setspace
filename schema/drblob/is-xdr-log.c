@@ -33,7 +33,6 @@
  *  	32	-> system fault
  *  Blame:
  *  	jmscott@setspace.com
- *  	setspace@gmail.com
  *  Note:
  *	Would be nice to remove dependency upon stdio library.
  */

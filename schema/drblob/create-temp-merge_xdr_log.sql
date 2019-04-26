@@ -8,7 +8,6 @@
  *	lib/merge-xdr_log_time.sql
  *  Blame:
  *  	jmscott@setspace.com
- *  	setspace@gmail.com
  *  Note:
  *	Constraint for wall_duration >= query_duration?
  *

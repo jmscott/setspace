@@ -3,8 +3,15 @@
 #  	Static Makefile rules for setspace/schema/* subsystems
 #  Blame:
 #  	jmscott@setspace.com
-#  	setspace@gmail.com
 #
+
+#  Variables for setcore schema
+
+SETCORE_ROOT=$(SETSPACE_PREFIX)/schema/setcore
+SETCORE_PREFIX=$(SETCORE_ROOT)
+SETCORE_USER=$(SETSPACE_USER)
+SETCORE_GROUP=$(SETSPACE_GROUP)
+
 
 #  Variables for Blob Detail Records stored in schema named 'drblob'
 

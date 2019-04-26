@@ -3,7 +3,6 @@
 #	Makefile for udigset development
 #  Blame:
 #  	jmscott@setspace.com
-#  	setspace@gmail.com
 #
 include ../../local.mk
 include ../schema.mk

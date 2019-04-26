@@ -10,7 +10,7 @@ WITH utf8wf AS (
   SELECT
   	blob
     FROM
-    	setspace.is_utf8wf
+    	setcore.is_utf8wf
     WHERE
 	is_utf8 IS TRUE
 )
@@ -18,8 +18,8 @@ SELECT
 	u8.blob
   FROM
   	utf8wf u8
-	  JOIN setspace.byte_prefix_32 p32 ON (p32.blob = u8.blob)
-	  JOIN setspace.byte_suffix_32 s32 ON (s32.blob = u8.blob)
+	  JOIN setcore.byte_prefix_32 p32 ON (p32.blob = u8.blob)
+	  JOIN setcore.byte_suffix_32 s32 ON (s32.blob = u8.blob)
 	  LEFT OUTER JOIN jsonorg.checker_255 js ON (js.blob = u8.blob)
   WHERE
 	(

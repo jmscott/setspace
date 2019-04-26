@@ -5,7 +5,6 @@
 #	. $SETSPACE_ROOT/etc/profile
 #  Blame:
 #  	jmscott@setspace.com
-#  	setspace@gmail.com
 #  Note:
 #	Contemplate replacing env variable SCHEMA_ROOT with SETSPACE_SCHEMA
 #

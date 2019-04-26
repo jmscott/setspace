@@ -6,7 +6,6 @@
  *	bio-cat sha:abc ... | psql -f merge-qdr_log_flow_sequence.sql
  *  Blame:
  *  	jmscott@setspace.com
- *  	setspace@gmail.com
  */
 
 \set ON_ERROR_STOP on

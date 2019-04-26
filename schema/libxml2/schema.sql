@@ -3,7 +3,6 @@
  *	Classify xml blobs using libxml2 software.
  *  Blame:
  *  	jmscott@setspace.com
- *  	setspace@gmail.com
  *  Note:
  *	foreign key xml_doc.blob must point to is_pg_well_formed.blob,
  *	not xmllint.blob!
@@ -17,7 +16,7 @@ DROP SCHEMA IF EXISTS libxml2 CASCADE;
 
 CREATE SCHEMA libxml2;
 
-SET search_path TO libxml2,setspace,public;
+SET search_path TO libxml2,setcore,public;
 
 /*
  *  Results of parsing xmllint --nonet --noout on the blob.
@@ -26,7 +25,7 @@ DROP TABLE IF EXISTS libxml2.xmllint;
 CREATE TABLE libxml2.xmllint
 (
 	blob	udig
-			references setspace.service
+			references setcore.service
 			on delete cascade
 			primary key,
 
@@ -91,7 +90,7 @@ DROP TABLE IF EXISTS libxml2.is_pg_well_formed;
 CREATE TABLE libxml2.is_pg_well_formed
 (
 	blob	udig
-			references setspace.service
+			references setcore.service
 			on delete cascade
 			primary key,
 	is_xml	bool

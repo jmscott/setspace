@@ -7,7 +7,6 @@
 #	../schema.mk
 #  Blame:
 #  	jmscott@setspace.com
-#  	setspace@gmail.com
 #  Note:
 #	Make variables can't be overridden in ../local.mk.
 #

@@ -8,9 +8,9 @@
 SELECT
   	pre.blob
     FROM
-    	setspace.byte_prefix_32 pre
+    	setcore.byte_prefix_32 pre
 	  --  discovered after certain time
-	  INNER JOIN setspace.service s ON (s.blob = pre.blob)
+	  INNER JOIN setcore.service s ON (s.blob = pre.blob)
 
 	  --  pddocument table
 	  LEFT OUTER JOIN pdfbox.pddocument pd ON
@@ -30,7 +30,7 @@ SELECT
 	  	fpdi.blob = pre.blob
 	  )
     WHERE
-	--  Note: need to check all core tables in setspace, not just prefix!!
+	--  Note: need to check all core tables in setcore, not just prefix!!
 
 	--  blob begins with 'PDF-'
   	substring(pre.prefix, 1, 4) = '\x25504446'

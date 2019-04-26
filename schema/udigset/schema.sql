@@ -5,7 +5,6 @@
  *	psql -f schema.sql
  *  Blame:
  *  	jmscott@setspace.com
- *  	setspace@gmail.com
  */
 \set ON_ERROR_STOP on
 \timing
@@ -22,7 +21,7 @@ DROP TABLE IF EXISTS udigset.is_udig_set;
 CREATE TABLE udigset.is_udig_set
 (
 	blob	udig
-			REFERENCES setspace.service
+			REFERENCES setcore.service
 			ON DELETE CASCADE
 			PRIMARY KEY,
 

@@ -40,7 +40,7 @@ CREATE TABLE pgtexts.tsv_utf8
 				ts_conf = ts_conf::regconfig::text
 			),
 	blob		udig
-				REFERENCES setspace.is_utf8wf(blob)
+				REFERENCES setcore.is_utf8wf(blob)
 				ON DELETE CASCADE,
 	doc		tsvector
 				not null,
@@ -72,7 +72,7 @@ DROP TABLE IF EXISTS pgtexts.text_utf8;
 CREATE TABLE pgtexts.text_utf8
 (
 	blob	udig
-			REFERENCES setspace.is_utf8wf(blob)
+			REFERENCES setcore.is_utf8wf(blob)
 			ON DELETE CASCADE
 			PRIMARY KEY,
 	doc	text
@@ -108,7 +108,7 @@ CREATE TABLE pgtexts.tsv_strip_utf8
 				ts_conf = ts_conf::regconfig::text
 			),
 	blob		udig
-				REFERENCES setspace.is_utf8wf(blob)
+				REFERENCES setcore.is_utf8wf(blob)
 				ON DELETE CASCADE,
 	doc		tsvector
 				not null,

@@ -11,7 +11,7 @@ export FFFILE_ROOT=${FFFILE_ROOT:=$SCHEMA_ROOT}
 
 #  create the spool file so tail doesn't abort.
 #  Note: got to be a better way. perhaps flowd.tail ought to create the file.
-BRR=$SCHEMA_ROOT/spool/setspace.brr
+BRR=$SCHEMA_ROOT/spool/setcore.brr
 touch $BRR
 chmod u=rw,g=w,o= $BRR
 

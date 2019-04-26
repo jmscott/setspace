@@ -4,4 +4,4 @@ See:
 	schema.sql
 	blobio/README for definition of a uniform digest (udig).
 Note:
-	Should this code be in setspace schema?
+	Should this code be in setcore schema?

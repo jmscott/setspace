@@ -5,7 +5,6 @@
 #	. $SETSPACE_ROOT/etc/profile
 #  Blame:
 #  	jmscott@setspace.com
-#  	setspace@gmail.com
 #
 SCHEMA_ROOT=$SETSPACE_ROOT/schema/jsonorg
 export TMPDIR=$SCHEMA_ROOT/tmp

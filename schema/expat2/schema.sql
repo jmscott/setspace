@@ -3,7 +3,6 @@
  *	Classify xml blobs using expat2 software.
  *  Blame:
  *  	jmscott@setspace.com
- *  	setspace@gmail.com
  */
 \set ON_ERROR_STOP on
 \timing
@@ -13,7 +12,7 @@ DROP SCHEMA IF EXISTS expat2 CASCADE;
 
 CREATE SCHEMA expat2;
 
-SET search_path TO expat2,setspace,public;
+SET search_path TO expat2,setcore,public;
 
 /*
  *  Is the blob well formed xml according to xmlwf program, version 2,
@@ -27,11 +26,11 @@ DROP TABLE IF EXISTS expat2.is_xmlwf;
 CREATE TABLE expat2.is_xmlwf
 (
 	blob	udig
-			references setspace.service
-			on delete cascade
-			primary key,
+			REFERENCES setcore.service
+			ON DELETE CASCADE
+			PRIMARY KEY,
 	is_xml	bool
-			not null
+			NOT NULL
 );
 
 COMMIT;

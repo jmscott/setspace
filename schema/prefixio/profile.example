@@ -5,7 +5,6 @@
 #	. $SETSPACE_ROOT/etc/profile
 #  Blame:
 #  	jmscott@setspace.com
-#  	setspace@gmail.com
 #
 export TMPDIR=$SETSPACE_ROOT/schema/prefixio/tmp
 mkdir -p $TMPDIR || exit 1
@@ -14,4 +13,4 @@ mkdir -p $TMPDIR || exit 1
 #  Note:
 #	got to be a better way.  Prehaps flowd outgh to create.
 
-touch $SETSPACE_ROOT/schema/prefixio/spool/setspace.brr || exit 1
+touch $SETSPACE_ROOT/schema/prefixio/spool/setcore.brr || exit 1

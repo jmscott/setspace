@@ -21,7 +21,7 @@ boot
 
 tail brr
 {
-	path = "spool/setspace.brr";
+	path = "spool/prefixio.brr";
 }
 
 sql database setspace

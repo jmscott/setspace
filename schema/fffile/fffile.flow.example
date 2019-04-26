@@ -30,7 +30,7 @@ sql database setspace
 
 tail brr
 {
-	path = "spool/setspace.brr";
+	path = "spool/setcore.brr";
 }
 
 sql query in_service_table row
@@ -41,7 +41,7 @@ sql query in_service_table row
 	  SELECT
 	  	blob
 	    FROM
-	    	setspace.service
+	    	setcore.service
 	    WHERE
 	    	blob = $1::udig
 	);

@@ -29,15 +29,15 @@ psql --no-psqlrc --quiet <<END | while read PAGE_UDIG BYTE_COUNT;  do
 \\pset format unaligned
 \\pset fieldsep '\\t'
 
-select
+SELECt
 	p8.page_blob,
 	bc.byte_count
-  from
+  FROM
   	pdfbox.extract_page_utf8 p8
-	  join setspace.byte_count bc on (bc.blob = p8.page_blob)
-  where
+	  JOIN setcore.byte_count bc ON (bc.blob = p8.page_blob)
+  WHERE
   	p8.pdf_blob = '$PDF_UDIG'
-	and
+	AND
 	bc.blob = p8.page_blob
 END
 	append-brr $BRR_PATH						\

@@ -12,7 +12,7 @@ select
 	bl.blob
   from
   	drblob.is_brr_log bl
-	  inner join setspace.service s on (s.blob = bl.blob)
+	  inner join setcore.service s on (s.blob = bl.blob)
 	  left outer join drblob.brr_log_total tot on (tot.blob = bl.blob)
 	  left outer join drblob.brr_log_time tim on (tim.blob = bl.blob)
   where
@@ -30,7 +30,7 @@ select
 	fl.blob
   from
   	drblob.is_fdr_log fl
-	  inner join setspace.service s on (s.blob = fl.blob)
+	  inner join setcore.service s on (s.blob = fl.blob)
 	  left outer join drblob.fdr_log_total tot on (tot.blob = fl.blob)
 	  left outer join drblob.fdr_log_time tim on (tim.blob = fl.blob)
 	  left outer join drblob.fdr_log_sequence seq on (seq.blob = fl.blob)
@@ -51,7 +51,7 @@ select
 	ql.blob
   from
   	drblob.is_qdr_log ql
-	  inner join setspace.service s on (s.blob = ql.blob)
+	  inner join setcore.service s on (s.blob = ql.blob)
 	  left outer join drblob.qdr_log_total tot on (tot.blob = ql.blob)
 	  left outer join drblob.qdr_log_time tim on (tim.blob = ql.blob)
 	  left outer join drblob.qdr_log_flow_sequence seq on (
@@ -86,7 +86,7 @@ select
 	xl.blob
   from
   	drblob.is_xdr_log xl
-	  inner join setspace.service s on (s.blob = xl.blob)
+	  inner join setcore.service s on (s.blob = xl.blob)
 	  left outer join drblob.xdr_log_total tot on (tot.blob = xl.blob)
 	  left outer join drblob.xdr_log_time tim on (tim.blob = xl.blob)
 	  left outer join drblob.xdr_log_flow_sequence seq on (

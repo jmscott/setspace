@@ -6,7 +6,7 @@
  *	defined in schema.mk.
  */
 set search_path to 
-	setspace,
+	setcore,
 	expat2,
 	jsonorg,
 	libxml2,

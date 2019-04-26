@@ -7,7 +7,6 @@
 #  	schema.sql
 #  Blame:
 #  	jmscott@setspace.com
-#  	setspace@gmail.com
 #  Note:
 #	Think about collapsing the in_<table>_table rules into single  "true"
 #	command. Or, think about the possible "predicate" clause that replaces

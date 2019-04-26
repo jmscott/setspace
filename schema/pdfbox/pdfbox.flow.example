@@ -69,7 +69,7 @@ sql query in_service_table row
 	  SELECT
 	  	blob
 	    FROM
-	    	setspace.service
+	    	setcore.service
 	    WHERE
 	    	blob = $1::udig
 	);
@@ -85,11 +85,13 @@ query in_service_table(brr.udig)
   	brr_on_network.exit_status == 0
 ;
 
-sql query in_pddocument_table row
+#  determine if the pdf exists in various pddocument tables.
+sql query pd_exists row
 {
 	statement = `
 
 	SELECT
+		--  exist in pddocument table
 		EXISTS (
 		  SELECT
 		  	blob
@@ -98,19 +100,20 @@ sql query in_pddocument_table row
 		    WHERE
 		    	blob = $1::udig
 		),
-		(
+		EXISTS (
 		  SELECT
-		  	exit_status = 0
+		  	blob
 		    FROM
-		    	pdfbox.pddocument
+		    	pdfbox.fault_process
 		    WHERE
+		    	table_
 		    	blob = $1::udig
-		)
+		),
 	;
 	`;
 
 	result row is (
-		answer bool,
+		in_ bool,
 		is_pdf bool
 	);
 
@@ -119,58 +122,6 @@ sql query in_pddocument_table row
 query in_pddocument_table(brr.udig)
   when
   	in_service_table.answer == true
-;
-
-sql query in_pddocument_pending_table row
-{
-	statement = `
-
-	SELECT EXISTS (
-	  SELECT
-	  	blob
-	    FROM
-	    	pdfbox.pddocument_pending
-	    WHERE
-		blob = $1::udig
-	  )
-	;
-	`;
-
-	result row is (
-		answer bool
-	);
-
-}
-
-query in_pddocument_pending_table(brr.udig)
-  when
-  	in_pddocument_table.answer == false
-;
-
-sql query merge_pddocument_pending row
-{
-	statement = `
-
-	INSERT INTO
-	  pdfbox.pddocument_pending(
-		blob
-	  ) VALUES(
-	  	$1::udig
- 	  )  ON CONFLICT
-	  	DO NOTHING
-	  RETURNING
-	  	true
-	`;
-
-	result row is (
-		inserted bool
-	);
-
-}
-
-query merge_pddocument_pending(brr.udig)
-  when
-  	in_pddocument_pending_table.answer == false
 ;
 
 command merge_pddocument
@@ -391,15 +342,6 @@ query insert_merge_pages_text_utf8_pending(brr.udig)
   when
 	in_merge_pages_text_utf8_pending_table.answer == false
 ;
-
-command merge_pages_text_utf8
-{
-	path = "sbin/merge-pages_text_utf8";
-	exit_status is OK when in {
-		0,	#  ok, all pages merged
-		1	#  at least one page blob does not exist
-	};
-}
 
 call merge_pages_text_utf8(brr.udig)
   when

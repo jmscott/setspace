@@ -3,11 +3,11 @@
 #	Route blobs into other schemas based upon patterns in the byte prefix.
 #  Description:
 #	Blob may be routed to other schemas based upon values in the the
-#	first 32 bytes of of the blob.  See the table setspace.byte_prefix_32.
-#	Recipes may also assume that the core byte oriented setspace tables
+#	first 32 bytes of of the blob.  See the table setcore.byte_prefix_32.
+#	Recipes may also assume that the core byte oriented setcore tables
 #	have already been populated:
 #
-#		setspace.{byte_bitmap, byte_count, is_utf8}
+#		setcore.{byte_bitmap, byte_count, is_utf8}
 #
 #	Since most routing rules are immutable, the queries are highly
 #	cacheable.  cool.
@@ -52,7 +52,7 @@ sql database setspace
 
 tail brr
 {
-	path = "spool/setspace.brr";
+	path = "spool/setcore.brr";
 }
 
 #  Is the utf8 blob framed with json object or array chars?
@@ -71,7 +71,7 @@ SELECT EXISTS (
     SELECT
   	blob
       FROM
-    	setspace.is_utf8wf
+    	setcore.is_utf8wf
       WHERE
 	is_utf8 IS TRUE
 	AND
@@ -81,8 +81,8 @@ SELECT EXISTS (
 	u8.blob
     FROM
   	utf8wf u8
-	  JOIN setspace.byte_prefix_32 p32 ON (p32.blob = u8.blob)
-	  JOIN setspace.byte_suffix_32 s32 ON (s32.blob = u8.blob)
+	  JOIN setcore.byte_prefix_32 p32 ON (p32.blob = u8.blob)
+	  JOIN setcore.byte_suffix_32 s32 ON (s32.blob = u8.blob)
 	  LEFT OUTER JOIN jsonorg.checker_255 js ON (js.blob = u8.blob)
     WHERE
     	/*
@@ -151,9 +151,9 @@ sql query prefix_is_percentPDF row
 
 	SELECT
 		substring(prefix, 1, 5) = '\x255044462d'  -- %PDF
-	  from
-	  	setspace.byte_prefix_32
-	  where
+	  FROM
+	  	setcore.byte_prefix_32
+	  WHERE
 	  	blob = $1::udig
 	`;
 

@@ -1,1 +1,1 @@
-set search_path to public,setspace,jsonorg;
+set search_path to public,setcore,jsonorg;

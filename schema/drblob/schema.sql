@@ -5,7 +5,6 @@
  *	psql -f schema.sql
  *  Blame:
  *  	jmscott@setspace.com
- *  	setspace@gmail.com
  */
 \set ON_ERROR_STOP on
 \timing

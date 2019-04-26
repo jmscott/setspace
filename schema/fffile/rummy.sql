@@ -5,7 +5,7 @@
 SELECT
 	s.blob
   FROM
-  	setspace.service s
+  	setcore.service s
 	  LEFT OUTER JOIN fffile.file f ON (f.blob = s.blob)
 	  LEFT OUTER JOIN fffile.file_mime_type ft ON (ft.blob = s.blob)
 	  LEFT OUTER JOIN fffile.file_mime_encoding fe ON (fe.blob = s.blob)

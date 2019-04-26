@@ -5,7 +5,6 @@
 #	. $SETSPACE_ROOT/etc/profile
 #  Blame:
 #  	jmscott@setspace.com
-#  	setspace@gmail.com
 #
 SCHEMA_ROOT=$SETSPACE_ROOT/schema/expat2
 export TMPDIR=$SCHEMA_ROOT/tmp
@@ -13,6 +12,6 @@ mkdir -p $TMPDIR || exit 1
 
 #  create the spool file so tail doesn't abort.
 #  Note: got to be a better way. perhaps flowd.tail ought to create the file.
-touch $SCHEMA_ROOT/spool/setspace.brr
+touch $SCHEMA_ROOT/spool/setcore.brr
 
 PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH

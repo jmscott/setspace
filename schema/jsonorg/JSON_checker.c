@@ -12,7 +12,6 @@
  *	Random json data here: http://www.json-generator.com/
  *  Blame:
  *  	jmscott@setspace.com
- *  	setspace@gmail.com
  *  Note:
  *	Investigate why JSON_Checker fails sample.zip in this unit test
  *

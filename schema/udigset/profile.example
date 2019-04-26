@@ -3,8 +3,7 @@
 #	Example profile for udigset login account
 #  Blame:
 #  	jmscott@setspace.com
-#  	setspace@gmail.com
 #
-BLOBLOG_ROOT=$SETSPACE_ROOT/schema/bloblog
+BLOBLOG_ROOT=$SETSPACE_ROOT/schema/udigset
 
 PATH=$BLOBLOG_ROOT/sbin:$BLOBLOG_ROOT/bin:$PATH

@@ -4,7 +4,7 @@
 #  See:
 #	schema.sql
 #  Note:
-#	Note verifying the json blob is in table setspace.service!!!
+#	Note verifying the json blob is in table setcore.service!!!
 #
 #	Investigate if the first two characters of a json document are
 #	always ascii:

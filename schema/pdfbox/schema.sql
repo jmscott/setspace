@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS pddocument CASCADE;
 CREATE TABLE pddocument
 (
 	blob		udig
-				REFERENCES setspace.service(blob)
+				REFERENCES setcore.service(blob)
 				ON DELETE CASCADE
 				PRIMARY KEY,
 	/*
@@ -58,10 +58,10 @@ DROP TABLE IF EXISTS fault_pddocument CASCADE;
 CREATE TABLE fault_pddocument
 (
 	blob	udig
-			REFERENCES setspace.service(blob)
+			REFERENCES setcore.service(blob)
 			ON DELETE CASCADE
 			PRIMARY KEY,
-	exit_status	setspace.unix_process_exit_status CHECK (
+	exit_status	setcore.unix_process_exit_status CHECK (
 				exit_status > 0
 			)
 			NOT NULL,
@@ -86,9 +86,9 @@ CREATE TABLE fault_process
 				)
 			),
 	blob		udig
-				REFERENCES setspace.service(blob)
+				REFERENCES setcore.service(blob)
 				ON DELETE CASCADE,
-	exit_status	setspace.unix_process_exit_status CHECK (
+	exit_status	setcore.unix_process_exit_status CHECK (
 				exit_status > 0
 			)
 			NOT NULL,
@@ -194,7 +194,7 @@ DROP TABLE IF EXISTS pddocument_information CASCADE;
 CREATE TABLE pddocument_information
 (
 	blob			udig
-					REFERENCES setspace.service(blob)
+					REFERENCES setcore.service(blob)
 					ON DELETE CASCADE
 					PRIMARY KEY,
 	title			dval32,
@@ -224,10 +224,10 @@ DROP TABLE IF EXISTS fault_pddocument_information;
 CREATE TABLE fault_pddocument_information
 (
 	blob	udig
-			REFERENCES setspace.service(blob)
+			REFERENCES setcore.service(blob)
 			ON DELETE CASCADE
 			PRIMARY KEY,
-	exit_status	setspace.unix_process_exit_status CHECK (
+	exit_status	setcore.unix_process_exit_status CHECK (
 				exit_status > 0
 			)
 			NOT NULL,
@@ -328,10 +328,10 @@ DROP TABLE IF EXISTS fault_extract_pages_utf8 CASCADE;
 CREATE TABLE fault_extract_pages_utf8
 (
 	blob	udig
-			REFERENCES setspace.service(blob)
+			REFERENCES setcore.service(blob)
 			ON DELETE CASCADE
 			PRIMARY KEY,
-	exit_status	setspace.unix_process_exit_status CHECK (
+	exit_status	setcore.unix_process_exit_status CHECK (
 				exit_status > 0
 			)
 			NOT NULL,
@@ -550,7 +550,7 @@ CREATE TABLE fault_pddocument_information_metadata_custom
 				   pddocument_information(blob)
 				ON DELETE CASCADE
 				PRIMARY KEY,
-	exit_status	setspace.unix_process_exit_status
+	exit_status	setcore.unix_process_exit_status
 				NOT NULL,
 	stderr_blob	udig
 				NOT NULL

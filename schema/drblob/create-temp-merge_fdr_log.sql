@@ -8,7 +8,6 @@
  *	lib/merge-fdr_log_time.sql
  *  Blame:
  *  	jmscott@setspace.com
- *  	setspace@gmail.com
  *  Note:
  *	Use the blobio domains for timestamp, name, etc.
  */

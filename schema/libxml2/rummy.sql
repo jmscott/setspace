@@ -7,7 +7,7 @@ WITH xml_candidate AS (
   	wf.blob
     FROM
 	expat2.is_xmlwf wf
-	  INNER JOIN setspace.service s ON (s.blob = wf.blob)
+	  INNER JOIN setcore.service s ON (s.blob = wf.blob)
     WHERE
   	wf.is_xml is true
 	AND

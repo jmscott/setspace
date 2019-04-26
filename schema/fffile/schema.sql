@@ -26,7 +26,7 @@ DROP TABLE IF EXISTS file CASCADE;
 CREATE TABLE file
 (
 	blob		udig
-				REFERENCES setspace.service(blob)
+				REFERENCES setcore.service(blob)
 				ON DELETE CASCADE
 				PRIMARY KEY,
 
@@ -46,7 +46,7 @@ DROP TABLE IF EXISTS file_mime_type CASCADE;
 CREATE TABLE file_mime_type
 (
 	blob		udig
-				REFERENCES setspace.service(blob)
+				REFERENCES setcore.service(blob)
 				ON DELETE CASCADE
 				PRIMARY KEY,
 	--  null indicates file produces non-utf8 output and exit status == 0
@@ -64,7 +64,7 @@ DROP TABLE IF EXISTS file_mime_encoding CASCADE;
 CREATE TABLE file_mime_encoding
 (
 	blob		udig
-				REFERENCES setspace.service(blob)
+				REFERENCES setcore.service(blob)
 				ON DELETE CASCADE
 				PRIMARY KEY,
 	--  null indicates file produces non-utf8 output and exit status == 0

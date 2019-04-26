@@ -33,16 +33,16 @@ TUPLE=$(psql --no-psqlrc --quiet --tuples-only <<END
 \\pset format unaligned
 \\pset fieldsep '\\t'
 
-select
+SELECT
 	u8.utf8_blob,
 	bc.byte_count
-  from
+  FROM
   	pdfbox.extract_text_utf8 u8
-	  inner join setspace.byte_count bc on (bc.blob = u8.utf8_blob)
+	  INNER JOIN setcore.byte_count bc ON (bc.blob = u8.utf8_blob)
   where
   	u8.blob = '$PDF_UDIG'
-	and
-	u8.utf8_blob is not null
+	AND
+	u8.utf8_blob IS NOT NULL
 END
 )
 test $? = 0 || die "psql failed: exit status=$?" 3

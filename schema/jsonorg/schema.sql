@@ -21,7 +21,7 @@ DROP TABLE IF EXISTS jsonorg.checker_255 CASCADE;
 CREATE TABLE jsonorg.checker_255
 (
 	blob	udig
-			REFERENCES setspace.service(blob)
+			REFERENCES setcore.service(blob)
 			ON DELETE CASCADE
 			PRIMARY KEY,
 	is_json	bool

@@ -8,7 +8,6 @@
 #	../../local.mk
 #  Blame:
 #  	jmscott@setspace.com
-#  	setspace@gmail.com
 #  Note:
 #	Make variables can't be overridden in ../../local.mk.
 #	For example, PGLIB is always defined to $(PGROOT)/include.

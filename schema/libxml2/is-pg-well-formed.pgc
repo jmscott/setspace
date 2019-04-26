@@ -19,7 +19,6 @@
  *	10	blob too large
  *  Blame:
  *  	jmscott@setspace.com
- *  	setspace@gmail.com
  *  Note:
  *	Rename is-pg-well-formed.pgc to merge-stdin-is_pg_well_formed.pgc
  */

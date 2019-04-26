@@ -19,7 +19,6 @@
  *	9	blob too large
  *  Blame:
  *  	jmscott@setspace.com
- *  	setspace@gmail.com
  */
 
 static char progname[] = "merge-stdin-file_mime_encoding";

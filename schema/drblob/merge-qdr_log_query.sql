@@ -6,7 +6,6 @@
  *	bio-cat sha:abc ... | psql -f merge-qdr_log_query.sql
  *  Blame:
  *  	jmscott@setspace.com
- *  	setspace@gmail.com
  *  Note:
  *	Think about using a grouping set for OK/ERR_count attributes.
  */

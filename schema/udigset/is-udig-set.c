@@ -11,7 +11,6 @@
  *  	64	-> system error occured
  *  Blame:
  *  	jmscott@setspace.com
- *  	setspace@gmail.com
  *  Note:
  *	When a false set is seen, the input is not drained.
  *	Should SIGPIPE be caught?

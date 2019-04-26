@@ -2,11 +2,11 @@ Synopsis:
 	Route blobs to schemas based upon patterns in the 32 byte prefix.
 Description:
 	Blob may be routed to other schemas based upon values in the the
-	first 32 bytes of of the blob.  See the table setspace.byte_prefix_32.
-	Recipes may also assume that the core byte oriented setspace tables
+	first 32 bytes of of the blob.  See the table setcore.byte_prefix_32.
+	Recipes may also assume that the core byte oriented setcore tables
 	have already been populated:
 
-		setspace.{byte_bitmap, byte_count, is_utf8}
+		setcore.{byte_bitmap, byte_count, is_utf8}
 
 	Since most routing rules are immutable, the queries are highly
 	cacheable.  cool.
