@@ -10,7 +10,7 @@ include schema.mk
 createdb:
 	createdb setspace --encoding=UTF8 --template template0
 all:
-	cd setspace && $(MAKE) all
+	cd setcore && $(MAKE) all
 	cd jsonorg && $(MAKE) all
 	cd expat2 && $(MAKE) all
 	cd libxml2 && $(MAKE) all
@@ -18,7 +18,7 @@ all:
 	cd fffile && $(MAKE) all
 
 clean:
-	cd setspace && $(MAKE) clean
+	cd setcore && $(MAKE) clean
 	cd jsonorg && $(MAKE) clean
 	cd expat2 && $(MAKE) clean
 	cd libxml2 && $(MAKE) clean
@@ -26,7 +26,7 @@ clean:
 	cd fffile && $(MAKE) clean
 
 install:
-	cd setspace && $(MAKE) install
+	cd setcore && $(MAKE) install
 	cd jsonorg && $(MAKE) install
 	cd expat2 && $(MAKE) install
 	cd libxml2 && $(MAKE) install
@@ -36,7 +36,7 @@ install:
 	cp psqlrc.example $(SETSPACE_PREFIX)/lib/
 
 distclean:
-	cd setspace && $(MAKE) distclean
+	cd setcore && $(MAKE) distclean
 	cd jsonorg && $(MAKE) distclean
 	cd expat2 && $(MAKE) distclean
 	cd libxml2 && $(MAKE) distclean
