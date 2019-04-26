@@ -3,6 +3,9 @@
  *	Schema for the file type guesser "Find Free File Command", version 5
  *  See:
  *	http://www.darwinsys.com/file/
+ *  Note:
+ *	Replace table fffile.fault with fffile.fault_process similar to
+ *	pdfbox.fault_process.
  */
 
 \set ON_ERROR_STOP on
