@@ -7,13 +7,7 @@
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
  *  Note:
- *	Need to add hash index to all tables!
- *
- *	A view is_printable_unix?  See file setspace.flow.example.
- *
- *	add sql comments!
- *
- *	what about a setspace.core view?
+ *	Rename schema "setspace" to "setcore"!
  */
 \set ON_ERROR_STOP on
 \timing
