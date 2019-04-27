@@ -45,7 +45,6 @@ SELECT
 		--  not in either [fault_]pddocument_information
 		(pdi.blob IS NULL AND fpdi.blob IS NULL)
 
-		--  exists in either tables pddocument or pddocument_information
 		--  but not in extract_pages_utf8 or fault_extract_pages_utf8.
 		OR
 		(
