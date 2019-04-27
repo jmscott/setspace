@@ -72,6 +72,10 @@
 #define COMMON_NEED_DIE3
 #endif
 
+#if defined(COMMON_NEED_UNLINK)
+#define COMMON_NEED_DIE2
+#endif
+
 /*
  * Synopsis:
  *  	Fast, safe and simple string concatenator
@@ -552,6 +556,23 @@ _is_udig(char *udig)
 			return 0;
 	}
 	return 1;
+}
+
+#endif
+
+#ifdef COMMON_NEED_UNLINK
+
+int
+_unlink(char *path)
+{
+again:
+	if (unlink(path) == 0)
+		return 0;
+	if (errno == ENOENT)
+		return 1;
+	if (errno != EINTR)
+		die2(EXIT_BAD_UNLINK, "unlink() failed", strerror(errno));
+	goto again;
 }
 
 #endif

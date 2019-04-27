@@ -27,6 +27,7 @@ PROG=					\
 	is-utf8wf			\
 	spin-wait-blob			\
 	tas-run-lock			\
+	tas-run-unlock			\
 
 all: $(PROG) $(CGI) 
 	cd schema && $(MAKE) all
@@ -79,6 +80,7 @@ install: all
 		spin-wait-blob						\
 		tail-flowd						\
 		tas-run-lock						\
+		tas-run-unlock						\
 		flip-tail						\
 		$(SETSPACE_PREFIX)/sbin
 
@@ -112,6 +114,7 @@ install: all
 		macosx.c						\
 		spin-wait-blob.pgc					\
 		tas-run-lock.c						\
+		tas-run-unlock.c					\
 		$(SETSPACE_PREFIX)/src
 	cd schema && $(MAKE) install
 
@@ -138,6 +141,9 @@ is-utf8wf: is-utf8wf.c
 
 tas-run-lock: tas-run-lock.c
 	cc -o tas-run-lock $(CFLAGS) tas-run-lock.c
+
+tas-run-unlock: tas-run-unlock.c
+	cc -o tas-run-unlock $(CFLAGS) tas-run-unlock.c
 
 spin-wait-blob:								\
 		spin-wait-blob.pgc					\
