@@ -91,7 +91,7 @@ sql query pd_row row
 	statement = `
 
 	SELECT
-		--  exist in pddocument table
+		--  exists in table pddocument
 		EXISTS (
 		  SELECT
 		  	blob
@@ -134,7 +134,44 @@ command merge_pddocument
         };
 }
 
-call merge_pddocument(brr.udig)
+command lock_pddocument
+{
+	path = "tas-run-lock";
+	argv = (
+		"merge-pddocument"
+	);
+	exit_status is OK when in {
+                0,			#  ok, lock file created
+                1			#  lock already exists
+        };
+}
+
+command unlock_pddocument
+{
+	path = "tas-run-unlock";
+	argv = (
+		"merge-pddocument"
+	);
+	exit_status is OK when in {
+                0,			#  ok, lock file removed
+                1			#  lock file does not exist
+        };
+}
+
+call lock_pddocument(brr.udig)
   when
   	pd_row.has_pddocument == false
+;
+
+call merge_pddocument(brr.udig)
+  when
+  	lock_pddocument.exit_status == 0
+;
+
+call unlock_pddocument(brr.udig)
+  when
+	#  kludgey way to test for process termination
+  	merge_pddocument.exit_status == 0
+	or
+  	merge_pddocument.exit_status != 0
 ;
