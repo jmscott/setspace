@@ -172,8 +172,7 @@ _read(int fd, void *p, ssize_t nbytes)
 {
 	ssize_t nb;
 
-	again:
-
+again:
 	nb = read(fd, p, nbytes);
 	if (nb >= 0)
 		return nb;
@@ -245,8 +244,7 @@ _write(int fd, void *p, ssize_t nbytes)
 {
 	int nb = 0;
 
-	again:
-
+again:
 	nb = write(fd, p + nb, nbytes);
 	if (nb < 0) {
 		if (errno == EINTR)
@@ -277,8 +275,7 @@ _open(char *path, int oflag, int mode)
 {
 	int fd;
 
-	again:
-
+again:
 	fd = open(path, oflag, mode);
 	if (fd < 0) {
 		if (errno == EINTR)
@@ -305,8 +302,7 @@ _open(char *path, int oflag, int mode)
 static void
 _close(int fd)
 {
-	again:
-
+again:
 	if (close(fd) < 0) {
 		if (errno == EINTR)
 			goto again;
@@ -335,8 +331,7 @@ _close(int fd)
 static int
 _stat(char *path, struct stat *st)
 {
-	again:
-
+again:
 	if (stat(path, st) < 0) {
 		if (errno == EINTR)
 			goto again;
@@ -419,8 +414,7 @@ _slurp(char *path, void **buf, ssize_t *buf_size)
 static void
 _fchmod(int fd, int mode)
 {
-	again:
-
+again:
 	if (fchmod(fd, mode) < 0) {
 		if (errno == EINTR)
 			goto again;

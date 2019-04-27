@@ -25,7 +25,8 @@ PROG=					\
 	file-stat-size			\
 	flip-tail			\
 	is-utf8wf			\
-	spin-wait-blob
+	spin-wait-blob			\
+	tas-run-lock			\
 
 all: $(PROG) $(CGI) 
 	cd schema && $(MAKE) all
@@ -75,7 +76,10 @@ install: all
 		ls-boot-flowd						\
 		ls-flowd						\
 		rummy							\
+		spin-wait-blob						\
 		tail-flowd						\
+		tas-run-lock						\
+		flip-tail						\
 		$(SETSPACE_PREFIX)/sbin
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
@@ -83,9 +87,7 @@ install: all
 		append-brr						\
 		escape-json-utf8					\
 		file-stat-size						\
-		flip-tail						\
 		is-utf8wf						\
-		spin-wait-blob						\
 		$(SETSPACE_PREFIX)/bin
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
@@ -109,6 +111,7 @@ install: all
 		local-macosx.mk.example					\
 		macosx.c						\
 		spin-wait-blob.pgc					\
+		tas-run-lock.c						\
 		$(SETSPACE_PREFIX)/src
 	cd schema && $(MAKE) install
 
@@ -132,6 +135,9 @@ escape-json-utf8: escape-json-utf8.c
 
 is-utf8wf: is-utf8wf.c
 	cc -o is-utf8wf $(CFLAGS) is-utf8wf.c
+
+tas-run-lock: tas-run-lock.c
+	cc -o tas-run-lock $(CFLAGS) tas-run-lock.c
 
 spin-wait-blob:								\
 		spin-wait-blob.pgc					\

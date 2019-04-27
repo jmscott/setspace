@@ -7,4 +7,6 @@ flip-tail
 is-utf8wf
 local.mk
 macosx.o
+run
 spin-wait-blob
+tas-run-lock
