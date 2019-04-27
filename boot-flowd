@@ -14,9 +14,7 @@
 #  	jmscott@setspace.com
 #  	setspace@gmail.com
 #  Note:
-#	Think about overriding name of SETSPACE_ROOT my consulting a variable
-#	named SETSPACE_ROOT_NAME.  Will be helpfull for non setspace
-#	schemas that wish to manage flowd process.
+#	Think about isolating lock files in run/flowd/ instead of in run/
 #
 
 PROG=$(basename $0)
@@ -57,8 +55,10 @@ trap leave EXIT
 log "schema: $1"
 SCHEMA=$1
 
-test -n "$SETSPACE_ROOT" ||
-			die "environment variable not defined: SETSPACE_ROOT"
+log "flowd pause: $FLOWD_PAUSE"
+log "flowd pause limit: $FLOWD_PAUSE_LIMIT"
+
+test -n "$SETSPACE_ROOT" || die "env variable not defined: SETSPACE_ROOT"
 log "SETSPACE_ROOT=$SETSPACE_ROOT"
 
 cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
@@ -66,47 +66,44 @@ cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
 . etc/profile
 
 SCHEMA_ROOT=$SETSPACE_ROOT/schema/$SCHEMA
+log "schema root: $SCHEMA_ROOT"
 test -d $SCHEMA_ROOT || die "schema dir does not exist: $SCHEMA_ROOT"
 
 cd $SCHEMA_ROOT || die "cd $SCHEMA_ROOT failed: exit status=$?"
 
-if [ ! -e etc/profile ];  then
-	WARN "no profile: $(pwd)/etc/profile"
-	WARN "flowd not started"
-	exit 1
-fi
+test -e etc/profile || die "no schema profile: $(pwd)/etc/profile"
 
 log "sourcing $(pwd)/etc/profile"
 . etc/profile
 
 FLOW=etc/$SCHEMA.flow
 log "flowd file: $FLOW"
+test -e $FLOW || die "no flow file: $FLOW"
 
-if [ ! -e $FLOW ];  then
-	WARN "no flow file: $FLOW"
-	WARN "tables in schema may not be populated"
-	exit 1
-fi
+RUN_PID=run/flowd.pid
+test -e $RUN_PID &&
+	die "run/flowd.pid exists: is another flowd running #$(cat $RUN_PID)"
 
 log "starting flowd server: $FLOW"
 flowd server $FLOW &
 PID=$!
 log "flowd started in background: pid=$PID"
 
-#  wait for flowd to start an generate pid file
-#  restart up toe
+#  wait for flowd to generate a pid file
 
 PAUSE=$FLOWD_PAUSE
-PID_FILE=run/flowd.pid
-while [ ! -e $PID_FILE -a $PAUSE -le $FLOWD_PAUSE_LIMIT ];  do
+while [ ! -e $RUN_PID -a $PAUSE -le $FLOWD_PAUSE_LIMIT ];  do
 	if [ $PAUSE -gt $FLOWD_PAUSE ];  then
-		WARN "pid file $PID_FILE has not appeared"
+		WARN "pid file $RUN_PID has not appeared"
 	fi
 	log "pausing $PAUSE seconds while server starts ..."
 	sleep $PAUSE
 	PAUSE=$(expr $PAUSE '*' 2)
 done
 
-test -e $PID_FILE ||
-	die "flowd boot failed: $FLOW: no pid file $(pwd)/$PID_FILE"
+test -e $RUN_PID ||
+	die "flowd boot failed: no pid file: $FLOW"
+
+log "log file: $(pwd)/log/flowd-$(date '+%a').log"
+
 exit 0
