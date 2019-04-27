@@ -76,7 +76,7 @@ sql query in_service row
 	`;
 
 	result row is (
-		answer bool
+		ok bool
 	);
 }
 
@@ -136,16 +136,16 @@ sql query in_pddocs row
 	`;
 
 	result row is (
-		ok_pddocument			bool,
-		flt_pddocument			bool,
-		ok_pddocument_information	bool,
-		flt_pddocument_information		bool
+		ok			bool,
+		faulted			bool,
+		ok_info	bool,
+		faulted_info		bool
 	);
 }
 
 query in_pddocs(brr.udig)
   when
-  	in_service.answer == true
+  	in_service.ok == true
 ;
 
 ###
@@ -158,7 +158,7 @@ command merge_pddocument
 	path = "merge-pddocument";
 	exit_status is OK when in {
                 0,      #  ok, extracted pddocument info and stored into PG
-                1,      #  pdf load failed (but still tuple stored in PG)
+                1,      #  pdf load failed
                 2       #  blob does not exist
         };
 }
@@ -189,9 +189,9 @@ command unlock_pddocument
 
 call lock_pddocument(brr.udig)
   when
-  	in_pddocs.ok_pddocument == false
+  	in_pddocs.ok == false
 	and
-	in_pddocs.flt_pddocument == false
+	in_pddocs.faulted == false
 ;
 
 call merge_pddocument(brr.udig)
@@ -217,7 +217,7 @@ command merge_pddocument_information
 	path = "merge-pddocument_information";
 	exit_status is OK when in {
                 0,      #  ok, extracted pddocument info and stored into PG
-                1,      #  pdf load failed (but still tuple stored in PG)
+                1,      #  pdf load failed
                 2       #  blob does not exist
         };
 }
@@ -248,9 +248,9 @@ command unlock_pddocument_information
 
 call lock_pddocument_information(brr.udig)
   when
-  	in_pddocs.ok_pddocument_information == false
+  	in_pddocs.ok_info == false
 	and
-  	in_pddocs.flt_pddocument_information == false
+  	in_pddocs.faulted_info == false
 ;
 
 call merge_pddocument_information(brr.udig)
@@ -274,6 +274,9 @@ call unlock_pddocument_information(brr.udig)
 command merge_extract_pages_utf8
 {
 	path = "merge-extract_pages_utf8";
+	argv = (
+		"english"
+	);
 	exit_status is OK when in {
                 0,      #  ok, extracted pddocument info and stored into PG
                 1      #  pdf load failed (but still tuple stored in PG)
@@ -296,8 +299,7 @@ command unlock_extract_pages_utf8
 {
 	path = "tas-run-unlock";
 	argv = (
-		"merge-extract_pages_utf8",
-		"english"
+		"merge-extract_pages_utf8"
 	);
 	exit_status is OK when in {
                 0,			#  ok, lock file removed
@@ -337,6 +339,41 @@ sql query in_extract row
 	`;
 
 	result row is (
-		done		bool
+		ok		bool
 	);
 }
+
+query in_extract(brr.udig)
+  when
+  	#  blob is in service
+  	in_service.ok == true
+;
+
+call lock_extract_pages_utf8(brr.udig)
+  when
+  	#  not in the table extract_pages_utf8 or fault_process
+  	in_extract.ok == false
+
+	and
+
+	#  either in table pddocuments or merge-pddocument command
+	#  finished
+  	(
+		in_pddocs.ok == true
+		or
+		merge_pddocument.exit_status == 0
+	)
+;
+
+call merge_extract_pages_utf8(brr.udig)
+  when
+  	lock_extract_pages_utf8.exit_status == 0
+;
+
+call unlock_extract_pages_utf8(brr.udig)
+  when
+	#  uggh.  kludgy way to test for process termination
+  	merge_extract_pages_utf8.exit_status == 0
+	or
+  	merge_extract_pages_utf8.exit_status != 0
+;
