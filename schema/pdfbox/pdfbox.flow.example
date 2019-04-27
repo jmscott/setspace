@@ -61,7 +61,7 @@ call brr_on_network()
   )
 ;
 
-sql query in_service_table row
+sql query in_service row
 {
 	statement = `
 
@@ -80,18 +80,21 @@ sql query in_service_table row
 	);
 }
 
-query in_service_table(brr.udig)
+query in_service(brr.udig)
   when
   	brr_on_network.exit_status == 0
 ;
 
-#  determine if the pdf exists in various pddocument tables.
-sql query pd_row row
+#  determine if the pdf exists in various pddocument tables
+#  and extract_pages_utf8
+
+sql query in_pddocs row
 {
 	statement = `
 
 	SELECT
-		--  exists in table pddocument
+		--  pddocument: does row exist in table
+
 		EXISTS (
 		  SELECT
 		  	blob
@@ -110,20 +113,46 @@ sql query pd_row row
 		    	table_name = 'pddocument'
 			AND
 		    	blob = $1::udig
+		),
+		--  pddocument_information: does row exist in table
+		EXISTS (
+		  SELECT
+		  	blob
+		    FROM
+		    	pdfbox.pddocument_information
+		    WHERE
+		    	blob = $1::udig
+		)
+		OR
+		EXISTS (
+		  SELECT
+		  	blob
+		    FROM
+		    	pdfbox.fault_process
+		    WHERE
+		    	table_name = 'pddocument_information'
+			AND
+		    	blob = $1::udig
 		)
 	;
 	`;
 
 	result row is (
-		has_pddocument bool
+		has_pddocument			bool,
+		has_pddocument_information	bool
 	);
 }
 
-query pd_row(brr.udig)
+query in_pddocs(brr.udig)
   when
-  	in_service_table.answer == true
+  	in_service.answer == true
 ;
 
+###
+#
+#  PDDocument
+#
+###
 command merge_pddocument
 {
 	path = "merge-pddocument";
@@ -160,7 +189,7 @@ command unlock_pddocument
 
 call lock_pddocument(brr.udig)
   when
-  	pd_row.has_pddocument == false
+  	in_pddocs.has_pddocument == false
 ;
 
 call merge_pddocument(brr.udig)
@@ -170,8 +199,64 @@ call merge_pddocument(brr.udig)
 
 call unlock_pddocument(brr.udig)
   when
-	#  kludgey way to test for process termination
+	#  kludgy way to test for process termination
   	merge_pddocument.exit_status == 0
 	or
   	merge_pddocument.exit_status != 0
+;
+###
+#
+#  PDDocumentInformation
+#
+###
+command merge_pddocument_information
+{
+	path = "merge-pddocument_information";
+	exit_status is OK when in {
+                0,      #  ok, extracted pddocument info and stored into PG
+                1,      #  pdf load failed (but still tuple stored in PG)
+                2       #  blob does not exist
+        };
+}
+
+command lock_pddocument_information
+{
+	path = "tas-run-lock";
+	argv = (
+		"merge-pddocument_information"
+	);
+	exit_status is OK when in {
+                0,			#  ok, lock file created
+                1			#  lock already exists
+        };
+}
+
+command unlock_pddocument_information
+{
+	path = "tas-run-unlock";
+	argv = (
+		"merge-pddocument_information"
+	);
+	exit_status is OK when in {
+                0,			#  ok, lock file removed
+                1			#  lock file does not exist
+        };
+}
+
+call lock_pddocument_information(brr.udig)
+  when
+  	in_pddocs.has_pddocument_information == false
+;
+
+call merge_pddocument_information(brr.udig)
+  when
+  	lock_pddocument_information.exit_status == 0
+;
+
+call unlock_pddocument_information(brr.udig)
+  when
+	#  kludgy way to test for process termination
+  	merge_pddocument_information.exit_status == 0
+	or
+  	merge_pddocument_information.exit_status != 0
 ;
