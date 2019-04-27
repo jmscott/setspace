@@ -1,6 +1,6 @@
 /*
  *  Synopsis
- *	Test and set lock file in run/<lock-name>-<udig>.lock for a blob.
+ *	Remove blob level Test/set lock in run/<lock-name>-<udig>.lock.
  *  Usage:
  *	BLOB=sha:563b8f2dd5e6e2cfff2d40787186124772c562a5
  *	taz-run-lock merge-pddocument $BLOB
@@ -8,8 +8,6 @@
  *	0  -  lock exists and removed
  *	1  -  lock does not exist
  *	2  -  unexpected error
- *  Note:
- *	Consider a timeout option on the create.
  */
 
 #define EXIT_EXISTS		0
