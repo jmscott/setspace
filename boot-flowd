@@ -83,6 +83,7 @@ test -e $FLOW || die "no flow file: $FLOW"
 RUN_PID=run/flowd.pid
 test -e $RUN_PID &&
 	die "run/flowd.pid exists: is another flowd running #$(cat $RUN_PID)"
+rm -f run/*.lock || die "rm -f run/pid failed: exit status=$?"
 
 log "starting flowd server: $FLOW"
 flowd server $FLOW &
