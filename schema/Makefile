@@ -7,6 +7,11 @@
 include ../local.mk
 include schema.mk
 
+LIBs=									\
+	create-fault-process.sql					\
+	fault-process.sh						\
+	psqlrc.example
+
 createdb:
 	createdb setspace --encoding=UTF8 --template template0
 all:
@@ -33,7 +38,10 @@ install:
 	cd prefixio && $(MAKE) install
 	cd pdfbox && $(MAKE) install
 	cd fffile && $(MAKE) install
-	cp psqlrc.example $(SETSPACE_PREFIX)/lib/
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
+		-d $(SETSPACE_PREFIX)/lib
+	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m ug=r		\
+		$(LIBs) $(SETSPACE_PREFIX)/lib
 
 distclean:
 	cd setcore && $(MAKE) distclean
@@ -44,3 +52,4 @@ distclean:
 	cd pdfbox && $(MAKE) distclean
 	cd fffile && $(MAKE) distclean
 	rm -f $(SETSPACE_PREFIX)/lib/psqlrc.example
+	rm -f $(SETSPACE_PREFIX)/lib/fault-process.sh
