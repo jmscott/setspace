@@ -54,26 +54,6 @@ COMMENT ON TABLE pddocument IS
 CREATE INDEX idx_pddocument ON pddocument USING hash(blob);
 REVOKE UPDATE ON pddocument FROM public;
 
-DROP TABLE IF EXISTS fault_pddocument CASCADE;
-CREATE TABLE fault_pddocument
-(
-	blob	udig
-			REFERENCES setcore.service(blob)
-			ON DELETE CASCADE
-			PRIMARY KEY,
-	exit_status	setcore.unix_process_exit_status CHECK (
-				exit_status > 0
-			)
-			NOT NULL,
-	stderr_blob	udig CHECK (
-				blob != stderr_blob
-			)
-);
-COMMENT ON TABLE fault_pddocument IS
-  'Track process faults for java PDDocument calls' 
-;
-REVOKE UPDATE ON fault_pddocument FROM public;
-
 DROP TABLE IF EXISTS fault_process CASCADE;
 CREATE TABLE fault_process
 (
@@ -108,6 +88,7 @@ CREATE TABLE fault_process
 				length(comment) < 256
 			),
 
+	--  why is not null for start_time?
 	start_time	timestamptz CHECK (
 				start_time <= insert_time
 			) NOT NULL,
@@ -220,26 +201,6 @@ CREATE INDEX idx_pddocument_information ON pddocument_information
 ;
 REVOKE UPDATE ON TABLE pddocument_information FROM public;
 
-DROP TABLE IF EXISTS fault_pddocument_information;
-CREATE TABLE fault_pddocument_information
-(
-	blob	udig
-			REFERENCES setcore.service(blob)
-			ON DELETE CASCADE
-			PRIMARY KEY,
-	exit_status	setcore.unix_process_exit_status CHECK (
-				exit_status > 0
-			)
-			NOT NULL,
-	stderr_blob	udig CHECK (
-				blob != stderr_blob
-			)
-);
-COMMENT ON TABLE fault_pddocument_information IS
-  'Track process faults for java PDDocumentInformation calls' 
-;
-REVOKE UPDATE ON fault_pddocument_information FROM public;
-
 CREATE OR REPLACE FUNCTION is_pddocument_information_disjoint() RETURNS TRIGGER
   AS $$
   DECLARE
@@ -277,7 +238,7 @@ CREATE OR REPLACE FUNCTION is_pddocument_information_disjoint() RETURNS TRIGGER
   LANGUAGE plpgsql
 ;
 COMMENT ON FUNCTION is_pddocument_information_disjoint IS
-  'Check the blob is not in both table pddocument_information and fault_pddocument_information'
+  'Tables pddocument_information and fault_process are disjoint'
 ;
 
 CREATE TRIGGER is_pddocument_information_disjoint
@@ -285,7 +246,7 @@ CREATE TRIGGER is_pddocument_information_disjoint
   FOR EACH ROW EXECUTE PROCEDURE is_pddocument_information_disjoint()
 ;
 CREATE TRIGGER is_fault_pddocument_information_disjoint
-  AFTER INSERT ON fault_pddocument_information
+  AFTER INSERT ON fault_process
   FOR EACH ROW EXECUTE PROCEDURE is_pddocument_information_disjoint()
 ;
 
@@ -323,26 +284,6 @@ CREATE TABLE extract_pages_utf8
 COMMENT ON TABLE extract_pages_utf8 IS
   'Pages of UTF8 Text extracted by java class ExtractPagesUTF8'
 ;
-
-DROP TABLE IF EXISTS fault_extract_pages_utf8 CASCADE;
-CREATE TABLE fault_extract_pages_utf8
-(
-	blob	udig
-			REFERENCES setcore.service(blob)
-			ON DELETE CASCADE
-			PRIMARY KEY,
-	exit_status	setcore.unix_process_exit_status CHECK (
-				exit_status > 0
-			)
-			NOT NULL,
-	stderr_blob	udig CHECK (
-				blob != stderr_blob
-			)
-);
-COMMENT ON TABLE fault_extract_pages_utf8 IS
-  'Track process faults for java ExtractPagesUTF8 calls' 
-;
-REVOKE UPDATE ON fault_extract_pages_utf8 FROM public;
 
 CREATE OR REPLACE FUNCTION is_extract_pages_utf8_disjoint()
   RETURNS TRIGGER
@@ -445,7 +386,7 @@ DROP TRIGGER IF EXISTS is_fault_extract_pages_utf8_disjoint
   	fault_extract_pages_utf8
 ;
 CREATE TRIGGER is_fault_extract_pages_utf8_disjoint
-  AFTER INSERT ON fault_extract_pages_utf8
+  AFTER INSERT ON fault_process
   FOR EACH ROW EXECUTE PROCEDURE is_fault_extract_pages_utf8_disjoint()
 ;
 
@@ -537,26 +478,6 @@ CREATE TABLE pddocument_information_metadata_custom
 );
 COMMENT ON TABLE pddocument_information_metadata_custom IS
   'Key/Value metadata fetched by java class PDDocumentInformation'
-;
-
-/*
- *  Faults for invocation of PDDocumentInformation custom metadata.
- */
-DROP TABLE IF EXISTS fault_pddocument_information_metadata_custom CASCADE;
-CREATE TABLE fault_pddocument_information_metadata_custom
-(
-	blob		udig
-				REFERENCES
-				   pddocument_information(blob)
-				ON DELETE CASCADE
-				PRIMARY KEY,
-	exit_status	setcore.unix_process_exit_status
-				NOT NULL,
-	stderr_blob	udig
-				NOT NULL
-);
-COMMENT ON TABLE fault_pddocument_information_metadata_custom IS
-  'Faults for Key/Value metadata fetched by java class PDDocumentInformation'
 ;
 
 COMMIT;

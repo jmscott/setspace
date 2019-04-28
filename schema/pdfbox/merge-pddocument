@@ -91,14 +91,18 @@ if [ $EXIT_STATUS != 0 ];  then
 		STDERR_UDIG=$(blobio empty --algorithm $ALGORITHM)
 	fi
 	$PSQL <<END || die "psql insert fault failed: exit status=$?" 6
-INSERT INTO pdfbox.fault_pddocument (
+INSERT INTO pdfbox.fault_process (
+	table_name,
 	blob,
 	exit_status,
-	stderr_blob
+	stderr_blob,
+	start_time
 ) VALUES (
+	'pddocument',
 	'$UDIG',
 	$EXIT_STATUS,
-	'$STDERR_UDIG'
+	'$STDERR_UDIG',
+	'$(RFC3339Nano)'
 ) ON CONFLICT
 	DO NOTHING
 ;
