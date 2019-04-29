@@ -8,9 +8,9 @@ include ../local.mk
 include schema.mk
 
 LIBs=									\
-	create-fault.sql						\
 	fault-process.sh						\
-	psqlrc.example
+	psqlrc.example							\
+	schema-fault.sql						\
 
 createdb:
 	createdb setspace --encoding=UTF8 --template template0
