@@ -8,7 +8,7 @@ include ../local.mk
 include schema.mk
 
 LIBs=									\
-	create-fault-process.sql					\
+	create-fault.sql						\
 	fault-process.sh						\
 	psqlrc.example
 

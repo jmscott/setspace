@@ -7,8 +7,41 @@
  *	...
  *	SET search_path TO pdfbox,public;
  *	...
- *	\include ../../create-fault-process.sql
+ *	\include ../create-fault.sql
  */
+
+\set ON_ERROR_STOP 1
+
+BEGIN;
+
+DROP TABLE IF EXISTS fault_table CASCADE;
+CREATE TABLE fault_table
+(
+	table_name	name
+				PRIMARY KEY
+);
+COMMENT ON TABLE fault_table IS
+  'Tables names for which the merging process may have faulted'
+;
+
+DROP TABLE IF EXISTS fault CASCADE;
+CREATE TABLE fault
+(
+	table_name	name
+				REFERENCES fault_table
+				ON DELETE CASCADE,
+	blob		udig
+				REFERENCES setcore.service
+				ON DELETE CASCADE,
+	insert_time	timestamptz
+				DEFAULT now(),
+	PRIMARY KEY	(table_name, blob)
+);
+COMMENT ON TABLE fault IS
+  'Track faults associated with a blob in a particular table of schema'
+;
+REVOKE UPDATE ON fault FROM public;
+
 DROP TABLE IF EXISTS fault_program CASCADE;
 CREATE TABLE fault_program
 (
@@ -21,29 +54,13 @@ CREATE TABLE fault_program
 COMMENT ON TABLE fault_program IS
   'pdfbox scripts/programs which may generate faults merging into tables'
 ;
-
-DROP TABLE IF EXISTS fault_table CASCADE;
-CREATE TABLE fault_table
-(
-	table_name	text CHECK (
-				length(table_name) < 128
-				AND
-				length(table_name) > 0
-			) PRIMARY KEY
-);
-COMMENT ON TABLE fault_table IS
-  'Tables for which the merging process may have faulted'
-;
+REVOKE UPDATE ON fault_program FROM public;
 
 DROP TABLE IF EXISTS fault_process CASCADE;
 CREATE TABLE fault_process
 (
-	table_name	text
-				REFERENCES fault_table
-				ON DELETE CASCADE,
-	blob		udig
-				REFERENCES setcore.service
-				ON DELETE CASCADE,
+	table_name	name,
+	blob		udig,
 	program_name	text
 				REFERENCES fault_program
 				ON DELETE CASCADE
@@ -67,10 +84,14 @@ CREATE TABLE fault_process
 				DEFAULT now()
 				NOT NULL,
 
+	FOREIGN KEY	(table_name, blob)
+				REFERENCES fault
+				ON DELETE CASCADE,
+
 	PRIMARY KEY	(table_name, blob)
 );
 COMMENT ON TABLE fault_process IS
-  'Track process faults when merging tuples into a table for a blob'
+  'Track program faults when merging tuples into a table for a blob'
 ;
 COMMENT ON COLUMN fault_process.stderr_msg IS
   'Stderr message realted to fault while processing the blob'
@@ -86,3 +107,5 @@ COMMENT ON COLUMN fault_process.start_time IS
 ;
 REVOKE UPDATE ON fault_process FROM public;
 CREATE INDEX idx_fault_process_blob ON fault_process(blob);
+
+COMMIT;
