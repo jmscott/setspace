@@ -2,13 +2,12 @@
 #  Synopsis:
 #	Example of a GNU Makefile template for typical Linux 2.6 distro.
 #  Usage:
-#  	cd ~/dev/setspace/trunk
-#  	cp local-linux.mk.example local.mk
-#  	... edit local.mk
-#  	make all
+#	cp local-linux.mk.example local.mk
+#	#  edit local.mk
+#	make world
 #  Note:
-#	The execution PATH must include the PostgreSQL C precompile 'ecpg'
-#	for schema/drblob.  See schema/drblob/Makefile.
+#	Why are PGINC and PGLIB defined here, since they will never be
+#	changed, relative to PGHOME?
 #
 
 ########################  BEGIN SECTION OF VARIABLES TO CHANGE
@@ -22,6 +21,7 @@
 INSTALL_PREFIX=/usr/local
 
 #  where are postgres includes & libraries?
+#  note: why are PGINC and PGLIB defined here?
 
 PGHOME=/usr/local/pgsql
 PGINC=$(PGHOME)/include

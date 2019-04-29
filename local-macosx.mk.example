@@ -1,8 +1,13 @@
 #
 #  Synopsis:
 #	Makefile template for typical Mac OSX >= 10.6 development environment
-#  Blame:
-#	https://github.com/jmscott
+#  Usage:
+#	cp local-linux.mk.example local.mk
+#	#  edit local.mk
+#	make world
+#  Note:
+#	Why are PGINC and PGLIB defined here, since they will never be
+#	changed, relative to PGHOME?
 #
 
 ########################  BEGIN SECTION OF VARIABLES TO CHANGE
@@ -15,7 +20,8 @@
 INSTALL_PREFIX=/usr/local
 #INSTALL_PREFIX=$(HOME)/opt
 
-#  where are postgres 9.6+ includes & libraries?
+#  where are postgres includes & libraries?
+#  note: why are PGINC and PGLIB defined here?
 
 PGHOME=/usr/local/pgsql
 PGINC=$(PGHOME)/include
