@@ -7,12 +7,12 @@
  *	...
  *	SET search_path TO pdfbox,public;
  *	...
+ *	BEGIN;
+ *
  *	\include ../create-fault.sql
+ *
+ *	COMMIT;
  */
-
-\set ON_ERROR_STOP 1
-
-BEGIN;
 
 DROP TABLE IF EXISTS fault_table CASCADE;
 CREATE TABLE fault_table
@@ -107,5 +107,3 @@ COMMENT ON COLUMN fault_process.start_time IS
 ;
 REVOKE UPDATE ON fault_process FROM public;
 CREATE INDEX idx_fault_process_blob ON fault_process(blob);
-
-COMMIT;
