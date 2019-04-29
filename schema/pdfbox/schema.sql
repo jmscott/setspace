@@ -7,6 +7,9 @@
  *	psql -f lib/schema.sql
  *  See:
  *	https://pdfbox.apache.org
+ *  Note:
+ *	Think about disjointness for extract_pages_utf8 when multiple langauges
+ *	are described via ts_conf
  */
 
 \set ON_ERROR_STOP on

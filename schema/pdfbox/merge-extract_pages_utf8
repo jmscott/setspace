@@ -24,13 +24,13 @@
 #	import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 #	import org.apache.pdfbox.text.PDFTextStripper;
 #  Note:
-#	Only faults of java ExtractPagesUTF8 are logged.  What happens
-#	if the sql insert fails?
+#	The error status '0 3' in the loop over pages is not correct.
 #
 #	Page blobs may be orphaned if the transaction if aborted.
 #	Perhaps a json blob summarizing the transaction should be created.
 #
 
+START_TIME=$(RFC3339Nano)
 PROG=merge-extract_pages_utf8
 GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 WORK_DIR=${TMPDIR:=/tmp}/$PROG.$$.d
@@ -50,8 +50,21 @@ leave()
 	cd .. && rm -rf $WORK_DIR
 	exit $STATUS
 }
-
 trap leave EXIT
+
+_fault()
+{
+	source $SETSPACE_ROOT/lib/fault-process.sh ||
+			die "source fault-process.sh failed: exit status=$?" 3
+	fault_process							\
+		pdfbox							\
+		extract_pages_utf8					\
+		$PDF_UDIG						\
+		"$TS_CONF: $1"						\
+		STDERR							\
+		$2							\
+		$START_TIME
+}
 
 test $# = 2 || die "wrong number of arguments: got $#, expected 2" 2
 TS_CONF=$1
@@ -85,47 +98,11 @@ java 									\
 	-cp $CLASSPATH							\
 	ExtractPagesUTF8						\
 	<$PDF 2>STDERR
-EXIT_STATUS=$?
+STATUS=$?
 test -e STDERR || die "java write to stderr failed" 
-cat STDERR >&2
 
-#  log the fault of the java invocation, including stderr.
-if [ $EXIT_STATUS != 0 ];  then
-	if [ -s STDERR ];  then
-		STDERR_UDIG=$ALGORITHM:$(
-			blobio eat					\
-				--algorithm $ALGORITHM			\
-				--input-path STDERR
-		)
-		test $? = 0 || die "blobio eat stderr failed: exit status=$?"
-
-		blobio put						\
-			--udig $STDERR_UDIG				\
-			--input-path STDERR				\
-			--service $BLOBIO_SERVICE			||
-			die "blobio put stderr failed: exit status=$?" 3
-	else
-		STDERR_UDIG=$ALGORITHM:$(blobio empty --algorithm $ALGORITHM)
-	fi
-	$PSQL <<END || die "psql insert fault failed: exit status=$?" 5
-INSERT INTO pdfbox.fault_process (
-	table_name,
-	blob,
-	exit_status,
-	stderr_blob,
-	start_time
-) VALUES (
-	'extract_pages_utf8',
-	'$UDIG',
-	$EXIT_STATUS,
-	'$STDERR_UDIG',
-	'$(RFC3339Nano)'
-) ON CONFLICT
-	DO NOTHING
-;
-END
-	die "java ExtractPagesUTF8 failed: exit status=$EXIT_STATUS" 4
-fi
+test $STATUS = 0 ||
+	_fault "java ExtractPagesUTF8 failed: exit status=$?" 4
 
 #  loop through the page files to put the blobs and record udigs in <page>.udig
 
@@ -161,7 +138,7 @@ case "$STATUS" in
 	exit 2
 	;;
 '0 3')
-	exit 3
+	exit 3		# WTF?
 	;;
 *)
 	die "find | page text failed: exit status=$STATUS" 2
@@ -170,5 +147,5 @@ esac
 
 #  sql merge all pages, text, tsf in database in a single transaction
 
-merge-all-extract_pages_utf8 $PDF_UDIG $TS_CONF ||
-	die "merge-all-extract_pages_utf8 failed: exit status=$?" 5
+merge-all-extract_pages_utf8 $PDF_UDIG $TS_CONF 2>STDERR ||
+	_fault "merge-all-extract_pages_utf8 failed: exit status=$?" 5

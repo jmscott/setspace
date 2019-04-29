@@ -15,7 +15,7 @@
  *		http://tex.stackexchange.com/questions/97071
  *
  *	Embedded pdfs are not extracted.  Eventually code from ExtractText.java
- *	will be added to ExtractPagesUTF8.java.
+ *	will be added to ExtractPagesUTF8.java to handle imbedded pdfs.
  */
 import java.io.File;
 import java.io.FileOutputStream;
