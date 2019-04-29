@@ -20,6 +20,7 @@
 #	How do we know the output of putPDDocument is always UTF-8?
 #
 
+START_TIME=$(RFC3339Nano)
 PROG=merge-pddocument
 GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 TMPDIR=${TMPDIR:=/tmp}
@@ -29,9 +30,6 @@ ALGORITHM=${BLOBIO_ALGORITHM:=bc160}
 TMP_BLOB=$TMPDIR/$PROG-$$.pdf
 TMP_ROW=$TMPDIR/$PROG-$$.row
 TMP_STDERR=$TMPDIR/$PROG-stderr.$$.out
-
-source $SETSPACE_ROOT/lib/fault-process.sh 				||
-	die "source fault-process.sh failed: exit status=$?" 3
 
 leave()
 {
@@ -46,9 +44,11 @@ die()
 	exit $STATUS
 }
 
-ERROR()
+_fault()
 {
-	echo "$PROG: ERROR: $@" >&2
+	source lib/fault-process.sh ||
+			die "source fault-process.sh failed: exit status=$?" 3
+	fault_process pdfbox pddocument $UDIG "$1" $TMP_STDERR $2 $START_TIME
 }
 
 test $# = 1 || die "wrong number of arguments: got $#, expected 1" 3
@@ -74,50 +74,12 @@ esac
 #  of the pdf file.
 
 java -server -cp $CLASSPATH putPDDocument <$TMP_BLOB >$TMP_ROW 2>$TMP_STDERR
-EXIT_STATUS=$?
+STATUS=$?
 test -e $TMP_STDERR || die "write to temp failed: $TMP_STDERR" 3
-cat $TMP_STDERR >&2
 
-test $EXIT_STATUS = 0							||
-	fault_process pdfbox pddocument					\
-	"java putPDDocument failed
+test $STATUS = 0							||
+	_fault "java putPDDocument failed: exit status=$STATUS" 5
 	
-if [ $EXIT_STATUS != 0 ];  then
-	if [ -s $TMP_STDERR ];  then
-		STDERR_UDIG=$ALGORITHM:$(
-			blobio eat 					\
-				-algorithm $ALGORITHM			\
-				--input-path $TMP_STDERR
-		)
-		blobio put						\
-			--udig $STDERR_UDIG				\
-			--input-path $TMP_STDERR			\
-			--service $BLOBIO_SERVICE			||
-			die "blobio put stderr failed: exit status=$?" 4
-	else
-		STDERR_UDIG=$(blobio empty --algorithm $ALGORITHM)
-	fi
-	$PSQL <<END || die "psql insert fault failed: exit status=$?" 6
-INSERT INTO pdfbox.fault_process (
-	table_name,
-	blob,
-	exit_status,
-	stderr_blob,
-	start_time
-) VALUES (
-	'pddocument',
-	'$UDIG',
-	$EXIT_STATUS,
-	'$STDERR_UDIG',
-	'$(RFC3339Nano)'
-) ON CONFLICT
-	DO NOTHING
-;
-END
-	test $EXIT_STATUS = 2 || die "java failed: exit status=$EXIT_STATUS" 5
-	exit 1
-fi
-
 #  pdf loaded and scalars extracted
 #  Note: are we reading UTF-8?
 

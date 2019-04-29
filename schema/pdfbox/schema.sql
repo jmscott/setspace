@@ -1,6 +1,10 @@
 /*
  *  Synopsis:
  *	Schema of the pdfbox.apache.org version 2 api
+ *  Usage:
+ *	#  this script needs to include $SETSPACE_ROOT/lib/schema-fault.sql
+ *	cd $SETSPACE_ROOT
+ *	psql -f lib/schema.sql
  *  See:
  *	https://pdfbox.apache.org
  */
@@ -56,9 +60,8 @@ REVOKE UPDATE ON pddocument FROM public;
 
 --  this script must be invoked in directory $SETSPACE_ROOT/schema/pdfbox
 
-\set schema=pdfbox
--- \include ../../lib/create-fault-process.sql
-\include create-fault-process.sql
+\echo including lib/schema-fault.sql
+\include lib/schema-fault.sql
 
 CREATE OR REPLACE FUNCTION is_pddocument_disjoint() RETURNS TRIGGER
   AS $$
@@ -76,7 +79,7 @@ CREATE OR REPLACE FUNCTION is_pddocument_disjoint() RETURNS TRIGGER
 	  SELECT
 		count(*) AS count
 	    FROM
-		pdfbox.fault_process
+		pdfbox.fault
 	    WHERE
 		table_name = 'pddocument'
 		AND
@@ -168,7 +171,7 @@ CREATE OR REPLACE FUNCTION is_pddocument_information_disjoint() RETURNS TRIGGER
 	  SELECT
 		count(*) AS count
 	    FROM
-		pdfbox.fault_process
+		pdfbox.fault
 	    WHERE
 		table_name = 'pddocument_information'
 		AND
@@ -188,7 +191,7 @@ CREATE OR REPLACE FUNCTION is_pddocument_information_disjoint() RETURNS TRIGGER
   LANGUAGE plpgsql
 ;
 COMMENT ON FUNCTION is_pddocument_information_disjoint IS
-  'Tables pddocument_information and fault_process are disjoint'
+  'Tables pddocument_information and fault are disjoint'
 ;
 
 CREATE TRIGGER is_pddocument_information_disjoint
@@ -196,7 +199,7 @@ CREATE TRIGGER is_pddocument_information_disjoint
   FOR EACH ROW EXECUTE PROCEDURE is_pddocument_information_disjoint()
 ;
 CREATE TRIGGER is_fault_pddocument_information_disjoint
-  AFTER INSERT ON fault_process
+  AFTER INSERT ON fault
   FOR EACH ROW EXECUTE PROCEDURE is_pddocument_information_disjoint()
 ;
 
@@ -255,7 +258,7 @@ CREATE OR REPLACE FUNCTION is_extract_pages_utf8_disjoint()
 	  SELECT
 		count(*) AS count
 	    FROM
-		pdfbox.fault_process
+		pdfbox.fault
 	    WHERE
 	    	table_name = 'extract_pages_utf8'
 		AND
@@ -275,7 +278,7 @@ CREATE OR REPLACE FUNCTION is_extract_pages_utf8_disjoint()
   LANGUAGE plpgsql
 ;
 COMMENT ON FUNCTION is_extract_pages_utf8_disjoint IS
-  'Check the new pdf for extract_pages_utf8 is not in fault_process'
+  'Check the new pdf for extract_pages_utf8 is not in fault'
 ;
 
 DROP TRIGGER IF EXISTS is_extract_pages_utf8_disjoint
@@ -307,7 +310,7 @@ CREATE OR REPLACE FUNCTION is_fault_extract_pages_utf8_disjoint()
 	  SELECT
 		count(*) AS count
 	    FROM
-		pdfbox.fault_process
+		pdfbox.fault
 	    WHERE
 	    	table_name = 'extract_pages_utf8'
 		AND
@@ -336,7 +339,7 @@ DROP TRIGGER IF EXISTS is_fault_extract_pages_utf8_disjoint
   	fault_extract_pages_utf8
 ;
 CREATE TRIGGER is_fault_extract_pages_utf8_disjoint
-  AFTER INSERT ON fault_process
+  AFTER INSERT ON fault
   FOR EACH ROW EXECUTE PROCEDURE is_fault_extract_pages_utf8_disjoint()
 ;
 

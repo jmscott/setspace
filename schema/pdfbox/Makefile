@@ -94,6 +94,7 @@ install: all
 		psqlrc.example						\
 		rummy.sql						\
 		schema.sql						\
+		schema-default.sql					\
 		$(PDFBOX_PREFIX)/lib
 
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m u=rx		\

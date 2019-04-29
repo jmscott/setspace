@@ -75,6 +75,7 @@ install: all
 		kill-flowd						\
 		launchd-flowd						\
 		ls-boot-flowd						\
+		ls-flow							\
 		ls-flowd						\
 		rummy							\
 		spin-wait-blob						\

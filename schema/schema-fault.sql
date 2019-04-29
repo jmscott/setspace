@@ -76,9 +76,8 @@ CREATE TABLE fault_process
 			),
 	stderr_blob	udig,
 
-	start_time	timestamptz CHECK (
-				start_time <= insert_time
-			) NOT NULL,
+	start_time	timestamptz
+				NOT NULL,
 
 	FOREIGN KEY	(table_name, blob)
 				REFERENCES fault
@@ -94,9 +93,6 @@ COMMENT ON COLUMN fault_process.stderr_msg IS
 ;
 COMMENT ON COLUMN fault_process.stderr_blob IS
   'Blob of stderr output of faulted process merging for a blob'
-;
-COMMENT ON COLUMN fault_process.env_blob IS
-  'Blob of the process environment'
 ;
 COMMENT ON COLUMN fault_process.start_time IS
   'When the fauling process started'
