@@ -8,7 +8,7 @@
 #	0	ok, extracted pddocument info and stored into PostgreSQL
 #	1	pdf load failed
 #	2	blob does not exist
-#	3	script invocation error 
+#	3	error with script invocation or setup
 #	4	unexpected blobio error
 #	5	unexpected java putPDDocument failed
 #	6	pg database error
@@ -29,6 +29,9 @@ ALGORITHM=${BLOBIO_ALGORITHM:=bc160}
 TMP_BLOB=$TMPDIR/$PROG-$$.pdf
 TMP_ROW=$TMPDIR/$PROG-$$.row
 TMP_STDERR=$TMPDIR/$PROG-stderr.$$.out
+
+source $SETSPACE_ROOT/lib/fault-process.sh 				||
+	die "source fault-process.sh failed: exit status=$?" 3
 
 leave()
 {
@@ -72,9 +75,13 @@ esac
 
 java -server -cp $CLASSPATH putPDDocument <$TMP_BLOB >$TMP_ROW 2>$TMP_STDERR
 EXIT_STATUS=$?
-test -e $TMP_STDERR || die "write to temp failed: $TMP_STDERR" 5
+test -e $TMP_STDERR || die "write to temp failed: $TMP_STDERR" 3
 cat $TMP_STDERR >&2
 
+test $EXIT_STATUS = 0							||
+	fault_process pdfbox pddocument					\
+	"java putPDDocument failed
+	
 if [ $EXIT_STATUS != 0 ];  then
 	if [ -s $TMP_STDERR ];  then
 		STDERR_UDIG=$ALGORITHM:$(
