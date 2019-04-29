@@ -9,11 +9,10 @@
 #	1	pdf load ok but some fields do not satify database constraints.
 #	2	pdf load failed
 #	3	blob does not exist
-#	4	script invocation error
+#	4	script invocation or setup error
 #	5	unexpected blobio error
 #	6	unexpected java putPDDocument failed
 #	7	pg database error
-#	8	infomation data violates database constraint
 #  Environment:
 #	BLOBIO_ALGORITHM
 #	BLOBIO_SERVICE
@@ -23,6 +22,7 @@
 #	How do we know the output of putPDDocumentInformation is always UTF-8?
 #
 
+START_TIME=$(RFC3339Nano)
 PROG=merge-pddocument_information
 PSQL='psql --no-psqlrc --quiet'
 BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
@@ -47,9 +47,18 @@ die()
 	exit $STATUS
 }
 
-ERROR()
+_fault()
 {
-	echo "$PROG: ERROR: $@" >&2
+	source lib/fault-process.sh ||
+			die "source fault-process.sh failed: exit status=$?" 3
+	fault_process							\
+		pdfbox							\
+		pddocument_information					\
+		$UDIG							\
+		"$1"							\
+		$TMP_STDERR						\
+		$2							\
+		$START_TIME
 }
 
 test $# = 1 || die "wrong number of arguments: got $#, expected 1" 4
@@ -63,7 +72,7 @@ case $STATUS in
 0)
 	;;
 1)
-	exit 2
+	exit 3
 	;;
 *)
 	die "blobio get pdf failed: exit status=$STATUS" 5
@@ -71,55 +80,29 @@ case $STATUS in
 esac
 
 #  execute the java extract.  although we expect only 0 and no stderr,
-#  0 with stderr is normal.  an exit status of 1 indicates a failed load
+#  0 with stderr is normal.  an exit status of 3 indicates a failed load
 #  of the pdf file.
 
 java <$TMP_BLOB								\
 	-server								\
 	-cp $CLASSPATH putPDDocumentInformation 			\
 	>$TMP_ROW 2>$TMP_STDERR
-EXIT_STATUS=$?
-test -e $TMP_STDERR || die "java write to stderr failed" 6
-cat $TMP_STDERR >&2
+STATUS=$?
+test -e $TMP_STDERR || die "java write to stderr failed" 4
+case $STATUS in
+0)
+	EXIT_STATUS=0
+	;;
+2)
+	EXIT_STATUS=1
+	;;
+*)
+	_fault "java putPDDocumentInformation failed: exit status=$STATUS" 6
+	;;
+esac
 
-#  log the fault of the java invocation, including stderr.
-if [ $EXIT_STATUS != 0 ];  then
-	if [ -s $TMP_STDERR ];  then
-		STDERR_UDIG=$ALGORITHM:$(
-			blobio eat					\
-				--algorithm $ALGORITHM			\
-				--input-path $TMP_STDERR
-		)
-		blobio put						\
-			--udig $STDERR_UDIG				\
-			--input-path $TMP_STDERR			\
-			--service $BLOBIO_SERVICE			||
-			die "blobio put stderr failed: exit status=$?" 5
-	else
-		STDERR_UDIG=$ALGORITHM:$(blobio empty --algorithm $ALGORITHM)
-	fi
-	$PSQL <<END || die "psql insert fault failed: exit status=$?" 7
-INSERT INTO pdfbox.fault_process (
-	table_name,
-	blob,
-	exit_status,
-	stderr_blob,
-	start_time
-) VALUES (
-	'pddocument_information',
-	'$UDIG',
-	$EXIT_STATUS,
-	'$STDERR_UDIG',
-	'$(RFC3339Nano)'
-) ON CONFLICT
-	DO NOTHING
-;
-END
-	test $EXIT_STATUS = 2 || die "java failed: exit status=$EXIT_STATUS" 6
-	exit 1
-fi
-
-merge-stdin-pddocument_information 					\
+merge-stdin-pddocument_information					\
 	$UDIG								\
 	$(file-stat-size $TMP_ROW) <$TMP_ROW				||
 	die "merge-stdin-pddocument_information failed: exit status=$?" 7
+exit $EXIT_STATUS
