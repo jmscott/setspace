@@ -75,14 +75,10 @@ CREATE TABLE fault_process
 				stderr_msg ~ '[^\s]'	-- not all empty space
 			),
 	stderr_blob	udig,
-	env_blob	udig,
 
 	start_time	timestamptz CHECK (
 				start_time <= insert_time
 			) NOT NULL,
-	insert_time	timestamptz
-				DEFAULT now()
-				NOT NULL,
 
 	FOREIGN KEY	(table_name, blob)
 				REFERENCES fault
