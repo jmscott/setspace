@@ -107,7 +107,7 @@ sql query in_pddocs row
 		  SELECT
 		  	blob
 		    FROM
-		    	pdfbox.fault_process
+		    	pdfbox.fault
 		    WHERE
 		    	table_name = 'pddocument'
 			AND
@@ -126,7 +126,7 @@ sql query in_pddocs row
 		  SELECT
 		  	blob
 		    FROM
-		    	pdfbox.fault_process
+		    	pdfbox.fault
 		    WHERE
 		    	table_name = 'pddocument_information'
 			AND
@@ -329,7 +329,7 @@ sql query in_extract row
 		  SELECT
 		  	blob
 		    FROM
-		    	pdfbox.fault_process
+		    	pdfbox.fault
 		    WHERE
 		    	table_name = 'extract_pages_utf8'
 			AND
@@ -351,7 +351,7 @@ query in_extract(brr.udig)
 
 call lock_extract_pages_utf8(brr.udig)
   when
-  	#  not in the table extract_pages_utf8 or fault_process
+  	#  not in the table extract_pages_utf8 or fault
   	in_extract.ok == false
 
 	and
