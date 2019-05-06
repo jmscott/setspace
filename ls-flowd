@@ -21,8 +21,13 @@ test -n "$SETSPACE_ROOT" || die 'env var not defined: SETSPACE_ROOT'
 SCHEMA=$SETSPACE_ROOT/schema
 cd $SCHEMA || die "cd $SCHEMA failed: exit status=$?"
 
-find . -type d -maxdepth 1 | while read SC;  do
-	test -e $SC/run/flowd.pid && echo $(basename $SC)
+find . -type d -maxdepth 1 -mindepth 1 | while read SC;  do
+	SC=$(basename $SC)
+	PID=$SC/run/flowd.pid
+	test -e $PID || continue
+	STATE=ALIVE
+	test -n "$(find $PID -mmin 2 -print)" || STATE=DEAD
+	echo "$SC	$STATE"
 done
 
 exit 0
