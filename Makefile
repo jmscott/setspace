@@ -70,6 +70,7 @@ install: all
 		find-brr						\
 		find-rolled-brr						\
 		find-schema						\
+		flip-tail						\
 		flowd-stat						\
 		kill-all-flowd						\
 		kill-flowd						\
@@ -82,7 +83,7 @@ install: all
 		tail-flowd						\
 		tas-run-lock						\
 		tas-run-unlock						\
-		flip-tail						\
+		zap-flowd						\
 		$(SETSPACE_PREFIX)/sbin
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
