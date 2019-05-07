@@ -83,7 +83,6 @@ install: all
 		tail-flowd						\
 		tas-run-lock						\
 		tas-run-unlock						\
-		zap-flowd						\
 		$(SETSPACE_PREFIX)/sbin
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
