@@ -28,7 +28,7 @@ find . -type d -maxdepth 1 -mindepth 1 | while read SC;  do
 	STATE=DEAD
 
 	#  has run/flowd.pid been touched within 2 minutes
-	test -n "$(find $PID -mmin -2 -print)" && STATE=DEAD
+	test -n "$(find $PID -mmin -2 -print)" && STATE=ALIVE
 	echo "$SC	$STATE"
 done
 
