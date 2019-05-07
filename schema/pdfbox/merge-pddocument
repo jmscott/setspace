@@ -46,7 +46,7 @@ die()
 
 _fault()
 {
-	source lib/fault-process.sh ||
+	source $SETSPACE_ROOT/lib/fault-process.sh ||
 			die "source fault-process.sh failed: exit status=$?" 3
 	fault_process pdfbox pddocument $UDIG "$1" $TMP_STDERR $2 $START_TIME
 }
