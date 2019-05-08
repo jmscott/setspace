@@ -138,8 +138,10 @@ parse_query()
 	return 0
 }
 
-test -n "$PDFBOX_ROOT" || die 'environment not defined: PDFBOX_ROOT' 4
+test -n "$SETSPACE_ROOT" || die 'environment not defined: SETSPACE_ROOT' 4
 test $# -gt 1 || die 'wrong number of arguments' 4
+
+PDFBOX_ROOT=$SETSPACE_ROOT/schema/pdfbox
 
 case "$1" in
 page)
