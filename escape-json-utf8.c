@@ -129,6 +129,8 @@ main(int argc, char **argv)
 
 		unsigned char c = *p++;
 
+		//  valid utf8 characters.
+
 		switch (state) {
 		case STATE_START:
 			/*
