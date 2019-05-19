@@ -1,14 +1,9 @@
 #
 #  Synopsis:
 #	Root makefile for setspace clients and spider environment.
-#  Depends:
-#	local.mk, derived from local-linux.mk.example  local-macosx.mk.example
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
-#  Note:
-#	The execution PATH must include the PostgreSQL C precompile 'ecpg'
-#	for schema/drblob.  See schema/drblob/Makefile.
+#  See:
+#	local-linux.mk.example
+#	local-macossx.mk.example
 #
 include local.mk
 include setspace.mk
