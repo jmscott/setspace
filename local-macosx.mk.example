@@ -11,7 +11,7 @@
 #	PGHOME			#  root of postgresql distro
 #	GODIST			#  golang distobution
 #  Note:
-#	Consider gnu make ?= for possible overriding
+#	Need to rename example local-*.example with os and arch..
 #
 #	Add comment about why GODIST is set.
 #
@@ -19,23 +19,21 @@
 ########################  BEGIN SECTION OF VARIABLES TO CHANGE
 #
 
-#  in dev environment overide to, say, $(HOME)/opt
-INSTALL_PREFIX=/usr/local
-#INSTALL_PREFIX=$(HOME)/opt
+INSTALL_PREFIX?=/usr/local
+#INSTALL_PREFIX?=$(HOME)/opt
 
 #  location of pdfbox jar file, version 2
 #
 #  Note: be carefull installing underneath $(INSTALL_PREFIX),
 #        since a 'make distclean' will remove the jar file.
 #
-PDFBOX_APP2_JAR:=/usr/local/lib/pdfbox-app-2.jar
+PDFBOX_APP2_JAR?=/usr/local/lib/pdfbox-app-2.jar
 
 #  Where postgres distro lives
-PGHOME=/usr/local/pgsql
-
+PGHOME?=/usr/local/pgsql
 
 #  Location of go language distribution.
 
-GODIST=/usr/local/go
+GODIST?=/usr/local/go
 
 ########################  END SECTION OF VARIABLES TO CHANGE
