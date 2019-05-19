@@ -25,8 +25,7 @@ INSTALL_PREFIX?=/usr/local
 
 #  location of pdfbox jar file, version 2
 #
-#  Note: be carefull installing underneath $(INSTALL_PREFIX),
-#        since a 'make distclean' will remove the jar file.
+#  Undefine to disable compiling entire pdfbox schema
 #
 PDFBOX_APP2_JAR?=/usr/local/lib/pdfbox-app-2.jar
 

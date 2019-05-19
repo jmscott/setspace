@@ -1,6 +1,9 @@
 #
 #  Synopsis:
 #  	Static Makefile rules for setspace/schema/* subsystems
+#  Note:
+#	Why soo many variables for <SCHEMA>_{USER,GROUP}?
+#	Seems like SETSPACE_{USER,GROUP} are sufficient.
 #
 
 #  Variables for setcore schema
@@ -10,13 +13,6 @@ SETCORE_PREFIX=$(SETCORE_ROOT)
 SETCORE_USER=$(SETSPACE_USER)
 SETCORE_GROUP=$(SETSPACE_GROUP)
 
-
-#  Variables for Blob Detail Records stored in schema named 'drblob'
-
-DRBLOB_ROOT=$(SETSPACE_PREFIX)/schema/drblob
-DRBLOB_PREFIX=$(DRBLOB_ROOT)
-DRBLOB_USER=$(SETSPACE_USER)
-DRBLOB_GROUP=$(SETSPACE_GROUP)
 
 #  Variables for json.org schema for binary json blobs, named 'jsonorg'
 JSONORG_ROOT=$(SETSPACE_PREFIX)/schema/jsonorg
@@ -43,10 +39,14 @@ PREFIXIO_USER=$(SETSPACE_USER)
 PREFIXIO_GROUP=$(SETSPACE_GROUP)
 
 #  Variables for pdfbox schema for all pdf files
+#  Only compile if var PDFBOX_APP2_JAR is defined in local.mk
+
+ifdef PDFBOX_APP2_JAR
 PDFBOX_ROOT=$(SETSPACE_PREFIX)/schema/pdfbox
 PDFBOX_PREFIX=$(PDFBOX_ROOT)
 PDFBOX_USER=$(SETSPACE_USER)
 PDFBOX_GROUP=$(SETSPACE_GROUP)
+endif
 
 #  Variables for pgtexts schema for all utf8 files
 PGTEXTS_ROOT=$(SETSPACE_PREFIX)/schema/pgtexts
