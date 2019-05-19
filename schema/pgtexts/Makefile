@@ -1,11 +1,10 @@
 #
 #  Synopsis:
 #	Development makefile
-#  Note:
-#	PostgreSQL program ecpg must be in PATH
 #
-include ../schema.mk
 include ../../local.mk
+include ../../setspace.mk
+include ../schema.mk
 
 COMPILED=merge-stdin-tsv_utf8 merge-stdin-text_utf8
 PROGS=									\

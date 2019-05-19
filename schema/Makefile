@@ -5,6 +5,7 @@
 #  	jmscott@setspace.com
 #
 include ../local.mk
+include ../setspace.mk
 include schema.mk
 
 LIBs=									\

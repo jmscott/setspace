@@ -1,9 +1,10 @@
 #
 #  Synopsis:
-#	Development Makefile for routing blob request records based upon prefix
+#	Development Makefile for prefix routing of blob request records
 #
-include ../schema.mk
 include ../../local.mk
+include ../../setspace.mk
+include ../schema.mk
 
 install:
 	install -g $(PREFIXIO_GROUP) -o $(PREFIXIO_USER) 		\

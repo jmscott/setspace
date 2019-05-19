@@ -1,9 +1,12 @@
 #
 #  Synopsis:
 #	Makefile suitable for development of pdfbox in local directory.
+#  Variables:
+#	PDFBOX_APP2_JAR		#  path to jar file pdfbox-app-2*.jar
 #
-include ../schema.mk
 include ../../local.mk
+include ../../setspace.mk
+include ../schema.mk
 
 JCOMPILED=								\
 	ExtractPagesUTF8.class						\

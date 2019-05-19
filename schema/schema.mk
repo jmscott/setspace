@@ -1,8 +1,6 @@
 #
 #  Synopsis:
 #  	Static Makefile rules for setspace/schema/* subsystems
-#  Blame:
-#  	jmscott@setspace.com
 #
 
 #  Variables for setcore schema

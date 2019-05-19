@@ -2,10 +2,11 @@
 #  Synopsis:
 #	Development Makefile for code to populate fffile schema.
 #
-include ../schema.mk
 include ../../local.mk
+include ../../setspace.mk
+include ../schema.mk
 
-SBINs=								\
+SBINs=									\
 	merge-file							\
 	merge-file_mime_encoding					\
 	merge-file_mime_type						\

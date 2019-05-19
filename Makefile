@@ -11,6 +11,7 @@
 #	for schema/drblob.  See schema/drblob/Makefile.
 #
 include local.mk
+include setspace.mk
 
 #  Note: need to set UNAME elsewhere, as blobio does.
 ifeq "$(shell uname)" "Linux"

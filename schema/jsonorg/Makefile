@@ -3,20 +3,13 @@
 #	Development/Install Makefile
 #  Usage:
 #	make clean all install
-#  See:
-#	../schema.mk
-#	../../local.mk
-#  Blame:
-#  	jmscott@setspace.com
-#  Note:
-#	Make variables can't be overridden in ../../local.mk.
-#	For example, PGLIB is always defined to $(PGROOT)/include.
 #
-include ../schema.mk
 include ../../local.mk
+include ../../setspace.mk
+include ../schema.mk
 
-COMPILED=			\
-	JSON_checker		\
+COMPILED=								\
+	JSON_checker							\
 	merge-stdin-jsonb_255
 
 PROGS=  $(COMPILED)							\
@@ -28,35 +21,35 @@ clean:
 	rm -f $(COMPILED) merge-stdin-jsonb_255.c
 
 install: all
-	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
 				-d $(JSONORG_PREFIX)
-	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
 				-d $(JSONORG_PREFIX)/etc
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m u=wrx,go=	\
 				-d $(JSONORG_PREFIX)/sbin
-	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
 				-d $(JSONORG_PREFIX)/lib
-	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
 				-d $(JSONORG_PREFIX)/src
-	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
 				-d $(JSONORG_PREFIX)/log
-	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
 				-d $(JSONORG_PREFIX)/run
-	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
 				-d $(JSONORG_PREFIX)/spool
-	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 		\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
 				-d $(JSONORG_PREFIX)/tmp
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m u=rx,go=	\
 		$(PROGS) 						\
 		$(JSONORG_PREFIX)/sbin
-	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r	\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r		\
 		jsonorg.flow.example					\
 		profile.example						\
 		psqlrc.example						\
 		rummy.sql						\
 		schema.sql						\
 		$(JSONORG_PREFIX)/lib
-	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r	\
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r		\
 		JSON_checker.c						\
 		merge-stdin-jsonb_255.pgc				\
 		$(JSONORG_PREFIX)/src

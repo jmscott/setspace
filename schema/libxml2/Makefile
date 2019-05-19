@@ -2,8 +2,9 @@
 #  Synopsis:
 #	Development Makefile for code to populate libxml2 schema.
 #
-include ../schema.mk
 include ../../local.mk
+include ../../setspace.mk
+include ../schema.mk
 
 COMPILED=								\
 	merge-stdin-xml_doc						\

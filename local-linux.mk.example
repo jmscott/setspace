@@ -5,54 +5,39 @@
 #	cp local-linux.mk.example local.mk
 #	#  edit local.mk
 #	make world
+#  Variables:
+#	INSTALL_PREFIX		#  parent directory where setspace/ is installed
+#	PDFBOX_APP2_JAR		#  jar file for pdfbox app
+#	PGHOME			#  root of postgresql distro
+#	GODIST			#  golang distobution
 #  Note:
-#	Why are PGINC and PGLIB defined here, since they will never be
-#	changed, relative to PGHOME?
+#	Consider gnu make ?= for possible overriding
+#
+#	Add comment about why GODIST is set.
+#
 #
 
 ########################  BEGIN SECTION OF VARIABLES TO CHANGE
 #
-#  Note:
-#  	Probably only need to change INSTALL_PREFIX and postgres PG variables.
-#
 
-#  during development change INSTALL_PREFIX to dir in $HOME, like $(HOME)/opt
+#  during development change INSTALL_PREFIX to, maybe, $(HOME)/opt
 
 INSTALL_PREFIX=/usr/local
-
-#  where are postgres includes & libraries?
-#  note: why are PGINC and PGLIB defined here?
-
-PGHOME=/usr/local/pgsql
-PGINC=$(PGHOME)/include
-PGLIB=$(PGHOME)/lib
-
-#  The execution PATH must include the PostgreSQL C precompiler 'ecpg'.
-
-PATH:=$(PGHOME)/bin:$(PATH)
-
-#  Location of go language distribution
-#  Some of us don't put go in our PATH.
-
-GODIST=/usr/local/go
+#INSTALL_PREFIX=$(HOME)/opt
 
 #  location of pdfbox jar file, version 2
 #
 #  Note: be carefull installing underneath $(INSTALL_PREFIX),
 #        since a 'make distclean' will remove the jar file.
 #
-PDFBOX_APP2_JAR:=/usr/local/lib/pdfbox-app-2.jar
+PDFBOX_APP2_JAR=/usr/local/lib/pdfbox-app-2.jar
 
-SETSPACE_PREFIX=$(INSTALL_PREFIX)/setspace
+#  PostgreSQL distribution: not tested with various unix distros.
+PGHOME=/usr/local/pgsql
 
-#  during development change to your user or group id
+#  Location of go language distribution
+#  Some of us don't put /usr/local/go/bin in our PATH, for historical reasons.
 
-SETSPACE_USER=$(USER)
-SETSPACE_GROUP=$(USER)
-
-#  strict compilation of C code.
-#  if compilation fails then post issue to github.
-
-CFLAGS=-Wall -Wextra -Werror
+GODIST=/usr/local/go
 
 ########################  END SECTION OF VARIABLES TO CHANGE

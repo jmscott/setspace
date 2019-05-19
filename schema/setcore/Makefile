@@ -1,13 +1,10 @@
 #
 #  Synopsis:
 #	Makefile for various programs in schema "setcore".
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
 #
 
-#  Note: includes do not seem to be relative.  what am i (jms) doing wrong?
 include ../../local.mk
+include ../../setspace.mk
 include ../schema.mk
 
 #  setspace schema code always in setspace install directory

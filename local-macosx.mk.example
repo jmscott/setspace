@@ -5,34 +5,23 @@
 #	cp local-linux.mk.example local.mk
 #	#  edit local.mk
 #	make world
+#  Variables:
+#	INSTALL_PREFIX		#  parent directory where setspace/ is installed
+#	PDFBOX_APP2_JAR		#  jar file for pdfbox app
+#	PGHOME			#  root of postgresql distro
+#	GODIST			#  golang distobution
 #  Note:
-#	Why are PGINC and PGLIB defined here, since they will never be
-#	changed, relative to PGHOME?
+#	Consider gnu make ?= for possible overriding
+#
+#	Add comment about why GODIST is set.
 #
 
 ########################  BEGIN SECTION OF VARIABLES TO CHANGE
 #
-#  Note:
-#  	Probably only need to change INSTALL_PREFIX and postgres PG variables
-#
 
-#  in dev environment overide to, say, $(HOME)/local or $(HOME)/opt
+#  in dev environment overide to, say, $(HOME)/opt
 INSTALL_PREFIX=/usr/local
 #INSTALL_PREFIX=$(HOME)/opt
-
-#  where are postgres includes & libraries?
-#  note: why are PGINC and PGLIB defined here?
-
-PGHOME=/usr/local/pgsql
-PGINC=$(PGHOME)/include
-PGLIB=$(PGHOME)/lib
-
-#  The execution PATH must include the PostgreSQL C precompiler 'ecpg'.
-PATH:=$(PGHOME)/bin:$(PATH)
-
-SETSPACE_PREFIX:=$(INSTALL_PREFIX)/setspace
-SETSPACE_USER:=$(USER)
-SETSPACE_GROUP:=staff
 
 #  location of pdfbox jar file, version 2
 #
@@ -41,12 +30,11 @@ SETSPACE_GROUP:=staff
 #
 PDFBOX_APP2_JAR:=/usr/local/lib/pdfbox-app-2.jar
 
-#  strict compilation of C code.
-#  if compilation fails then post issue to github.
+#  Where postgres distro lives
+PGHOME=/usr/local/pgsql
 
-CFLAGS=-Wall -Wextra -Werror
 
-#  Location of go language distribution
+#  Location of go language distribution.
 
 GODIST=/usr/local/go
 

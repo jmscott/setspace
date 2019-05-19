@@ -3,15 +3,10 @@
 #	Development/Install Makefile
 #  Usage:
 #	make distclean install
-#  See:
-#	../schema.mk
-#  Blame:
-#  	jmscott@setspace.com
-#  Note:
-#	Make variables can't be overridden in ../local.mk.
 #
-include ../schema.mk
 include ../../local.mk
+include ../../setspace.mk
+include ../schema.mk
 
 COMPILED=
 PROGS=  get-is_xmlwf
