@@ -23,7 +23,7 @@ boot
 
 tail brr
 {
-	path = "spool/biod.brr";
+	path = "spool/bio4d.brr";
 }
 
 sql database setspace

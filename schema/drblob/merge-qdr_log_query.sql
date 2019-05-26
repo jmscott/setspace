@@ -2,7 +2,7 @@
  *  Synopsis:
  *	Merge a qdr_log_query tuple built from log blob read from stdin of psql.
  *  Usage:
- *	psql -f merge-qdr_log_query.sql <biod.qdr
+ *	psql -f merge-qdr_log_query.sql <bio4d.qdr
  *	bio-cat sha:abc ... | psql -f merge-qdr_log_query.sql
  *  Blame:
  *  	jmscott@setspace.com

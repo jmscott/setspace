@@ -2,7 +2,7 @@
  *  Synopsis:
  *	Merge a brr_log_total tuple built from log blob read from stdin of psql.
  *  Usage:
- *	psql -f merge-brr_log_total.sql <biod.brr
+ *	psql -f merge-brr_log_total.sql <bio4d.brr
  *	bio-cat sha:abc ... | psql -f merge-brr_log_total.sql
  *  Blame:
  *  	jmscott@setspace.com

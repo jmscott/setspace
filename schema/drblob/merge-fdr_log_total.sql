@@ -2,7 +2,7 @@
  *  Synopsis:
  *	Merge a fdr_log_total tuple built from log blob read from stdin of psql.
  *  Usage:
- *	psql -f merge-fdr_log_total.sql <biod.fdr
+ *	psql -f merge-fdr_log_total.sql <bio4d.fdr
  *	bio-cat sha:abc ... | psql -f merge-fdr_log_total.sql
  *  Blame:
  *  	jmscott@setspace.com

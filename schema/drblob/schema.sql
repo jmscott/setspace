@@ -48,7 +48,7 @@ create domain drblob.duration as interval
 
 /*
  *  Is blob a log of blob request records.
- *  See the product blobio/biod for description of blob request records.
+ *  See the product blobio/bio4d for description of blob request records.
  */
 drop table if exists drblob.is_brr_log;
 create table drblob.is_brr_log

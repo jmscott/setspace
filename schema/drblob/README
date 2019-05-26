@@ -3,6 +3,6 @@ Synopsis:
 See:
 	schema.sql
 	$BLOBIO_ROOT/log/flowd.[fqx]dr
-	$BLOBIO_ROOT/spool/biod.brr
+	$BLOBIO_ROOT/spool/bio4d.brr
 Blame:
 	jmscott@setspace.com

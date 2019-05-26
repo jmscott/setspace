@@ -2,7 +2,7 @@
  *  Synopsis:
  *	Merge a brr_log_time tuple built from log blob read from stdin of psql.
  *  Usage:
- *	psql -f merge-brr_log_time.sql <biod.brr
+ *	psql -f merge-brr_log_time.sql <bio4d.brr
  *	bio-cat sha:abc ... | psql -f merge-brr_log_time.sql
  *  Blame:
  *  	jmscott@setspace.com

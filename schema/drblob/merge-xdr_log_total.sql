@@ -2,7 +2,7 @@
  *  Synopsis:
  *	Merge a xdr_log_total tuple built from log blob read from stdin of psql.
  *  Usage:
- *	psql -f merge-xdr_log_total.sql <biod.xdr
+ *	psql -f merge-xdr_log_total.sql <bio4d.xdr
  *	bio-cat sha:abc ... | psql -f merge-xdr_log_total.sql
  *  Blame:
  *  	jmscott@setspace.com

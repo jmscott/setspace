@@ -36,7 +36,7 @@ sql database setspace
 	max_open_conns = 2;
 }
 
-tail biod
+tail bio4d
 {
 	path = "spool/setspace.brr";
 }
@@ -238,24 +238,24 @@ sql query has_brr_chars row
 	);
 }
 
-query is_in_service_table(biod.udig);
+query is_in_service_table(bio4d.udig);
 
-query has_brr_chars(biod.udig)
+query has_brr_chars(bio4d.udig)
   when
   	is_in_service_table.answer == true
 ;
 
-query in_is_brr_log_table(biod.udig)
+query in_is_brr_log_table(bio4d.udig)
   when
   	has_brr_chars.answer == true
 ;
 
-call get_is_brr_log(biod.udig) 
+call get_is_brr_log(bio4d.udig) 
   when
   	in_is_brr_log_table.answer == false
 ;
 
-query merge_is_brr_log(biod.udig, get_is_brr_log.exit_status);
+query merge_is_brr_log(bio4d.udig, get_is_brr_log.exit_status);
 
 sql query in_brr_log_total_table row
 {
@@ -276,7 +276,7 @@ sql query in_brr_log_total_table row
 	);
 }
 
-query in_brr_log_total_table(biod.udig)
+query in_brr_log_total_table(bio4d.udig)
   when
 	#  just installed the brr log
   	merge_is_brr_log.is_brr == true
@@ -293,7 +293,7 @@ command merge_brr_log_total
 	exit_status is OK when in {0, 1};
 }
 
-call merge_brr_log_total(biod.udig)
+call merge_brr_log_total(bio4d.udig)
   when
   	in_brr_log_total_table.answer == false
 ;
@@ -317,7 +317,7 @@ sql query in_brr_log_time_table row
 	);
 }
 
-query in_brr_log_time_table(biod.udig)
+query in_brr_log_time_table(bio4d.udig)
   when
 	#  just installed the brr log
   	merge_is_brr_log.is_brr == true
@@ -334,7 +334,7 @@ command merge_brr_log_time
 	exit_status is OK when in {0, 1};
 }
 
-call merge_brr_log_time(biod.udig)
+call merge_brr_log_time(bio4d.udig)
   when
   	in_brr_log_time_table.answer == false
 ;
@@ -421,16 +421,16 @@ sql query merge_is_fdr_log row
 	);
 }
 
-query in_is_fdr_log_table(biod.udig)
+query in_is_fdr_log_table(bio4d.udig)
   when
   	is_in_service_table.answer == true;
 
-call get_is_fdr_log(biod.udig) 
+call get_is_fdr_log(bio4d.udig) 
   when
   	in_is_fdr_log_table.answer == false
 ;
 
-query merge_is_fdr_log(biod.udig, get_is_fdr_log.exit_status)
+query merge_is_fdr_log(bio4d.udig, get_is_fdr_log.exit_status)
   when
   	get_is_fdr_log.exit_status == 0
 	or
@@ -458,7 +458,7 @@ sql query in_fdr_log_total_table row
 	);
 }
 
-query in_fdr_log_total_table(biod.udig)
+query in_fdr_log_total_table(bio4d.udig)
   when
 	#  just install the fdr log
   	merge_is_fdr_log.is_fdr == true
@@ -475,7 +475,7 @@ command merge_fdr_log_total
 	exit_status is OK when in {0, 1};
 }
 
-call merge_fdr_log_total(biod.udig)
+call merge_fdr_log_total(bio4d.udig)
   when
   	in_fdr_log_total_table.answer == false
 ;
@@ -499,7 +499,7 @@ sql query in_fdr_log_time_table row
 	);
 }
 
-query in_fdr_log_time_table(biod.udig)
+query in_fdr_log_time_table(bio4d.udig)
   when
 	#  just installed the fdr log
   	merge_is_fdr_log.is_fdr == true
@@ -516,7 +516,7 @@ command merge_fdr_log_time
 	exit_status is OK when in {0, 1};
 }
 
-call merge_fdr_log_time(biod.udig)
+call merge_fdr_log_time(bio4d.udig)
   when
   	in_fdr_log_time_table.answer == false
 ;
@@ -540,7 +540,7 @@ sql query in_fdr_log_sequence_table row
 	);
 }
 
-query in_fdr_log_sequence_table(biod.udig)
+query in_fdr_log_sequence_table(bio4d.udig)
   when
 	#  just installed the fdr log
   	merge_is_fdr_log.is_fdr == true
@@ -557,7 +557,7 @@ command merge_fdr_log_sequence
 	exit_status is OK when in {0, 1};
 }
 
-call merge_fdr_log_sequence(biod.udig)
+call merge_fdr_log_sequence(bio4d.udig)
   when
   	in_fdr_log_sequence_table.answer == false
 ;
@@ -639,17 +639,17 @@ sql query merge_is_qdr_log row
 	);
 }
 
-query in_is_qdr_log_table(biod.udig)
+query in_is_qdr_log_table(bio4d.udig)
   when
   	is_in_service_table.answer == true
 ;
 
-call get_is_qdr_log(biod.udig) 
+call get_is_qdr_log(bio4d.udig) 
   when
   	in_is_qdr_log_table.answer == false
 ;
 
-query merge_is_qdr_log(biod.udig, get_is_qdr_log.exit_status)
+query merge_is_qdr_log(bio4d.udig, get_is_qdr_log.exit_status)
   when
   	get_is_qdr_log.exit_status == 0
 	or
@@ -678,7 +678,7 @@ sql query in_qdr_log_total_table row
 	);
 }
 
-query in_qdr_log_total_table(biod.udig)
+query in_qdr_log_total_table(bio4d.udig)
   when
 	#  just install the qdr log
   	merge_is_qdr_log.is_qdr == true
@@ -695,7 +695,7 @@ command merge_qdr_log_total
 	exit_status is OK when in {0, 1};
 }
 
-call merge_qdr_log_total(biod.udig)
+call merge_qdr_log_total(bio4d.udig)
   when
   	in_qdr_log_total_table.answer == false
 ;
@@ -719,7 +719,7 @@ sql query in_qdr_log_time_table row
 	);
 }
 
-query in_qdr_log_time_table(biod.udig)
+query in_qdr_log_time_table(bio4d.udig)
   when
 	#  just installed the qdr log
   	merge_is_qdr_log.is_qdr == true
@@ -736,7 +736,7 @@ command merge_qdr_log_time
 	exit_status is OK when in {0, 1};
 }
 
-call merge_qdr_log_time(biod.udig)
+call merge_qdr_log_time(bio4d.udig)
   when
   	in_qdr_log_time_table.answer == false
 ;
@@ -760,7 +760,7 @@ sql query in_qdr_log_flow_sequence_table row
 	);
 }
 
-query in_qdr_log_flow_sequence_table(biod.udig)
+query in_qdr_log_flow_sequence_table(bio4d.udig)
   when
 	#  just installed the qdr log
   	merge_is_qdr_log.is_qdr == true
@@ -777,7 +777,7 @@ command merge_qdr_log_flow_sequence
 	exit_status is OK when in {0, 1};
 }
 
-call merge_qdr_log_flow_sequence(biod.udig)
+call merge_qdr_log_flow_sequence(bio4d.udig)
   when
   	in_qdr_log_flow_sequence_table.answer == false
 ;
@@ -801,7 +801,7 @@ sql query in_qdr_log_query_table row
 	);
 }
 
-query in_qdr_log_query_table(biod.udig)
+query in_qdr_log_query_table(bio4d.udig)
   when
 	#  just installed the qdr log
   	merge_is_qdr_log.is_qdr == true
@@ -818,7 +818,7 @@ command merge_qdr_log_query
 	exit_status is OK when in {0, 1};
 }
 
-call merge_qdr_log_query(biod.udig)
+call merge_qdr_log_query(bio4d.udig)
   when
   	in_qdr_log_query_table.answer == false
 ;
@@ -903,17 +903,17 @@ sql query merge_is_xdr_log row
 	);
 }
 
-query in_is_xdr_log_table(biod.udig)
+query in_is_xdr_log_table(bio4d.udig)
   when
 	is_in_service_table.answer == true
 ;
 
-call get_is_xdr_log(biod.udig) 
+call get_is_xdr_log(bio4d.udig) 
   when
   	in_is_xdr_log_table.answer == false
 ;
 
-query merge_is_xdr_log(biod.udig, get_is_xdr_log.exit_status)
+query merge_is_xdr_log(bio4d.udig, get_is_xdr_log.exit_status)
   when
   	get_is_xdr_log.exit_status == 0
 	or
@@ -941,7 +941,7 @@ sql query in_xdr_log_total_table row
 	);
 }
 
-query in_xdr_log_total_table(biod.udig)
+query in_xdr_log_total_table(bio4d.udig)
   when
 	#  just install the xdr log
   	merge_is_xdr_log.is_xdr == true
@@ -958,7 +958,7 @@ command merge_xdr_log_total
 	exit_status is OK when in {0, 1};
 }
 
-call merge_xdr_log_total(biod.udig)
+call merge_xdr_log_total(bio4d.udig)
   when
   	in_xdr_log_total_table.answer == false
 ;
@@ -982,7 +982,7 @@ sql query in_xdr_log_time_table row
 	);
 }
 
-query in_xdr_log_time_table(biod.udig)
+query in_xdr_log_time_table(bio4d.udig)
   when
 	#  just installed the xdr log
   	merge_is_xdr_log.is_xdr == true
@@ -999,7 +999,7 @@ command merge_xdr_log_time
 	exit_status is OK when in {0, 1};
 }
 
-call merge_xdr_log_time(biod.udig)
+call merge_xdr_log_time(bio4d.udig)
   when
   	in_xdr_log_time_table.answer == false
 ;
@@ -1023,7 +1023,7 @@ sql query in_xdr_log_flow_sequence_table row
 	);
 }
 
-query in_xdr_log_flow_sequence_table(biod.udig)
+query in_xdr_log_flow_sequence_table(bio4d.udig)
   when
 	#  just installed the xdr log
   	merge_is_xdr_log.is_xdr == true
@@ -1040,7 +1040,7 @@ command merge_xdr_log_flow_sequence
 	exit_status is OK when in {0, 1};
 }
 
-call merge_xdr_log_flow_sequence(biod.udig)
+call merge_xdr_log_flow_sequence(bio4d.udig)
   when
   	in_xdr_log_flow_sequence_table.answer == false
 ;
@@ -1064,7 +1064,7 @@ sql query in_xdr_log_query_table row
 	);
 }
 
-query in_xdr_log_query_table(biod.udig)
+query in_xdr_log_query_table(bio4d.udig)
   when
 	#  just installed the xdr log
   	merge_is_xdr_log.is_xdr == true
@@ -1081,7 +1081,7 @@ command merge_xdr_log_query
 	exit_status is OK when in {0, 1};
 }
 
-call merge_xdr_log_query(biod.udig)
+call merge_xdr_log_query(bio4d.udig)
   when
   	in_xdr_log_query_table.answer == false
 ;

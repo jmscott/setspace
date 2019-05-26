@@ -15,6 +15,6 @@ export BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 test ! -x tmp && mkdir -p tmp && test $? != 0 && exit 1
 export TMPDIR=$SCHEMA_ROOT/tmp
 
-touch $SCHEMA_ROOT/spool/biod.brr
+touch $SCHEMA_ROOT/spool/bio4d.brr
 
 PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
