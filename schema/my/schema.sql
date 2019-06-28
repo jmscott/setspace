@@ -12,8 +12,10 @@ COMMENT ON SCHEMA my IS
 	'Personal metadata about blobs, like title, notes and tags'
 ;
 
-DROP TABLE IF EXISTS my.title;
-CREATE TABLE my.title
+\set search_path to my,public;
+
+DROP TABLE IF EXISTS title;
+CREATE TABLE title
 (
 	blob	udig
 			REFERENCES setcore.service(blob)
@@ -31,9 +33,12 @@ CREATE TABLE my.title
 				update_time >= insert_time
 			) DEFAULT NOW() NOT NULL
 );
+COMMENT ON TABLE title IS
+	'My title for any blob'
+;
 
-DROP TABLE IF EXISTS my.note;
-CREATE TABLE my.note
+DROP TABLE IF EXISTS note;
+CREATE TABLE note
 (
 	blob	udig
 			REFERENCES setcore.service(blob)
@@ -50,30 +55,40 @@ CREATE TABLE my.note
 				update_time >= insert_time
 			) DEFAULT NOW() NOT NULL
 );
+COMMENT ON TABLE title IS
+	'My notes for any blob'
+;
 
-DROP TABLE IF EXISTS my.tags;
-CREATE TABLE my.tags
+DROP TABLE IF EXISTS tags CASCADE;
+CREATE TABLE tags
 (
 	tag	text	CHECK (
 				tag !~ '[[:space:]]$'
 				AND
 				length(tag) < 32
-			) NOT NULL
+			)
+			NOT NULL
 			PRIMARY KEY,
 	insert_time	timestamptz
-				DEFAULT NOW(),
+				DEFAULT NOW()
+				NOT NULL,
 	update_time	timestamptz CHECK (
 				update_time >= insert_time
-			) DEFAULT NOW() NOT NULL
+			)
+			DEFAULT NOW()
+			NOT NULL
 );
+COMMENT ON TABLE tags IS
+	'All my tags for blobs'
+;
 
-DROP TABLE IF EXISTS my.tag;
-CREATE TABLE my.tag
+DROP TABLE IF EXISTS tag;
+CREATE TABLE tag
 (
 	blob	udig
 			REFERENCES setcore.service(blob)
 			ON DELETE CASCADE,
-	tag	text	REFERENCES my.tags(tag)
+	tag	text	REFERENCES tags(tag)
 			ON DELETE CASCADE
 			CHECK (
 				tag !~ '[[:space:]]$'
@@ -87,5 +102,8 @@ CREATE TABLE my.tag
 			) DEFAULT NOW() NOT NULL,
 	PRIMARY KEY	(blob, tag)
 );
+COMMENT ON TABLE tags IS
+	'My tagged blobs'
+;
 
 COMMIT;
