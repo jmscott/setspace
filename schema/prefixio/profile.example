@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Profile for typical prefixio server
 #  Usage:
-#	. $SETSPACE_ROOT/etc/profile
+#	. $SCHEMA_ROOT/etc/profile
 #  Blame:
 #  	jmscott@setspace.com
 #
