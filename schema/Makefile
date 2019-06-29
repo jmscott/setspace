@@ -21,6 +21,7 @@ ifdef PDFBOX_PREFIX
 	cd pdfbox && $(MAKE) all
 endif
 	cd fffile && $(MAKE) all
+	cd curl7 && $(MAKE) all
 
 createdb:
 	createdb setspace --encoding=UTF8 --template template0
@@ -49,6 +50,7 @@ ifdef PDFBOX_PREFIX
 endif
 
 	cd fffile && $(MAKE) install
+	cd curl7 && $(MAKE) install
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
 		-d $(SETSPACE_PREFIX)/lib
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r	\
@@ -65,5 +67,6 @@ ifdef PDFBOX_PREFIX
 	cd pdfbox && $(MAKE) distclean
 endif
 	cd fffile && $(MAKE) distclean
+	cd curl7 && $(MAKE) distclean
 	rm -f $(SETSPACE_PREFIX)/lib/psqlrc.example
 	rm -f $(SETSPACE_PREFIX)/lib/fault-process.sh
