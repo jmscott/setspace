@@ -37,6 +37,7 @@ endif
 
 install:
 	cd setcore && $(MAKE) install
+	cd myblob && $(MAKE) install
 	cd jsonorg && $(MAKE) install
 	cd expat2 && $(MAKE) install
 	cd libxml2 && $(MAKE) install
@@ -55,6 +56,7 @@ endif
 
 distclean:
 	cd setcore && $(MAKE) distclean
+	cd myblob && $(MAKE) distclean
 	cd jsonorg && $(MAKE) distclean
 	cd expat2 && $(MAKE) distclean
 	cd libxml2 && $(MAKE) distclean
