@@ -4,7 +4,6 @@
  */
 \set ON_ERROR_STOP on
 \timing
-\set search_path to mycore,public;
 
 BEGIN;
 DROP SCHEMA IF EXISTS mycore cascade;
@@ -12,6 +11,7 @@ CREATE SCHEMA mycore;
 COMMENT ON SCHEMA mycore IS
 	'Personal metadata about blobs, like title, notes and tags'
 ;
+SET search_path TO mycore,public;
 
 DROP TABLE IF EXISTS title;
 CREATE TABLE title
