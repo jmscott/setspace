@@ -1,0 +1,13 @@
+#
+#  Synopsis:
+#	Profile for typical myblob server
+#  Usage:
+#	. $SCHEMA_ROOT/etc/profile
+#  Blame:
+#  	jmscott@setspace.com
+#
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/myblob
+export TMPDIR=$SCHEMA_ROOT/tmp
+mkdir -p $TMPDIR || exit 1
+
+touch $SCHEMA_ROOT/spool/setcore.brr
