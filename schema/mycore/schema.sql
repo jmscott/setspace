@@ -23,7 +23,8 @@ CREATE TABLE title
 	title	text	CHECK (
 				length(title) < 255
 				AND
-				title !~ '^[[:space:]]*$'
+				--  not all spaces
+				title ~ '[[:graph:]]'
 			) NOT NULL,
 	insert_time	timestamptz
 				DEFAULT NOW()
@@ -44,7 +45,7 @@ CREATE TABLE note
 			ON DELETE CASCADE
 			PRIMARY KEY,
 	note	text	CHECK (
-				note !~ '^[[:space:]]*$'
+				note ~ '[[:graph:]]'
 				AND
 				length(note) < 255
 			) NOT NULL,
@@ -62,7 +63,7 @@ DROP TABLE IF EXISTS tags CASCADE;
 CREATE TABLE tags
 (
 	tag	text	CHECK (
-				tag !~ '[[:space:]]$'
+				tag ~ '[[:graph:]]'
 				AND
 				length(tag) < 32
 			)
@@ -90,7 +91,7 @@ CREATE TABLE tag
 	tag	text	REFERENCES tags(tag)
 			ON DELETE CASCADE
 			CHECK (
-				tag !~ '[[:space:]]$'
+				tag !~ '[[:graph:]]$'
 				AND
 				length(tag) < 32
 			),
