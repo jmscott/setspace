@@ -26,10 +26,10 @@ INSTALL_PREFIX?=/usr/local
 #
 #  Undefine to disable compiling entire pdfbox schema
 #
-PDFBOX_APP2_JAR?=/usr/local/lib/pdfbox-app-2.jar
+PDFBOX_APP2_JAR?=$(INSTALL_PREFIX)/lib/pdfbox-app-2.jar
 
 #  Where postgres distro lives
-PGHOME?=/usr/local/pgsql
+PGHOME?=$(INSTALL_PREFIX)/pgsql
 
 #  Location of go language distribution.
 
