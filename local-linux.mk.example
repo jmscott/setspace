@@ -27,10 +27,10 @@ INSTALL_PREFIX?=/usr/local
 #
 #  Undefine to disable compiling entire pdfbox schema
 #
-PDFBOX_APP2_JAR?=/usr/local/lib/pdfbox-app-2.jar
+PDFBOX_APP2_JAR?=$(INSTALL_PREFIX)/lib/pdfbox-app-2.jar
 
 #  PostgreSQL distribution: not tested with various unix distros.
-PGHOME?=/usr/local/pgsql
+PGHOME?=$(INSTALL_PREFIX)/pgsql
 
 #  Location of go language distribution
 #  Some of us don't put /usr/local/go/bin in our PATH, for historical reasons.
