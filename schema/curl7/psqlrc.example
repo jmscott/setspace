@@ -1,1 +1,1 @@
-set search_path to curl7,myblob,public;
+set search_path to curl7,mycore,public;

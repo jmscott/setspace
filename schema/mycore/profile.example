@@ -1,12 +1,12 @@
 #
 #  Synopsis:
-#	Profile for typical myblob server
+#	Profile for typical mycore server
 #  Usage:
 #	. $SCHEMA_ROOT/etc/profile
 #  Blame:
 #  	jmscott@setspace.com
 #
-SCHEMA_ROOT=$SETSPACE_ROOT/schema/myblob
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/mycore
 export TMPDIR=$SCHEMA_ROOT/tmp
 mkdir -p $TMPDIR || exit 1
 
