@@ -42,115 +42,22 @@ tail brr
 	path = "spool/setcore.brr";
 }
 
-sql query is_json
+#  Note: need to test for in flight.
+sql query is_json row
 {
 	statement = `
 SELECT EXISTS (
-  WITH utf8wf AS (
-    SELECT
-  	blob
-      FROM
-    	setcore.is_utf8wf
-      WHERE
-	is_utf8 IS TRUE
-	AND
-	blob = $1::udig
-  )
   SELECT
-	u8.blob
+  	blob
     FROM
-  	utf8wf u8
-	  JOIN setcore.byte_prefix_32 p32 ON (p32.blob = u8.blob)
-	  JOIN setcore.byte_suffix_32 s32 ON (s32.blob = u8.blob)
-	  LEFT OUTER JOIN jsonorg.checker_255 js ON (js.blob = u8.blob)
+    	jsonorg.checker_255
     WHERE
-    	/*
-	 *  Consult the hex versions of the prefix/suffix, sine
-	 *  we may have malformed utf8 due to truncating at 32 bytes.
-	 */
-	((	--  utf8 framed with {}
-
-		p32.prefix::text ~ '^\\x(09|0a|20|0d)*7b'
-		AND
-		s32.suffix::text ~ '^\\x.*7d(09|0a|20|0d)*$'
-	)
-	OR
-	(	--  utf8 framed with []
-
-		p32.prefix::text ~ '^\\x(09|0a|20|0d)*5b'
-		AND
-		s32.suffix::text ~ '^\\x.*5d(09|0a|20|0d)*$'
-	))
+    	blob = $1::udig
 	AND
-	js.blob IS NULL
+	is_json IS TRUE
 );
-	`;
-
+`;
 	result row is (
-		answer bool
+		is_json bool
 	);
 }
-
-query is_json_object_or_array(brr.udig);
-
-command append_jsonorg_brr
-{
-	path = "append-brr";
-	argv = (
-		"../jsonorg/spool/prefixio.brr"
-	);
-}
-
-call append_jsonorg_brr(
-	brr.start_time,
-	brr.netflow,
-	brr.verb,
-	brr.udig,
-	brr.chat_history,
-	brr.blob_size,
-	brr.wall_duration
-) when
-	is_json_object_or_array.answer == true
-;
-
-command append_pdfbox_brr
-{
-	path = "append-brr";
-	argv = (
-		"../pdfbox/spool/prefixio.brr"
-	);
-}
-
-#
-#  The prefix of blob matches '^%PDF-'
-#
-sql query prefix_is_percentPDF row
-{
-	statement = `
-
-	SELECT
-		substring(prefix, 1, 5) = '\x255044462d'  -- %PDF
-	  FROM
-	  	setcore.byte_prefix_32
-	  WHERE
-	  	blob = $1::udig
-	`;
-
-	result row is (
-		answer bool
-	);
-}
-
-query prefix_is_percentPDF(brr.udig);
-
-call append_pdfbox_brr(
-	brr.start_time,
-	brr.netflow,
-	brr.verb,
-	brr.udig,
-	brr.chat_history,
-	brr.blob_size,
-	brr.wall_duration
-) when
-	prefix_is_percentPDF.answer == true
-;
