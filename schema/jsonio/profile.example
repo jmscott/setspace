@@ -1,0 +1,16 @@
+#
+#  Synopsis:
+#	Profile for typical jsonio server
+#  Usage:
+#	. $SCHEMA_ROOT/etc/profile
+#  Blame:
+#  	jmscott@setspace.com
+#
+export TMPDIR=$SETSPACE_ROOT/schema/jsonio/tmp
+mkdir -p $TMPDIR || exit 1
+
+#  create the spool file so tail doesn't abort.
+#  Note:
+#	got to be a better way.  Prehaps flowd outgh to create.
+
+touch $SETSPACE_ROOT/schema/jsonio/spool/jsonorg.brr || exit 1

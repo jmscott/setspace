@@ -1,0 +1,156 @@
+#
+#  Synopsis:
+#	Route blobs to schemas based upon patterns in the json blob.
+#  Usage:
+#  	flowd server jsonio.conf
+#  See:
+#  	schema.sql
+#
+
+boot
+{
+	brr_capacity = 256;
+	flow_worker_count = 32;
+
+	#
+	#  No processes are invoked
+	#
+	#  Note:
+	#	Since no workers can we set to 0?
+	#
+	os_exec_worker_count = 1;
+	os_exec_capacity = 1;
+
+	xdr_roll_duration = "24h";
+	fdr_roll_duration = "24h";
+	qdr_roll_duration = "24h";
+
+	heartbeat_duration = "10s";
+}
+
+sql database setspace
+{
+	driver_name = "postgres";
+	data_source_name =
+		"fallback_application_name=jsonio.flow sslmode=disable";
+	max_idle_conns = 0;
+	max_open_conns = 16;
+}
+
+tail brr
+{
+	path = "spool/setcore.brr";
+}
+
+sql query is_json
+{
+	statement = `
+SELECT EXISTS (
+  WITH utf8wf AS (
+    SELECT
+  	blob
+      FROM
+    	setcore.is_utf8wf
+      WHERE
+	is_utf8 IS TRUE
+	AND
+	blob = $1::udig
+  )
+  SELECT
+	u8.blob
+    FROM
+  	utf8wf u8
+	  JOIN setcore.byte_prefix_32 p32 ON (p32.blob = u8.blob)
+	  JOIN setcore.byte_suffix_32 s32 ON (s32.blob = u8.blob)
+	  LEFT OUTER JOIN jsonorg.checker_255 js ON (js.blob = u8.blob)
+    WHERE
+    	/*
+	 *  Consult the hex versions of the prefix/suffix, sine
+	 *  we may have malformed utf8 due to truncating at 32 bytes.
+	 */
+	((	--  utf8 framed with {}
+
+		p32.prefix::text ~ '^\\x(09|0a|20|0d)*7b'
+		AND
+		s32.suffix::text ~ '^\\x.*7d(09|0a|20|0d)*$'
+	)
+	OR
+	(	--  utf8 framed with []
+
+		p32.prefix::text ~ '^\\x(09|0a|20|0d)*5b'
+		AND
+		s32.suffix::text ~ '^\\x.*5d(09|0a|20|0d)*$'
+	))
+	AND
+	js.blob IS NULL
+);
+	`;
+
+	result row is (
+		answer bool
+	);
+}
+
+query is_json_object_or_array(brr.udig);
+
+command append_jsonorg_brr
+{
+	path = "append-brr";
+	argv = (
+		"../jsonorg/spool/prefixio.brr"
+	);
+}
+
+call append_jsonorg_brr(
+	brr.start_time,
+	brr.netflow,
+	brr.verb,
+	brr.udig,
+	brr.chat_history,
+	brr.blob_size,
+	brr.wall_duration
+) when
+	is_json_object_or_array.answer == true
+;
+
+command append_pdfbox_brr
+{
+	path = "append-brr";
+	argv = (
+		"../pdfbox/spool/prefixio.brr"
+	);
+}
+
+#
+#  The prefix of blob matches '^%PDF-'
+#
+sql query prefix_is_percentPDF row
+{
+	statement = `
+
+	SELECT
+		substring(prefix, 1, 5) = '\x255044462d'  -- %PDF
+	  FROM
+	  	setcore.byte_prefix_32
+	  WHERE
+	  	blob = $1::udig
+	`;
+
+	result row is (
+		answer bool
+	);
+}
+
+query prefix_is_percentPDF(brr.udig);
+
+call append_pdfbox_brr(
+	brr.start_time,
+	brr.netflow,
+	brr.verb,
+	brr.udig,
+	brr.chat_history,
+	brr.blob_size,
+	brr.wall_duration
+) when
+	prefix_is_percentPDF.answer == true
+;
