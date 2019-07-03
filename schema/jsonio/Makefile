@@ -22,7 +22,7 @@ install:
 	install -g $(JSONIO_GROUP) -o $(JSONIO_USER) 		\
 				-d $(JSONIO_PREFIX)/tmp
 	install -g $(JSONIO_GROUP) -o $(JSONIO_USER) -m a=r	\
-		prefixio.flow.example					\
+		jsonio.flow.example					\
 		profile.example						\
 		$(JSONIO_PREFIX)/lib
 
