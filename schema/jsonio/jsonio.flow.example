@@ -39,7 +39,22 @@ sql database setspace
 
 tail brr
 {
-	path = "spool/setcore.brr";
+	path = "spool/jsonorg.brr";
+}
+
+sql query in_service row
+{
+	statement = `
+SELECT EXISTS (
+  SELECT
+  	blob
+    FROM
+)
+
+	`;
+	result row is (
+		answer bool
+	);
 }
 
 #  Note: need to test for in flight.

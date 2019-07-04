@@ -24,6 +24,7 @@ install:
 	install -g $(JSONIO_GROUP) -o $(JSONIO_USER) -m a=r	\
 		jsonio.flow.example					\
 		profile.example						\
+		psqlrc.example						\
 		$(JSONIO_PREFIX)/lib
 
 frisk ff:
