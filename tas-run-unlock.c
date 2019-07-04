@@ -1,6 +1,6 @@
 /*
  *  Synopsis
- *	Remove blob level Test/set lock in run/<lock-name>-<udig>.lock.
+ *	Remove a test and set file lock in run/<lock-name>-<udig>.lock.
  *  Usage:
  *	BLOB=sha:563b8f2dd5e6e2cfff2d40787186124772c562a5
  *	taz-run-lock merge-pddocument $BLOB
