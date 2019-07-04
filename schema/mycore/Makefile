@@ -3,31 +3,68 @@
 #	Development/Install Makefile
 #  Usage:
 #	make clean all install
+#  Note:
+#	Need to add permissions to install invocation, in particular,
+#	cgi-bin/
 #
 include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
-install:
-	install -g $(MYBLOB_GROUP) -o $(MYBLOB_USER) 			\
-				-d $(MYBLOB_PREFIX)
-	install -g $(MYBLOB_GROUP) -o $(MYBLOB_USER) 			\
-				-d $(MYBLOB_PREFIX)/etc
-	install -g $(MYBLOB_GROUP) -o $(MYBLOB_USER) 			\
-				-d $(MYBLOB_PREFIX)/lib
-	install -g $(MYBLOB_GROUP) -o $(MYBLOB_USER) 			\
-				-d $(MYBLOB_PREFIX)/log
-	install -g $(MYBLOB_GROUP) -o $(MYBLOB_USER) 			\
-				-d $(MYBLOB_PREFIX)/run
-	install -g $(MYBLOB_GROUP) -o $(MYBLOB_USER) 			\
-				-d $(MYBLOB_PREFIX)/spool
-	install -g $(MYBLOB_GROUP) -o $(MYBLOB_USER) 			\
-				-d $(MYBLOB_PREFIX)/tmp
-	install -g $(MYBLOB_GROUP) -o $(MYBLOB_USER) -m a=r		\
+CGIBINs=tag-url
+
+all: $(CGIBINs)
+clean:
+	rm -f $(CGIBINs)
+
+install: all
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
+				-d $(MYCORE_PREFIX)
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
+				-d $(MYCORE_PREFIX)/etc
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
+				-d $(MYCORE_PREFIX)/lib
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
+				-d $(MYCORE_PREFIX)/lib/tag-url.d	
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
+				-d $(MYCORE_PREFIX)/log
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
+				-d $(MYCORE_PREFIX)/run
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
+				-d $(MYCORE_PREFIX)/spool
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
+				-d $(MYCORE_PREFIX)/cgi-bin
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
+				-d $(MYCORE_PREFIX)/tmp
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) -m a=r		\
 		profile.example						\
 		psqlrc.example						\
 		schema.sql						\
-		$(MYBLOB_PREFIX)/lib
+		$(MYCORE_PREFIX)/lib
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) -m a=r		\
+		tag-url.d/a.pl						\
+		tag-url.d/click.pl					\
+		tag-url.d/common.pl					\
+		tag-url.d/div.err.pl					\
+		tag-url.d/div.nav.pl					\
+		tag-url.d/dl.pl						\
+		tag-url.d/help.pl					\
+		tag-url.d/save.pl					\
+		tag-url.d/select.host.pl				\
+		tag-url.d/select.rppg.pl				\
+		tag-url.d/table.pl					\
+		tag-url.d/textarea.pl					\
+		$(MYCORE_PREFIX)/lib/tag-url.d
 
 distclean:
-	rm -rf $(MYBLOB_PREFIX)/lib
+	rm -rf $(MYCORE_PREFIX)/lib
+
+tag-url: tag-url.cgi
+	cgi2perl5 --source-path tag-url.cgi
+
+world:
+	$(MAKE) $(MAKEFLAGS) clean
+	$(MAKE) $(MAKEFLAGS) all
+	$(MAKE) $(MAKEFLAGS) distclean
+	$(MAKE) $(MAKEFLAGS) install
+
