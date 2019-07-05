@@ -1,0 +1,149 @@
+# Virtual Hosts
+#
+# Required modules: mod_log_config
+
+# If you want to maintain multiple domains/hostnames on your
+# machine you can setup VirtualHost containers for them. Most configurations
+# use only name-based virtual hosts so the server doesn't need to worry about
+# IP addresses. This is indicated by the asterisks in the directives below.
+#
+# Please see the documentation at 
+# <URL:http://httpd.apache.org/docs/2.4/vhosts/>
+# for further details before you try to setup virtual hosts.
+#
+# You may use the command line option '-S' to verify your virtual host
+# configuration.
+
+#
+# VirtualHost example:
+# Almost any Apache directive may go into a VirtualHost container.
+# The first VirtualHost section is used for all requests that do not
+# match a ServerName or ServerAlias in any <VirtualHost> block.
+#
+
+#
+#  Synopsis:
+#       Apache2 Site specific configuration for setspace controller web gui
+#
+
+#  ${APACHE2_SERVER_NAME}, $APACHE2_SERVER_PORT}
+
+Define SETSPACE_APACHE2_SERVER_NAME setspace.jmscott.tmonk
+Define SETSPACE_APACHE2_SERVER_PORT 443
+
+#  Export SETSPACE_ROOT to CGI process environment
+#Define SETSPACE_ROOT /usr/local/setspace
+Define SETSPACE_ROOT /Users/jmscott/opt/www/setspace
+
+Define SETSPACE_PGHOST 127.0.0.1
+Define SETSPACE_PGPORT 15432
+Define SETSPACE_PGUSER postgres
+Define SETSPACE_PGDATABASE jmscott 
+Define SETSPACE_PERL5LIB /Users/jmscott/opt/www/setspace/lib:/usr/local/jmscott/httpd2/lib
+
+Define SETSPACE_BLOBIO_SERVICE bio4:127.0.0.1:1796
+Define SETSPACE_BLOBIO_GET_SERVICE fs:/Users/jmscott/opt/blobio
+Define SETSPACE_BLOBIO_ALGORITHM bc160
+Define SETSPACE_BLOBIO_PGHOST 127.0.0.1
+Define SETSPACE_BLOBIO_PGPORT 5432
+Define SETSPACE_BLOBIO_PGUSER jmscott
+Define SETSPACE_BLOBIO_PGDATABASE jmscott 
+
+Define SETSPACE_PATH /usr/local/pgsql/bin:/usr/local/blobio/bin:/usr/bin:/bin:/usr/sbin:/sbin
+
+#  Uncomment on Mac OS/X under ports distro, which does not define
+Define APACHE_LOG_DIR /opt/local/log
+
+#
+#  Synopsis:
+#	Example development Apache2 configuration for setspace web gui.
+#  Note:
+#	See toolkit at https://github.com/jmscott/work/tree/master/httpd2
+#	for reference in PERL5LIB to /usr/local/jmscott/httpd2/lib
+#
+<VirtualHost ${SETSPACE_APACHE2_SERVER_NAME}:${SETSPACE_APACHE2_SERVER_PORT}>
+	LogLevel warn
+        ServerName ${SETSPACE_APACHE2_SERVER_NAME}
+	SetEnv SETSPACE_ROOT ${SETSPACE_ROOT}
+	SetEnv SERVER_ROOT ${SETSPACE_ROOT}
+
+	SetEnv PGHOST ${SETSPACE_PGHOST}
+	SetEnv PGPORT ${SETSPACE_PGPORT}
+	SetEnv PGUSER ${SETSPACE_PGUSER}
+	<IfDefine SETSPACE_PGPASSWORD>
+		SetEnv PGPASSWORD ${SETSPACE_PGPASSWORD}
+	</IfDefine>
+	SetEnv PGDATABASE ${SETSPACE_PGDATABASE}
+
+	SetEnv BLOBIO_SERVICE ${SETSPACE_BLOBIO_SERVICE}
+	SetEnv BLOBIO_GET_SERVICE ${SETSPACE_BLOBIO_GET_SERVICE}
+	SetEnv BLOBIO_ALGORITHM ${SETSPACE_BLOBIO_ALGORITHM}
+
+	SetEnv BLOBIO_PGHOST ${SETSPACE_BLOBIO_PGHOST}
+	SetEnv BLOBIO_PGPORT ${SETSPACE_BLOBIO_PGPORT}
+	SetEnv BLOBIO_PGUSER ${SETSPACE_BLOBIO_PGUSER}
+	<IfDefine SETSPACE_BLOBIO_PGPASSWORD>
+		SetEnv BLOBIO_PGPASSWORD ${SETSPACE_BLOBIO_PGPASSWORD}
+	</IfDefine>
+	SetEnv BLOBIO_PGDATABASE ${SETSPACE_BLOBIO_PGDATABASE}
+
+	SetEnv PATH ${SETSPACE_PATH}
+
+	#  Note:See https://github.com/jmscott/work/tree/master/httpd2
+	#
+	SetEnv PERL5LIB ${SETSPACE_PERL5LIB}
+
+	DocumentRoot "${SETSPACE_ROOT}/htdocs"
+
+	#  Disable chatty logging to preserve write limits on secure drives.
+
+	CustomLog ${APACHE_LOG_DIR}/${SETSPACE_APACHE2_SERVER_NAME}-access.log debuggable
+
+	#  Note: log to syslog to improved secure drive write limits
+
+	ErrorLog ${APACHE_LOG_DIR}/${SETSPACE_APACHE2_SERVER_NAME}-error.log
+
+	<Directory />
+            AllowOverride all
+            Require all granted
+        </Directory>
+
+	<Directory "${SETSPACE_ROOT}/">
+		Options Indexes FollowSymLinks
+		AllowOverride None
+		Require all granted
+	</Directory>
+
+	DirectoryIndex index.shtml
+
+	<Directory "${SETSPACE_ROOT}/htdocs">
+                Options +ExecCGI +Includes +FollowSymLinks
+
+                AddType text/html .shtml
+                AddOutputFilter INCLUDES .shtml
+
+		AuthType Basic
+		AuthName "RJ2 NOC"
+		AuthUserFile ${SETSPACE_ROOT}/etc/passwd
+		Require valid-user
+	</Directory>
+
+	ScriptAlias /cgi-bin/ "${SETSPACE_ROOT}/cgi-bin/"
+	<Directory "${SETSPACE_ROOT}/cgi-bin">
+                AllowOverride all
+                Allow from all
+
+                Options None +ExecCGI +Includes +FollowSymLinks
+
+                AuthType Basic
+                AuthName "RJ2 NOC"
+                AuthBasicProvider file
+                AuthUserFile ${SETSPACE_ROOT}/etc/passwd
+                Require valid-user
+        </Directory>
+
+	SSLEngine on
+	SSLCertificateFile etc/apache2/extra/setspace.jmscott.tmonk.crt
+	SSLCertificateKeyFile etc/apache2/extra/setspace.jmscott.tmonk.key
+
+</VirtualHost>
