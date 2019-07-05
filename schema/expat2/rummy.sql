@@ -16,7 +16,7 @@ SELECT
 	  SELECT
 	  	xwf.blob
 	    FROM
-	  	expat2.is_xmlwf xwf
+	  	expat2.is_xml xwf
 	    WHERE
 	    	xwf.blob = xb.blob
 	)
