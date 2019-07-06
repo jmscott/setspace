@@ -43,7 +43,6 @@ install:
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m a=r	\
 		expat2.flow.example					\
 		profile.example						\
-		rummy.sql						\
 		schema.sql						\
 		$(EXPAT2_PREFIX)/lib
 

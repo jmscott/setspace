@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Route blobs to schemas based upon patterns in the json blob.
+#	Route blobs to schemas based upon patterns in a json blob.
 #  Usage:
 #  	flowd server jsonio.conf
 #  See:
@@ -42,37 +42,21 @@ tail brr
 	path = "spool/jsonorg.brr";
 }
 
-sql query in_service row
+sql query is_curl7 row
 {
 	statement = `
 SELECT EXISTS (
   SELECT
   	blob
     FROM
+	jsonorg.jsonb_255 j
+    WHERE
+    	j.blob = $1
+	AND
+	j.doc->'schema.setspace.com' = 'mycore.schema.setspace.com' 
 )
-
 	`;
 	result row is (
 		answer bool
-	);
-}
-
-#  Note: need to test for in flight.
-sql query is_json row
-{
-	statement = `
-SELECT EXISTS (
-  SELECT
-  	blob
-    FROM
-    	jsonorg.checker_255
-    WHERE
-    	blob = $1::udig
-	AND
-	is_json IS TRUE
-);
-`;
-	result row is (
-		is_json bool
 	);
 }
