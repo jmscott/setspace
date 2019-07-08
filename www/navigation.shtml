@@ -1,11 +1,5 @@
 <div id="navigation">
  <ul>
   <li><a href="/">Home</a></li>
-  <li><a href="/remember-uri.shtml">Search Remembered Links</a></li>
-  <li><a href="/remember-uri-save.shtml">Save a Web Link</a></li>
-  <li><a href="/pdf.shtml">PDF Search</a></li>
-  <li><a href="/blob.shtml">Blob Search</a></li>
-  <li><a href="/sengine.shtml">Search</a></li>
-  <li><a href="/etc.shtml">Extra</a></li>
  </ul>
 </div>
