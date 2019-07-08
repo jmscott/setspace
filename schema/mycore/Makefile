@@ -72,4 +72,6 @@ dev-links:
 	test -e cgi-bin || ln -s . cgi-bin
 	test -e etc || ln -s . etc
 	test -e htdocs || ln -s . htdocs
+	test -e jmscott || ln -s . jmscott
 	test -e lib || ln -s . lib
+	test -e screen.css || ln -s ../../www/screen.css .
