@@ -1,6 +1,7 @@
 cgi-bin
-etc
 env.shtml
+etc
+favicon.ico
 footer.shtml
 header.shtml
 htdocs

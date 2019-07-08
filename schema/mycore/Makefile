@@ -79,3 +79,4 @@ dev-links:
 	test -e navigation.shtml || ln -s ../../www/navigation.shtml .
 	test -e header.shtml || ln -s ../../www/header.shtml .
 	test -e footer.shtml || ln -s ../../www/footer.shtml .
+	test -e favicon.ico || ln -s ../../www/favicon.ico .
