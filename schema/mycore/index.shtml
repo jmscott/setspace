@@ -1,9 +1,17 @@
 <html>
  <head>
-  <title>Test MyCore Schema in SetSpace</title>
+  <title>MyCore Schema</title>
+  <link href="screen.css" rel="stylesheet" type="text/css" />
  </head>
 
  <body>
-  <h1>Welcome to Test Page for MyCore Schema in SetSpace</h1>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/navigation.shtml" -->
+   <div id="content">
+    <h2>MyCore Schema</h2>
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
  </body>
 </html>

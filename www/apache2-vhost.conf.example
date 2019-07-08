@@ -123,7 +123,7 @@ Define APACHE_LOG_DIR /opt/local/log
                 AddOutputFilter INCLUDES .shtml
 
 		AuthType Basic
-		AuthName "RJ2 NOC"
+		AuthName "SetSpace NOC"
 		AuthUserFile ${SETSPACE_ROOT}/etc/passwd
 		Require valid-user
 	</Directory>
@@ -136,7 +136,7 @@ Define APACHE_LOG_DIR /opt/local/log
                 Options None +ExecCGI +Includes +FollowSymLinks
 
                 AuthType Basic
-                AuthName "RJ2 NOC"
+                AuthName "SetSpace NOC"
                 AuthBasicProvider file
                 AuthUserFile ${SETSPACE_ROOT}/etc/passwd
                 Require valid-user
