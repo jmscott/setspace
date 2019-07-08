@@ -1,0 +1,48 @@
+<!--
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="theme-color" content="#ffffff">
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 576.73 551.91675"
+>
+ <title>SetSpace Logo</title>
+ <defs>
+  <style>
+    .a
+    {
+	isolation:	isolate;
+    }
+    .b
+     {
+	fill:		#072736;
+	mix-blend-mode:	screen;
+     }
+  </style>
+ </defs>
+ <g class="a">
+  <circle
+    class="b"
+    cx="195.76071"
+    cy="356.15604"
+    r="195.76071"
+  />
+  <circle
+    class="b"
+    cx="380.96929"
+    cy="356.15604"
+    r="195.76071"
+  />
+  <circle
+    class="b"
+    cx="288.365"
+    cy="195.76071"
+    r="195.76071"
+  />
+ </g>
+</svg>

@@ -1,0 +1,24 @@
+Synopsis:
+	Various icons for assorted browsing environments.
+Usage:
+	<head>
+	 ...
+	 <!--#include virtual="/favicon/index.html.inc"  -->
+	 ...
+	</head>
+See:
+	Make venn diagrams:
+
+		https://www.lucidchart.com/pages/venn-diagram
+
+	Render various favicons:
+
+		https://realfavicongenerator.net
+Note:
+	Investigate site.webmanifest
+
+	Investigate various issues discussed here:
+		
+		https://realfavicongenerator.net/faq#why_icons_in_root
+		https://realfavicongenerator.net/blog/favicon-why-youre-doing-it-wrong/
+		https://github.com/audreyr/favicon-cheat-sheet
