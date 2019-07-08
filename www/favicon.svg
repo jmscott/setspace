@@ -12,8 +12,8 @@
     }
     .b
      {
-	fill:		#fcd1a5;
-	mix-blend-mode:	overlay;
+	fill:		#072736;
+	mix-blend-mode:	screen;
      }
   </style>
  </defs>
