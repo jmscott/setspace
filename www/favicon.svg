@@ -8,12 +8,12 @@
   <style>
     .a
     {
-	isolation:isolate;
+	isolation:	isolate;
     }
     .b
      {
-	fill:#fcd1a5;
-	mix-blend-mode:overlay;
+	fill:		#fcd1a5;
+	mix-blend-mode:	overlay;
      }
   </style>
  </defs>
