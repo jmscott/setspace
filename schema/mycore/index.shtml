@@ -3,6 +3,8 @@
  <head>
   <title>MyCore Schema</title>
   <meta charset="UTF-8" />
+  <!--#include virtual="/icon/index.html.inc"  -->
+
   <link href="screen.css" rel="stylesheet" type="text/css" />
  </head>
 

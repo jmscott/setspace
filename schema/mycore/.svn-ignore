@@ -1,10 +1,10 @@
 cgi-bin
 env.shtml
 etc
-favicon.ico
 footer.shtml
 header.shtml
 htdocs
+icon
 jmscott
 lib
 navigation.shtml
