@@ -3,5 +3,38 @@
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 576.73 551.91675"
 >
-  <defs>
-   <style>.a{isolation:isolate;}.b{fill:#fcd1a5;mix-blend-mode:overlay;}</style></defs><title>venn diagrams</title><g class="a"><circle class="b" cx="195.76071" cy="356.15604" r="195.76071"/><circle class="b" cx="380.96929" cy="356.15604" r="195.76071"/><circle class="b" cx="288.365" cy="195.76071" r="195.76071"/></g></svg>
+ <title>SetSpace Logo</title>
+ <defs>
+  <style>
+    .a
+    {
+	isolation:isolate;
+    }
+    .b
+     {
+	fill:#fcd1a5;
+	mix-blend-mode:overlay;
+     }
+  </style>
+ </defs>
+ <g class="a">
+  <circle
+    class="b"
+    cx="195.76071"
+    cy="356.15604"
+    r="195.76071"
+  />
+  <circle
+    class="b"
+    cx="380.96929"
+    cy="356.15604"
+    r="195.76071"
+  />
+  <circle
+    class="b"
+    cx="288.365"
+    cy="195.76071"
+    r="195.76071"
+  />
+ </g>
+</svg>
