@@ -75,3 +75,7 @@ dev-links:
 	test -e jmscott || ln -s . jmscott
 	test -e lib || ln -s . lib
 	test -e screen.css || ln -s ../../www/screen.css .
+	test -e env.shtml || ln -s ../../www/env.shtml .
+	test -e navigation.shtml || ln -s ../../www/navigation.shtml .
+	test -e header.shtml || ln -s ../../www/header.shtml .
+	test -e footer.shtml || ln -s ../../www/footer.shtml .

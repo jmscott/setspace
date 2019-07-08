@@ -1,7 +1,11 @@
 cgi-bin
 etc
+env.shtml
+footer.shtml
+header.shtml
 htdocs
 jmscott
 lib
+navigation.shtml
 passwd
 screen.css
