@@ -3,7 +3,7 @@
 #	Root makefile for setspace clients and spider environment.
 #  See:
 #	local-linux.mk.example
-#	local-macossx.mk.example
+#	local-darwin.mk.example
 #
 include local.mk
 include setspace.mk
@@ -107,7 +107,7 @@ install: all
 		flip-tail.c						\
 		is-utf8wf.c						\
 		local-linux.mk.example					\
-		local-macosx.mk.example					\
+		local-darwin.mk.example					\
 		macosx.c						\
 		spin-wait-blob.pgc					\
 		tas-run-lock.c						\
