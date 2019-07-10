@@ -18,13 +18,13 @@ clean:
 	rm -f $(CGIBINs)
 
 install: all
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
+		-d $(MYCORE_PREFIX) -m u=rwx,g=rx,o=
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
-				-d $(MYCORE_PREFIX)
-	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
-				-d $(MYCORE_PREFIX)/etc
-	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
-				-d $(MYCORE_PREFIX)/lib
-	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
+		-d $(MYCORE_PREFIX)/etc u=rwx,go=
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
+				-d $(MYCORE_PREFIX)/lib -m u=rwx,g=rx,o=
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) -m u=rwx,g=rx 		\
 				-d $(MYCORE_PREFIX)/lib/tag-url.d	
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
 				-d $(MYCORE_PREFIX)/log
@@ -34,6 +34,8 @@ install: all
 				-d $(MYCORE_PREFIX)/spool
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
 				-d $(MYCORE_PREFIX)/cgi-bin
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
+				-d $(MYCORE_PREFIX)/sbin
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
 				-d $(MYCORE_PREFIX)/tmp
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) -m a=r		\
