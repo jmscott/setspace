@@ -12,13 +12,15 @@ COMMENT ON SCHEMA jsonorg IS
 	'JSON blobs parseable by code from the site json.org'
 ;
 
+SET search_path TO jsonorg,public;
+
 /*
  *  Is the blob valid json, max depth 255, according to the checker at
  *
  *	http://www.json.org/JSON_checker/
  */
-DROP TABLE IF EXISTS jsonorg.checker_255 CASCADE;
-CREATE TABLE jsonorg.checker_255
+DROP TABLE IF EXISTS checker_255 CASCADE;
+CREATE TABLE checker_255
 (
 	blob	udig
 			REFERENCES setcore.service(blob)
@@ -27,7 +29,7 @@ CREATE TABLE jsonorg.checker_255
 	is_json	bool
 			NOT NULL
 );
-COMMENT ON TABLE jsonorg.checker_255 IS
+COMMENT ON TABLE checker_255 IS
   'The json blob passes the checker at json.org, with nesting up to 255 levels'
 ;
 
@@ -37,22 +39,22 @@ COMMENT ON TABLE jsonorg.checker_255 IS
  *  If you want the exact text of the json document
  *  then just fetch the immutable blob.
  */
-DROP TABLE IF EXISTS jsonorg.jsonb_255 CASCADE;
-CREATE TABLE jsonorg.jsonb_255
+DROP TABLE IF EXISTS jsonb_255 CASCADE;
+CREATE TABLE jsonb_255
 (
 	blob	udig
-			REFERENCES jsonorg.checker_255
+			REFERENCES checker_255
 			ON DELETE CASCADE
 			PRIMARY KEY,
 	doc	jsonb
 			NOT NULL
 );
-COMMENT ON TABLE jsonorg.jsonb_255 IS
+COMMENT ON TABLE jsonb_255 IS
   'A queryable, jsonb internal version of the blob' 
 ;
 
-DROP FUNCTION IF EXISTS jsonorg.check_jsonability();
-CREATE OR REPLACE FUNCTION jsonorg.check_jsonability() RETURNS TRIGGER
+DROP FUNCTION IF EXISTS check_jsonability();
+CREATE OR REPLACE FUNCTION check_jsonability() RETURNS TRIGGER
   AS $$
 	DECLARE
 		my_blob public.udig;
@@ -82,26 +84,26 @@ CREATE OR REPLACE FUNCTION jsonorg.check_jsonability() RETURNS TRIGGER
 
 CREATE TRIGGER check_jsonability AFTER INSERT
   ON
-  	jsonorg.jsonb_255
+  	jsonb_255
   FOR EACH ROW EXECUTE PROCEDURE
-  	jsonorg.check_jsonability()
+  	check_jsonability()
 ;
 
-COMMENT ON TABLE jsonorg.jsonb_255 IS
+COMMENT ON TABLE jsonb_255 IS
 	'Binary encoding of valid json document from table checker_255'
 ;
 
 DROP INDEX IF EXISTS idx_jsonb_255_gin CASCADE;
 CREATE INDEX idx_jsonb_255_gin
   ON
-  	jsonorg.jsonb_255 USING gin(doc)
+  	jsonb_255 USING gin(doc)
 ;
 
 --  indexing the @> operator
 DROP INDEX IF EXISTS idx_jsonb_255_pgin CASCADE;
 CREATE INDEX idx_jsonb_255_pgin
   ON
-  	jsonorg.jsonb_255 USING gin (doc jsonb_path_ops)
+  	jsonb_255 USING gin (doc jsonb_path_ops)
 ;
 
 REVOKE UPDATE ON ALL TABLES IN SCHEMA jsonorg FROM PUBLIC;
