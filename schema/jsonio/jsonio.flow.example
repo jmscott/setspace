@@ -37,12 +37,12 @@ sql database setspace
 	max_open_conns = 16;
 }
 
-tail brr
+tail jsonorg
 {
 	path = "spool/jsonorg.brr";
 }
 
-sql query is_curl7 row
+sql query is_mycore_json row
 {
 	statement = `
 SELECT EXISTS (
@@ -57,6 +57,26 @@ SELECT EXISTS (
 )
 	`;
 	result row is (
-		answer bool
+		exists bool
 	);
 }
+
+command append_mycore_brr
+{
+       path = "append-brr";
+       argv = (
+               "../mycore/spool/jsonio.brr"
+       );
+}
+
+call append_mycore_brr(
+       jsonorg.start_time,
+       jsonorg.netflow,
+       jsonorg.verb,
+       jsonorg.udig,
+       jsonorg.chat_history,
+       jsonorg.blob_size,
+       jsonorg.wall_duration
+) when
+	is_mycore_json.exists == true
+;
