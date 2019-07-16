@@ -19,13 +19,13 @@ clean:
 
 install: all
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
-		-d $(MYCORE_PREFIX) -m u=rwx,g=rx,o=
+		-m u=rwx,g=rx,o= -d $(MYCORE_PREFIX)
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
-		-d $(MYCORE_PREFIX)/etc u=rwx,go=
+		-m u=rwx,go= -d $(MYCORE_PREFIX)/etc
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
-				-d $(MYCORE_PREFIX)/lib -m u=rwx,g=rx,o=
-	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) -m u=rwx,g=rx 		\
-				-d $(MYCORE_PREFIX)/lib/tag-url.d	
+		-m u=rwx,g=rx,o= -d $(MYCORE_PREFIX)/lib
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
+		-m u=rwx,g=rx -d $(MYCORE_PREFIX)/lib/tag-url.d	
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
 				-d $(MYCORE_PREFIX)/log
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
