@@ -2,6 +2,8 @@
 #  Synposis:
 #	Makefile for setspace/schema/*
 #  Note:
+#	Why is $(MFLAGS) missing from invocations of $(MAKE)?
+#
 #	No distclean of PDFBOX_PREFIX if we disabled pdfbox compilation
 #
 include ../local.mk
@@ -72,3 +74,8 @@ endif
 	cd jsonio && $(MAKE) distclean
 	rm -f $(SETSPACE_PREFIX)/lib/psqlrc.example
 	rm -f $(SETSPACE_PREFIX)/lib/fault-process.sh
+world:
+	$(MAKE) clean
+	$(MAKE) all
+	$(MAKE) distclean
+	$(MAKE) install
