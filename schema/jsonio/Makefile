@@ -32,3 +32,7 @@ frisk ff:
 
 distclean:
 	rm -rf $(JSONIO_PREFIX)/lib
+
+world:
+	$(MAKE) $(MFLAGS) distclean
+	$(MAKE) $(MFLAGS) install
