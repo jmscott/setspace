@@ -2,8 +2,9 @@
 #  Synopsis:
 #  	Static Makefile rules for setspace/schema/* subsystems
 #  Note:
-#	Why soo many variables for <SCHEMA>_{USER,GROUP}?
-#	Seems like SETSPACE_{USER,GROUP} are sufficient.
+#	Why sooo many variables for <SCHEMA>_{ROOT,PREFIX,USER,GROUP}?
+#	Seems like SETSPACE_{USER,GROUP} are sufficient.  Can we
+#	assume any schema is always rooted in $SETSPACE_ROOT/schema?
 #
 
 #  Variables for setcore schema
@@ -74,6 +75,6 @@ CURL7_GROUP=$(SETSPACE_GROUP)
 
 #  Variables for jsonio schema
 JSONIO_ROOT=$(SETSPACE_PREFIX)/schema/jsonio
-JSONIO_PREFIX=$(CURL7_ROOT)
+JSONIO_PREFIX=$(JSONIO_ROOT)
 JSONIO_USER=$(SETSPACE_USER)
 JSONIO_GROUP=$(SETSPACE_GROUP)
