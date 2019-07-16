@@ -25,9 +25,18 @@ ls-flow | while read SC;  do
 	SC=$(basename $SC)
 	PID=$SC/run/flowd.pid
 	STATE=DEAD
-	#  pid exists or has run/flowd.pid been touched within 2 minutes
-	if [ -e $PID -a -z "$(find $PID -mmin -2 -print)" ];  then
-		STATE=ALIVE
+
+	#  run the gauntlet on the state of the run/flowd.pid file.
+	if [ -e $PID ];  then
+		#  run/flowd.pid been touched within 2 minutes
+		#
+		#  Note:
+		#	test -a alway evaluates both sides of the expression,
+		#	breaking a $(find) in single invocation.
+		#
+		if [ -n "$(find $PID -mmin -2 -print)" ];  then
+			STATE=ALIVE
+		fi
 	fi
 	echo "$SC	$STATE"
 done
