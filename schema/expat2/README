@@ -1,6 +1,6 @@
 Synopsis:
-	The schema for xml blobs parsable by the well known expat2 code
+	A schema for xml blobs parsed by v2 of http://libexpat.org
 See:
-	http://expat.sourceforge.net/
+	http://www.jclark.com/xml/expat.html
 Blame:
 	jmscott@setspace.com
