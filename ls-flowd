@@ -21,14 +21,14 @@ test -n "$SETSPACE_ROOT" || die 'env var not defined: SETSPACE_ROOT'
 SCHEMA=$SETSPACE_ROOT/schema
 cd $SCHEMA || die "cd $SCHEMA failed: exit status=$?"
 
-find . -type d -maxdepth 1 -mindepth 1 | while read SC;  do
+ls-flow | while read SC;  do
 	SC=$(basename $SC)
 	PID=$SC/run/flowd.pid
-	test -e $PID || continue
 	STATE=DEAD
-
-	#  has run/flowd.pid been touched within 2 minutes
-	test -n "$(find $PID -mmin -2 -print)" && STATE=ALIVE
+	#  pid exists or has run/flowd.pid been touched within 2 minutes
+	if [ -e $PID -a -z "$(find $PID -mmin -2 -print)" ];  then
+		STATE=ALIVE
+	fi
 	echo "$SC	$STATE"
 done
 
