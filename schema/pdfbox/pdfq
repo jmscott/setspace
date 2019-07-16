@@ -42,7 +42,7 @@
 #	$PDFBOX_ROOT/lib/page-text-utf8-phrase[-count].sql
 #	$PDFBOX_ROOT/lib/page-text-utf8-keyword[-count].sql
 #  Note:
-#	Rename script 'pdfq' to pdfboxq.
+#	Rename script 'pdfq' to 'pdfboxq'.
 #
 #	Option process is broken!!  For example, no way to specify
 #	the text search.  Need to rewrite script for [--options]
@@ -138,10 +138,8 @@ parse_query()
 	return 0
 }
 
-test -n "$SETSPACE_ROOT" || die 'environment not defined: SETSPACE_ROOT' 4
-test $# -gt 1 || die 'wrong number of arguments' 4
-
-PDFBOX_ROOT=$SETSPACE_ROOT/schema/pdfbox
+test -n "$PDFBOX_ROOT" || die 'environment not defined: PDFBOX_ROOT' 4
+test $# -gt 1 || die "wrong number of arguments: expected > 1, got $#" 4
 
 case "$1" in
 page)
@@ -206,7 +204,7 @@ if [ $# -eq 5 ];  then
 	RANK_NORM=$5
 fi
 
-#  parse page level ranking normalization facor
+#  parse page level ranking normalization factor
 
 psql	--quiet								\
 	--no-psqlrc 							\
