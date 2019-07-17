@@ -17,7 +17,6 @@ LIBs=									\
 all:
 	cd setcore && $(MAKE) all
 	cd jsonorg && $(MAKE) all
-	cd expat2 && $(MAKE) all
 	cd libxml2 && $(MAKE) all
 ifdef PDFBOX_PREFIX
 	cd pdfbox && $(MAKE) all

@@ -8,12 +8,6 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
-COMPILED=
-PROGS=  get-is_xmlwf
-
-all: $(COMPILED)
-	true
-
 clean:
 	rm -f $(COMPILED)
 
@@ -38,7 +32,7 @@ install:
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 		\
 				-d $(EXPAT2_PREFIX)/tmp
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m u=rx,go=	\
-		$(PROGS) 						\
+		get-xmlwf						\
 		$(EXPAT2_PREFIX)/sbin
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m a=r	\
 		expat2.flow.example					\
