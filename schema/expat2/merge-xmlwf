@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Is a blob well formed xml, according to the expat2 is_xmlwf program?
+#	Is a blob well formed xml, according to the expat2 xmlwf program?
 #  Usage:
 #	get-is_xmlwf <blob udig>
 #  Exit Status:
@@ -11,6 +11,7 @@
 #	3	wrong number of arguments
 #	4	unexpected 'blobio get' error
 #	5	unexpected xmlwf error
+#	6	unexpected psql error
 #  Environment:
 #	BLOBIO_SERVICE
 #	BLOBIO_GET_SERVICE
@@ -58,5 +59,6 @@ esac
 #  non zero exit code means wierdness, not xml validity  
 xmlwf $TMP_BLOB >$TMP_XMLWF
 test $? = 0 || die "xmlwf failed >$TMP_XMLWF: exit status = $?" 5
-test -s $TMP_XMLWF || exit 0
-exit 1
+
+merge-stdin-xmlwf $UDIG $(file-stat-size $TMP_XMLWF) < $TMP_XMLWF ||
+			die "merge-stdin-xmlwf failed: exit status=$?" 6

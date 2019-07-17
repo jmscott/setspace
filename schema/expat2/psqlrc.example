@@ -1,0 +1,1 @@
+SET search_path TO expat2,mycore,setcore,public;

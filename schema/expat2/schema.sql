@@ -1,8 +1,8 @@
 /*
  *  Synopsis:
- *	Classify xml blobs using expat2 software.
- *  Blame:
- *  	jmscott@setspace.com
+ *	Classify xml blobs in utf8 encoding using expat2 software.
+ *  Note:
+ *	Add trigger to test if setcore.is_utf8.is_utf8 == true.
  */
 \set ON_ERROR_STOP on
 \timing
@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS xmlwf_utf8;
 CREATE TABLE xmlwf_utf8
 (
 	blob	udig
-			REFERENCES setcore.service
+			REFERENCES setcore.is_utf8wf
 			ON DELETE CASCADE
 			PRIMARY KEY,
 	stdout	text	CHECK (
