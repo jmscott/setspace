@@ -7,7 +7,8 @@
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
  *  Note:
- *	Rename schema "setspace" to "setcore"!
+ *	Think about function has_utf8_prefix('prefix', bytea) that will hide
+ *	exceptions for byte strings that are not castable to utf8.
  */
 \set ON_ERROR_STOP on
 \timing
