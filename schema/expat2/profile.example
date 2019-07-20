@@ -12,6 +12,6 @@ mkdir -p $TMPDIR || exit 1
 
 #  create the spool file so tail doesn't abort.
 #  Note: got to be a better way. perhaps flowd.tail ought to create the file.
-touch $SCHEMA_ROOT/spool/setcore.brr
+touch $SCHEMA_ROOT/spool/prefixio.brr
 
 PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH

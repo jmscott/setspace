@@ -33,24 +33,26 @@ sql database setspace
 	max_open_conns = 4;
 }
 
-sql query in_is_xmlwf_table row
+sql query is_in_xmlwf_utf8_table row
 {
 	statement = `
 
-	SELECT exists (
-	  select
+	SELECT EXISTS (
+	  SELECT
 	  	blob
-	    from
-	    	expat2.is_xmlwf
-	    where
+	    FROM
+	    	expat2.xmlwf_utf8
+	    WHERE
 	    	blob = $1::udig
 	),
 	(SELECT
-		is_xml
-	  from
-	    	expat2.is_xmlwf
-	  where
+		stdout
+	  FROM
+	    	expat2.xmlwf_utf8
+	  WHERE
 	    	blob = $1::udig
+		AND
+		length(stdout) > 0
 	)
 	`;
 
@@ -60,52 +62,21 @@ sql query in_is_xmlwf_table row
 	);
 }
 
-query in_is_xmlwf_table(brr.udig);
+query is_in_xmlwf_utf8_table(brr.udig);
 
-command get_is_xmlwf
+command merge_xmlwf_utf8
 {
-	path = "sbin/get-is_xmlwf";
+	path = "sbin/merge-xmlwf_utf8";
 	exit_status is OK when in {
-		0,			#  command is true
-		1,			#  command is false
+		0,			#  is valid xml
+		1,			#  is not valid xml
 		2			#  blob does not exist
 	};
 }
 
-call get_is_xmlwf(brr.udig)
+call merge_xmlwf_utf8(brr.udig)
   when
-  	in_is_xmlwf_table.answer == false
-;
-
-sql query merge_is_xmlwf row
-{
-	statement = `
-
-	INSERT into expat2.is_xmlwf(
-		blob,
-		is_xml
-	) SELECT
-		$1::udig,
-		case $2 
-	  		when '0' then true
-	  		when '1' then false
-		end as "is_xml"
-	  ON CONFLICT
-		do nothing
-  	  RETURNING
-  		"is_xml"
-	`;
-
-	result row is (
-		is_xml bool
-	);
-}
-
-query merge_is_xmlwf(brr.udig, get_is_xmlwf.exit_status)
-  when
-  	get_is_xmlwf.exit_status == 0
-	or
-	get_is_xmlwf.exit_status == 1
+  	is_in_xmlwf_utf8_table.answer == false
 ;
 
 command append_libxml2_brr
@@ -125,7 +96,7 @@ call append_libxml2_brr(
 	brr.blob_size,
 	brr.wall_duration
 ) when
-	in_is_xmlwf_table.is_xml == true
+	is_in_xmlwf_utf8_table.is_xml == true
 	or
-	merge_is_xmlwf.is_xml == true
+	merge_xmlwf_utf8.exit_status == 0
 ;

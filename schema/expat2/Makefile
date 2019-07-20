@@ -8,7 +8,7 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
-COMPILED= merge-stdin-xmlwf
+COMPILED= merge-stdin-xmlwf_utf8
 
 all: $(COMPILED)
 
@@ -38,7 +38,7 @@ install:
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 			\
 				-d $(EXPAT2_PREFIX)/tmp
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m u=rx,go=	\
-		merge-xmlwf						\
+		merge-xmlwf_utf8					\
 		$(EXPAT2_PREFIX)/sbin
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m a=r		\
 		expat2.flow.example					\
@@ -46,10 +46,10 @@ install:
 		schema.sql						\
 		$(EXPAT2_PREFIX)/lib
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m a=r		\
-		merge-stdin-xmlwf.pgc					\
+		merge-stdin-xmlwf_utf8.pgc				\
 		$(EXPAT2_PREFIX)/src
 
-frisk ff:
+frisk:
 	flowd frisk expat2.flow.example
 
 distclean:
@@ -62,11 +62,11 @@ world:
 	$(MAKE) $(MFLAGS) distclean
 	$(MAKE) $(MFLAGS) install
 
-merge-stdin-xmlwf:							\
-		merge-stdin-xmlwf.pgc					\
+merge-stdin-xmlwf_utf8:							\
+		merge-stdin-xmlwf_utf8.pgc				\
 		../../common.c						\
 		../../common-ecpg.c
-	ecpg merge-stdin-xmlwf.pgc
-	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-xmlwf.c 			\
-		-o merge-stdin-xmlwf -L$(PGLIB) -lecpg
-	rm merge-stdin-xmlwf.c
+	ecpg merge-stdin-xmlwf_utf8.pgc
+	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-xmlwf_utf8.c 		\
+		-o merge-stdin-xmlwf_utf8 -L$(PGLIB) -lecpg
+	rm merge-stdin-xmlwf_utf8.c
