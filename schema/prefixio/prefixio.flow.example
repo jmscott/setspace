@@ -211,7 +211,7 @@ SELECT EXISTS (
   	utf8wf u8
 	  JOIN setcore.byte_prefix_32 p32 ON (p32.blob = u8.blob)
 	  JOIN setcore.byte_suffix_32 s32 ON (s32.blob = u8.blob)
-	  LEFT OUTER JOIN expat2.xmlwf xml ON (xml.blob = u8.blob)
+	  LEFT OUTER JOIN expat2.xmlwf_utf8 xml ON (xml.blob = u8.blob)
     WHERE
     	/*
 	 *  Consult the hex versions of the prefix/suffix, since
