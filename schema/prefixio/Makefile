@@ -26,8 +26,12 @@ install:
 		profile.example						\
 		$(PREFIXIO_PREFIX)/lib
 
-frisk ff:
+frisk:
 	flowd frisk prefixio.flow.example
 
 distclean:
 	rm -rf $(PREFIXIO_PREFIX)/lib
+
+world:
+	$(MAKE) $(MFLAGS) distclean
+	$(MAKE) $(MFLAGS) install
