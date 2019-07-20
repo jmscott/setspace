@@ -3,20 +3,18 @@
 #	Route blobs into other schemas based upon patterns in the byte prefix.
 #  Description:
 #	Blob may be routed to other schemas based upon values in the the
-#	first 32 bytes of of the blob.  See the table setcore.byte_prefix_32.
-#	Recipes may also assume that the core byte oriented setcore tables
-#	have already been populated:
+#	first 32 bytes of of the blob.  See the table setcore.byte_prefix_32
+#	and setcore.byte_suffix_32.  Recipes may also assume that the core
+#	byte oriented setcore tables have already been populated:
 #
 #		setcore.{byte_bitmap, byte_count, is_utf8}
-#
-#	Since most routing rules are immutable, the queries are highly
-#	cacheable.  cool.
-#
 #  Usage:
 #  	flowd server prefixio.conf
 #  See:
-#  	schema.sql
+#  	prefixio/lib/schema.sql
 #  Note:
+#	Can we set os_exec_worker_count == 0?
+#
 #	Only need to append requests that proof existence.
 #
 
@@ -55,15 +53,19 @@ tail brr
 	path = "spool/setcore.brr";
 }
 
+#
 #  Is the utf8 blob framed with json object or array chars?
 #
 #  Note:
 #	We only consult 32 bytes of prefix and suffix of the blob.
 #	This implies we will miss json blobs with long leading chunks of
-#	white space.  Need add another recipe for such patterns.
+#	white space.
+#
+#	Also, SQL does not insure that the bytea cast to text will
+#	never be executed for non-utf8.
 #
 
-sql query is_json_object_or_array row
+sql query may_be_json_object_or_array row
 {
 	statement = `
 SELECT EXISTS (
@@ -86,7 +88,7 @@ SELECT EXISTS (
 	  LEFT OUTER JOIN jsonorg.checker_255 js ON (js.blob = u8.blob)
     WHERE
     	/*
-	 *  Consult the hex versions of the prefix/suffix, sine
+	 *  Consult the hex versions of the prefix/suffix, since
 	 *  we may have malformed utf8 due to truncating at 32 bytes.
 	 */
 	((	--  utf8 framed with {}
@@ -112,7 +114,7 @@ SELECT EXISTS (
 	);
 }
 
-query is_json_object_or_array(brr.udig);
+query may_be_json_object_or_array(brr.udig);
 
 command append_jsonorg_brr
 {
@@ -131,7 +133,7 @@ call append_jsonorg_brr(
 	brr.blob_size,
 	brr.wall_duration
 ) when
-	is_json_object_or_array.answer == true
+	may_be_json_object_or_array.answer == true
 ;
 
 command append_pdfbox_brr
@@ -175,3 +177,58 @@ call append_pdfbox_brr(
 ) when
 	prefix_is_percentPDF.answer == true
 ;
+
+#
+#  If the UTF8 blob has char '<' as first char and '>' as last then route to
+#  expat2 schema.
+#
+#  Note:
+#	We only consult 32 bytes of prefix and suffix of the blob.
+#	This implies we will miss xml blobs with long leading chunks of
+#	white space.
+#
+#	Also, SQL does not insure that the bytea cast to text will
+#	never be executed for non-utf8.
+#
+
+sql query may_be_xml row
+{
+	statement = `
+SELECT EXISTS (
+  WITH utf8wf AS (
+    SELECT
+  	blob
+      FROM
+    	setcore.is_utf8wf
+      WHERE
+	is_utf8 IS TRUE
+	AND
+	blob = $1::udig
+  )
+  SELECT
+	u8.blob
+    FROM
+  	utf8wf u8
+	  JOIN setcore.byte_prefix_32 p32 ON (p32.blob = u8.blob)
+	  JOIN setcore.byte_suffix_32 s32 ON (s32.blob = u8.blob)
+	  LEFT OUTER JOIN expat2.xmlwf xml ON (xml.blob = u8.blob)
+    WHERE
+    	/*
+	 *  Consult the hex versions of the prefix/suffix, since
+	 *  we may have malformed utf8 due to truncating at 32 bytes.
+	 */
+	(	--  utf8 framed with < ... >
+
+		p32.prefix::text ~ '^\\x(09|0a|20|0d)*3c'
+		AND
+		s32.suffix::text ~ '^\\x.*3e(09|0a|20|0d)*$'
+	)
+	AND
+	xml.blob IS NULL
+);
+	`;
+
+	result row is (
+		answer bool
+	);
+}
