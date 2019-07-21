@@ -67,13 +67,14 @@ world:
 
 dev-links:
 	test -e cgi-bin || ln -s . cgi-bin
+	test -e env.shtml || ln -s ../../www/env.shtml .
 	test -e etc || ln -s . etc
+	test -e footer.shtml || ln -s ../../www/footer.shtml .
+	test -e header.shtml || ln -s ../../www/header.shtml .
 	test -e htdocs || ln -s . htdocs
+	test -e icon || ln -s ../../www/icon .
 	test -e jmscott || ln -s . jmscott
 	test -e lib || ln -s . lib
-	test -e screen.css || ln -s ../../www/screen.css .
-	test -e env.shtml || ln -s ../../www/env.shtml .
 	test -e navigation.shtml || ln -s ../../www/navigation.shtml .
-	test -e header.shtml || ln -s ../../www/header.shtml .
-	test -e footer.shtml || ln -s ../../www/footer.shtml .
-	test -e icon || ln -s ../../www/icon .
+	test -e passwd || ln -s ../../www/apache2-vhost.conf.example passwd
+	test -e screen.css || ln -s ../../www/screen.css .
