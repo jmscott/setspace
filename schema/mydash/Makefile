@@ -76,5 +76,5 @@ dev-links:
 	test -e jmscott || ln -s . jmscott
 	test -e lib || ln -s . lib
 	test -e navigation.shtml || ln -s ../../www/navigation.shtml .
-	test -e passwd || ln -s ../../www/apache2-vhost.conf.example passwd
+	test -e passwd || ln -s ../../www/apache2-passwd.example passwd
 	test -e screen.css || ln -s ../../www/screen.css .
