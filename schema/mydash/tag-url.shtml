@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Tag URL - MyCore@SetSpace</title>
+  <meta charset="UTF-8" />
+  <link href="screen.css" rel="stylesheet" type="text/css" />
+  <script>
+    function copy_button_js()
+    {
+	/* Get the javascript */
+	var js = document.getElementById("tag-button-js");
+
+	/* Select the text field */
+	js.select();
+
+	/* Copy the text inside the text field */
+	document.execCommand("copy");
+
+	/* Alert the copied text */
+	alert("Copied the text: " + js.value);
+    }
+  </script>
+  <style>
+    /* <![CDATA[ */
+    #content button:first-of-type
+    {
+    	font-weight:		bold;
+    	font-size:		200%;
+	margin-left:		auto;
+	margin-right:		auto;
+	display:		block;
+    }
+    #tag-button-js
+    {
+    	Xdisplay:		flex;
+	Xjustify-content:	center;
+
+	margin-left:		auto;
+	margin-right:		auto;
+	display:		block;
+	width:			66%;
+	height:			5em;
+	background-color:	black;
+	color:			lightgreen;
+	font-family:		fixed;
+	font-size:		x-large;
+    }
+    /* ]]> */
+  </style>
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/navigation.shtml" -->
+   <div id="content">
+    <h2>How to add the "Tag" button to Your Browser</h2>
+    <button onclick="copy_button_js()">Copy Javascript</button>
+    <!--#include virtual="/cgi-bin/tag-url?out=textarea&id=tag-button-js" -->
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>
