@@ -11,8 +11,6 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
-CGIBINs=tag-url
-
 all: $(CGIBINs)
 clean:
 	rm -f $(CGIBINs)
@@ -24,8 +22,6 @@ install: all
 		-m u=rwx,go= -d $(MYCORE_PREFIX)/etc
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
 		-m u=rwx,g=rx,o= -d $(MYCORE_PREFIX)/lib
-	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
-		-m u=rwx,g=rx -d $(MYCORE_PREFIX)/lib/tag-url.d	
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
 				-d $(MYCORE_PREFIX)/log
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
@@ -43,26 +39,9 @@ install: all
 		psqlrc.example						\
 		schema.sql						\
 		$(MYCORE_PREFIX)/lib
-	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) -m a=r		\
-		tag-url.d/a.pl						\
-		tag-url.d/click.pl					\
-		tag-url.d/common.pl					\
-		tag-url.d/div.err.pl					\
-		tag-url.d/div.nav.pl					\
-		tag-url.d/dl.pl						\
-		tag-url.d/help.pl					\
-		tag-url.d/save.pl					\
-		tag-url.d/select.host.pl				\
-		tag-url.d/select.rppg.pl				\
-		tag-url.d/table.pl					\
-		tag-url.d/textarea.pl					\
-		$(MYCORE_PREFIX)/lib/tag-url.d
 
 distclean:
 	rm -rf $(MYCORE_PREFIX)/lib
-
-tag-url: tag-url.cgi
-	cgi2perl5 --source-path tag-url.cgi
 
 world:
 	$(MAKE) $(MAKEFLAGS) clean
