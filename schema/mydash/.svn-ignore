@@ -1,4 +1,5 @@
 cgi-bin
+env
 env.shtml
 etc
 footer.shtml

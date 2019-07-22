@@ -34,6 +34,9 @@ install: all
 				-d $(MYDASH_PREFIX)/spool
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 				-d $(MYDASH_PREFIX)/cgi-bin
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=rx		\
+		tag-url							\
+		$(MYDASH_PREFIX)/cgi-bin
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 				-d $(MYDASH_PREFIX)/sbin
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
@@ -58,6 +61,7 @@ distclean:
 
 tag-url: tag-url.cgi
 	cgi2perl5 --source-path tag-url.cgi
+	chmod a=rx tag-url
 
 world:
 	$(MAKE) $(MAKEFLAGS) clean
