@@ -28,7 +28,7 @@ for(0x00 .. 0x1f) {
 			unless defined $REVERSE{$packed};
 }
 
-sub utf82json
+sub utf82json_string
 {
 	my $str = shift;
 	$str =~ s!([\x00-\x1f\x{2028}\x{2029}\\"/])!$REVERSE{$1}!gs;
@@ -37,15 +37,15 @@ sub utf82json
 
 sub env2json()
 {
-	my $json = "{";
+	my $json = '{';
 	for (sort keys %ENV) {
-		my $e = utf82json($_);
-		my $v = utf82json($ENV{$_});
+		my $e = utf82json_string($_);
+		my $v = utf82json_string($ENV{$_});
 		$json .=<<END;
-		"$e": "$v",
+		$e: $v,
 END
 	}
-	$json =~ s/,//;
+	$json =~ s/,$//;
 	return $json . '}';
 }
 
