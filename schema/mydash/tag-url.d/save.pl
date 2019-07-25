@@ -31,7 +31,7 @@ print STDERR "tag-url.save: udig=$udig\n";
 
 print <<END;
 Status: 303
-Location: $QUERY_ARG{ura}
+Location: $QUERY_ARG{url}
 
 END
 
