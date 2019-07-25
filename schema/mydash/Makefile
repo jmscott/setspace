@@ -24,6 +24,9 @@ install: all
 		-m u=rwx,go= -d $(MYDASH_PREFIX)/etc
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(MYDASH_PREFIX)/lib
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=r		\
+		tag-url.js						\
+		$(MYDASH_PREFIX)/lib
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx -d $(MYDASH_PREFIX)/lib/tag-url.d	
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
@@ -64,10 +67,10 @@ tag-url: tag-url.cgi
 	chmod a=rx tag-url
 
 world:
-	$(MAKE) $(MAKEFLAGS) clean
-	$(MAKE) $(MAKEFLAGS) all
-	$(MAKE) $(MAKEFLAGS) distclean
-	$(MAKE) $(MAKEFLAGS) install
+	$(MAKE) $(MFLAGS) clean
+	$(MAKE) $(MFLAGS) all
+	$(MAKE) $(MFLAGS) distclean
+	$(MAKE) $(MFLAGS) install
 
 dev-links:
 	test -e cgi-bin || ln -s . cgi-bin
@@ -78,6 +81,7 @@ dev-links:
 	test -e htdocs || ln -s . htdocs
 	test -e icon || ln -s ../../www/icon .
 	test -e jmscott || ln -s . jmscott
+	test -e mydash || ln -s . mydash
 	test -e lib || ln -s . lib
 	test -e navigation.shtml || ln -s ../../www/navigation.shtml .
 	test -e passwd || ln -s ../../www/apache2-passwd.example passwd
