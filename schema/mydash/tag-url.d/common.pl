@@ -10,14 +10,13 @@ use IPC::Open2;
 my %ESCAPE = (
 	'"'     => '"',
 	'\\'    => '\\',
-	'/'     => '/',
 	'b'     => "\x08",
 	'f'     => "\x0c",
 	'n'     => "\x0a",
 	'r'     => "\x0d",
 	't'     => "\x09",
-	'u2028' => "\x{2028}",
-	'u2029' => "\x{2029}"
+	'u2028' => "\x{2028}",		#  unicode line-separator
+	'u2029' => "\x{2029}"		#  unicode paragraph-separator
 );
 
 my %REVERSE = map { $ESCAPE{$_} => "\\$_" } keys %ESCAPE;
