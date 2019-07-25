@@ -16,6 +16,9 @@ export BLOBIO_ROOT=$HOME/opt/blobio
 cd $SETSPACE_ROOT || exit 1
 PS1='sets@opt> '
 
+#  colored cursor for terms with limited, garish color selection
+#PS1='\e[45;1;37mset@opt>\e[0m '
+
 #  clear out runtime variables and reset from $SETSPACE_ROOT/etc/profile
 
 unset $(
