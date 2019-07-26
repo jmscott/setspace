@@ -73,8 +73,8 @@ install: all
 		launchd-flowd						\
 		ls-boot-flowd						\
 		ls-flow							\
-		ls-flowd						\
 		rummy							\
+		run-stat						\
 		spin-wait-blob						\
 		tail-flowd						\
 		tas-run-lock						\
