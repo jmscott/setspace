@@ -22,6 +22,8 @@ install: all
 		-m u=rwx,g=rx,o= -d $(MYDASH_PREFIX)
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
 		-m u=rwx,go= -d $(MYDASH_PREFIX)/etc
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+		-d $(MYDASH_PREFIX)/htdocs
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(MYDASH_PREFIX)/lib
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=r		\
@@ -44,6 +46,11 @@ install: all
 				-d $(MYDASH_PREFIX)/sbin
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
 				-d $(MYDASH_PREFIX)/tmp
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
+			index.shtml					\
+			navigation.shtml				\
+			header.shtml					\
+		$(MYDASH_PREFIX)/htdocs
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=r		\
 		tag-url.d/a.pl						\
 		tag-url.d/click.pl					\
@@ -77,13 +84,11 @@ dev-links:
 	test -e env.shtml || ln -s ../../www/env.shtml .
 	test -e etc || ln -s . etc
 	test -e footer.shtml || ln -s ../../www/footer.shtml .
-	test -e header.shtml || ln -s ../../www/header.shtml .
 	test -e htdocs || ln -s . htdocs
 	test -e icon || ln -s ../../www/icon .
 	test -e jmscott || ln -s . jmscott
 	test -e mydash || ln -s . mydash
 	test -e lib || ln -s . lib
-	test -e navigation.shtml || ln -s ../../www/navigation.shtml .
 	test -e passwd || ln -s ../../www/apache2-passwd.example passwd
 	test -e screen.css || ln -s ../../www/screen.css .
 	test -e env || ln -s ../../www/env .
