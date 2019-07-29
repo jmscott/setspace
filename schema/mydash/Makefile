@@ -11,6 +11,23 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
+#  Variable DASH_DNS_SUFFIX determines the directory name for the the
+#  web server, which matches the DNS name in the ssl certificate.  The
+#  default is .com for building dash.setspace.com.  However, typically
+#  in development the dns name will be local, like
+#
+#	dash.setspace.jmscott.cassimac.lan
+#	dash.setspace.jmscott.tmonk.local
+#
+#  using a snake oil, self-signed ssl certificate built for development.
+#
+#  The value of DNS_DOMAIN_SUFFIX
+#	
+DASH_DNS_HOST_SUFFIX?=com
+DASH_DNS_HOST=dash.setspace.$(DASH_DNS_HOST_SUFFIX)
+WWW_ROOT=$(SETSPACE_PREFIX)/www/vhost/$(DASH_DNS_HOST)
+SCHEMA_ROOT=$(SETSPACE_PREFIX)/schema/mydash
+
 CGIBINs=tag-url
 
 all: $(CGIBINs)
@@ -18,39 +35,53 @@ clean:
 	rm -f $(CGIBINs)
 
 install: all
+	#  Build SCHEMA_ROOT directories
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(MYDASH_PREFIX)
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
-		-m u=rwx,go= -d $(MYDASH_PREFIX)/etc
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-		-d $(MYDASH_PREFIX)/htdocs
+		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(MYDASH_PREFIX)/lib
+		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/schema
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(SCHEMA_ROOT)
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(SCHEMA_ROOT)/etc
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(SCHEMA_ROOT)/lib
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(SCHEMA_ROOT)/log
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(SCHEMA_ROOT)/run
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/spool
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/src
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/tmp
+
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/www
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/www/vhost
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(WWW_ROOT)
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(WWW_ROOT)/lib
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(WWW_ROOT)/lib/tag-url.d
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(WWW_ROOT)/cgi-bin
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(WWW_ROOT)/htdocs
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=r		\
 		tag-url.js						\
-		$(MYDASH_PREFIX)/lib
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx -d $(MYDASH_PREFIX)/lib/tag-url.d	
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
-				-d $(MYDASH_PREFIX)/log
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
-				-d $(MYDASH_PREFIX)/run
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
-				-d $(MYDASH_PREFIX)/spool
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-				-d $(MYDASH_PREFIX)/cgi-bin
+		$(WWW_ROOT)/lib
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=rx		\
 		tag-url							\
-		$(MYDASH_PREFIX)/cgi-bin
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-				-d $(MYDASH_PREFIX)/sbin
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
-				-d $(MYDASH_PREFIX)/tmp
+		$(WWW_ROOT)/cgi-bin
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
 			index.shtml					\
 			navigation.shtml				\
 			header.shtml					\
-		$(MYDASH_PREFIX)/htdocs
+		$(WWW_ROOT)/htdocs
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=r		\
 		tag-url.d/a.pl						\
 		tag-url.d/click.pl					\
@@ -64,10 +95,12 @@ install: all
 		tag-url.d/select.rppg.pl				\
 		tag-url.d/table.pl					\
 		tag-url.d/textarea.pl					\
-		$(MYDASH_PREFIX)/lib/tag-url.d
+		$(WWW_ROOT)/lib/tag-url.d
 
 distclean:
-	rm -rf $(MYDASH_PREFIX)/lib
+	rm -rf $(SCHEMA_PREFIX)/lib
+	rm -rf $(WWW_ROOT)/lib
+	rm -rf $(WWW_ROOT)/cgi-bin
 
 tag-url: tag-url.cgi
 	cgi2perl5 --source-path tag-url.cgi
