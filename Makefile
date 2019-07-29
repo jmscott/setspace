@@ -75,6 +75,7 @@ install: all
 		ls-flow							\
 		rummy							\
 		run-stat						\
+		run-stat-report						\
 		spin-wait-blob						\
 		tail-flowd						\
 		tas-run-lock						\

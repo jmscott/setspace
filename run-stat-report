@@ -1,0 +1,11 @@
+#
+#  Synospsis:
+#	Report of running flowd process bound to a schema.
+#  Usage:
+#	run-stat-report
+#
+(
+	echo "Schema	Flowd State"
+	echo "------	-----------"
+	run-stat | sort
+) | column -t -s '	'

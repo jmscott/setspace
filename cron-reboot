@@ -59,3 +59,7 @@ ls-boot-flowd | while read SCHEMA;  do
 done
 
 log 'all flowds started'
+
+echo
+run-stat-report
+echo

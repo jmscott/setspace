@@ -14,9 +14,6 @@
 
 PROG=$(basename $0)
 
-#  pause after either stopping or starting flowd
-FLOWD_PAUSE=2
-
 log()
 {
 	MSG=$@
