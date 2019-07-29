@@ -70,39 +70,16 @@ test -d run || die "missing run directory: $(pwd)/run/"
 #  check for pid file of flowd process
 
 FLOWD_PID=run/flowd.pid
-if [ ! -e $FLOWD_PID ];  then
-	WARN "no pid file: $(pwd)/$FLOWD_PID"
-	exit 0
-fi
-
-#  stop a possibly running flowd process
-
-PID=$(cat $FLOWD_PID)
+zap-proc $FLOWD_PID
 STATUS=$?
-case "$PID" in
-[0-9]*)
-	log "killing flowd process: id #$PID"
-	kill $PID
-	log "pause $FLOWD_PAUSE secs while flowd process stops"
-	sleep $FLOWD_PAUSE
-
-	#  does the flowd.pid file still exist?
-	#  if so, then nuke the process
-
-	if [ -e $FLOWD_PID ];  then
-		WARN "flowd pid file still exists: $FLOWD_PID"
-
-		#  forcible remove the pid file
-		rm -f $FLOWD_PID ||
-			die "rm -f $FLOWD_PID failed: exit status=$?"
-		WARN "killing $PID with signal -9"
-		kill -9 $PID
-	else
-		log 'flowd process shutdown gracefully'
-	fi
+case $STATUS in
+0)
+	log 'flowd killed'
 	;;
-'')
-	die "cat $FLOWD_PID failed: exit status=$STATUS"
+1)
+	log 'pid file does not exist'
+	;;
+*)
+	die "zap-proc failed: exit status=$STATUS"
 	;;
 esac
-exit 0
