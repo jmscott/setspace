@@ -62,7 +62,6 @@ install: all
 		cron-reboot						\
 		cron-rummy						\
 		dec2pgbit						\
-		dev-reboot						\
 		find-brr						\
 		find-rolled-brr						\
 		find-schema						\
