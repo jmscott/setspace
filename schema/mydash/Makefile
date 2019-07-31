@@ -8,6 +8,7 @@
 #	cgi-bin/
 #
 include ../../local.mk
+include ../../jmscott.mk
 include ../../setspace.mk
 include ../schema.mk
 
@@ -25,7 +26,7 @@ include ../schema.mk
 #	
 DASH_DNS_HOST_SUFFIX?=com
 DASH_DNS_HOST=dash.setspace.$(DASH_DNS_HOST_SUFFIX)
-WWW_ROOT=$(SETSPACE_PREFIX)/www/vhost/$(DASH_DNS_HOST)
+WWW_PREFIX=$(SETSPACE_PREFIX)/www/vhost/$(DASH_DNS_HOST)
 SCHEMA_ROOT=$(SETSPACE_PREFIX)/schema/mydash
 
 CGIBINs=tag-url
@@ -46,6 +47,7 @@ install: all
 		-m u=rwx,g=rx,o= -d $(SCHEMA_ROOT)/etc
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(SCHEMA_ROOT)/lib
+
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(SCHEMA_ROOT)/log
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
@@ -62,26 +64,26 @@ install: all
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/www/vhost
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(WWW_ROOT)
+		-m u=rwx,g=rx,o= -d $(WWW_PREFIX)
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(WWW_ROOT)/lib
+		-m u=rwx,g=rx,o= -d $(WWW_PREFIX)/lib
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(WWW_ROOT)/lib/tag-url.d
+		-m u=rwx,g=rx,o= -d $(WWW_PREFIX)/lib/tag-url.d
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(WWW_ROOT)/cgi-bin
+		-m u=rwx,g=rx,o= -d $(WWW_PREFIX)/cgi-bin
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(WWW_ROOT)/htdocs
+		-m u=rwx,g=rx,o= -d $(WWW_PREFIX)/htdocs
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=r		\
 		tag-url.js						\
-		$(WWW_ROOT)/lib
+		$(WWW_PREFIX)/lib
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=rx		\
 		tag-url							\
-		$(WWW_ROOT)/cgi-bin
+		$(WWW_PREFIX)/cgi-bin
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
 			index.shtml					\
 			navigation.shtml				\
 			header.shtml					\
-		$(WWW_ROOT)/htdocs
+		$(WWW_PREFIX)/htdocs
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=r		\
 		tag-url.d/a.pl						\
 		tag-url.d/click.pl					\
@@ -95,12 +97,18 @@ install: all
 		tag-url.d/select.rppg.pl				\
 		tag-url.d/table.pl					\
 		tag-url.d/textarea.pl					\
-		$(WWW_ROOT)/lib/tag-url.d
+		$(WWW_PREFIX)/lib/tag-url.d
+
+	#  set up symbolic links to $JMSCOTT_ROOT tools
+	test -e $(WWW_PREFIX)/cgi-bin/jmscott				||\
+		ln -s $(JMSCOTT_ROOT)/cgi-bin $(WWW_PREFIX)/cgi-bin/jmscott
+	test -e $(WWW_PREFIX)/lib/jmscott				||\
+		ln -s $(JMSCOTT_ROOT)/lib $(WWW_PREFIX)/lib/jmscott
 
 distclean:
 	rm -rf $(SCHEMA_PREFIX)/lib
-	rm -rf $(WWW_ROOT)/lib
-	rm -rf $(WWW_ROOT)/cgi-bin
+	rm -rf $(WWW_PREFIX)/lib
+	rm -rf $(WWW_PREFIX)/cgi-bin
 
 tag-url: tag-url.cgi
 	cgi2perl5 --source-path tag-url.cgi

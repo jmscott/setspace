@@ -13,6 +13,8 @@ install:
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		-d $(WWW_ROOT)
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+		-d $(WWW_ROOT)/lib
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		-d $(WWW_ROOT)/htdocs
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		-d $(WWW_ROOT)/htdocs/icon
@@ -39,6 +41,7 @@ install:
 
 distclean:
 	rm -rf $(WWW_ROOT)/htdocs
+	rm -rf $(WWW_ROOT)/lib
 
 world:
 	$(MAKE) $(MFLAGS) distclean
