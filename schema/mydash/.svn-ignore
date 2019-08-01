@@ -1,14 +1,10 @@
 cgi-bin
 env
-env.shtml
 etc
-footer.shtml
-header.shtml
 htdocs
 icon
 jmscott
 lib
 mydash
-navigation.shtml
 passwd
 screen.css

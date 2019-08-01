@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html>
  <head>
-  <title>Tag URL - MyCore@SetSpace</title>
+  <title>Tag URL - MyDash@SetSpace</title>
   <meta charset="UTF-8" />
-  <link href="screen.css" rel="stylesheet" type="text/css" />
+  <link
+    href="/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
   <script>
+    /* <![CDATA[ */
     function copy_button_js()
     {
 	/* Get the javascript */
@@ -19,6 +24,7 @@
 	/* Alert the copied text */
 	alert("Copied the text: " + js.value);
     }
+    /* ]]> */
   </script>
   <style>
     /* <![CDATA[ */

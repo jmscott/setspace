@@ -12,6 +12,7 @@ include ../../jmscott.mk
 include ../../setspace.mk
 include ../schema.mk
 
+#
 #  Variable DASH_DNS_SUFFIX determines the directory name for the the
 #  web server, which matches the DNS name in the ssl certificate.  The
 #  default is .com for building dash.setspace.com.  However, typically
@@ -27,7 +28,7 @@ include ../schema.mk
 DASH_DNS_HOST_SUFFIX?=com
 DASH_DNS_HOST=dash.setspace.$(DASH_DNS_HOST_SUFFIX)
 WWW_PREFIX=$(SETSPACE_PREFIX)/www/vhost/$(DASH_DNS_HOST)
-SCHEMA_ROOT=$(SETSPACE_PREFIX)/schema/mydash
+SCHEMA_PREFIX=$(SETSPACE_PREFIX)/schema/mydash
 
 CGIBINs=tag-url
 
@@ -36,22 +37,22 @@ clean:
 	rm -f $(CGIBINs)
 
 install: all
-	#  Build SCHEMA_ROOT directories
+	#  Build SCHEMA_PREFIX directories
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/schema
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(SCHEMA_ROOT)
+		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(SCHEMA_ROOT)/etc
+		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/etc
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(SCHEMA_ROOT)/lib
+		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/lib
 
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(SCHEMA_ROOT)/log
+		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/log
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(SCHEMA_ROOT)/run
+		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/run
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/spool
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
@@ -80,9 +81,13 @@ install: all
 		tag-url							\
 		$(WWW_PREFIX)/cgi-bin
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
+			footer.shtml					\
+			header.shtml					\
 			index.shtml					\
 			navigation.shtml				\
-			header.shtml					\
+			screen.css					\
+			tag-url.shtml					\
+			template.shtml					\
 		$(WWW_PREFIX)/htdocs
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=r		\
 		tag-url.d/a.pl						\
@@ -122,14 +127,10 @@ world:
 
 dev-links:
 	test -e cgi-bin || ln -s . cgi-bin
-	test -e env.shtml || ln -s ../../www/env.shtml .
 	test -e etc || ln -s . etc
-	test -e footer.shtml || ln -s ../../www/footer.shtml .
 	test -e htdocs || ln -s . htdocs
 	test -e icon || ln -s ../../www/icon .
 	test -e jmscott || ln -s . jmscott
 	test -e mydash || ln -s . mydash
 	test -e lib || ln -s . lib
 	test -e passwd || ln -s ../../www/apache2-passwd.example passwd
-	test -e screen.css || ln -s ../../www/screen.css .
-	test -e env || ln -s ../../www/env .
