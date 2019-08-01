@@ -83,7 +83,7 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
 
 	#  Disable chatty logging to preserve write limits on secure drives.
 
-	CustomLog ${APACHE_LOG_DIR}/${SETSPACE_APACHE2_SERVER_NAME}-access.log debuggable
+	CustomLog ${APACHE_LOG_DIR}/${SETSPACE_APACHE2_SERVER_NAME}-access.log common
 
 	#  Note: log to syslog to improved secure drive write limits
 
@@ -109,7 +109,7 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
                 AddOutputFilter INCLUDES .shtml
 
 		AuthType Basic
-		AuthName "SetSpace NOC"
+		AuthName "SetSpace ${SETSPACE_APACHE2_SERVER_NAME}"
 		AuthUserFile ${SETSPACE_ROOT}/etc/passwd
 		Require valid-user
 	</Directory>
@@ -122,7 +122,7 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
                 Options None +ExecCGI +Includes +FollowSymLinks
 
                 AuthType Basic
-                AuthName "SetSpace NOC"
+                AuthName "SetSpace ${SETSPACE_APACHE2_SERVER_NAME}"
                 AuthBasicProvider file
                 AuthUserFile ${SETSPACE_ROOT}/etc/passwd
                 Require valid-user
