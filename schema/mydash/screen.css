@@ -194,6 +194,11 @@ table.query tfoot th
 	text-align:		center;
 }
 
+dl dt
+{
+	font-weight:		bold;
+}
+
 dl.raw dt
 {
 	flex-basis:		20%;
@@ -201,7 +206,6 @@ dl.raw dt
 	background:		#000;
 	color:			#0f0;
 	text-align:		right;
-	font-weight:		bold;
 }
 
 dl.raw dd
@@ -277,11 +281,6 @@ span.ok
 {
 	background-color:	lightgreen;
 	color:			black;
-}
-
-dl.form dt
-{
-	font-weight:		bold;
 }
 
 dl.raw

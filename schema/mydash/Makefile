@@ -25,9 +25,9 @@ include ../schema.mk
 #
 #  The value of DNS_DOMAIN_SUFFIX
 #	
-DASH_DNS_HOST_SUFFIX?=com
-DASH_DNS_HOST=dash.setspace.$(DASH_DNS_HOST_SUFFIX)
-WWW_PREFIX=$(SETSPACE_PREFIX)/www/vhost/$(DASH_DNS_HOST)
+DASH_DNS_VHOST_SUFFIX?=com
+DASH_DNS_VHOST=dash.setspace.$(DASH_DNS_VHOST_SUFFIX)
+WWW_PREFIX=$(SETSPACE_PREFIX)/www/vhost/$(DASH_DNS_VHOST)
 SCHEMA_PREFIX=$(SETSPACE_PREFIX)/schema/mydash
 
 CGIBINs=tag-url
@@ -81,6 +81,7 @@ install: all
 		tag-url							\
 		$(WWW_PREFIX)/cgi-bin
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
+			env.shtml					\
 			footer.shtml					\
 			header.shtml					\
 			index.shtml					\
