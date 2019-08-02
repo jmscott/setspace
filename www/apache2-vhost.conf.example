@@ -18,7 +18,8 @@ Define SETSPACE_JMSCOTT_ROOT /usr/local/jmscott
 #
 #	${SETSPACE_DNS_VHOST_PREFIX}.setspace.${SETSPACE_DNS_VHOST_SUFFIX}
 #
-#  Current values of PREFIX can be "www", "dash", or "noc"
+#  Current values of PREFIX can be "www", "dash", or "noc".  During development
+#  may user a schema name like "pdfbox".
 #
 Define SETSPACE_DNS_VHOST_PREFIX www
 Define SETSPACE_DNS_VHOST_SUFFIX com
@@ -36,7 +37,7 @@ Define SETSPACE_PATH ${SETSPACE_PGHOME}/bin:${SETSPACE_BLOBIO_ROOT}/bin:/usr/bin
 
 Define SETSPACE_APACHE2_SERVER_NAME ${SETSPACE_DNS_VHOST_PREFIX}.setspace.${SETSPACE_DNS_VHOST_SUFFIX}
 Define SETSPACE_WWW_ROOT ${SETSPACE_ROOT}/www/vhost/${SETSPACE_APACHE2_SERVER_NAME}
-Define SETSPACE_PERL5LIB ${SETSPACE_JMSCOTT_ROOT}/lib:${SETSPACE_WWW_ROOT}/lib
+Define SETSPACE_PERL5LIB ${SETSPACE_JMSCOTT_ROOT}/www/lib:${SETSPACE_WWW_ROOT}/lib
 
 #  always encrypted
 Define SETSPACE_APACHE2_SERVER_PORT 443
@@ -118,8 +119,23 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
 		Require valid-user
 	</Directory>
 
+	ScriptAlias /cgi-bin/jmscott/ "${SETSPACE_JMSCOTT_ROOT}/www/cgi-bin/"
 	ScriptAlias /cgi-bin/ "${SETSPACE_WWW_ROOT}/cgi-bin/"
+
 	<Directory "${SETSPACE_WWW_ROOT}/cgi-bin">
+                AllowOverride all
+                Allow from all
+
+                Options None +ExecCGI +Includes +FollowSymLinks
+
+                AuthType Basic
+                AuthName "Login ${SETSPACE_APACHE2_SERVER_NAME}"
+                AuthBasicProvider file
+		AuthUserFile ${SETSPACE_WWW_ROOT}/etc/passwd
+                Require valid-user
+        </Directory>
+
+	<Directory "${SETSPACE_JMSCOTT_ROOT}/www/cgi-bin">
                 AllowOverride all
                 Allow from all
 
