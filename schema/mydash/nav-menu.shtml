@@ -57,14 +57,22 @@ li.dropdown {
 <body>
 
 <ul>
-  <li><a href="#home">Home</a></li>
-  <li><a href="#news">News</a></li>
+  <li><a href="/">Home</a></li>
   <li class="dropdown">
-    <a href="javascript:void(0)" class="dropbtn">Dropdown</a>
+    <a href="javascript:void(0)" class="dropbtn">Schema</a>
     <div class="dropdown-content">
-      <a href="#">Link 1</a>
-      <a href="#">Link 2</a>
-      <a href="#">Link 3</a>
+      <a href="#">Curl v7</a>
+      <a href="#">EXIF Tool</a>
+      <a href="#">ExPat v2</a>
+      <a href="#">Fine Free File</a>
+      <a href="#">JSON IO</a>
+      <a href="#">JSON Org</a>
+      <a href="#">LibXML2</a>
+      <a href="#">My Core</a>
+      <a href="#">My Dash</a>
+      <a href="#">PDF Box</a>
+      <a href="#">Prefix IO</a>
+      <a href="#">Set Core</a>
     </div>
   </li>
 </ul>
