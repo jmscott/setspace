@@ -59,7 +59,7 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
 	LogLevel warn
         ServerName ${SETSPACE_APACHE2_SERVER_NAME}
 	SetEnv SETSPACE_ROOT ${SETSPACE_ROOT}
-	SetEnv SERVER_ROOT ${SETSPACE_ROOT}
+	SetEnv SERVER_ROOT ${SETSPACE_ROOT}/www/vhost/${SETSPACE_APACHE2_SERVER_NAME}
 
 	SetEnv PGHOST ${SETSPACE_PGHOST}
 	SetEnv PGPORT ${SETSPACE_PGPORT}
@@ -94,7 +94,7 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
             Require all granted
         </Directory>
 
-	<Directory "${SETSPACE_ROOT}/">
+	<Directory "${SETSPACE_ROOT}/www/vhost/${SETSPACE_APACHE2_SERVER_NAME}">
 		Options Indexes FollowSymLinks
 		AllowOverride None
 		Require all granted
@@ -102,20 +102,20 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
 
 	DirectoryIndex index.shtml
 
-	<Directory "${SETSPACE_ROOT}/htdocs">
+	<Directory "${SETSPACE_ROOT}/www/vhost/${SETSPACE_APACHE2_SERVER_NAME}/htdocs">
                 Options +ExecCGI +Includes +FollowSymLinks
 
                 AddType text/html .shtml
                 AddOutputFilter INCLUDES .shtml
 
 		AuthType Basic
-		AuthName "SetSpace ${SETSPACE_APACHE2_SERVER_NAME}"
-		AuthUserFile ${SETSPACE_ROOT}/etc/passwd
+		AuthName "${SETSPACE_APACHE2_SERVER_NAME}"
+		AuthUserFile ${SETSPACE_ROOT}/www/vhost/${SETSPACE_APACHE2_SERVER_NAME}/etc/passwd
 		Require valid-user
 	</Directory>
 
-	ScriptAlias /cgi-bin/ "${SETSPACE_ROOT}/cgi-bin/"
-	<Directory "${SETSPACE_ROOT}/cgi-bin">
+	ScriptAlias /cgi-bin/ "${SETSPACE_ROOT}/www/vhost/${SETSPACE_APACHE2_SERVER_NAME}/cgi-bin/"
+	<Directory "${SETSPACE_ROOT}/www/vhost/${SETSPACE_APACHE2_SERVER_NAME}/cgi-bin">
                 AllowOverride all
                 Allow from all
 
@@ -124,7 +124,7 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
                 AuthType Basic
                 AuthName "SetSpace ${SETSPACE_APACHE2_SERVER_NAME}"
                 AuthBasicProvider file
-                AuthUserFile ${SETSPACE_ROOT}/etc/passwd
+		AuthUserFile ${SETSPACE_ROOT}/www/vhost/${SETSPACE_APACHE2_SERVER_NAME}/etc/passwd
                 Require valid-user
         </Directory>
 
