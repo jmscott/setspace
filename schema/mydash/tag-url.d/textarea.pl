@@ -7,7 +7,7 @@
 
 our %QUERY_ARG;
 
-my $JS_PATH = "$ENV{SETSPACE_ROOT}/lib/mydash/tag-url.js";
+my $JS_PATH = "$ENV{SERVER_ROOT}/lib/tag-url.js";
 my $JS;
 
 sub _die
