@@ -5,6 +5,8 @@
 #  	flowd server jsonio.conf
 #  See:
 #  	schema.sql
+#  Note:
+#	Think about an SQL table driven route table instead of explicit recipes.
 #
 
 boot
@@ -42,6 +44,9 @@ tail jsonorg
 	path = "spool/jsonorg.brr";
 }
 
+#
+#  Schema MyCore: "schema.setspace.com": "mycore.schema.setspace.com"
+#
 sql query is_mycore_json row
 {
 	statement = `
@@ -79,4 +84,46 @@ call append_mycore_brr(
        jsonorg.wall_duration
 ) when
 	is_mycore_json.exists == true
+;
+
+#
+#  Schema MyDash: "schema.setspace.com": "mydash.schema.setspace.com"
+#
+sql query is_mydash_json row
+{
+	statement = `
+SELECT EXISTS (
+  SELECT
+  	blob
+    FROM
+	jsonorg.jsonb_255 j
+    WHERE
+    	j.blob = $1
+	AND
+	j.doc->'schema.setspace.com' = 'mydash.schema.setspace.com' 
+)
+	`;
+	result row is (
+		exists bool
+	);
+}
+
+command append_mydash_brr
+{
+       path = "append-brr";
+       argv = (
+               "../mydash/spool/jsonio.brr"
+       );
+}
+
+call append_mydash_brr(
+       jsonorg.start_time,
+       jsonorg.netflow,
+       jsonorg.verb,
+       jsonorg.udig,
+       jsonorg.chat_history,
+       jsonorg.blob_size,
+       jsonorg.wall_duration
+) when
+	is_mydash_json.exists == true
 ;
