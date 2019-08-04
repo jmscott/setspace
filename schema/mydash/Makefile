@@ -127,3 +127,5 @@ dev-links:
 	test -e jmscott || ln -s . jmscott
 	test -e lib || ln -s . lib
 	test -e passwd || ln -s ../../www/apache2-passwd.example passwd
+clean-dev-links:
+	rm -rf cgi-bin etc htdocs icon jmscott lib passwd
