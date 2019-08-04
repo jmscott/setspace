@@ -132,6 +132,5 @@ dev-links:
 	test -e htdocs || ln -s . htdocs
 	test -e icon || ln -s ../../www/icon .
 	test -e jmscott || ln -s . jmscott
-	test -e mydash || ln -s . mydash
 	test -e lib || ln -s . lib
 	test -e passwd || ln -s ../../www/apache2-passwd.example passwd
