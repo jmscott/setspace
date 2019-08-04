@@ -40,25 +40,20 @@ clean:
 install: all
 	#  Build SCHEMA_PREFIX directories
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/etc
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/lib
-
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/log
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/run
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/spool
+		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/spool
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/src
+		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/src
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/tmp
+		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/tmp
 
-	#install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		#-m u=rwx,g=rx,o= -d $(WWW_PREFIX)
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(WWW_PREFIX)/lib
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
