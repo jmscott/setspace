@@ -40,10 +40,6 @@ clean:
 install: all
 	#  Build SCHEMA_PREFIX directories
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/schema
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/etc
@@ -61,12 +57,8 @@ install: all
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/tmp
 
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/www
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(SETSPACE_PREFIX)/www/vhost
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(WWW_PREFIX)
+	#install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		#-m u=rwx,g=rx,o= -d $(WWW_PREFIX)
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(WWW_PREFIX)/lib
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
@@ -79,7 +71,7 @@ install: all
 		tag-url.js						\
 		$(WWW_PREFIX)/lib
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=rx		\
-		tag-url							\
+			tag-url						\
 		$(WWW_PREFIX)/cgi-bin
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
 			env.shtml					\
@@ -92,18 +84,18 @@ install: all
 			template.shtml					\
 		$(WWW_PREFIX)/htdocs
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=r		\
-		tag-url.d/a.pl						\
-		tag-url.d/click.pl					\
-		tag-url.d/common.pl					\
-		tag-url.d/div.err.pl					\
-		tag-url.d/div.nav.pl					\
-		tag-url.d/dl.pl						\
-		tag-url.d/help.pl					\
-		tag-url.d/save.pl					\
-		tag-url.d/select.host.pl				\
-		tag-url.d/select.rppg.pl				\
-		tag-url.d/table.pl					\
-		tag-url.d/textarea.pl					\
+			tag-url.d/a.pl					\
+			tag-url.d/click.pl				\
+			tag-url.d/common.pl				\
+			tag-url.d/div.err.pl				\
+			tag-url.d/div.nav.pl				\
+			tag-url.d/dl.pl					\
+			tag-url.d/help.pl				\
+			tag-url.d/save.pl				\
+			tag-url.d/select.host.pl			\
+			tag-url.d/select.rppg.pl			\
+			tag-url.d/table.pl				\
+			tag-url.d/textarea.pl				\
 		$(WWW_PREFIX)/lib/tag-url.d
 
 	#  set up symbolic links to $JMSCOTT_ROOT tools
