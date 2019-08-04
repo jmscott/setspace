@@ -1,7 +1,8 @@
 #
 #  Synopsis:
-#	Development/Install Makefile
+#	Development/Install Makefile for dash.setspace.$(DASH_DNS_VHOST_SUFFIX)
 #  Usage:
+#	export DASH_DNS_VHOST_SUFFIX=jmscott.tmonk.local
 #	make clean all install
 #  Note:
 #	Need to add permissions to install invocation, in particular,
