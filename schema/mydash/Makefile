@@ -24,9 +24,10 @@ include ../schema.mk
 #
 #  using a snake oil, self-signed ssl certificate built for development.
 #
-#  The value of DNS_DOMAIN_SUFFIX
-#	
-DASH_DNS_VHOST_SUFFIX?=com
+ifndef DASH_DNS_VHOST_SUFFIX
+$(error DASH_DNS_VHOST_SUFFIX is not set)
+endif
+
 DASH_DNS_VHOST=dash.setspace.$(DASH_DNS_VHOST_SUFFIX)
 WWW_PREFIX=$(SETSPACE_PREFIX)/www/vhost/$(DASH_DNS_VHOST)
 SCHEMA_PREFIX=$(SETSPACE_PREFIX)/schema/mydash
@@ -49,8 +50,6 @@ install: all
 		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/run
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/spool
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
-		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/src
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/tmp
 
