@@ -3,8 +3,6 @@
 #	Route blobs to schemas based upon patterns in a json blob.
 #  Usage:
 #  	flowd server jsonio.conf
-#  See:
-#  	schema.sql
 #  Note:
 #	Think about an SQL table driven route table instead of explicit recipes.
 #
@@ -56,15 +54,17 @@ SELECT EXISTS (
     FROM
 	jsonorg.jsonb_255 j
     WHERE
-    	j.blob = $1
+    	j.blob = $1::udig
 	AND
-	j.doc->'schema.setspace.com' = 'mycore.schema.setspace.com' 
+	j.doc @> '{"schema.setspace.com" : "mycore.schema.setspace.com"}'
 )
 	`;
 	result row is (
 		exists bool
 	);
 }
+
+query is_mycore_json(jsonorg.udig);
 
 command append_mycore_brr
 {
@@ -98,15 +98,16 @@ SELECT EXISTS (
     FROM
 	jsonorg.jsonb_255 j
     WHERE
-    	j.blob = $1
+    	j.blob = $1::udig
 	AND
-	j.doc->'schema.setspace.com' = 'mydash.schema.setspace.com' 
+	j.doc @> '{"schema.setspace.com" : "mydash.schema.setspace.com"}'
 )
 	`;
 	result row is (
 		exists bool
 	);
 }
+query is_mydash_json(jsonorg.udig);
 
 command append_mydash_brr
 {
