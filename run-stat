@@ -39,6 +39,6 @@ ls-flow | while read SC;  do
 		fi
 	fi
 	echo "$SC	$STATE"
-done
+done | sort --reverse --key=2  --key=1 --field-separator='	'
 
 exit 0

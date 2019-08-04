@@ -7,5 +7,5 @@
 (
 	echo "Schema	Flowd State"
 	echo "------	-----------"
-	run-stat | sort
+	run-stat
 ) | column -t -s '	'
