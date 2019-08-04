@@ -24,7 +24,7 @@ cd $SCHEMA || die "cd $SCHEMA failed: exit status=$?"
 ls-flow | while read SC;  do
 	SC=$(basename $SC)
 	PID=$SC/run/flowd.pid
-	STATE=DEAD
+	STATE=DOWN
 
 	#  run the gauntlet on the state of the run/flowd.pid file.
 	if [ -e $PID ];  then
@@ -35,10 +35,10 @@ ls-flow | while read SC;  do
 		#	breaking a $(find) in single invocation.
 		#
 		if [ -n "$(find $PID -mmin -2 -print)" ];  then
-			STATE=ALIVE
+			STATE=UP
 		fi
 	fi
 	echo "$SC	$STATE"
-done | sort --reverse --key=2  --key=1 --field-separator='	'
+done | sort --key=2 --key=1 --field-separator='	'
 
 exit 0
