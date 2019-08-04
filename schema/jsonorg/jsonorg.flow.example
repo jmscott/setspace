@@ -47,24 +47,24 @@ sql query is_in_checker_255_table row
 	statement = `
 
 	 SELECT
-	  exists (
-	    select
+	  EXISTS (
+	    SELECT
 	    	blob
-	      from
+	      FROM
 	      	jsonorg.checker_255
-	      where
+	      WHERE
 	      	blob = $1::udig
 	  ),
 	  (SELECT
 	    	is_json
-	    from
+	    FROM
 	      	jsonorg.checker_255
-	      where
+	      WHERE
 	      	blob = $1::udig
 	  )
 	;`;
 	result row is (
-		answer bool,
+		exists bool,
 		is_json bool
 	);
 }
@@ -111,7 +111,7 @@ command get_JSON_checker
 
 call get_JSON_checker (brr.udig)
   when
-  	is_in_checker_255_table.answer == false
+  	is_in_checker_255_table.exists == false
 ;
 
 #
@@ -164,7 +164,7 @@ sql query in_jsonb_255_table row
 	);`;
 
 	result row is (
-		answer bool
+		exists bool
 	);
 }
 
@@ -178,11 +178,37 @@ query in_jsonb_255_table (brr.udig)
 command merge_jsonb_255
 {
 	path = "sbin/merge-jsonb_255";
+	exit_status is OK when in {
+		0,	#  merged or already exists
+		1	#  blob does not exist
+	};
 }
 
 call merge_jsonb_255 (brr.udig, brr.blob_size)
   when
-  	in_jsonb_255_table.answer == false
+  	in_jsonb_255_table.exists == false
 	and
 	brr_has_size.exit_status == 0
+;
+
+command append_jsonio_brr
+{
+       path = "append-brr";
+       argv = (
+               "../jsonio/spool/jsonorg.brr"
+       );
+}
+
+call append_jsonio_brr(
+       brr.start_time,
+       "fs~schema=jsonio",
+       brr.verb,
+       brr.udig,
+       brr.chat_history,
+       brr.blob_size,
+       brr.wall_duration
+) when
+	merge_jsonb_255.exit_status == 0
+	or
+	in_jsonb_255_table.exists == true
 ;
