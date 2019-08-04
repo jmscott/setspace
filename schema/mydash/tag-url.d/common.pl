@@ -30,7 +30,7 @@ for(0x00 .. 0x1f) {
 sub utf82json_string
 {
 	my $str = shift;
-	$str =~ s!([\x00-\x1f\x{2028}\x{2029}\\"/])!$REVERSE{$1}!gs;
+	$str =~ s!([\x00-\x1f\x{2028}\x{2029}\\"])!$REVERSE{$1}!gs;
 	return "\"$str\"";
 }
 
