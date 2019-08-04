@@ -1,0 +1,14 @@
+**/*.d/help.pl
+RFC3339Nano
+append-brr
+dec2pgbit
+escape-json-utf8
+file-stat-size
+flip-tail
+is-utf8wf
+local.mk
+macosx.o
+run
+spin-wait-blob
+tas-run-lock
+tas-run-unlock
