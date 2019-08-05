@@ -27,6 +27,9 @@ include ../schema.mk
 ifndef DASH_DNS_VHOST_SUFFIX
 $(error DASH_DNS_VHOST_SUFFIX is not set)
 endif
+ifndef JMSCOTT_ROOT
+$(error JMSCOTT_ROOT is not set)
+endif
 
 DASH_DNS_VHOST=dash.setspace.$(DASH_DNS_VHOST_SUFFIX)
 WWW_PREFIX=$(SETSPACE_PREFIX)/www/vhost/$(DASH_DNS_VHOST)
@@ -92,7 +95,7 @@ install: all
 			tag-url.d/textarea.pl				\
 		$(WWW_PREFIX)/lib/tag-url.d
 
-	#  set up symbolic links to $JMSCOTT_ROOT tools
+	#  set up symbolic links to $(JMSCOTT_ROOT) tools
 	test -e $(WWW_PREFIX)/cgi-bin/jmscott				||\
 		ln -s $(JMSCOTT_ROOT)/cgi-bin $(WWW_PREFIX)/cgi-bin/jmscott
 	test -e $(WWW_PREFIX)/lib/jmscott				||\
