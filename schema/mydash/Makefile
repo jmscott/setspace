@@ -27,9 +27,6 @@ include ../schema.mk
 ifndef DASH_DNS_VHOST_SUFFIX
 $(error DASH_DNS_VHOST_SUFFIX is not set)
 endif
-ifndef JMSCOTT_ROOT
-$(error JMSCOTT_ROOT is not set)
-endif
 
 DASH_DNS_VHOST=dash.setspace.$(DASH_DNS_VHOST_SUFFIX)
 WWW_PREFIX=$(SETSPACE_PREFIX)/www/vhost/$(DASH_DNS_VHOST)
@@ -72,6 +69,7 @@ install: all
 		$(WWW_PREFIX)/cgi-bin
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
 			env.shtml					\
+			extra.shtml					\
 			footer.shtml					\
 			header.shtml					\
 			index.shtml					\
