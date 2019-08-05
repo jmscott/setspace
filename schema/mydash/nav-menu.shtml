@@ -73,7 +73,7 @@ li.dropdown
    <a
      href="javascript:void(0)"
      class="dropbtn"
-   >SQL Schema</a>
+   >SQL Schemas</a>
    <div class="dropdown-content">
     <a href="#">Curl v7</a>
     <a href="#">EXIF Tool</a>

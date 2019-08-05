@@ -74,7 +74,9 @@ install: all
 			header.shtml					\
 			index.shtml					\
 			navigation.shtml				\
+			pdfbox.shtml					\
 			screen.css					\
+			sql-schema.shtml				\
 			tag-url.shtml					\
 			template.shtml					\
 		$(WWW_PREFIX)/htdocs
