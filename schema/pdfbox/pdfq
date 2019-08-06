@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Engligh fulltext, phrase or keyword query of tables in pdfbox schema.
+#	English fulltext, phrase or keyword query of tables in pdfbox schema.
 #  Usage:
 #	pdfq <sql> [txt-query:]'query' [limit [offset [rank_norm]]]
 #
@@ -38,9 +38,7 @@
 #	PDFBOX_ROOT
 #	PostgreSQL PG* variables
 #  See Also:
-#	$PDFBOX_ROOT/lib/page-text-utf8-fts[-count].sql
-#	$PDFBOX_ROOT/lib/page-text-utf8-phrase[-count].sql
-#	$PDFBOX_ROOT/lib/page-text-utf8-keyword[-count].sql
+#	$PDFBOX_ROOT/lib/page-[count-][fts,keyword,phrase].sql
 #  Note:
 #	Rename script 'pdfq' to 'pdfboxq'.
 #
