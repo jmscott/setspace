@@ -3,7 +3,11 @@
 #	Write html <dl> of pdf documents that match keywrod search.
 #  Usage:
 #	/cgi-bin/pdfbox?out=dl&q=neural+cryptography
+#  Note:
+#	The snippet is not escaped properly.  Need to escape match indicators
+#	<b> with a random string and the transform to <span class="key">.
 #
+use Time::HiRes qw(gettimeofday);
 
 require 'dbi-pg.pl';
 require 'httpd2.d/common.pl';
@@ -30,6 +34,7 @@ END
 	exit;
 }
 
+my $start_time = gettimeofday();
 my $qh = dbi_pg_select(
 	db =>	dbi_pg_connect(),
 	tag =>	'select-pdfbox-page-dl',
@@ -135,9 +140,12 @@ WITH pdf_page_match AS (
 ;
 ));
 
+my $end_time = gettimeofday();
+my $elapsed_sec = sprintf('%.2fsec', gettimeofday() - $start_time);
+
 #  Note: write execution speed.
 print <<END;
-  <caption>Query: $q</caption>
+  <caption>Query: $q ($elapsed_sec)</caption>
   <tr>
    <th>PDF Blob</th>
    <th>Rank</th>
@@ -155,7 +163,7 @@ while (my $r = $qh->fetchrow_hashref()) {
 	my $rank = encode_html_entities($r->{rank});
 	my $match_page_count = encode_html_entities($r->{match_page_count});
 	my $pdf_page_count = encode_html_entities($r->{pdf_page_count});
-	my $snippet = encode_html_entities($r->{snippet});
+	my $snippet = $r->{snippet});
 	my $title = 'title';
 	$title = 'pdf_title' unless length($r->{title}) > 0;
 	$title = encode_html_entities($r->{$title});
