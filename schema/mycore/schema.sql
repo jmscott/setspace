@@ -25,25 +25,19 @@ CREATE TABLE title
 				AND
 				--  not all spaces
 				title ~ '[[:graph:]]'
-			) NOT NULL,
-	insert_time	timestamptz
-				DEFAULT NOW()
-				NOT NULL,
-	update_time	timestamptz CHECK (
-				update_time >= insert_time
-			) DEFAULT NOW() NOT NULL
+			) NOT NULL
 );
 COMMENT ON TABLE title IS
 	'My title for any blob'
 ;
+CREATE INDEX idx_title ON title USING hash(blob);
 
 DROP TABLE IF EXISTS note;
 CREATE TABLE note
 (
 	blob	udig
 			REFERENCES setcore.service(blob)
-			ON DELETE CASCADE
-			PRIMARY KEY,
+			ON DELETE CASCADE,
 	note	text	CHECK (
 				note ~ '[[:graph:]]'
 				AND
@@ -53,7 +47,8 @@ CREATE TABLE note
 				DEFAULT NOW(),
 	update_time	timestamptz CHECK (
 				update_time >= insert_time
-			) DEFAULT NOW() NOT NULL
+			) DEFAULT NOW() NOT NULL,
+	PRIMARY KEY	(blob, insert_time)
 );
 COMMENT ON TABLE title IS
 	'My notes for any blob'
@@ -71,12 +66,7 @@ CREATE TABLE tags
 			PRIMARY KEY,
 	insert_time	timestamptz
 				DEFAULT NOW()
-				NOT NULL,
-	update_time	timestamptz CHECK (
-				update_time >= insert_time
-			)
-			DEFAULT NOW()
-			NOT NULL
+				NOT NULL
 );
 COMMENT ON TABLE tags IS
 	'All my tags for my blobs'
@@ -97,9 +87,6 @@ CREATE TABLE tag
 			),
 	insert_time	timestamptz
 				DEFAULT NOW(),
-	update_time	timestamptz CHECK (
-				update_time >= insert_time
-			) DEFAULT NOW() NOT NULL,
 	PRIMARY KEY	(blob, tag)
 );
 COMMENT ON TABLE tags IS
