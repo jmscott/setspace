@@ -20,13 +20,17 @@ my $qh = recent_select();
 while (my $r = $qh->fetchrow_hashref()) {
 	my $blob = encode_html_entities($r->{blob});
 	my $title = encode_html_entities($r->{title});
-	$title = 'No Title' unless $title =~ m/[[:graph:]]/;
+	my $dt_class;
+	unless ($title =~ m/[[:graph:]]/) {
+		$title = 'No Title';
+		$dt_class = ' class="no-title"';
+	}
 	my $number_of_pages = $r->{number_of_pages};
 	my $discover_time = $r->{discover_time};
 	my $plural_nop = 's';
 	$plural_nop = '' if $number_of_pages == 1;
 	print <<END;
- <dt>$title</dt>
+ <dt$dt_class>$title</dt>
  <dd>$number_of_pages page$plural_nop, discovered $discover_time</dd>
 END
 }

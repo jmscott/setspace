@@ -341,3 +341,9 @@ tr.footer h1
 {
 	font-size:	100%;
 }
+
+dt.no-title
+{
+	font-style:	italic;
+	font-weight:	normal;
+}
