@@ -56,6 +56,22 @@ $CGI{GET}->{out}->{putter}->{'table'}->{name} = 'table';
 $CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{q} = {
 	perl5_re	=>	'.{0,255}',
 };
+$CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{tsconf} = {
+	perl5_re	=>	'[a-z0-9-]{1,32}',
+	default	=>	'english',
+};
+$CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{rnorm} = {
+	perl5_re	=>	'[0-9]{1,3}',
+	default	=>	'14',
+};
+$CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{lim} = {
+	perl5_re	=>	'[1-9][0-9]{0,3}',
+	default	=>	'10',
+};
+$CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{off} = {
+	perl5_re	=>	'[1-9][0-9]{0,9}',
+	default	=>	'1',
+};
 #
 #  END: /cgi/GET/out/putter[@name=table]/query-args
 #

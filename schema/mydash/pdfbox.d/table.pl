@@ -10,12 +10,11 @@ require 'httpd2.d/common.pl';
 
 our %QUERY_ARG;
 
-my $ts_conf = 'english';
-my $rank_norm = 14;
-my $limit = 10;
-my $offset = 0;
-
-my $q = $QUERY_ARG{q};
+my $q =		$QUERY_ARG{q};
+my $ts_conf =	$QUERY_ARG{tsconf};
+my $rank_norm = $QUERY_ARG{rnorm};
+my $limit =	$QUERY_ARG{lim};
+my $offset =	$QUERY_ARG{off};
 
 print <<END;
 <table $QUERY_ARG{id_att}$QUERY_ARG{class_att}>

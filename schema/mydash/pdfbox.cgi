@@ -18,6 +18,26 @@
      	name="q"
 	perl5_re=".{0,255}"
      />
+     <arg
+     	name="tsconf"
+	perl5_re="[a-z0-9-]{1,32}"
+	default="english"
+     />
+     <arg
+     	name="rnorm"
+	perl5_re="[0-9]{1,3}"
+	default="14"
+     />
+     <arg
+     	name="lim"
+	perl5_re="[1-9][0-9]{0,3}"
+	default="10"
+     />
+     <arg
+     	name="off"
+	perl5_re="[1-9][0-9]{0,9}"
+	default="1"
+     />
     </query-args>
    </putter>
   </out>
