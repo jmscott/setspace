@@ -97,6 +97,7 @@ install: all
 			tag-url.d/textarea.pl				\
 		$(WWW_PREFIX)/lib/tag-url.d
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m u=rw,g=r,o=	\
+			pdfbox.d/common.pl				\
 			pdfbox.d/help.pl				\
 			pdfbox.d/table.pl				\
 		$(WWW_PREFIX)/lib/pdfbox.d
