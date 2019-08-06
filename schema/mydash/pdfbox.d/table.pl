@@ -116,13 +116,19 @@ WITH pdf_page_match AS (
 	    FROM
 	    	plainto_tsquery($2, $1) AS q,
 		max_ranked_tsv maxts
-	) AS "snippet"
+	) AS "snippet",
+	myt.title,
+	pi.title AS pdf_title
   FROM
-  	pdfbox.pddocument pd
-	  JOIN pdf_page_match pp ON (pp.blob = pd.blob)
+  	pdf_page_match pp
+	  JOIN pdfbox.pddocument pd ON (pd.blob = pp.blob)
+	  LEFT OUTER JOIN mycore.title myt ON (myt.blob = pp.blob)
+	  LEFT OUTER JOIN pdfbox.pddocument_information pi ON (pi.blob = pp.blob)
   GROUP BY
   	pd.blob,
-	match_page_count
+	match_page_count,
+	myt.title,
+	pi.title
   ORDER BY
   	rank DESC,
 	match_page_count DESC
@@ -137,6 +143,7 @@ print <<END;
    <th>Rank</th>
    <th>Match Page Count</th>
    <th>PDF Page Count</th>
+   <th>Title</th>
    <th>Snippet</th>
   </tr>
  </thead>
@@ -149,12 +156,16 @@ while (my $r = $qh->fetchrow_hashref()) {
 	my $match_page_count = encode_html_entities($r->{match_page_count});
 	my $pdf_page_count = encode_html_entities($r->{pdf_page_count});
 	my $snippet = encode_html_entities($r->{snippet});
+	my $title = 'title';
+	$title = 'pdf_title' unless length($r->{title}) > 0;
+	$title = encode_html_entities($r->{$title});
 	print <<END;
  <tr>
   <td>$pdf_blob</td>
   <td>$rank</td>
   <td>$match_page_count</td>
   <td>$pdf_page_count</td>
+  <td>$title</td>
   <td>$snippet</td>
  </tr>
 END
