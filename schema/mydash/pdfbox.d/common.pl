@@ -5,9 +5,19 @@
 
 our %QUERY_ARG;
 
-sub keyword2sql
+sub keyword_select
 {
-	return q(
+	return dbi_pg_select(
+		db =>	dbi_pg_connect(),
+		tag =>	'pdfbox-keyword_select',
+		argv =>	[
+				decode_url_query_arg($QUERY_ARG{q}),
+				$QUERY_ARG{tsconf},
+				$QUERY_ARG{rnorm},
+				$QUERY_ARG{lim},
+				$QUERY_ARG{off},
+			],
+		sql =>	q(
 WITH pdf_page_match AS (
   SELECT
 	tsv.pdf_blob AS blob,
@@ -100,23 +110,7 @@ WITH pdf_page_match AS (
   	rank DESC,
 	match_page_count DESC
 ;
-	);
-}
-
-sub keyword_select
-{
-	return dbi_pg_select(
-		db =>	dbi_pg_connect(),
-		tag =>	'pdfbox-keyword_select',
-		argv =>	[
-				decode_url_query_arg($QUERY_ARG{q}),
-				$QUERY_ARG{tsconf},
-				$QUERY_ARG{rnorm},
-				$QUERY_ARG{lim},
-				$QUERY_ARG{off},
-			],
-		sql =>	keyword2sql()
-	);
+	));
 }
 
 1;
