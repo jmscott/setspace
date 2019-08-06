@@ -37,10 +37,7 @@ CREATE TABLE pddocument
 				PRIMARY KEY,
 	/*
 	 *  Note:
-	 *	Spec not clear about number of pa
-	 *	which screws up code needing number_of_pages to be
-	 *	> 0.  Instead, consider added a exit_status to indicate when
-	 *	number_of_pages is <= 0 and set number_of_pages to null.
+	 *	Spec not clear if number_of_pages > 0 of >= 0.
 	 */
 	number_of_pages int CHECK (
 				number_of_pages >= 0
