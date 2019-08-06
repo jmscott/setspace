@@ -108,9 +108,9 @@ install: all
 		ln -s $(JMSCOTT_ROOT)/www/lib $(WWW_PREFIX)/lib/jmscott
 
 distclean:
-	rm -rf $(SCHEMA_PREFIX)/lib
-	rm -rf $(WWW_PREFIX)/lib
-	rm -rf $(WWW_PREFIX)/cgi-bin
+	test -L $(SCHEMA_PREFIX)/lib || rm -rf $(SCHEMA_PREFIX)/lib
+	test -L $(WWW_PREFIX)/lib || rm -rf $(WWW_PREFIX)/lib
+	test -L $(WWW_PREFIX)/cgi-bin || rm -rf $(WWW_PREFIX)/cgi-bin
 
 tag-url: tag-url.cgi
 	cgi2perl5 --source-path tag-url.cgi
