@@ -10,7 +10,7 @@ require 'httpd2.d/common.pl';
 
 our %QUERY_ARG;
 
-my $q =		$QUERY_ARG{q};
+my $q =		decode_url_query_arg($QUERY_ARG{q});
 my $ts_conf =	$QUERY_ARG{tsconf};
 my $rank_norm = $QUERY_ARG{rnorm};
 my $limit =	$QUERY_ARG{lim};
