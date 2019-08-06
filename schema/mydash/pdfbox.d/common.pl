@@ -5,6 +5,20 @@
 
 our %QUERY_ARG;
 
+sub recent_select
+{
+	return dbi_pg_select(
+		db =>   dbi_pg_connect(),
+		tag =>  'pdfbox-recent_select',
+		argv =>	[
+				$QUERY_ARG{lim},
+				$QUERY_ARG{off},
+			],
+		sql =>	q(
+		)
+	);
+}
+
 sub keyword_select
 {
 	return dbi_pg_select(
@@ -93,9 +107,15 @@ WITH pdf_page_match AS (
 	    FROM
 	    	plainto_tsquery($2, $1) AS q,
 		max_ranked_tsv maxts
-	) AS "snippet",
-	myt.title,
-	pi.title AS pdf_title
+	) AS snippet,
+	CASE
+	  WHEN
+		length(myt.title) > 0
+	  THEN
+	  	myt.title
+	  ELSE
+		pi.title
+	END AS title
   FROM
   	pdf_page_match pp
 	  JOIN pdfbox.pddocument pd ON (pd.blob = pp.blob)

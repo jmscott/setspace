@@ -68,7 +68,6 @@ while (my $r = $qh->fetchrow_hashref()) {
 	my $pdf_page_count = encode_html_entities($r->{pdf_page_count});
 	my $snippet = $r->{snippet};
 	my $title = 'title';
-	$title = 'pdf_title' unless length($r->{title}) > 0;
 	$title = encode_html_entities($r->{$title});
 	print <<END;
  <tr>
