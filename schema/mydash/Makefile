@@ -32,11 +32,11 @@ DASH_DNS_VHOST=dash.setspace.$(DASH_DNS_VHOST_SUFFIX)
 WWW_PREFIX=$(SETSPACE_PREFIX)/www/vhost/$(DASH_DNS_VHOST)
 SCHEMA_PREFIX=$(SETSPACE_PREFIX)/schema/mydash
 
-CGIBINs=tag-url
+CGIBINs=tag-url pdfbox
 
 all: $(CGIBINs)
 clean:
-	rm -f $(CGIBINs)
+	rm -f $(CGIBINs) tag-url.d/help.pl pdfbox.d/help.pl
 
 install: all
 	#  Build SCHEMA_PREFIX directories
@@ -58,16 +58,18 @@ install: all
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(WWW_PREFIX)/lib/tag-url.d
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(WWW_PREFIX)/lib/pdfbox.d
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(WWW_PREFIX)/cgi-bin
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(WWW_PREFIX)/htdocs
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=r		\
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m u=rx,go=r	\
 		tag-url.js						\
 		$(WWW_PREFIX)/lib
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=rx		\
-			tag-url						\
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m u=rwx,g=rx,o=	\
+			$(CGIBINs)					\
 		$(WWW_PREFIX)/cgi-bin
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m u=rw,g=r,o=	\
 			env.shtml					\
 			extra.shtml					\
 			footer.shtml					\
@@ -80,7 +82,7 @@ install: all
 			tag-url.shtml					\
 			template.shtml					\
 		$(WWW_PREFIX)/htdocs
-	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m a=r		\
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m u=rw,g=r	\
 			tag-url.d/a.pl					\
 			tag-url.d/click.pl				\
 			tag-url.d/common.pl				\
@@ -94,12 +96,16 @@ install: all
 			tag-url.d/table.pl				\
 			tag-url.d/textarea.pl				\
 		$(WWW_PREFIX)/lib/tag-url.d
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m u=rw,g=r,o=	\
+			pdfbox.d/help.pl				\
+			pdfbox.d/table.pl				\
+		$(WWW_PREFIX)/lib/pdfbox.d
 
 	#  set up symbolic links to $(JMSCOTT_ROOT) tools
 	test -e $(WWW_PREFIX)/cgi-bin/jmscott				||\
-		ln -s $(JMSCOTT_ROOT)/cgi-bin $(WWW_PREFIX)/cgi-bin/jmscott
+		ln -s $(JMSCOTT_ROOT)/www/cgi-bin $(WWW_PREFIX)/cgi-bin/jmscott
 	test -e $(WWW_PREFIX)/lib/jmscott				||\
-		ln -s $(JMSCOTT_ROOT)/lib $(WWW_PREFIX)/lib/jmscott
+		ln -s $(JMSCOTT_ROOT)/www/lib $(WWW_PREFIX)/lib/jmscott
 
 distclean:
 	rm -rf $(SCHEMA_PREFIX)/lib
@@ -108,7 +114,11 @@ distclean:
 
 tag-url: tag-url.cgi
 	cgi2perl5 --source-path tag-url.cgi
-	chmod a=rx tag-url
+	chmod a+rx tag-url
+
+pdfbox: pdfbox.cgi
+	cgi2perl5 --source-path pdfbox.cgi
+	chmod a+rx pdfbox
 
 world:
 	$(MAKE) $(MFLAGS) clean
@@ -125,5 +135,6 @@ dev-links:
 	test -e lib || ln -s . lib
 	test -e passwd || ln -s ../../www/apache2-passwd.example passwd
 	test -e spool || ln -s . spool
+
 clean-dev-links:
 	rm -rf cgi-bin etc htdocs icon jmscott lib passwd spool
