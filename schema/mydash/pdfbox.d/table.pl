@@ -21,8 +21,6 @@ our %QUERY_ARG;
 
 my $q = $QUERY_ARG{q};
 
-my $offset =	decode_url_query_arg($QUERY_ARG{off});
-
 print <<END;
 <table $QUERY_ARG{id_att}$QUERY_ARG{class_att}>
  <thead>
