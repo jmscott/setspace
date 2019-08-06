@@ -77,6 +77,48 @@ print <<'END';
   </dl>
 </div>
      </dd>
+     <dt>dl</dt>
+     <dd>
+<div class="query-args">
+ <h4>Query Args</h4>
+ <dl>
+  <dt>q</dt>
+  <dd>
+   <ul>
+    <li><code>perl5_re:</code> .{0,255}</li>
+   </ul>
+  </dd>
+  <dt>tsconf</dt>
+  <dd>
+   <ul>
+    <li><code>default:</code> english</li>
+    <li><code>perl5_re:</code> [a-z0-9-]{1,32}</li>
+   </ul>
+  </dd>
+  <dt>rnorm</dt>
+  <dd>
+   <ul>
+    <li><code>default:</code> 14</li>
+    <li><code>perl5_re:</code> [0-9]{1,3}</li>
+   </ul>
+  </dd>
+  <dt>lim</dt>
+  <dd>
+   <ul>
+    <li><code>default:</code> 10</li>
+    <li><code>perl5_re:</code> [1-9][0-9]{0,3}</li>
+   </ul>
+  </dd>
+  <dt>off</dt>
+  <dd>
+   <ul>
+    <li><code>default:</code> 1</li>
+    <li><code>perl5_re:</code> [1-9][0-9]{0,9}</li>
+   </ul>
+  </dd>
+  </dl>
+</div>
+     </dd>
   </dl>
  </div>
 </div>

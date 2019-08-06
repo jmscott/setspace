@@ -16,9 +16,7 @@
    <!--#include virtual="/navigation.shtml" -->
    <div id="content">
     <h2>PDF Box from Apache</h2>
-    <form
-      name="pdfq"
-      action="/cgi-bin/
+    <!--#include virtual="/cgi-bin/pdfbox?out=dl" -->
    </div>
    <!--#include virtual="/footer.shtml" -->
   </div>

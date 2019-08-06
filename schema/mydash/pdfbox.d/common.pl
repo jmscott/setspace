@@ -3,6 +3,8 @@
 #	Common routines for full text search.
 #
 
+use utf8;
+
 our %QUERY_ARG;
 
 sub recent_select
@@ -15,8 +17,30 @@ sub recent_select
 				$QUERY_ARG{off},
 			],
 		sql =>	q(
-		)
-	);
+SELECT
+	pdf.blob,
+	pdf.number_of_pages,
+	CASE
+	  WHEN
+	  	myt.title ~ '[[:graph:]]'
+	  THEN
+	  	myt.title
+	  ELSE
+		pi.title
+	END AS title,
+	s.discover_time
+  FROM
+  	pdfbox.pddocument pdf JOIN setcore.service s ON (s.blob = pdf.blob)
+	  LEFT OUTER JOIN mycore.title myt ON (myt.blob = pdf.blob)
+	  LEFT OUTER JOIN pdfbox.pddocument_information pi ON (
+	  	pi.blob = pdf.blob
+	  )
+  ORDER BY
+  	s.discover_time DESC
+  LIMIT
+  	$1
+  OFFSET
+  	$2));
 }
 
 sub keyword_select

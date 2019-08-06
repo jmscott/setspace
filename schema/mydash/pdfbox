@@ -6,8 +6,6 @@
 #	pdfbox.cgi
 #  Source SHA1 Digest:
 #	No SHA1 Calculated
-#  GitHub:
-#	https://github.com/jmscott/work/tree/master/httpd2
 #  Note:
 #	/cgi-bin/pdfbox was generated automatically by cgi2perl5.
 #
@@ -44,7 +42,7 @@ $CGI{GET}->{out}->{'query-args'}->{arg}->{class} = {
 #  'out' query argument must match one of the out putter names.
 #
 $CGI{GET}->{out}->{'query-args'}->{arg}->{out} = {
-	perl5_re	=> 	'table|help',
+	perl5_re	=> 	'table|dl|help',
 	default		=>	'help',
 };
 #
@@ -80,6 +78,41 @@ $CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{off} = {
 
 #
 #  END: /cgi/GET/out/putter[@name='table']
+#
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name='dl']
+#
+$CGI{GET}->{out}->{putter}->{'dl'}->{name} = 'dl';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=dl]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{q} = {
+	perl5_re	=>	'.{0,255}',
+};
+$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{tsconf} = {
+	perl5_re	=>	'[a-z0-9-]{1,32}',
+	default	=>	'english',
+};
+$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{rnorm} = {
+	perl5_re	=>	'[0-9]{1,3}',
+	default	=>	'14',
+};
+$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{lim} = {
+	perl5_re	=>	'[1-9][0-9]{0,3}',
+	default	=>	'10',
+};
+$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{off} = {
+	perl5_re	=>	'[1-9][0-9]{0,9}',
+	default	=>	'1',
+};
+#
+#  END: /cgi/GET/out/putter[@name=dl]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='dl']
 #
 
 $CGI{GET}->{out}->{putter}->{help}->{name} = 'help';
