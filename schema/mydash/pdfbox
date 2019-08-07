@@ -42,7 +42,7 @@ $CGI{GET}->{out}->{'query-args'}->{arg}->{class} = {
 #  'out' query argument must match one of the out putter names.
 #
 $CGI{GET}->{out}->{'query-args'}->{arg}->{out} = {
-	perl5_re	=> 	'table|dl|input|help',
+	perl5_re	=> 	'table|dl|input|(?:span[.]stat)|help',
 	default		=>	'help',
 };
 #
@@ -130,6 +130,18 @@ $CGI{GET}->{out}->{putter}->{'input'}->{'query-args'}->{arg}->{q} = {
 
 #
 #  END: /cgi/GET/out/putter[@name='input']
+#
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name='span.stat']
+#
+$CGI{GET}->{out}->{putter}->{'span.stat'}->{name} = 'span.stat';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=span.stat]/query-args
+#
+#
+#  END: /cgi/GET/out/putter[@name='span.stat']
 #
 
 $CGI{GET}->{out}->{putter}->{help}->{name} = 'help';

@@ -78,6 +78,9 @@
      />
     </query-args>
    </putter>
+
+   <putter name="span.stat">
+   </putter>
   </out>
  </GET>
 </cgi>

@@ -17,7 +17,8 @@
    <div id="content">
     <h2>PDF Box from Apache</h2>
     <!--#include virtual=
-      "/cgi-bin/pdfbox?out=input&id=q&${QUERY_STRING}" -->
+      "/cgi-bin/pdfbox?out=input&id=q&${QUERY_STRING}"
+    -->
     <style>
       dd
       {
@@ -25,6 +26,9 @@
       }
     </style>
     <!--#include virtual="/cgi-bin/pdfbox?out=dl&${QUERY_STRING}" -->
+    <!--#include virtual=
+      "/cgi-bin/pdfbox?out=span.stat&${QUERY_STRING}"
+    -->
    </div>
    <!--#include virtual="/footer.shtml" -->
   </div>
