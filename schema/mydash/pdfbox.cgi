@@ -70,6 +70,20 @@
     </query-args>
    </putter>
 
+   <putter name="span.nav">
+    <query-args>
+     <arg
+     	name="q"
+	perl5_re=".{0,255}"
+     />
+     <arg
+     	name="off"
+	perl5_re="[1-9][0-9]{0,9}"
+	default="0"
+     />
+    </query-args>
+   </putter>
+
    <putter name="input">
     <query-args>
      <arg
