@@ -112,10 +112,21 @@
     </query-args>
    </putter>
 
-   <putter name="span.stat">
+   <putter
+     name="mime.pdf"
+     content-type="application/pdf"
+   >
+    <query-args>
+     <arg
+     	name="udig"
+	perl5_re="[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}"
+     />
+    </query-args>
    </putter>
+
   </out>
  </GET>
+
  <POST>
   <in>
    <putter name="post.q">

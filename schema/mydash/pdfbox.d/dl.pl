@@ -41,7 +41,7 @@ if ($QUERY_ARG{q} =~ m/[[:graph:]]/) {
 
 while (my $r = $qh->fetchrow_hashref()) {
 	#  every pdf has these four attributes
-	my $blob = encode_html_entities($r->{blob});
+	my $blob = $r->{blob};
 	my $title = encode_html_entities($r->{title});
 	my $number_of_pages = $r->{number_of_pages};
 	my $discover_elapsed = $r->{discover_elapsed};
@@ -67,7 +67,9 @@ END
 
 	#  build the row
 	print <<END;
- <dt$dt_class>$title</dt>
+ <dt$dt_class>
+  <a href="/cgi-bin/pdfbox?out=mime.pdf&udig=$blob">$title</a>
+ </dt>
  <dd>
    $span_snippet
    <span class="detail">

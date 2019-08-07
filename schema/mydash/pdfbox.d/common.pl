@@ -249,7 +249,7 @@ WITH pdf_page_match AS (
   	$5
 )
   SELECT
-  	pd.blob AS "pdf_blob",
+  	pd.blob,
 	match_page_count,
 	pd.number_of_pages,
 	/*
@@ -392,7 +392,7 @@ WITH pdf_page_match AS (
   	$5
 )
   SELECT
-  	pd.blob AS "pdf_blob",
+  	pd.blob,
 	match_page_count,
 	pd.number_of_pages,
 	/*
