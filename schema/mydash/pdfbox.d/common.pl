@@ -21,7 +21,8 @@ SELECT
 	  ELSE
 		pi.title
 	END AS title,
-	s.discover_time
+	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
+		AS discover_elapsed
   FROM
   	pdfbox.pddocument pdf JOIN setcore.service s ON (s.blob = pdf.blob)
 	  LEFT OUTER JOIN mycore.title myt ON (myt.blob = pdf.blob)

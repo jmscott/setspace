@@ -26,12 +26,15 @@ while (my $r = $qh->fetchrow_hashref()) {
 		$dt_class = ' class="no-title"';
 	}
 	my $number_of_pages = $r->{number_of_pages};
-	my $discover_time = $r->{discover_time};
+	my $discover_elapsed = encode_html_entities($r->{discover_elapsed});
 	my $plural_nop = 's';
 	$plural_nop = '' if $number_of_pages == 1;
 	print <<END;
  <dt$dt_class>$title</dt>
- <dd>$number_of_pages page$plural_nop, discovered $discover_time</dd>
+ <dd>
+   $number_of_pages page$plural_nop,
+   $discover_elapsed
+ </dd>
 END
 }
 
