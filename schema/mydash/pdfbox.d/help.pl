@@ -70,7 +70,7 @@ print <<'END';
   <dt>off</dt>
   <dd>
    <ul>
-    <li><code>default:</code> 1</li>
+    <li><code>default:</code> 0</li>
     <li><code>perl5_re:</code> [1-9][0-9]{0,9}</li>
    </ul>
   </dd>
@@ -112,7 +112,7 @@ print <<'END';
   <dt>off</dt>
   <dd>
    <ul>
-    <li><code>default:</code> 1</li>
+    <li><code>default:</code> 0</li>
     <li><code>perl5_re:</code> [1-9][0-9]{0,9}</li>
    </ul>
   </dd>
