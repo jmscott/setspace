@@ -347,3 +347,10 @@ dt.no-title
 	font-style:	italic;
 	font-weight:	normal;
 }
+
+#q
+{
+	width:			50%;
+	background-color:	black;
+	color:			lightgreen;
+}
