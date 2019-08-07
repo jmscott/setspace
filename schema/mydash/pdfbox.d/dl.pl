@@ -17,13 +17,6 @@ require 'pdfbox.d/common.pl';
 
 our %QUERY_ARG;
 
-print STDERR "WTF: qtype=$QUERY_ARG{qtype}\n";
-print STDERR "WTF: q=$QUERY_ARG{q}\n";
-print STDERR "WTF: tsconf=$QUERY_ARG{tsconf}\n";
-print STDERR "WTF: rnorm=$QUERY_ARG{rnorm}\n";
-print STDERR "WTF: offset=$QUERY_ARG{offset}\n";
-print STDERR "WTF: lim=$QUERY_ARG{lim}\n";
-
 print <<END;
 <dl $QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END
@@ -34,6 +27,8 @@ if ($QUERY_ARG{q} =~ m/[[:graph:]]/) {
 
 	if ($qtype eq 'phrase') {
 		$qh = phrase_select();
+	} elsif ($qtype eq 'fts') {
+		$qh = fts_select();
 	} else {
 		$qh = keyword_select();
 	}
@@ -44,7 +39,6 @@ if ($QUERY_ARG{q} =~ m/[[:graph:]]/) {
 #  write the <dt> as <a>title<a> link to the pdf blob
 #  write the <dt> as the details of the pdf blob
 
-print STDERR "WTF: start fetching rows ...\n";
 while (my $r = $qh->fetchrow_hashref()) {
 	#  every pdf has these four attributes
 	my $blob = encode_html_entities($r->{blob});
@@ -84,7 +78,6 @@ END
 END
 }
 
-print STDERR "WTF: done fetching rows ...\n";
 print <<END;
 </dl>
 END
