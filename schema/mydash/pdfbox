@@ -150,9 +150,6 @@ $CGI{GET}->{out}->{putter}->{'select.qtype'}->{name} = 'select.qtype';
 $CGI{GET}->{out}->{putter}->{'select.qtype'}->{'query-args'}->{arg}->{qtype} = {
 	perl5_re	=>	'key|phrase|fts',
 };
-$CGI{GET}->{out}->{putter}->{'select.qtype'}->{'query-args'}->{arg}->{off} = {
-	perl5_re	=>	'[0-9]{0,10}',
-};
 #
 #  END: /cgi/GET/out/putter[@name=select.qtype]/query-args
 #
