@@ -25,19 +25,27 @@ if ($q =~ /[[:graph:]]/) {
 		$q,
 		'english'
 	];
-	$sql = q(
+	my $to_tsquery = 'plainto_tsquery';
+
+	if ($qtype eq 'phrase') {
+		$to_tsquery = 'phraseto_tsquery'; 
+	} elsif ($qtype eq 'fts') {
+		$to_tsquery = 'to_tsquery';
+	}
+	$sql =<<END;
 SELECT
 	count(DISTINCT tsv.pdf_blob) AS pdf_count,
 	count(tsv.pdf_blob)::float8 AS pdf_page_count
   FROM
 	pdfbox.page_tsv_utf8 tsv,
-	plainto_tsquery($2, $1) AS q
+	$to_tsquery(\$2, \$1) AS q
   WHERE
   	tsv.tsv @@ q
 	AND
-	tsv.ts_conf = $2::regconfig
+	tsv.ts_conf = \$2::regconfig
 ;
-	)
+END
+	;
 } else {
 	$sql = q(
 SELECT
