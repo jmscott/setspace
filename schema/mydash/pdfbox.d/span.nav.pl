@@ -7,6 +7,9 @@
 
 use utf8;
 
+#  stop apache log message 'Wide character in print at ...' from arrow chars
+binmode(STDOUT, ":utf8");
+
 require 'dbi-pg.pl';
 require 'pdfbox.d/common.pl';
 
