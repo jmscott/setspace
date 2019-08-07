@@ -60,6 +60,8 @@ install: all
 		-m u=rwx,g=rx,o= -d $(SCHEMA_PREFIX)/tmp
 
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
+		-m u=rwx,g=rx,o= -d $(WWW_PREFIX)/etc
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(WWW_PREFIX)/lib
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER)			\
 		-m u=rwx,g=rx,o= -d $(WWW_PREFIX)/lib/tag-url.d
