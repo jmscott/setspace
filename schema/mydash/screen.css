@@ -344,8 +344,9 @@ tr.footer h1
 
 dt.no-title
 {
-	font-style:	italic;
-	font-weight:	normal;
+	font-style:		italic;
+	font-weight:		normal;
+	text-decoration:	line-through;
 }
 
 #q
@@ -354,3 +355,24 @@ dt.no-title
 	background-color:	black;
 	color:			lightgreen;
 }
+
+span.snippet
+{
+	background-color:	#fff;
+	font-style:		italic;
+	color:			#111;
+}
+
+span.snippet b
+{
+	color:		green;
+	font-weight:	bold;
+}
+
+dl.query span.detail
+{
+	margin-left:	3em;
+	font-size:	smaller;
+	display:	block;
+}
+

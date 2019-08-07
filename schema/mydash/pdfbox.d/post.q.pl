@@ -2,13 +2,12 @@
 #  Synopsis:
 #	Submit a full-tect search query.
 #
-our (
-	%QUERY_ARG,
-	%POST_VAR
-);
+our %POST_VAR;
+
+my $q = $POST_VAR{q};
 
 print <<END;
 Status: 302
-Location: /pdfbox.shtml?q=WTF
+Location: /pdfbox.shtml?q=$q
 
 END
