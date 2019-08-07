@@ -106,7 +106,11 @@ install: all
 		$(WWW_PREFIX)/lib/tag-url.d
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -m u=rw,g=r,o=	\
 			pdfbox.d/common.pl				\
+			pdfbox.d/dl.pl					\
 			pdfbox.d/help.pl				\
+			pdfbox.d/input.pl				\
+			pdfbox.d/post.q.pl				\
+			pdfbox.d/span.nav.pl				\
 			pdfbox.d/table.pl				\
 		$(WWW_PREFIX)/lib/pdfbox.d
 
