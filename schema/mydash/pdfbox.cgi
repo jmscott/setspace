@@ -34,8 +34,8 @@
 	default="10"
      />
      <arg
-     	name="off"
-	perl5_re="[0-9]{0,10}"
+     	name="offset"
+	perl5_re="[+0-9]{1,10}"
 	default="0"
      />
     </query-args>
@@ -63,8 +63,8 @@
 	default="10"
      />
      <arg
-     	name="off"
-	perl5_re="[0-9]{0,10}"
+     	name="offset"
+	perl5_re="[+0-9]{1,10}"
 	default="0"
      />
      <arg
@@ -82,9 +82,14 @@
 	perl5_re=".{0,255}"
      />
      <arg
-     	name="off"
-	perl5_re="[0-9]{0,10}"
+     	name="offset"
+	perl5_re="[+0-9]{1,10}"
 	default="0"
+     />
+     <arg
+     	name="qtype"
+	perl5_re="key|phrase|fts"
+	default="key"
      />
     </query-args>
    </putter>

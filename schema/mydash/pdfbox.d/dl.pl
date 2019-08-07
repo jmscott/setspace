@@ -17,13 +17,26 @@ require 'pdfbox.d/common.pl';
 
 our %QUERY_ARG;
 
+print STDERR "WTF: qtype=$QUERY_ARG{qtype}\n";
+print STDERR "WTF: q=$QUERY_ARG{q}\n";
+print STDERR "WTF: tsconf=$QUERY_ARG{tsconf}\n";
+print STDERR "WTF: rnorm=$QUERY_ARG{rnorm}\n";
+print STDERR "WTF: offset=$QUERY_ARG{offset}\n";
+print STDERR "WTF: lim=$QUERY_ARG{lim}\n";
+
 print <<END;
 <dl $QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END
 
 my $qh;
 if ($QUERY_ARG{q} =~ m/[[:graph:]]/) {
-	$qh = keyword_select();
+	my $qtype = $QUERY_ARG{qtype};
+
+	if ($qtype eq 'phrase') {
+		$qh = phrase_select();
+	} else {
+		$qh = keyword_select();
+	}
 } else {
 	$qh = recent_select();
 }
@@ -31,6 +44,7 @@ if ($QUERY_ARG{q} =~ m/[[:graph:]]/) {
 #  write the <dt> as <a>title<a> link to the pdf blob
 #  write the <dt> as the details of the pdf blob
 
+print STDERR "WTF: start fetching rows ...\n";
 while (my $r = $qh->fetchrow_hashref()) {
 	#  every pdf has these four attributes
 	my $blob = encode_html_entities($r->{blob});
@@ -52,10 +66,12 @@ while (my $r = $qh->fetchrow_hashref()) {
 	my $plural_nop = 's';
 	$plural_nop = '' if $number_of_pages == 1;
 
-	my ($snippet, $p_snippet) = $r->{snippet};
-	$span_snippet = <<END if $snippet =~ /[[:graph:]]/;
+	my $snippet = $r->{snippet};
+	my $span_snippet = <<END if $snippet =~ /[[:graph:]]/;
    <span class="snippet">$snippet</span>
 END
+
+	#  build the row
 	print <<END;
  <dt$dt_class>$title</dt>
  <dd>
@@ -68,6 +84,7 @@ END
 END
 }
 
+print STDERR "WTF: done fetching rows ...\n";
 print <<END;
 </dl>
 END

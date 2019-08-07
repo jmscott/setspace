@@ -16,7 +16,7 @@ require 'pdfbox.d/common.pl';
 our %QUERY_ARG;
 
 my $q = $QUERY_ARG{q};
-my $off = $QUERY_ARG{off};
+my $offset = $QUERY_ARG{offset};
 my $qtype = $QUERY_ARG{qtype};
 my ($sql, $argv);
 
@@ -67,10 +67,10 @@ print <<END;
 END
 
 my $arrow_off;
-if ($off >= 10) {
-	$arrow_off = $off - 10;
+if ($offset >= 10) {
+	$arrow_off = $offset - 10;
 	print <<END;
-<a href="/pdfbox.shtml?q=$q&off=$arrow_off&qtype=$qtype">◀</a>
+<a href="/pdfbox.shtml?q=$q&offset=$arrow_off&qtype=$qtype">◀</a>
 END
 }
 
@@ -78,9 +78,9 @@ print <<END;
 $pdf_count docs, $pdf_page_count pages
 END
 
-$arrow_off = $off + 10;
+$arrow_off = $offset + 10;
 print <<END if $arrow_off < $pdf_count;
-<a href="/pdfbox.shtml?q=$q&off=$arrow_off&qtype=$qtype">▶</a>
+<a href="/pdfbox.shtml?q=$q&offset=$arrow_off&qtype=$qtype">▶</a>
 END
 
 print <<END;

@@ -67,11 +67,11 @@ print <<'END';
     <li><code>perl5_re:</code> [1-9][0-9]{0,3}</li>
    </ul>
   </dd>
-  <dt>off</dt>
+  <dt>offset</dt>
   <dd>
    <ul>
     <li><code>default:</code> 0</li>
-    <li><code>perl5_re:</code> [0-9]{0,10}</li>
+    <li><code>perl5_re:</code> [+0-9]{1,10}</li>
    </ul>
   </dd>
   </dl>
@@ -109,11 +109,11 @@ print <<'END';
     <li><code>perl5_re:</code> [1-9][0-9]{0,3}</li>
    </ul>
   </dd>
-  <dt>off</dt>
+  <dt>offset</dt>
   <dd>
    <ul>
     <li><code>default:</code> 0</li>
-    <li><code>perl5_re:</code> [0-9]{0,10}</li>
+    <li><code>perl5_re:</code> [+0-9]{1,10}</li>
    </ul>
   </dd>
   <dt>qtype</dt>
@@ -137,11 +137,18 @@ print <<'END';
     <li><code>perl5_re:</code> .{0,255}</li>
    </ul>
   </dd>
-  <dt>off</dt>
+  <dt>offset</dt>
   <dd>
    <ul>
     <li><code>default:</code> 0</li>
-    <li><code>perl5_re:</code> [0-9]{0,10}</li>
+    <li><code>perl5_re:</code> [+0-9]{1,10}</li>
+   </ul>
+  </dd>
+  <dt>qtype</dt>
+  <dd>
+   <ul>
+    <li><code>default:</code> key</li>
+    <li><code>perl5_re:</code> key|phrase|fts</li>
    </ul>
   </dd>
   </dl>
@@ -156,13 +163,6 @@ print <<'END';
   <dd>
    <ul>
     <li><code>perl5_re:</code> key|phrase|fts</li>
-   </ul>
-  </dd>
-  <dt>off</dt>
-  <dd>
-   <ul>
-    <li><code>default:</code> 0</li>
-    <li><code>perl5_re:</code> [0-9]{0,10}</li>
    </ul>
   </dd>
   </dl>

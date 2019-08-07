@@ -68,8 +68,8 @@ $CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{lim} = {
 	perl5_re	=>	'[1-9][0-9]{0,3}',
 	default	=>	'10',
 };
-$CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{off} = {
-	perl5_re	=>	'[0-9]{0,10}',
+$CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{offset} = {
+	perl5_re	=>	'[+0-9]{1,10}',
 };
 #
 #  END: /cgi/GET/out/putter[@name=table]/query-args
@@ -102,8 +102,8 @@ $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{lim} = {
 	perl5_re	=>	'[1-9][0-9]{0,3}',
 	default	=>	'10',
 };
-$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{off} = {
-	perl5_re	=>	'[0-9]{0,10}',
+$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{offset} = {
+	perl5_re	=>	'[+0-9]{1,10}',
 };
 $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{qtype} = {
 	perl5_re	=>	'key|phrase|fts',
@@ -128,8 +128,12 @@ $CGI{GET}->{out}->{putter}->{'span.nav'}->{name} = 'span.nav';
 $CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{q} = {
 	perl5_re	=>	'.{0,255}',
 };
-$CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{off} = {
-	perl5_re	=>	'[0-9]{0,10}',
+$CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{offset} = {
+	perl5_re	=>	'[+0-9]{1,10}',
+};
+$CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{qtype} = {
+	perl5_re	=>	'key|phrase|fts',
+	default	=>	'key',
 };
 #
 #  END: /cgi/GET/out/putter[@name=span.nav]/query-args
