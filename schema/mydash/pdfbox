@@ -6,8 +6,6 @@
 #	pdfbox.cgi
 #  Source SHA1 Digest:
 #	No SHA1 Calculated
-#  GitHub:
-#	https://github.com/jmscott/work/tree/master/httpd2
 #  Note:
 #	/cgi-bin/pdfbox was generated automatically by cgi2perl5.
 #
@@ -166,6 +164,22 @@ $CGI{GET}->{out}->{putter}->{'span.stat'}->{name} = 'span.stat';
 #
 #
 #  END: /cgi/GET/out/putter[@name='span.stat']
+#
+
+
+#
+#  BEGIN: /cgi/POST/in/putter[@name='post.q']
+#
+$CGI{POST}->{in}->{putter}->{'post.q'}->{name} = 'post.q';
+$CGI{POST}->{in}->{putter}->{'post.q'}->{vars}->{var}->{q} = {
+	perl5_re	=>	'.{0,255}',
+};
+#
+#  END: /cgi/POST/in/putter[@name=post.q]/vars
+#
+
+#
+#  END: /cgi/POST/in/putter[@name='post.q']
 #
 
 $CGI{GET}->{out}->{putter}->{help}->{name} = 'help';

@@ -99,18 +99,15 @@
  </GET>
  <POST>
   <in>
-  <putter
-  	name="post.q"
-  >
-   <title>POST a search query</title>
-   <vars>
-    <var
-    	name="q"
-	required="yes"
-	perl5_re=".{0,255}"
-    />
-   </vars>
-  </putter>
- </in>
-</POST>
+   <putter name="post.q">
+    <title>POST a search query</title>
+    <vars>
+     <var
+       name="q"
+       perl5_re=".{0,255}"
+     />
+    </vars>
+   </putter>
+  </in>
+ </POST>
 </cgi>

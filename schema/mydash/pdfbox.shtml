@@ -17,7 +17,11 @@
    <div id="content">
     <h2>PDF Box from Apache</h2>
 
-    <form name="q">
+    <form
+      name="q"
+      method="POST"
+      action="/cgi-bin/pdfbox?out=post.q"
+    >
      <input
        name="in"
        type="hidden"
@@ -26,6 +30,10 @@
      <!--#include virtual=
        "/cgi-bin/pdfbox?out=input&id=q&${QUERY_STRING}"
      -->
+     <input
+       type="submit"
+       value="Find PDF"
+     />
     </form>
 
     <style>
