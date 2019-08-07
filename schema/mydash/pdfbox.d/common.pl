@@ -7,16 +7,9 @@ use utf8;
 
 our %QUERY_ARG;
 
-sub recent_select
+sub recent_sql
 {
-	return dbi_pg_select(
-		db =>   dbi_pg_connect(),
-		tag =>  'pdfbox-recent_select',
-		argv =>	[
-				$QUERY_ARG{lim},
-				$QUERY_ARG{off},
-			],
-		sql =>	q(
+	return q(
 SELECT
 	pdf.blob,
 	pdf.number_of_pages,
@@ -40,22 +33,25 @@ SELECT
   LIMIT
   	$1
   OFFSET
-  	$2));
-}
+  	$2
+);}
 
-sub keyword_select
+sub recent_select
 {
 	return dbi_pg_select(
-		db =>	dbi_pg_connect(),
-		tag =>	'pdfbox-keyword_select',
+		db =>   dbi_pg_connect(),
+		tag =>  'pdfbox-recent_select',
 		argv =>	[
-				decode_url_query_arg($QUERY_ARG{q}),
-				$QUERY_ARG{tsconf},
-				$QUERY_ARG{rnorm},
 				$QUERY_ARG{lim},
 				$QUERY_ARG{off},
 			],
-		sql =>	q(
+		sql =>	recent_sql()
+	);
+}
+
+sub keyword_sql
+{
+	return q(
 WITH pdf_page_match AS (
   SELECT
 	tsv.pdf_blob AS blob,
@@ -154,7 +150,23 @@ WITH pdf_page_match AS (
   	rank DESC,
 	match_page_count DESC
 ;
-	));
+	);
+}
+
+sub keyword_select
+{
+	return dbi_pg_select(
+		db =>	dbi_pg_connect(),
+		tag =>	'pdfbox-keyword_select',
+		argv =>	[
+				decode_url_query_arg($QUERY_ARG{q}),
+				$QUERY_ARG{tsconf},
+				$QUERY_ARG{rnorm},
+				$QUERY_ARG{lim},
+				$QUERY_ARG{off},
+			],
+		sql =>	keyword_sql()
+	);
 }
 
 1;
