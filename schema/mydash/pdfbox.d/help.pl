@@ -119,6 +119,20 @@ print <<'END';
   </dl>
 </div>
      </dd>
+     <dt>input</dt>
+     <dd>
+<div class="query-args">
+ <h4>Query Args</h4>
+ <dl>
+  <dt>q</dt>
+  <dd>
+   <ul>
+    <li><code>perl5_re:</code> .{0,255}</li>
+   </ul>
+  </dd>
+  </dl>
+</div>
+     </dd>
   </dl>
  </div>
 </div>

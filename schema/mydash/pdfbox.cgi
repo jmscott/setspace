@@ -70,7 +70,7 @@
     </query-args>
    </putter>
 
-   <putter name="input.q">
+   <putter name="input">
     <query-args>
      <arg
      	name="q"
