@@ -351,9 +351,11 @@ dt.no-title
 
 #q
 {
-	width:			50%;
+	font-size:		larger;
+	width:			100%;
 	background-color:	black;
 	color:			lightgreen;
+	font:			monospace;
 }
 
 span.snippet
