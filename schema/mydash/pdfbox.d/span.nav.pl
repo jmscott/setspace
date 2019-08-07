@@ -17,6 +17,7 @@ our %QUERY_ARG;
 
 my $q = $QUERY_ARG{q};
 my $off = $QUERY_ARG{off};
+my $qtype = $QUERY_ARG{qtype};
 my ($sql, $argv);
 
 if ($q =~ /[[:graph:]]/) {
@@ -69,7 +70,7 @@ my $arrow_off;
 if ($off >= 10) {
 	$arrow_off = $off - 10;
 	print <<END;
-<a href="/pdfbox.shtml?q=$q&off=$arrow_off">◀</a>
+<a href="/pdfbox.shtml?q=$q&off=$arrow_off&qtype=$qtype">◀</a>
 END
 }
 
@@ -79,7 +80,7 @@ END
 
 $arrow_off = $off + 10;
 print <<END if $arrow_off < $pdf_count;
-<a href="/pdfbox.shtml?q=$q&off=$arrow_off">▶</a>
+<a href="/pdfbox.shtml?q=$q&off=$arrow_off&qtype=$qtype">▶</a>
 END
 
 print <<END;

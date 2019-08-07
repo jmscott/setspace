@@ -67,6 +67,11 @@
 	perl5_re="[0-9]{0,10}"
 	default="0"
      />
+     <arg
+     	name="qtype"
+	perl5_re="(key|phrase|fts)"
+	default="key"
+     />
     </query-args>
    </putter>
 
@@ -75,6 +80,20 @@
      <arg
      	name="q"
 	perl5_re=".{0,255}"
+     />
+     <arg
+     	name="off"
+	perl5_re="[0-9]{0,10}"
+	default="0"
+     />
+    </query-args>
+   </putter>
+
+   <putter name="select.qtype">
+    <query-args>
+     <arg
+     	name="qtype"
+	perl5_re="(key|phrase|fts)"
      />
      <arg
      	name="off"
@@ -105,6 +124,10 @@
      <var
        name="q"
        perl5_re=".{0,255}"
+     />
+     <var
+       name="qtype"
+       perl5_re="(key|phrase|fts)"
      />
     </vars>
    </putter>

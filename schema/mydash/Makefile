@@ -110,6 +110,7 @@ install: all
 			pdfbox.d/help.pl				\
 			pdfbox.d/input.pl				\
 			pdfbox.d/post.q.pl				\
+			pdfbox.d/select.qtype.pl			\
 			pdfbox.d/span.nav.pl				\
 			pdfbox.d/table.pl				\
 		$(WWW_PREFIX)/lib/pdfbox.d
