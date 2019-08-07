@@ -38,6 +38,10 @@ install:
 		icon/safari-pinned-tab.svg				\
 		icon/site.webmanifest					\
 		$(WWW_ROOT)/htdocs/icon
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
+		apache2-vhost.conf.example				\
+		apache2-passwd.example					\
+		$(WWW_ROOT)/lib
 
 distclean:
 	rm -rf $(WWW_ROOT)/htdocs
