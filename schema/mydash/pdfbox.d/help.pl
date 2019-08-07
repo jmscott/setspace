@@ -71,7 +71,7 @@ print <<'END';
   <dd>
    <ul>
     <li><code>default:</code> 0</li>
-    <li><code>perl5_re:</code> [1-9][0-9]{0,9}</li>
+    <li><code>perl5_re:</code> [0-9]{0,10}</li>
    </ul>
   </dd>
   </dl>
@@ -113,7 +113,7 @@ print <<'END';
   <dd>
    <ul>
     <li><code>default:</code> 0</li>
-    <li><code>perl5_re:</code> [1-9][0-9]{0,9}</li>
+    <li><code>perl5_re:</code> [0-9]{0,10}</li>
    </ul>
   </dd>
   </dl>
@@ -134,7 +134,7 @@ print <<'END';
   <dd>
    <ul>
     <li><code>default:</code> 0</li>
-    <li><code>perl5_re:</code> [1-9][0-9]{0,9}</li>
+    <li><code>perl5_re:</code> [0-9]{0,10}</li>
    </ul>
   </dd>
   </dl>

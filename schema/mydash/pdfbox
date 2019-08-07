@@ -71,7 +71,7 @@ $CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{lim} = {
 	default	=>	'10',
 };
 $CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{off} = {
-	perl5_re	=>	'[1-9][0-9]{0,9}',
+	perl5_re	=>	'[0-9]{0,10}',
 };
 #
 #  END: /cgi/GET/out/putter[@name=table]/query-args
@@ -105,7 +105,7 @@ $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{lim} = {
 	default	=>	'10',
 };
 $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{off} = {
-	perl5_re	=>	'[1-9][0-9]{0,9}',
+	perl5_re	=>	'[0-9]{0,10}',
 };
 #
 #  END: /cgi/GET/out/putter[@name=dl]/query-args
@@ -127,7 +127,7 @@ $CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{q} = {
 	perl5_re	=>	'.{0,255}',
 };
 $CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{off} = {
-	perl5_re	=>	'[1-9][0-9]{0,9}',
+	perl5_re	=>	'[0-9]{0,10}',
 };
 #
 #  END: /cgi/GET/out/putter[@name=span.nav]/query-args

@@ -35,7 +35,7 @@
      />
      <arg
      	name="off"
-	perl5_re="[1-9][0-9]{0,9}"
+	perl5_re="[0-9]{0,10}"
 	default="0"
      />
     </query-args>
@@ -64,7 +64,7 @@
      />
      <arg
      	name="off"
-	perl5_re="[1-9][0-9]{0,9}"
+	perl5_re="[0-9]{0,10}"
 	default="0"
      />
     </query-args>
@@ -78,7 +78,7 @@
      />
      <arg
      	name="off"
-	perl5_re="[1-9][0-9]{0,9}"
+	perl5_re="[0-9]{0,10}"
 	default="0"
      />
     </query-args>
