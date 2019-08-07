@@ -28,7 +28,13 @@ ifndef DASH_DNS_VHOST_SUFFIX
 $(error DASH_DNS_VHOST_SUFFIX is not set)
 endif
 
-DASH_DNS_VHOST=dash.setspace.$(DASH_DNS_VHOST_SUFFIX)
+#
+#  Note:
+#	Rarely override:  for example, pgdfw.setspace.com
+#
+DASH_DNS_VHOST_PREFIX?=dash.setspace
+
+DASH_DNS_VHOST=$(DASH_DNS_VHOST_PREFIX).$(DASH_DNS_VHOST_SUFFIX)
 WWW_PREFIX=$(SETSPACE_PREFIX)/www/vhost/$(DASH_DNS_VHOST)
 SCHEMA_PREFIX=$(SETSPACE_PREFIX)/schema/mydash
 
