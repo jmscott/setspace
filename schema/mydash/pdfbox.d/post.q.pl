@@ -4,7 +4,7 @@
 #
 our %POST_VAR;
 
-my $q = $POST_VAR{q};
+my $q = encode_url_query_arg($POST_VAR{q});
 my $qtype = $POST_VAR{qtype};
 
 print <<END;

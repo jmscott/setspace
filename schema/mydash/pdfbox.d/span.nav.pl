@@ -75,6 +75,7 @@ print <<END;
 END
 
 my $arrow_off;
+$q = encode_url_query_arg($q);
 if ($offset >= 10) {
 	$arrow_off = $offset - 10;
 	print <<END;
