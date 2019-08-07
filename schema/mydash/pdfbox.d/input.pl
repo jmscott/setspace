@@ -11,6 +11,7 @@ my $q = decode_url_query_arg($QUERY_ARG{q});
 
 print <<END;
 <input
+  name="q"
   $QUERY_ARG{id_att}
   $QUERY_ARG{class_att}
   value="$q"

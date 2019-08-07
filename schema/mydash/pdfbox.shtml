@@ -16,9 +16,18 @@
    <!--#include virtual="/navigation.shtml" -->
    <div id="content">
     <h2>PDF Box from Apache</h2>
-    <!--#include virtual=
-      "/cgi-bin/pdfbox?out=input&id=q&${QUERY_STRING}"
-    -->
+
+    <form name="q">
+     <input
+       name="in"
+       type="hidden"
+       value="post.q"
+     />
+     <!--#include virtual=
+       "/cgi-bin/pdfbox?out=input&id=q&${QUERY_STRING}"
+     -->
+    </form>
+
     <style>
       dd
       {
