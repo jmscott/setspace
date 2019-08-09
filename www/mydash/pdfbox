@@ -1,0 +1,227 @@
+#!/usr/bin/env perl
+#
+#  Synopsis:
+#	Implements argument processing for /cgi-bin/pdfbox.
+#  Source Path:
+#	pdfbox.cgi
+#  Source SHA1 Digest:
+#	No SHA1 Calculated
+#  Note:
+#	/cgi-bin/pdfbox was generated automatically by cgi2perl5.
+#
+#	Do not make changes directly to this script.
+#
+die "SERVER_ROOT environment variable not defined"
+				unless defined $ENV{SERVER_ROOT};
+
+#
+#  Prepend the $SERVER_ROOT/lib directory
+#  to the load path.
+#
+unshift @INC, "$ENV{SERVER_ROOT}/lib";
+
+our (%CGI);
+
+require 'httpd2.d/common.pl';
+$CGI{name} = 'pdfbox';
+#
+#  Default content type for all elements.
+#
+$CGI{GET}->{out}->{'content-type'} = 'text/html';
+
+#
+#  BEGIN: /cgi/GET/out/query-args
+#
+$CGI{GET}->{out}->{'query-args'}->{arg}->{id} = {
+	perl5_re	=>	'\w[\w-]{0,32}'
+};
+$CGI{GET}->{out}->{'query-args'}->{arg}->{class} = {
+	perl5_re	=>	'\w[\w-]{0,32}'
+};
+#
+#  'out' query argument must match one of the out putter names.
+#
+$CGI{GET}->{out}->{'query-args'}->{arg}->{out} = {
+	perl5_re	=> 	'table|dl|(?:span[.]nav)|(?:select[.]qtype)|input|(?:mime[.]pdf)|help',
+	default		=>	'help',
+};
+#
+#  BEGIN: /cgi/GET/out/putter[@name='table']
+#
+$CGI{GET}->{out}->{putter}->{'table'}->{name} = 'table';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=table]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{q} = {
+	perl5_re	=>	'.{0,255}',
+};
+$CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{tsconf} = {
+	perl5_re	=>	'[a-z0-9-]{1,32}',
+	default	=>	'english',
+};
+$CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{rnorm} = {
+	perl5_re	=>	'[0-9]{1,3}',
+	default	=>	'14',
+};
+$CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{lim} = {
+	perl5_re	=>	'[1-9][0-9]{0,3}',
+	default	=>	'10',
+};
+$CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{offset} = {
+	perl5_re	=>	'[+0-9]{1,10}',
+};
+#
+#  END: /cgi/GET/out/putter[@name=table]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='table']
+#
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name='dl']
+#
+$CGI{GET}->{out}->{putter}->{'dl'}->{name} = 'dl';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=dl]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{q} = {
+	perl5_re	=>	'.{0,255}',
+};
+$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{tsconf} = {
+	perl5_re	=>	'[a-z0-9-]{1,32}',
+	default	=>	'english',
+};
+$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{rnorm} = {
+	perl5_re	=>	'[0-9]{1,3}',
+	default	=>	'14',
+};
+$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{lim} = {
+	perl5_re	=>	'[1-9][0-9]{0,3}',
+	default	=>	'10',
+};
+$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{offset} = {
+	perl5_re	=>	'[+0-9]{1,10}',
+};
+$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{qtype} = {
+	perl5_re	=>	'web|key|phrase|fts',
+	default	=>	'web',
+};
+#
+#  END: /cgi/GET/out/putter[@name=dl]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='dl']
+#
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name='span.nav']
+#
+$CGI{GET}->{out}->{putter}->{'span.nav'}->{name} = 'span.nav';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=span.nav]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{q} = {
+	perl5_re	=>	'.{0,255}',
+};
+$CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{offset} = {
+	perl5_re	=>	'[+0-9]{1,10}',
+};
+$CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{qtype} = {
+	perl5_re	=>	'web|key|phrase|fts',
+	default	=>	'web',
+};
+#
+#  END: /cgi/GET/out/putter[@name=span.nav]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='span.nav']
+#
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name='select.qtype']
+#
+$CGI{GET}->{out}->{putter}->{'select.qtype'}->{name} = 'select.qtype';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=select.qtype]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'select.qtype'}->{'query-args'}->{arg}->{qtype} = {
+	perl5_re	=>	'web|key|phrase|fts',
+	default	=>	'web',
+};
+#
+#  END: /cgi/GET/out/putter[@name=select.qtype]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='select.qtype']
+#
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name='input']
+#
+$CGI{GET}->{out}->{putter}->{'input'}->{name} = 'input';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=input]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'input'}->{'query-args'}->{arg}->{q} = {
+	perl5_re	=>	'.{0,255}',
+};
+#
+#  END: /cgi/GET/out/putter[@name=input]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='input']
+#
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name='mime.pdf']
+#
+$CGI{GET}->{out}->{putter}->{'mime.pdf'}->{name} = 'mime.pdf';
+$CGI{GET}->{out}->{putter}->{'mime.pdf'}->{'content-type'} = 'application/pdf';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=mime.pdf]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'mime.pdf'}->{'query-args'}->{arg}->{udig} = {
+	perl5_re	=>	'[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}',
+};
+#
+#  END: /cgi/GET/out/putter[@name=mime.pdf]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='mime.pdf']
+#
+
+
+#
+#  BEGIN: /cgi/POST/in/putter[@name='post.q']
+#
+$CGI{POST}->{in}->{putter}->{'post.q'}->{name} = 'post.q';
+$CGI{POST}->{in}->{putter}->{'post.q'}->{vars}->{var}->{q} = {
+	perl5_re	=>	'.{0,255}',
+};
+$CGI{POST}->{in}->{putter}->{'post.q'}->{vars}->{var}->{qtype} = {
+	perl5_re	=>	'web|key|phrase|fts',
+};
+#
+#  END: /cgi/POST/in/putter[@name=post.q]/vars
+#
+
+#
+#  END: /cgi/POST/in/putter[@name='post.q']
+#
+
+$CGI{GET}->{out}->{putter}->{help}->{name} = 'help';
+$CGI{GET}->{out}->{putter}->{help}->{'content-type'} = 'text/html';
+
+require "httpd2.d/$ENV{REQUEST_METHOD}.pl";
