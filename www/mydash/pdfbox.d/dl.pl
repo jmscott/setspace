@@ -46,6 +46,12 @@ while (my $r = $qh->fetchrow_hashref()) {
 	my $blob = $r->{blob};
 	my $title = encode_html_entities($r->{title});
 	my $number_of_pages = $r->{number_of_pages};
+	my $match_page_count = $r->{match_page_count};
+
+	my $match_page_count_text = <<END if $match_page_count > 0;
+      $match_page_count matched of
+END
+
 	my $discover_elapsed = $r->{discover_elapsed};
 
 	#  strip off tailing hours:min:sec if more than day elapsed
@@ -75,7 +81,7 @@ END
  <dd>
    $span_snippet
    <span class="detail">
-     $number_of_pages page$plural_nop,
+     $match_page_count_text $number_of_pages page$plural_nop total,
      $discover_elapsed
    </span>
  </dd>
