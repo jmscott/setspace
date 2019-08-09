@@ -2,6 +2,9 @@
 #  Synopsis:
 #	Write html <span> of for navigating search results
 #  Note:
+#	Consider pretty printing using use POSIX qw(locale_h)
+#	instead of english style 999,999.
+#
 #	One day this query may be a materialized view.
 #
 
@@ -67,7 +70,9 @@ my $r = dbi_pg_select(
 )->fetchrow_hashref();
 
 my $pdf_count = $r->{pdf_count};
+true while $pdf_count =~ s/^(\d+)(\d{3})/$1,$2/;
 my $pdf_page_count = $r->{pdf_page_count};
+true while $pdf_page_count =~ s/^(\d+)(\d{3})/$1,$2/;
 
 print <<END;
 <span
