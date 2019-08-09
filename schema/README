@@ -32,6 +32,7 @@ See:
 	https://github.com/openpreserve
 
 Possible Schemas:
+	pcap - Wireshark capture format
 	w3valid - w3 validator of flavors of html
 	exiv2 - generale c++ metadata extractor
 	simdjson - Optimized json verifier from Daniel Lemire
