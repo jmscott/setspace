@@ -2,6 +2,7 @@
 #  Synopsis:
 #	Write html <span> of for navigating search results
 #  Note:
+#	Add query argument "lim"
 #	Consider pretty printing using use POSIX qw(locale_h)
 #	instead of english style 999,999.
 #
@@ -22,6 +23,7 @@ my $q = $QUERY_ARG{q};
 my $offset = $QUERY_ARG{offset};
 my $qtype = $QUERY_ARG{qtype};
 my ($sql, $argv);
+my $limit = 10;
 
 if ($q =~ /[[:graph:]]/) {
 	$argv = [
@@ -70,9 +72,9 @@ my $r = dbi_pg_select(
 )->fetchrow_hashref();
 
 my $pdf_count = $r->{pdf_count};
-true while $pdf_count =~ s/^(\d+)(\d{3})/$1,$2/;
+1 while $pdf_count =~ s/^(\d+)(\d{3})/$1,$2/;
 my $pdf_page_count = $r->{pdf_page_count};
-true while $pdf_page_count =~ s/^(\d+)(\d{3})/$1,$2/;
+1 while $pdf_page_count =~ s/^(\d+)(\d{3})/$1,$2/;
 
 print <<END;
 <span
@@ -83,8 +85,8 @@ END
 
 my $arrow_off;
 $q = encode_url_query_arg($q);
-if ($offset >= 10) {
-	$arrow_off = $offset - 10;
+if ($offset >= $limit) {
+	$arrow_off = $offset - $limit;
 	print <<END;
 <a href="/pdfbox.shtml?q=$q&offset=$arrow_off&qtype=$qtype">◀</a>
 END
@@ -94,7 +96,7 @@ print <<END;
 $pdf_count docs, $pdf_page_count pages
 END
 
-$arrow_off = $offset + 10;
+$arrow_off = $offset + $limit;
 print <<END if $arrow_off < $pdf_count;
 <a href="/pdfbox.shtml?q=$q&offset=$arrow_off&qtype=$qtype">▶</a>
 END
