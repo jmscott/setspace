@@ -83,6 +83,13 @@ print <<END;
 >
 END
 
+if ($pdf_count == 0) {
+	print <<END;
+No Documents Matched</span>
+END
+	return 0;
+}
+
 my $arrow_off;
 $q = encode_url_query_arg($q);
 if ($offset >= $limit) {
@@ -92,8 +99,15 @@ if ($offset >= $limit) {
 END
 }
 
+my $doc_lower = $offset + 1;
+1 while $doc_lower =~ s/^(\d+)(\d{3})/$1,$2/;
+
+my $doc_up = $doc_lower + $limit - 1;
+$doc_up = $pdf_count if $doc_up > $pdf_count;
+1 while $doc_up =~ s/^(\d+)(\d{3})/$1,$2/;
+
 print <<END;
-$pdf_count docs, $pdf_page_count pages
+$doc_lower to $doc_up
 END
 
 $arrow_off = $offset + $limit;
@@ -102,5 +116,8 @@ print <<END if $arrow_off < $pdf_count;
 END
 
 print <<END;
+ - Matched $pdf_count docs and $pdf_page_count pages total
 </span>
 END
+
+1;
