@@ -72,9 +72,7 @@ my $r = dbi_pg_select(
 )->fetchrow_hashref();
 
 my $pdf_count = $r->{pdf_count};
-1 while $pdf_count =~ s/^(\d+)(\d{3})/$1,$2/;
 my $pdf_page_count = $r->{pdf_page_count};
-1 while $pdf_page_count =~ s/^(\d+)(\d{3})/$1,$2/;
 
 print <<END;
 <span
@@ -115,8 +113,10 @@ print <<END if $arrow_off < $pdf_count;
 <a href="/pdfbox.shtml?q=$q&offset=$arrow_off&qtype=$qtype">▶</a>
 END
 
+1 while $pdf_count =~ s/^(\d+)(\d{3})/$1,$2/;
+1 while $pdf_page_count =~ s/^(\d+)(\d{3})/$1,$2/;
 print <<END;
- - Matched $pdf_count docs and $pdf_page_count pages total
+matched $pdf_count docs and $pdf_page_count pages total
 </span>
 END
 
