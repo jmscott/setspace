@@ -106,8 +106,8 @@ $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{offset} = {
 	perl5_re	=>	'[+0-9]{1,10}',
 };
 $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{qtype} = {
-	perl5_re	=>	'key|phrase|fts',
-	default	=>	'key',
+	perl5_re	=>	'web|key|phrase|fts',
+	default	=>	'web',
 };
 #
 #  END: /cgi/GET/out/putter[@name=dl]/query-args
@@ -132,8 +132,8 @@ $CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{offset} = {
 	perl5_re	=>	'[+0-9]{1,10}',
 };
 $CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{qtype} = {
-	perl5_re	=>	'key|phrase|fts',
-	default	=>	'key',
+	perl5_re	=>	'web|key|phrase|fts',
+	default	=>	'web',
 };
 #
 #  END: /cgi/GET/out/putter[@name=span.nav]/query-args
@@ -152,7 +152,8 @@ $CGI{GET}->{out}->{putter}->{'select.qtype'}->{name} = 'select.qtype';
 #  BEGIN: /cgi/GET/out/putter[@name=select.qtype]/query-args
 #
 $CGI{GET}->{out}->{putter}->{'select.qtype'}->{'query-args'}->{arg}->{qtype} = {
-	perl5_re	=>	'key|phrase|fts',
+	perl5_re	=>	'web|key|phrase|fts',
+	default	=>	'web',
 };
 #
 #  END: /cgi/GET/out/putter[@name=select.qtype]/query-args
@@ -210,7 +211,7 @@ $CGI{POST}->{in}->{putter}->{'post.q'}->{vars}->{var}->{q} = {
 	perl5_re	=>	'.{0,255}',
 };
 $CGI{POST}->{in}->{putter}->{'post.q'}->{vars}->{var}->{qtype} = {
-	perl5_re	=>	'key|phrase|fts',
+	perl5_re	=>	'web|key|phrase|fts',
 };
 #
 #  END: /cgi/POST/in/putter[@name=post.q]/vars

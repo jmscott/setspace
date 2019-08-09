@@ -69,8 +69,8 @@
      />
      <arg
      	name="qtype"
-	perl5_re="key|phrase|fts"
-	default="key"
+	perl5_re="web|key|phrase|fts"
+	default="web"
      />
     </query-args>
    </putter>
@@ -88,8 +88,8 @@
      />
      <arg
      	name="qtype"
-	perl5_re="key|phrase|fts"
-	default="key"
+	perl5_re="web|key|phrase|fts"
+	default="web"
      />
     </query-args>
    </putter>
@@ -98,7 +98,8 @@
     <query-args>
      <arg
      	name="qtype"
-	perl5_re="key|phrase|fts"
+	perl5_re="web|key|phrase|fts"
+	default="web"
      />
     </query-args>
    </putter>
@@ -138,7 +139,7 @@
      />
      <var
        name="qtype"
-       perl5_re="key|phrase|fts"
+       perl5_re="web|key|phrase|fts"
      />
     </vars>
    </putter>

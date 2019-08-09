@@ -119,8 +119,8 @@ print <<'END';
   <dt>qtype</dt>
   <dd>
    <ul>
-    <li><code>default:</code> key</li>
-    <li><code>perl5_re:</code> key|phrase|fts</li>
+    <li><code>default:</code> web</li>
+    <li><code>perl5_re:</code> web|key|phrase|fts</li>
    </ul>
   </dd>
   </dl>
@@ -147,8 +147,8 @@ print <<'END';
   <dt>qtype</dt>
   <dd>
    <ul>
-    <li><code>default:</code> key</li>
-    <li><code>perl5_re:</code> key|phrase|fts</li>
+    <li><code>default:</code> web</li>
+    <li><code>perl5_re:</code> web|key|phrase|fts</li>
    </ul>
   </dd>
   </dl>
@@ -162,7 +162,8 @@ print <<'END';
   <dt>qtype</dt>
   <dd>
    <ul>
-    <li><code>perl5_re:</code> key|phrase|fts</li>
+    <li><code>default:</code> web</li>
+    <li><code>perl5_re:</code> web|key|phrase|fts</li>
    </ul>
   </dd>
   </dl>

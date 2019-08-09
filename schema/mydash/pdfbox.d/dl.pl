@@ -29,8 +29,10 @@ if ($QUERY_ARG{q} =~ m/[[:graph:]]/) {
 		$qh = phrase_select();
 	} elsif ($qtype eq 'fts') {
 		$qh = fts_select();
-	} else {
+	} elsif ($qtype eq 'key') {
 		$qh = keyword_select();
+	} else {
+		$qh = websearch_select();
 	}
 } else {
 	$qh = recent_select();

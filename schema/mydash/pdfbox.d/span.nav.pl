@@ -25,12 +25,14 @@ if ($q =~ /[[:graph:]]/) {
 		$q,
 		'english'
 	];
-	my $to_tsquery = 'plainto_tsquery';
+	my $to_tsquery = 'websearch_to_tsquery';
 
 	if ($qtype eq 'phrase') {
 		$to_tsquery = 'phraseto_tsquery'; 
 	} elsif ($qtype eq 'fts') {
 		$to_tsquery = 'to_tsquery';
+	} elsif ($qtype eq 'key') {
+		$to_tsquery = 'plainto_tsquery';
 	}
 	$sql =<<END;
 SELECT

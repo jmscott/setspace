@@ -14,6 +14,6 @@ print <<END;
   name="q"
   $QUERY_ARG{id_att}
   $QUERY_ARG{class_att}
-  value="$QUERY_ARG{q}"
+  value="$q"
 />
 END
