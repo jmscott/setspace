@@ -42,7 +42,7 @@ $CGI{GET}->{out}->{'query-args'}->{arg}->{class} = {
 #  'out' query argument must match one of the out putter names.
 #
 $CGI{GET}->{out}->{'query-args'}->{arg}->{out} = {
-	perl5_re	=> 	'table|dl|(?:span[.]nav)|(?:select[.]qtype)|input|(?:mime[.]pdf)|help',
+	perl5_re	=> 	'table|dl|(?:span[.]nav)|(?:select[.]qtype)|input|(?:mime[.]pdf)|(?:dl[.]pddoc)|help',
 	default		=>	'help',
 };
 #
@@ -200,6 +200,25 @@ $CGI{GET}->{out}->{putter}->{'mime.pdf'}->{'query-args'}->{arg}->{udig} = {
 
 #
 #  END: /cgi/GET/out/putter[@name='mime.pdf']
+#
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name='dl.pddoc']
+#
+$CGI{GET}->{out}->{putter}->{'dl.pddoc'}->{name} = 'dl.pddoc';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=dl.pddoc]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'dl.pddoc'}->{'query-args'}->{arg}->{blob} = {
+	perl5_re	=>	'[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}',
+};
+#
+#  END: /cgi/GET/out/putter[@name=dl.pddoc]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='dl.pddoc']
 #
 
 
