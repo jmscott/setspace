@@ -1,7 +1,0 @@
-<div id="navigation">
- <ul>
-  <li><a href="/">SetSpace Dashboard</a></li>
-  <li><a href="/sql-schema.shtml">SQL Schemas</a></li>
-  <li><a href="/extra.shtml">Etc</a></li>
- </ul>
-</div>
