@@ -17,6 +17,11 @@
    <div id="content">
     <h2>PDF Detail</h2>
     <h3>
+     <!--#include
+       virtual="/cgi-bin/jmscott/env?out=text&qarg=blob&${QUERY_STRING}"
+     -->
+    </h3>
+    <h3>
       <a
         href="https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/pdmodel/PDDocument.html"
         title="class in pdfbox.pdmodel"
