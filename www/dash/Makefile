@@ -16,7 +16,9 @@ include dash.mk
 CGIBINs=tag-url
 
 all: $(CGIBINs)
+	cd pdfbox && $(MAKE) $(MFLAGS) all
 clean:
+	cd pdfbox && $(MAKE) $(MFLAGS) clean
 	rm -f $(CGIBINs) tag-url.d/help.pl
 
 install: all
@@ -61,9 +63,12 @@ install: all
 		ln -s $(JMSCOTT_ROOT)/www/cgi-bin $(WWW_PREFIX)/cgi-bin/jmscott
 	test -e $(WWW_PREFIX)/lib/jmscott				||\
 		ln -s $(JMSCOTT_ROOT)/www/lib $(WWW_PREFIX)/lib/jmscott
+	cd pdfbox && $(MAKE) $(MFLAGS) install
 
 distclean:
+	cd pdfbox && $(MAKE) $(MFLAGS) distclean
 	test -L $(WWW_PREFIX)/lib || rm -rf $(WWW_PREFIX)/lib
+	test -L $(WWW_PREFIX)/htdocs || rm -rf $(WWW_PREFIX)/htdocs
 	test -L $(WWW_PREFIX)/cgi-bin || rm -rf $(WWW_PREFIX)/cgi-bin
 
 tag-url: tag-url.cgi
@@ -76,15 +81,17 @@ world:
 	$(MAKE) $(MFLAGS) distclean
 	$(MAKE) $(MFLAGS) install
 
-dev-links:
-	test -e cgi-bin || ln -s . cgi-bin
-	test -e etc || ln -s . etc
-	test -e htdocs || ln -s . htdocs
-	test -e icon || ln -s ../../www/icon .
-	test -e jmscott || ln -s . jmscott
-	test -e lib || ln -s . lib
-	test -e passwd || ln -s ../../www/apache2-passwd.example passwd
-	test -e spool || ln -s . spool
+dev:
+	test -d cgi-bin || mkdir cgi-bin
+	test -L etc || ln -s . etc
+	test -L htdocs || ln -s . htdocs
+	test -d lib || mkdir lib
+	test -L icon || ln -s ../../www/icon .
+	test -L passwd || ln -s ../apache2-passwd.example passwd
 
-clean-dev-links:
-	rm -rf cgi-bin etc htdocs icon jmscott lib passwd spool
+	test -L lib/pdfbox.cgi || ln -s ../pdfbox/pdfbox.cgi lib/pdfbox.cgi
+	test -L lib/pdfbox.d || ln -s ../pdfbox/pdfbox.d lib/pdfbox.d
+	test -L cgi-bin/pdfbox || ln -s ../pdfbox/pdfbox cgi-bin/pdfbox
+
+clean-dev dev-clean:
+	rm -rf cgi-bin etc htdocs icon lib passwd

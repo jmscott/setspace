@@ -19,8 +19,12 @@ clean:
 
 install: all
 
-	install -m u=rwx,g=rx,o= pdfbox $(WWW_PREFIX)/cgi-bin
 	install -d $(WWW_PREFIX)/lib/pdfbox.d
+	install -d $(WWW_PREFIX)/htdocs/pdfbox
+	install -d $(WWW_PREFIX)/cgi-bin
+	test -L $(WWW_PREFIX)/cgi-bin/pdfbox				||\
+		install pdfbox $(WWW_PREFIX)/cgi-bin
+
 	install								\
 		pdfbox.d/common.pl					\
 		pdfbox.d/dl.pl						\
@@ -32,11 +36,19 @@ install: all
 		pdfbox.d/span.nav.pl					\
 		pdfbox.d/table.pl					\
 		$(WWW_PREFIX)/lib/pdfbox.d
+	install								\
+		pdfbox.shtml						\
+		$(WWW_PREFIX)/htdocs/pdfbox
+	test -L $(WWW_PREFIX)/lib/pdfbox.cgi				||\
+		install pdfbox.cgi $(WWW_PREFIX)/lib
 
 distclean:
-	rm -f $(WWW_PREFIX)/cgi-bin/pdfbox
-	rm -f $(WWW_PREFIX)/lib/pdfbox.d
-	rm -f $(WWW_PREFIX)/lib/pdfbox.cgi
+	test -L $(WWW_PREFIX)/cgi-bin/pdfbox				||\
+		rm -f $(WWW_PREFIX)/cgi-bin/pdfbox
+	test -L $(WWW_PREFIX)/lib/pdfbox.d 				||\
+		rm -rf $(WWW_PREFIX)/lib/pdfbox.d
+	test -L $(WWW_PREFIX)/lib/pdfbox.cgi 				||\
+		rm -f $(WWW_PREFIX)/lib/pdfbox.cgi
 
 pdfbox: pdfbox.cgi
 	cgi2perl5 --source-path pdfbox.cgi
