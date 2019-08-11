@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>MyDash Schema</title>
+  <meta charset="UTF-8" />
+  <!--#include virtual="/icon/index.html.inc"  -->
+
+  <link href="/screen.css" rel="stylesheet" type="text/css" />
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/navigation.shtml" -->
+   <div id="content">
+    <h2>MyDash Schema</h2>
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

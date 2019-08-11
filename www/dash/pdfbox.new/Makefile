@@ -1,0 +1,49 @@
+#
+#  Synopsis:
+#	Development/Install Makefile for dash.setspace.$(DASH_DNS_VHOST_SUFFIX)
+#  Usage:
+#	export DASH_DNS_VHOST_SUFFIX=jmscott.tmonk.local
+#	make clean all install
+#  Note:
+#	Need to add permissions to install invocation, in particular,
+#	cgi-bin/
+#
+include ../../../local.mk
+include ../../../jmscott.mk
+include ../../../setspace.mk
+include ../dash.mk
+
+all: pdfbox pdfbox.d/help.pl
+clean:
+	rm -f pdfbox pdfbox.d/help.pl
+
+install: all
+
+	install -m u=rwx,g=rx,o= pdfbox $(WWW_PREFIX)/cgi-bin
+	install -d $(WWW_PREFIX)/lib/pdfbox.d
+	install								\
+		pdfbox.d/common.pl					\
+		pdfbox.d/dl.pl						\
+		pdfbox.d/help.pl					\
+		pdfbox.d/input.pl					\
+		pdfbox.d/mime.pdf.pl					\
+		pdfbox.d/post.q.pl					\
+		pdfbox.d/select.qtype.pl				\
+		pdfbox.d/span.nav.pl					\
+		pdfbox.d/table.pl					\
+		$(WWW_PREFIX)/lib/pdfbox.d
+
+distclean:
+	rm -f $(WWW_PREFIX)/cgi-bin/pdfbox
+	rm -f $(WWW_PREFIX)/lib/pdfbox.d
+	rm -f $(WWW_PREFIX)/lib/pdfbox.cgi
+
+pdfbox: pdfbox.cgi
+	cgi2perl5 --source-path pdfbox.cgi
+	chmod a+rx pdfbox
+
+world:
+	$(MAKE) $(MFLAGS) clean
+	$(MAKE) $(MFLAGS) all
+	$(MAKE) $(MFLAGS) distclean
+	$(MAKE) $(MFLAGS) install
