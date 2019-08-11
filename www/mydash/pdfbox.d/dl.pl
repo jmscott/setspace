@@ -82,7 +82,12 @@ END
    $span_snippet
    <span class="detail">
      $match_page_count_text $number_of_pages page$plural_nop total,
-     $discover_elapsed
+     $discover_elapsed,
+     <a
+       class="detail"
+       href="pdf-detail.shtml?blob=$blob"
+       title="$blob"
+     >Detail</a>
    </span>
  </dd>
 END

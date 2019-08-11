@@ -12,9 +12,8 @@ print <<END;
 <dl $QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END
 
-my $db = dbi_connect();
 my $qh = dbi_pg_select(
-	db =>		$db,
+	db =>		dbi_pg_connect(),
 	tag =>		'select-dl-pddocument',
 	argv =>		[
 				$blob,
