@@ -67,9 +67,11 @@ install: all
 
 distclean:
 	cd pdfbox && $(MAKE) $(MFLAGS) distclean
-	test -L $(WWW_PREFIX)/lib || rm -rf $(WWW_PREFIX)/lib
-	test -L $(WWW_PREFIX)/htdocs || rm -rf $(WWW_PREFIX)/htdocs
-	test -L $(WWW_PREFIX)/cgi-bin || rm -rf $(WWW_PREFIX)/cgi-bin
+	test -L $(WWW_PREFIX)/htdocs					|| (\
+		rm -rf $(WWW_PREFIX)/lib				&&\
+		rm -rf $(WWW_PREFIX)/cgi-bin				&&\
+		rm -rf $(WWW_PREFIX)/htdocs				\
+	)
 
 tag-url: tag-url.cgi
 	cgi2perl5 --source-path tag-url.cgi
@@ -89,9 +91,14 @@ dev:
 	test -L icon || ln -s ../../www/icon .
 	test -L passwd || ln -s ../apache2-passwd.example passwd
 
-	test -L lib/pdfbox.cgi || ln -s ../pdfbox/pdfbox.cgi lib/pdfbox.cgi
-	test -L lib/pdfbox.d || ln -s ../pdfbox/pdfbox.d lib/pdfbox.d
-	test -L cgi-bin/pdfbox || ln -s ../pdfbox/pdfbox cgi-bin/pdfbox
+	test -e lib/pdfbox.cgi || ln -s ../pdfbox/pdfbox.cgi lib/pdfbox.cgi
+	test -e lib/pdfbox.d || ln -s ../pdfbox/pdfbox.d lib/pdfbox.d
+	test -e cgi-bin/pdfbox || ln -s ../pdfbox/pdfbox cgi-bin/pdfbox
+
+	test -e lib/tag-url.cgi || ln -s ../tag-url/tag-url.cgi lib/tag-url.cgi
+	test -e lib/tag-url.d || ln -s ../tag-url/tag-url.d lib/tag-url.d
+	test -e lib/tag-url.js || ln -s ../tag-url.js lib/tag-url.js
+	test -e cgi-bin/tag-url || ln -s ../tag-url cgi-bin/tag-url
 
 clean-dev dev-clean:
 	rm -rf cgi-bin etc htdocs icon lib passwd
