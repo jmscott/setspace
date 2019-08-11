@@ -36,11 +36,11 @@ DASH_DNS_VHOST_PREFIX?=dash.setspace
 DASH_DNS_VHOST=$(DASH_DNS_VHOST_PREFIX).$(DASH_DNS_VHOST_SUFFIX)
 WWW_PREFIX=$(SETSPACE_PREFIX)/www/vhost/$(DASH_DNS_VHOST)
 
-CGIBINs=tag-url pdfbox
+CGIBINs=tag-url
 
 all: $(CGIBINs)
 clean:
-	rm -f $(CGIBINs) tag-url.d/help.pl pdfbox.d/help.pl
+	rm -f $(CGIBINs) tag-url.d/help.pl
 
 install: all
 
@@ -49,7 +49,6 @@ install: all
 	install -d $(WWW_PREFIX)/cgi-bin
 	install -d $(WWW_PREFIX)/htdocs
 	install -d $(WWW_PREFIX)/lib/tag-url.d
-	install -d $(WWW_PREFIX)/lib/pdfbox.d
 
 	install tag-url.js $(WWW_PREFIX)/lib
 	install -m u=rwx,g=rx,o= $(CGIBINs) $(WWW_PREFIX)/cgi-bin
@@ -60,8 +59,6 @@ install: all
 		header.shtml						\
 		index.shtml						\
 		navigation.shtml					\
-		pdf-detail.shtml					\
-		pdfbox.shtml						\
 		screen.css						\
 		sql-schema.shtml					\
 		tag-url.shtml						\
@@ -81,17 +78,6 @@ install: all
 		tag-url.d/table.pl					\
 		tag-url.d/textarea.pl					\
 		$(WWW_PREFIX)/lib/tag-url.d
-	install								\
-		pdfbox.d/common.pl					\
-		pdfbox.d/dl.pl						\
-		pdfbox.d/help.pl					\
-		pdfbox.d/input.pl					\
-		pdfbox.d/mime.pdf.pl					\
-		pdfbox.d/post.q.pl					\
-		pdfbox.d/select.qtype.pl				\
-		pdfbox.d/span.nav.pl					\
-		pdfbox.d/table.pl					\
-		$(WWW_PREFIX)/lib/pdfbox.d
 
 	#  set up symbolic links to $(JMSCOTT_ROOT) tools
 	test -e $(WWW_PREFIX)/cgi-bin/jmscott				||\
@@ -106,10 +92,6 @@ distclean:
 tag-url: tag-url.cgi
 	cgi2perl5 --source-path tag-url.cgi
 	chmod a+rx tag-url
-
-pdfbox: pdfbox.cgi
-	cgi2perl5 --source-path pdfbox.cgi
-	chmod a+rx pdfbox
 
 world:
 	$(MAKE) $(MFLAGS) clean
