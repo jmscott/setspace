@@ -32,7 +32,9 @@ SELECT
 my $r = $qh->fetchrow_hashref();
 unless ($r) {
 	print <<END;
- <dt class="error">PDF Blob not in Table pdfbox.pddocument</dt>
+ <dt class="error">
+   PDF Blob not in Table <code>pdfbox.pddocument</code>
+ </dt>
  <dd>$blob</dd>
 END
 	return;
