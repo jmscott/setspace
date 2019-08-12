@@ -18,7 +18,7 @@
     <h2>Extra Stuff</h2>
     <ul>
      <li><a href="/env.shtml">Apache Process Environment</a></li>
-     <li><a href="/tag-url.shtml">Tag Web Pages"</a></li>
+     <li><a href="/tag-url">Tag Web Pages"</a></li>
     </ul>
    </div>
    <!--#include virtual="/footer.shtml" -->
