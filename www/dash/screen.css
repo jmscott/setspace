@@ -123,6 +123,14 @@ h3
 	text-align:		center;
 }
 
+h4
+{
+	color:			black;
+	background-color:	white;
+	margin:			0 0 .5em;
+	text-align:		center;
+}
+
 footer
 {
 	font-size:	12px;
