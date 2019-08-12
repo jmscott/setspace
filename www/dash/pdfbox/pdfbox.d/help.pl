@@ -192,6 +192,7 @@ print <<'END';
   <dd>
    <ul>
     <li><code>perl5_re:</code> [a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}</li>
+    <li><code>required:</code> yes</li>
    </ul>
   </dd>
   </dl>
@@ -206,6 +207,7 @@ print <<'END';
   <dd>
    <ul>
     <li><code>perl5_re:</code> [a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}</li>
+    <li><code>required:</code> yes</li>
    </ul>
   </dd>
   </dl>
@@ -220,6 +222,22 @@ print <<'END';
   <dd>
    <ul>
     <li><code>perl5_re:</code> [a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}</li>
+    <li><code>required:</code> yes</li>
+   </ul>
+  </dd>
+  </dl>
+</div>
+     </dd>
+     <dt>text.objdesc</dt>
+     <dd>
+<div class="query-args">
+ <h4>Query Args</h4>
+ <dl>
+  <dt>name</dt>
+  <dd>
+   <ul>
+    <li><code>perl5_re:</code> ^[a-z][a-z0-9_]{0,64}</li>
+    <li><code>required:</code> yes</li>
    </ul>
   </dd>
   </dl>

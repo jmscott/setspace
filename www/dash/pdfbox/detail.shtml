@@ -28,9 +28,12 @@
         title="class in pdfbox.pdmodel"
       ><code>pdfbox.pdmodel.PDDocument</code></a>
     </h3>
+    <h4><!--#include virtual=
+        "/cgi-bin/pdfbox?out=text.objdesc&name=pddocument"
+      --></h4>
 
     <!--#include virtual=
-      "/cgi-bin/pdfbox?out=dl.pddoc&id=pddoc&class=raw&${QUERY_STRING}"
+      "/cgi-bin/pdfbox?out=dl.pddoc&class=raw&${QUERY_STRING}"
     -->
 
     <h3>
@@ -39,9 +42,12 @@
         title="class in pdfbox.pdmodel"
       ><code>pdfbox.pdmodel.PDDocumentInformation</code></a>
     </h3>
+    <h4><!--#include virtual=
+        "/cgi-bin/pdfbox?out=text.objdesc&name=pddocument_information"
+      --></h4>
 
     <!--#include virtual=
-      "/cgi-bin/pdfbox?out=dl.pdinfo&id=pddoc&class=raw&${QUERY_STRING}"
+      "/cgi-bin/pdfbox?out=dl.pdinfo&class=raw&${QUERY_STRING}"
     -->
    </div>
    <!--#include virtual="/footer.shtml" -->

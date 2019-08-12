@@ -37,6 +37,7 @@ install: all
 		pdfbox.d/select.qtype.pl				\
 		pdfbox.d/span.nav.pl					\
 		pdfbox.d/table.pl					\
+		pdfbox.d/text.objdesc.pl				\
 		$(WWW_PREFIX)/lib/pdfbox.d
 	install								\
 		detail.shtml						\
