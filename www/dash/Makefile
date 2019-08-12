@@ -83,6 +83,8 @@ world:
 	$(MAKE) $(MFLAGS) distclean
 	$(MAKE) $(MFLAGS) install
 
+#  Make various links for development environment where httpd
+#  read directly from this source directory.
 dev:
 	test -d cgi-bin || mkdir cgi-bin
 	test -L etc || ln -s . etc
@@ -97,8 +99,8 @@ dev:
 
 	test -e lib/tag-url.cgi || ln -s ../tag-url/tag-url.cgi lib/tag-url.cgi
 	test -e lib/tag-url.d || ln -s ../tag-url/tag-url.d lib/tag-url.d
-	test -e lib/tag-url.js || ln -s ../tag-url.js lib/tag-url.js
-	test -e cgi-bin/tag-url || ln -s ../tag-url cgi-bin/tag-url
+	test -e cgi-bin/tag-url || ln -s ../tag-url/tag-url cgi-bin/tag-url
+	test -e lib/tag-url.js || ln -s ../tag-url/tag-url.js lib/tag-url.js
 
 clean-dev dev-clean:
 	rm -rf cgi-bin etc htdocs icon lib passwd
