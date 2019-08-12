@@ -134,6 +134,15 @@
     </query-args>
    </putter>
 
+   <putter name="dl.pdinfo">
+    <query-args>
+     <arg
+     	name="blob"
+	perl5_re="[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}"
+     />
+    </query-args>
+   </putter>
+
   </out>
  </GET>
 

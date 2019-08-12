@@ -28,6 +28,7 @@ install: all
 	install								\
 		pdfbox.d/common.pl					\
 		pdfbox.d/dl.pddoc.pl					\
+		pdfbox.d/dl.pdinfo.pl					\
 		pdfbox.d/dl.pl						\
 		pdfbox.d/help.pl					\
 		pdfbox.d/input.pl					\
