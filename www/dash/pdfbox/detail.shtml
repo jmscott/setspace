@@ -22,29 +22,29 @@
      -->
     </h3>
 
-    <h3>
+    <h3><!--#include virtual=
+        "/cgi-bin/pdfbox?out=text.objdesc&name=pddocument"
+      --></h3>
+    <h4>
       <a
         href="https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/pdmodel/PDDocument.html"
         title="class in pdfbox.pdmodel"
       ><code>pdfbox.pdmodel.PDDocument</code></a>
-    </h3>
-    <h4><!--#include virtual=
-        "/cgi-bin/pdfbox?out=text.objdesc&name=pddocument"
-      --></h4>
+    </h4>
 
     <!--#include virtual=
       "/cgi-bin/pdfbox?out=dl.pddoc&class=raw&${QUERY_STRING}"
     -->
 
-    <h3>
+    <h3><!--#include virtual=
+        "/cgi-bin/pdfbox?out=text.objdesc&name=pddocument_information"
+      --></h3>
+    <h4>
       <a
         href="https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/pdmodel/PDDocumentInformation.html"
         title="class in pdfbox.pdmodel"
       ><code>pdfbox.pdmodel.PDDocumentInformation</code></a>
-    </h3>
-    <h4><!--#include virtual=
-        "/cgi-bin/pdfbox?out=text.objdesc&name=pddocument_information"
-      --></h4>
+    </h4>
 
     <!--#include virtual=
       "/cgi-bin/pdfbox?out=dl.pdinfo&class=raw&${QUERY_STRING}"
