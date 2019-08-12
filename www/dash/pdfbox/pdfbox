@@ -42,7 +42,7 @@ $CGI{GET}->{out}->{'query-args'}->{arg}->{class} = {
 #  'out' query argument must match one of the out putter names.
 #
 $CGI{GET}->{out}->{'query-args'}->{arg}->{out} = {
-	perl5_re	=> 	'table|dl|(?:span[.]nav)|(?:select[.]qtype)|input|(?:mime[.]pdf)|(?:dl[.]pddoc)|(?:dl[.]pdinfo)|(?:text[.]objdesc)|help',
+	perl5_re	=> 	'table|dl|(?:span[.]nav)|(?:select[.]qtype)|input|(?:mime[.]pdf)|(?:dl[.]pddoc)|(?:dl[.]pdinfo)|(?:dl[.]extpg)|(?:text[.]objdesc)|help',
 	default		=>	'help',
 };
 #
@@ -241,6 +241,26 @@ $CGI{GET}->{out}->{putter}->{'dl.pdinfo'}->{'query-args'}->{arg}->{blob} = {
 
 #
 #  END: /cgi/GET/out/putter[@name='dl.pdinfo']
+#
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name='dl.extpg']
+#
+$CGI{GET}->{out}->{putter}->{'dl.extpg'}->{name} = 'dl.extpg';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=dl.extpg]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'dl.extpg'}->{'query-args'}->{arg}->{blob} = {
+	perl5_re	=>	'[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}',
+	required	=>	'yes',
+};
+#
+#  END: /cgi/GET/out/putter[@name=dl.extpg]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='dl.extpg']
 #
 
 #

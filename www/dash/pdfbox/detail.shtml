@@ -8,6 +8,12 @@
     rel="stylesheet"
     type="text/css"
   />
+  <style>
+  #extpg
+  {
+  	font-size:	smaller;
+  }
+  </style>
  </head>
 
  <body>
@@ -49,6 +55,12 @@
     <!--#include virtual=
       "/cgi-bin/pdfbox?out=dl.pdinfo&class=raw&${QUERY_STRING}"
     -->
+
+    <h3>Extracted UTF Pages</h3>
+    <!--#include virtual=
+      "/cgi-bin/pdfbox?out=dl.extpg&id=extpg&class=raw&${QUERY_STRING}"
+    -->
+
    </div>
    <!--#include virtual="/footer.shtml" -->
   </div>
