@@ -17,7 +17,7 @@
    <div id="content">
     <h2>SQL Schemas</h2>
     <ul>
-     <li><a href="pdfbox/pdfbox.shtml">PDF Box from Apache</a></li>
+     <li><a href="pdfbox">PDF Box from Apache</a></li>
      <li>
       JSON Checker from
       <a href="https://json.org">json.org</a></li>

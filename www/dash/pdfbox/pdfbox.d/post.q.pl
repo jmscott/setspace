@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Submit a full-tect search query.
+#	Redirect a full text search to pdfbox/index page seeded with query.
 #
 our %POST_VAR;
 
@@ -9,6 +9,6 @@ my $qtype = $POST_VAR{qtype};
 
 print <<END;
 Status: 302
-Location: /pdfbox.shtml?q=$q&qtype=$qtype
+Location: /pdfbox/index.shtml?q=$q&qtype=$qtype
 
 END

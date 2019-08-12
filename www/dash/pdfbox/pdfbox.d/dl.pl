@@ -85,7 +85,7 @@ END
      $discover_elapsed,
      <a
        class="detail"
-       href="pdf-detail.shtml?blob=$blob"
+       href="/pdfbox/detail.shtml?blob=$blob"
        title="$blob"
      >Detail</a>
    </span>

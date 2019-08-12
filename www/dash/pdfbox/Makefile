@@ -38,7 +38,8 @@ install: all
 		pdfbox.d/table.pl					\
 		$(WWW_PREFIX)/lib/pdfbox.d
 	install								\
-		pdfbox.shtml						\
+		detail.shtml						\
+		index.shtml						\
 		$(WWW_PREFIX)/htdocs/pdfbox
 	test -L $(WWW_PREFIX)/lib/pdfbox.cgi				||\
 		install pdfbox.cgi $(WWW_PREFIX)/lib
