@@ -93,7 +93,7 @@ $q = encode_url_query_arg($q);
 if ($offset >= $limit) {
 	$arrow_off = $offset - $limit;
 	print <<END;
-<a href="/pdfbox.shtml?q=$q&offset=$arrow_off&qtype=$qtype">◀</a>
+<a href="/pdfbox/index.shtml?q=$q&offset=$arrow_off&qtype=$qtype">◀</a>
 END
 }
 
@@ -110,7 +110,7 @@ END
 
 $arrow_off = $offset + $limit;
 print <<END if $arrow_off < $pdf_count;
-<a href="/pdfbox.shtml?q=$q&offset=$arrow_off&qtype=$qtype">▶</a>
+<a href="/pdfbox/index.shtml?q=$q&offset=$arrow_off&qtype=$qtype">▶</a>
 END
 
 1 while $pdf_count =~ s/^(\d+)(\d{3})/$1,$2/;
