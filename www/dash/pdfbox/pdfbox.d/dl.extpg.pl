@@ -33,7 +33,7 @@ SELECT
 	  	pt.pdf_blob = ep.pdf_blob
 		AND
 		pt.page_number = ep.page_number
-	)
+	  )
   WHERE
   	ep.pdf_blob = $1
   ORDER BY
