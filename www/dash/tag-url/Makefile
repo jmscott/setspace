@@ -40,18 +40,20 @@ install: all
 		tag-url.d/textarea.pl					\
 		$(WWW_PREFIX)/lib/tag-url.d
 	install								\
-		tag-url.shtml						\
+		index.shtml						\
 		$(WWW_PREFIX)/htdocs/tag-url
 	test -L $(WWW_PREFIX)/lib/tag-url.cgi				||\
-		install tag-url.cgi $(WWW_PREFIX)/lib
+		install							\
+		tag-url.cgi						\
+		tag-url.js						\
+		$(WWW_PREFIX)/lib
 
 distclean:
+	#  on zap copied versions
 	test -L $(WWW_PREFIX)/cgi-bin/tag-url				||\
 		rm -f $(WWW_PREFIX)/cgi-bin/tag-url
 	test -L $(WWW_PREFIX)/lib/tag-url.d 				||\
 		rm -rf $(WWW_PREFIX)/lib/tag-url.d
-	test -L $(WWW_PREFIX)/lib/tag-url.cgi 				||\
-		rm -f $(WWW_PREFIX)/lib/tag-url.cgi
 
 tag-url: tag-url.cgi
 	cgi2perl5 --source-path tag-url.cgi

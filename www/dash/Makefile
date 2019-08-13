@@ -13,13 +13,13 @@ include ../../jmscott.mk
 include ../../setspace.mk
 include dash.mk
 
-CGIBINs=tag-url
 
-all: $(CGIBINs)
+all:
 	cd pdfbox && $(MAKE) $(MFLAGS) all
+	cd tag-url && $(MAKE) $(MFLAGS) all
 clean:
 	cd pdfbox && $(MAKE) $(MFLAGS) clean
-	rm -f $(CGIBINs) tag-url.d/help.pl
+	cd tag-url && $(MAKE) $(MFLAGS) clean
 
 install: all
 
@@ -27,10 +27,7 @@ install: all
 	install -d $(WWW_PREFIX)/lib
 	install -d $(WWW_PREFIX)/cgi-bin
 	install -d $(WWW_PREFIX)/htdocs
-	install -d $(WWW_PREFIX)/lib/tag-url.d
 
-	install tag-url.js $(WWW_PREFIX)/lib
-	install -m u=rwx,g=rx,o= $(CGIBINs) $(WWW_PREFIX)/cgi-bin
 	install 							\
 		env.shtml						\
 		extra.shtml						\
@@ -40,23 +37,8 @@ install: all
 		navigation.shtml					\
 		screen.css						\
 		sql-schema.shtml					\
-		tag-url.shtml						\
 		template.shtml						\
 		$(WWW_PREFIX)/htdocs
-	install								\
-		tag-url.d/a.pl						\
-		tag-url.d/click.pl					\
-		tag-url.d/common.pl					\
-		tag-url.d/div.err.pl					\
-		tag-url.d/div.nav.pl					\
-		tag-url.d/dl.pl						\
-		tag-url.d/help.pl					\
-		tag-url.d/save.pl					\
-		tag-url.d/select.host.pl				\
-		tag-url.d/select.rppg.pl				\
-		tag-url.d/table.pl					\
-		tag-url.d/textarea.pl					\
-		$(WWW_PREFIX)/lib/tag-url.d
 
 	#  set up symbolic links to $(JMSCOTT_ROOT) tools
 	test -e $(WWW_PREFIX)/cgi-bin/jmscott				||\
@@ -64,18 +46,16 @@ install: all
 	test -e $(WWW_PREFIX)/lib/jmscott				||\
 		ln -s $(JMSCOTT_ROOT)/www/lib $(WWW_PREFIX)/lib/jmscott
 	cd pdfbox && $(MAKE) $(MFLAGS) install
+	cd tag-url && $(MAKE) $(MFLAGS) install
 
 distclean:
 	cd pdfbox && $(MAKE) $(MFLAGS) distclean
+	cd tag-url && $(MAKE) $(MFLAGS) distclean
 	test -L $(WWW_PREFIX)/htdocs					|| (\
 		rm -rf $(WWW_PREFIX)/lib				&&\
 		rm -rf $(WWW_PREFIX)/cgi-bin				&&\
 		rm -rf $(WWW_PREFIX)/htdocs				\
 	)
-
-tag-url: tag-url.cgi
-	cgi2perl5 --source-path tag-url.cgi
-	chmod a+rx tag-url
 
 world:
 	$(MAKE) $(MFLAGS) clean
