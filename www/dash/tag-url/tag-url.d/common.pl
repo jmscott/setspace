@@ -36,16 +36,20 @@ sub utf82json_string
 
 sub env2json()
 {
-	my $json = '{';
+	my $tab_indent = $_[0];
+
+	my $tab1 = "\t" x $_[0];
+	my $tab2 = $tab1 . "\t";
+
+	my $json = "{\n";
+
 	for (sort keys %ENV) {
 		my $e = utf82json_string($_);
 		my $v = utf82json_string($ENV{$_});
-		$json .=<<END;
-		$e: $v,
-END
+		$json .= "$tab2$e: $v,\n";
 	}
 	$json =~ s/,$//;
-	return $json . '}';
+	return $json . "$tab1}";
 }
 
 #
