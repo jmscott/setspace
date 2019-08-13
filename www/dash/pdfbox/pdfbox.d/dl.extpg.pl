@@ -24,7 +24,6 @@ my $qh = dbi_pg_select(
 			],
 	sql =>		q(
 SELECT
-	ep.page_blob,
 	ep.page_number,
 	pt.txt
   FROM
