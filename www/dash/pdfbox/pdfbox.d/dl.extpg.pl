@@ -4,6 +4,9 @@
 #  Usage:
 #	/cgi-bin/pdfbox?out=dl.extpg&blob=bc160:46036a9c2545b...
 #
+use utf8;
+
+binmode(STDOUT, ":utf8");
 
 require 'dbi-pg.pl';
 
