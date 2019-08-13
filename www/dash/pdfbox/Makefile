@@ -42,6 +42,7 @@ install: all
 		$(WWW_PREFIX)/lib/pdfbox.d
 	install								\
 		detail.shtml						\
+		detail-tsv.shtml					\
 		index.shtml						\
 		$(WWW_PREFIX)/htdocs/pdfbox
 	test -L $(WWW_PREFIX)/lib/pdfbox.cgi				||\

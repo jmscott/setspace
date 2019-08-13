@@ -56,7 +56,16 @@
       "/cgi-bin/pdfbox?out=dl.pdinfo&class=raw&${QUERY_STRING}"
     -->
 
-    <h3>Extracted UTF Pages</h3>
+    <h3>
+      <!--#include virtual=
+        "/cgi-bin/pdfbox?out=text.objdesc&name=extract_pages_utf8"
+      -->
+    </h3>
+    <h3>
+      <!--#include virtual=
+        "/cgi-bin/pdfbox?out=text.objdesc&name=page_text_utf8"
+      -->
+    </h3>
     <!--#include virtual=
       "/cgi-bin/pdfbox?out=dl.extpg&id=extpg&class=raw&${QUERY_STRING}"
     -->

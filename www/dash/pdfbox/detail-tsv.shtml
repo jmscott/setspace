@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>PDF Text Search Vector Detail @SetSpace</title>
+  <meta charset="UTF-8" />
+  <link
+    href="/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <style>
+  #extpg
+  {
+  	font-size:	smaller;
+  }
+  </style>
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/navigation.shtml" -->
+   <div id="content">
+    <h2>PDF Text Search Vector Details</h2>
+    <h3>
+     <!--#include
+       virtual="/cgi-bin/jmscott/env?out=text&qarg=blob&${QUERY_STRING}"
+     -->
+    </h3>
+
+    <h3>
+     <!--#include virtual=
+        "/cgi-bin/pdfbox?out=text.objdesc&name=extract_pages_utf8"
+      -->
+    </h3>
+    <h3>
+     <!--#include virtual=
+        "/cgi-bin/pdfbox?out=text.objdesc&name=page_tsv_utf8"
+      -->
+    </h3>
+
+    <!--#include virtual=
+      "/cgi-bin/pdfbox?out=table.exttsv&${QUERY_STRING}"
+    -->
+
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

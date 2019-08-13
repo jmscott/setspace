@@ -22,7 +22,7 @@ our %QUERY_ARG;
 my $q = $QUERY_ARG{q};
 
 print <<END;
-<table $QUERY_ARG{id_att}$QUERY_ARG{class_att}>
+<table$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
  <thead>
 END
 
