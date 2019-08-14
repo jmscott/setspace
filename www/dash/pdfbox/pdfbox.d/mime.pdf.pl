@@ -10,6 +10,9 @@ our %QUERY_ARG;
 my $udig = $QUERY_ARG{udig};
 
 my $status = system("blobio get --service $ENV{BLOBIO_SERVICE} --udig $udig");
-print STDERR "pdfbox.d/blob: system($udig): exit status=$status\n";
+
+print STDERR "pdfbox.d/blob: blobio get $udig: exit status=$status\n"
+	unless $status == 0
+;
 
 1;
