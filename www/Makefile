@@ -7,6 +7,11 @@ include ../setspace.mk
 
 WWW_ROOT=$(SETSPACE_PREFIX)/www
 
+all:
+ifdef DASH_DNS_VHOST_SUFFIX
+	cd dash && make all
+endif
+
 install:
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		-d $(SETSPACE_PREFIX)
@@ -42,11 +47,24 @@ install:
 		apache2-vhost.conf.example				\
 		apache2-passwd.example					\
 		$(WWW_ROOT)/lib
+ifdef DASH_DNS_VHOST_SUFFIX
+	cd dash && make install
+endif
 
 distclean:
+ifdef DASH_DNS_VHOST_SUFFIX
+	cd dash && make distclean
+endif
 	rm -rf $(WWW_ROOT)/htdocs
 	rm -rf $(WWW_ROOT)/lib
 
+clean:
+ifdef DASH_DNS_VHOST_SUFFIX
+	cd dash && make clean
+endif
+
 world:
+	$(MAKE) $(MFLAGS) clean
+	$(MAKE) $(MFLAGS) all
 	$(MAKE) $(MFLAGS) distclean
 	$(MAKE) $(MFLAGS) install

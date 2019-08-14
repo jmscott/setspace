@@ -13,6 +13,9 @@ include ../../jmscott.mk
 include ../../setspace.mk
 include dash.mk
 
+ifndef DASH_DNS_VHOST_SUFFIX
+$(error DASH_DNS_VHOST_SUFFIX is not set)
+endif
 
 all:
 	cd pdfbox && $(MAKE) $(MFLAGS) all
