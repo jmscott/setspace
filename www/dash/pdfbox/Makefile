@@ -37,6 +37,7 @@ install: all
 		pdfbox.d/post.q.pl					\
 		pdfbox.d/select.qtype.pl				\
 		pdfbox.d/span.nav.pl					\
+		pdfbox.d/table.exttsv.pl				\
 		pdfbox.d/table.pl					\
 		pdfbox.d/text.objdesc.pl				\
 		$(WWW_PREFIX)/lib/pdfbox.d
