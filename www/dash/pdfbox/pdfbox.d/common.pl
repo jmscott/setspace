@@ -631,4 +631,45 @@ sub websearch_select
 	);
 }
 
+sub blob_sql
+{
+	return q(
+SELECT
+	pdf.blob,
+	pdf.number_of_pages,
+	CASE
+	  WHEN
+	  	myt.title ~ '[[:graph:]]'
+	  THEN
+	  	myt.title
+	  ELSE
+		pi.title
+	END AS title,
+	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
+		AS discover_elapsed
+  FROM
+  	pdfbox.pddocument pdf JOIN setcore.service s ON (s.blob = pdf.blob)
+	  LEFT OUTER JOIN mycore.title myt ON (myt.blob = pdf.blob)
+	  LEFT OUTER JOIN pdfbox.pddocument_information pi ON (
+	  	pi.blob = pdf.blob
+	  )
+  WHERE
+  	pdf.blob = $1
+);}
+
+sub blob_select
+{
+	my $blob = $QUERY_ARG{q};
+	$blob =~ s/\s*//g;
+
+	return dbi_pg_select(
+		db =>	dbi_pg_connect(),
+		tag =>	'select-pdfbox-web',
+		argv =>	[
+			$blob
+		],
+		sql =>	blob_sql()
+	);
+}
+
 1;

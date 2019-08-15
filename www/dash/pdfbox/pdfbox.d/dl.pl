@@ -22,7 +22,17 @@ print <<END;
 END
 
 my $qh;
-if ($QUERY_ARG{q} =~ m/[[:graph:]]/) {
+
+#  replace with ENV var BLOBIO_KNOWN_ALGORITHMS
+
+my $q = $QUERY_ARG{q};
+
+#  either find a particular pdf, do a full text search or get most
+#  recent pdf files.
+
+if ($q =~ m/^\s*[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}\s*$/) {	#  find blob
+	$qh = blob_select();
+} elsif ($q =~ m/[[:graph:]]/) {				#  text query
 	my $qtype = $QUERY_ARG{qtype};
 
 	if ($qtype eq 'phrase') {
