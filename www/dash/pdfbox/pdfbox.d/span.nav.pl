@@ -85,7 +85,7 @@ if ($pdf_count == 0) {
 	print <<END;
 No Documents Matched</span>
 END
-	return 0;
+	return 1;
 }
 
 my $arrow_off;
