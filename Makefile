@@ -4,6 +4,8 @@
 #  See:
 #	local-linux.mk.example
 #	local-darwin.mk.example
+#  Note:
+#	DASH_DNS_VHOST_SUFFIX need to be replaced with MAKE_WWW.
 #
 include local.mk
 include setspace.mk
@@ -27,10 +29,16 @@ PROG=					\
 
 all: $(PROG) $(CGI) 
 	cd schema && $(MAKE) all
+ifdef DASH_DNS_VHOST_SUFFIX
+	cd www && make all
+endif
 
 clean:
 	rm -f $(PROG) $(CGI) spin-wait-blob.c
 	cd schema && $(MAKE) clean
+ifdef DASH_DNS_VHOST_SUFFIX
+	cd www && make clean
+endif
 
 install: all
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
@@ -114,6 +122,9 @@ install: all
 		tas-run-unlock.c					\
 		$(SETSPACE_PREFIX)/src
 	cd schema && $(MAKE) install
+ifdef DASH_DNS_VHOST_SUFFIX
+	cd www && make install
+endif
 
 append-brr: append-brr.c common.c
 	cc $(CFLAGS) -o append-brr append-brr.c
@@ -153,6 +164,9 @@ spin-wait-blob:								\
 
 distclean:
 	cd schema && $(MAKE) distclean
+ifdef DASH_DNS_VHOST_SUFFIX
+	cd www && make distclean
+endif
 	rm -rf $(SETSPACE_PREFIX)/bin
 	rm -rf $(SETSPACE_PREFIX)/sbin
 	rm -rf $(SETSPACE_PREFIX)/lib
