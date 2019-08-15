@@ -48,6 +48,12 @@ install: all
 		ln -s $(JMSCOTT_ROOT)/www/cgi-bin $(WWW_PREFIX)/cgi-bin/jmscott
 	test -e $(WWW_PREFIX)/lib/jmscott				||\
 		ln -s $(JMSCOTT_ROOT)/www/lib $(WWW_PREFIX)/lib/jmscott
+
+	#  set symbolic link to $(SETSPACE_ROOT)/www/htdocs/icon
+	test -e $(WWW_PREFIX)/htdocs/icon				||\
+		ln -s $(SETSPACE_PREFIX)/www/htdocs/icon		\
+		      $(WWW_PREFIX)/htdocs/icon
+
 	cd pdfbox && $(MAKE) $(MFLAGS) install
 	cd tag-url && $(MAKE) $(MFLAGS) install
 
