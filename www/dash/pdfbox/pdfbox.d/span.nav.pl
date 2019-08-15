@@ -25,7 +25,22 @@ my $qtype = $QUERY_ARG{qtype};
 my ($sql, $argv);
 my $limit = 10;
 
-if ($q =~ /[[:graph:]]/) {
+if ($q =~ m/^\s*[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}\s*$/) {
+	my $blob = $q;
+	$blob =~ s/\s*//g;
+	$argv = [
+		$blob
+	];
+	$sql = q(
+SELECT
+	1 AS pdf_count,
+	sum(pd.number_of_pages) AS pdf_page_count
+  FROM
+  	pdfbox.pddocument pd
+  WHERE
+  	pd.blob = $1
+;);
+} elsif ($q =~ m/[[:graph:]]/) {
 	$argv = [
 		$q,
 		'english'
@@ -39,6 +54,8 @@ if ($q =~ /[[:graph:]]/) {
 	} elsif ($qtype eq 'key') {
 		$to_tsquery = 'plainto_tsquery';
 	}
+
+	#  Note:  why not use q()?
 	$sql =<<END;
 SELECT
 	count(DISTINCT tsv.pdf_blob) AS pdf_count,
@@ -60,7 +77,6 @@ SELECT
 	sum(pd.number_of_pages) AS pdf_page_count
   FROM
   	pdfbox.pddocument pd
-	  JOIN setcore.byte_count bc ON (bc.blob = pd.blob)
 ;);
 }
 
@@ -84,6 +100,16 @@ END
 if ($pdf_count == 0) {
 	print <<END;
 No Documents Matched</span>
+END
+	return 1;
+} elsif ($pdf_count <= $limit) {
+	my $plural = 's';
+	my $page_plural = 's';
+	$plural = '' if $pdf_count == 1;
+	$page_plural = '' if $pdf_page_count == 1;
+
+	print <<END;
+$pdf_count doc$plural matched and $pdf_page_count page$page_plural total
 END
 	return 1;
 }
