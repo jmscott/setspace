@@ -54,10 +54,14 @@ SELECT EXISTS (
     FROM
 	jsonorg.jsonb_255 j
     WHERE
-    	j.blob = $1::udig
+    	j.blob = $1
 	AND
-	j.doc @> '{"schema.setspace.com" : "mycore.schema.setspace.com"}'
-)
+        doc @> '{
+                "setspace.com": {
+                        "schema.setspace.com":"mycore.schema.setspace.com"
+                }
+        }'
+);
 	`;
 	result row is (
 		exists bool
@@ -98,10 +102,14 @@ SELECT EXISTS (
     FROM
 	jsonorg.jsonb_255 j
     WHERE
-    	j.blob = $1::udig
+    	j.blob = $1
 	AND
-	j.doc @> '{"schema.setspace.com" : "mydash.schema.setspace.com"}'
-)
+        doc @> '{
+                "setspace.com": {
+                        "schema.setspace.com":"mydash.schema.setspace.com"
+                }
+        }'
+);
 	`;
 	result row is (
 		exists bool
