@@ -24,6 +24,7 @@ install:
 	install -g $(PREFIXIO_GROUP) -o $(PREFIXIO_USER) -m a=r	\
 		prefixio.flow.example					\
 		profile.example						\
+		setspace.schema.prefixio.flowd.plist.example		\
 		$(PREFIXIO_PREFIX)/lib
 
 frisk:

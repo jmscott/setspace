@@ -66,6 +66,7 @@ install: all
 		profile.example						\
 		psqlrc.example						\
 		schema.sql						\
+		setspace.schema.libxml2.flowd.plist.example		\
 		rummy.sql						\
 		$(LIBXML2_PREFIX)/lib
 	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m a=r		\

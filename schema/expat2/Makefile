@@ -44,6 +44,7 @@ install:
 		expat2.flow.example					\
 		profile.example						\
 		schema.sql						\
+		setspace.schema.expat2.flowd.plist.example		\
 		$(EXPAT2_PREFIX)/lib
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m a=r		\
 		merge-stdin-xmlwf_utf8.pgc				\

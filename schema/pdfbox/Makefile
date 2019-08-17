@@ -98,6 +98,7 @@ install: all
 		rummy.sql						\
 		schema.sql						\
 		schema-default.sql					\
+		setspace.schema.pdfbox.flowd.plist.example		\
 		$(PDFBOX_PREFIX)/lib
 
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m u=rx		\

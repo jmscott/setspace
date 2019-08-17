@@ -60,6 +60,7 @@ ifdef SETCORE_PREFIX
 		rummy.sql						\
 		schema.sql						\
 		setcore.flow.example					\
+		setspace.schema.setcore.flowd.plist.example		\
 		$(SETCORE_ROOT)/lib
 
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)		\

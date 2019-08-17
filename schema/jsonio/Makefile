@@ -25,6 +25,7 @@ install:
 		jsonio.flow.example					\
 		profile.example						\
 		psqlrc.example						\
+		setspace.schema.jsonio.flowd.plist.example		\
 		$(JSONIO_PREFIX)/lib
 
 frisk ff:
