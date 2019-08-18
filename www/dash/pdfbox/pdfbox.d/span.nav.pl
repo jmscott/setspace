@@ -109,7 +109,7 @@ END
 	$page_plural = '' if $pdf_page_count == 1;
 
 	print <<END;
-$pdf_count doc$plural matched and $pdf_page_count page$page_plural total
+$pdf_count doc$plural and $pdf_page_count page$page_plural matched
 END
 	return 1;
 }
@@ -139,10 +139,12 @@ print <<END if $arrow_off < $pdf_count;
 <a href="/pdfbox/index.shtml?q=$q&offset=$arrow_off&qtype=$qtype">▶</a>
 END
 
+#  add commas to numbers to render human readable
 1 while $pdf_count =~ s/^(\d+)(\d{3})/$1,$2/;
 1 while $pdf_page_count =~ s/^(\d+)(\d{3})/$1,$2/;
+
 print <<END;
-matched $pdf_count docs and $pdf_page_count pages total
+of $pdf_count docs and $pdf_page_count pages matched
 </span>
 END
 
