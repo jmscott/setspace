@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>SetCore Schema</title>
+  <meta charset="UTF-8" />
+  <link
+    href="/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <style> /* <![CDATA[ */
+  #content h3
+  {
+  	text-align:		left;
+  }
+  #content dl
+  {
+  	margin-left:		2em;
+  }
+  /*]]>*/ </style>
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/setcore/nav.shtml" -->
+   <div id="content">
+    <h2>SQL Objects in Schema <code>setcore</code></h2>
+
+    <h3>Tables</h3>
+    <dl>
+     <dt>service</dt>
+     <dd>All Blobs Verified to Exist in Blobio Service</dd>
+
+     <dt>byte_count</dt>
+     <dd>How Many Bytes are in the Blob</dd>
+
+     <dt>is_utf8</dt>
+     <dd>Is the Blob Entirely Well Formed UTF8 Encoded Bytes</dd>
+
+     <dt>byte_bitmap</dt>
+     <dd>A Bitmap of Existing Bytes in the Blob</dd>
+
+     <dt>byte_prefix_32</dt>
+     <dd>First 32 Bytes in a Blob</dd>
+
+     <dt>byte_suffix_32</dt>
+     <dd>Final 32 Bytes in a Blob</dd>
+
+    </dl>
+
+    <h3>Domains</h3>
+    <dl>
+     <dt>unix_process_exit_status</dt>
+     <dd>Exit status of Unix process</dd>
+    </dl>
+
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

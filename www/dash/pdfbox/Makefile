@@ -22,8 +22,8 @@ install: all
 	install -d $(WWW_PREFIX)/lib/pdfbox.d
 	install -d $(WWW_PREFIX)/htdocs/pdfbox
 	install -d $(WWW_PREFIX)/cgi-bin
-	test -L $(WWW_PREFIX)/cgi-bin/pdfbox				||\
-		install pdfbox $(WWW_PREFIX)/cgi-bin
+	test -L $(WWW_PREFIX)/cgi-bin/pdfbox && exit 0
+	install pdfbox $(WWW_PREFIX)/cgi-bin
 
 	install								\
 		pdfbox.d/common.pl					\

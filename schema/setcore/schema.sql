@@ -73,7 +73,7 @@ CREATE TABLE is_utf8wf
 				NOT NULL
 );
 COMMENT ON TABLE is_utf8wf IS
-	'How Many Bytes (Octets) are in the Blob'
+	'Is the Blob Entirely Well Formed UTF8 Encoded Bytes'
 ;
 CREATE INDEX is_utf8wf_blob ON is_utf8wf USING hash(blob);
 
@@ -114,7 +114,7 @@ CREATE TABLE byte_prefix_32
 				NOT NULL
 );
 COMMENT ON TABLE byte_prefix_32 IS
-	'First 32 bytes in a Blob'
+	'First 32 Bytes in a Blob'
 ;
 CREATE INDEX byte_prefix_32_blob ON byte_prefix_32 USING hash(blob);
 CREATE INDEX byte_prefix_32_prefix ON byte_prefix_32(prefix);
