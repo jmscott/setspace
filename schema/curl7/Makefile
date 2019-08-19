@@ -34,3 +34,4 @@ install:
 distclean:
 	rm -rf $(CURL7_PREFIX)/lib
 	rm -rf $(CURL7_PREFIX)/cgi-bin
+clean:

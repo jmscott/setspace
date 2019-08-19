@@ -6,6 +6,7 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
+all:
 install:
 	install -g $(JSONIO_GROUP) -o $(JSONIO_USER) 		\
 				-d $(JSONIO_PREFIX)
@@ -27,6 +28,7 @@ install:
 		psqlrc.example						\
 		setspace.schema.jsonio.flowd.plist.example		\
 		$(JSONIO_PREFIX)/lib
+clean:
 
 frisk ff:
 	flowd frisk jsonio.flow.example
@@ -35,5 +37,7 @@ distclean:
 	rm -rf $(JSONIO_PREFIX)/lib
 
 world:
+	$(MAKE) $(MFLAGS) clean
+	$(MAKE) $(MFLAGS) all
 	$(MAKE) $(MFLAGS) distclean
 	$(MAKE) $(MFLAGS) install

@@ -12,6 +12,8 @@ MYDASH_USER?=$(SETSPACE_USER)
 MYDASH_GROUP?=$(SETSPACE_GROUP)
 MYDASH_PREFIX?=$(SETSPACE_PREFIX)/schema/mydash
 
+all:
+
 install:
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -d $(MYDASH_PREFIX)
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
@@ -37,10 +39,12 @@ install:
 
 distclean:
 	rm -rf $(MYDASH_PREFIX)/lib
+clean:
 
 world:
 	$(MAKE) $(MAKEFLAGS) distclean
 	$(MAKE) $(MAKEFLAGS) install
+clean:
 
 frisk:
 	flowd frisk mydash.flow.example

@@ -6,6 +6,8 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
+all:
+clean:
 install:
 	install -g $(PREFIXIO_GROUP) -o $(PREFIXIO_USER) 		\
 				-d $(PREFIXIO_PREFIX)
