@@ -41,3 +41,9 @@ distclean:
 world:
 	$(MAKE) $(MAKEFLAGS) distclean
 	$(MAKE) $(MAKEFLAGS) install
+
+frisk:
+	flowd frisk mydash.flow.example
+dev:
+	test -e run || ln -s . run
+	test -e log || ln -s . log
