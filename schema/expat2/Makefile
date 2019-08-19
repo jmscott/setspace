@@ -15,12 +15,7 @@ all: $(COMPILED)
 clean:
 	rm -f $(COMPILED)
 
-flatx: flatx.c
-	$(CC) -o flatx $(CFLAGS) flatx.c -lexpat
-
-install:
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-				-d $(EXPAT2_PREFIX)
+install: all
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 			\
 				-d $(EXPAT2_PREFIX)/etc
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m u=wrx,go=	\
@@ -38,6 +33,7 @@ install:
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 			\
 				-d $(EXPAT2_PREFIX)/tmp
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m u=rx,go=	\
+		merge-stdin-xmlwf_utf8					\
 		merge-xmlwf_utf8					\
 		$(EXPAT2_PREFIX)/sbin
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m a=r		\
