@@ -23,11 +23,11 @@ my $json =<<END;
 		"schema.setspace.com": "mydash.schema.setspace.com",
 		"tag-url": {
 			"url": $url,
-			"title": $title
+			"title": $title,
+			"discover-time-epoch": $unix_epoch
 		},
 		"environment": $env
-	},
-	"unix-epoch": $unix_epoch
+	}
 }
 END
 
