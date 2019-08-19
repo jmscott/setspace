@@ -2,7 +2,8 @@
 #  Synopsis:
 #	Write html <table> of pdf documents that match full text search.
 #  Usage:
-#	/cgi-bin/pdfbox?out=dl&q=neural+cryptography
+#	/cgi-bin/pdfbox?out=table&q=neural+cryptography
+#	/cgi-bin/pdfbox?out=table&q=neural+cryptography&off=10
 #  Note:
 #	httpd2.d/common.pl ought to be references as
 #
