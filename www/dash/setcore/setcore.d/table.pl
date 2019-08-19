@@ -47,9 +47,10 @@ END
 while (my $r = $qh->fetchrow_hashref()) {
 	my $blob = encode_html_entities($r->{blob});
 	my $discover_time = encode_html_entities($r->{discover_time});
-	my $byte_count = $r->{match_page_count};
-	my $byte_bitmap = encode_html_entities($r->{byte_bitmap});
-	my $is_utf8wf = $r->{is_utf8wf};
+	my $byte_count = $r->{byte_count};
+	my $bitmap = $r->{bitmap};
+	$bitmap =~ s/(........)/$1 /g;
+	my $is_utf8 = $r->{is_utf8};
 	my $prefix = encode_html_entities($r->{prefix});
 	my $suffix = encode_html_entities($r->{suffix});
 	print <<END;
@@ -57,8 +58,8 @@ while (my $r = $qh->fetchrow_hashref()) {
   <td>$discover_time</td>
   <td>$blob</td>
   <td>$byte_count</td>
-  <td>$byte_bitmap</td>
-  <td>$is_utf8wf</td>
+  <td>$bitmap</td>
+  <td>$is_utf8</td>
   <td>$prefix</td>
   <td>$suffix</td>
  </tr>

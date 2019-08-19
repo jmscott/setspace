@@ -40,12 +40,28 @@ print <<'END';
 <div class="query-args">
  <h4>Query Args</h4>
  <dl>
-  <dt>q</dt>
+  <dt>lim</dt>
   <dd>
    <ul>
-    <li><code>perl5_re:</code> .{0,255}</li>
+    <li><code>default:</code> 10</li>
+    <li><code>perl5_re:</code> [1-9][0-9]{0,3}</li>
    </ul>
   </dd>
+  <dt>offset</dt>
+  <dd>
+   <ul>
+    <li><code>default:</code> 0</li>
+    <li><code>perl5_re:</code> [+0-9]{1,10}</li>
+   </ul>
+  </dd>
+  </dl>
+</div>
+     </dd>
+     <dt>table</dt>
+     <dd>
+<div class="query-args">
+ <h4>Query Args</h4>
+ <dl>
   <dt>lim</dt>
   <dd>
    <ul>
