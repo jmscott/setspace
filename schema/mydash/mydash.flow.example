@@ -1,0 +1,153 @@
+#
+#  Synopsis:
+#	Merge blobs into tables in schema mydash, like tagged urls.
+#  Usage:
+#  	flowd server mydash.conf
+#  See:
+#  	mydash/lib/schema.sql
+#
+
+boot
+{
+	brr_capacity = 256;
+	flow_worker_count = 4;
+
+	#
+	#  No processes are invoked
+	#
+	#  Note:
+	#	Since no workers can we set to 0?
+	#
+	os_exec_worker_count = 1;
+	os_exec_capacity = 1;
+
+	xdr_roll_duration = "24h";
+	fdr_roll_duration = "24h";
+	qdr_roll_duration = "24h";
+
+	heartbeat_duration = "10s";
+}
+
+sql database setspace
+{
+	driver_name = "postgres";
+	data_source_name =
+		"fallback_application_name=mydash.flow sslmode=disable";
+	max_idle_conns = 0;
+	max_open_conns = 4;
+}
+
+tail brr
+{
+	path = "spool/jsonio.brr";
+}
+
+command lock_in_flight
+{
+	path = "tas-run-lock";
+	argv = (
+		"in-flight"
+	);
+	exit_status is OK when in {
+                0,			#  ok, lock file created
+                1			#  blob already in flight
+        };
+}
+
+command unlock_in_flight
+{
+	path = "tas-run-unlock";
+	argv = (
+		"in-flight"
+	);
+}
+
+#
+#  Is the blob a json object matching
+#
+#	{
+#		"setspace.com": {
+#			"schema.setspace.com": "mydash.schema.setspace.com"
+#		}
+#	}
+#
+
+sql query is_json_mydash row
+{
+	statement = `
+SELECT EXISTS (
+  SELECT
+	j.blob
+    FROM
+  	jsonorg.jsonb_255 j
+    WHERE
+  	j.doc @> '{
+		"setspace.com": {
+			"schema.setspace.com": "mydash.schema.setspace.com"
+		}
+	}'
+	AND
+	j.blob = $1
+);
+	`;
+
+	result row is (
+		is_mydash bool
+	);
+}
+
+query is_json_mydash(brr.udig)
+  when
+  	lock_in_flight.exit_status == 0
+;
+
+sql query is_tag_url row
+{
+	statement = `
+SELECT EXISTS (
+  SELECT
+	j.blob
+  from
+  	jsonorg.jsonb_255 j
+  where
+  	j.doc @> '{
+		"setspace.com": {
+			"tag-url":{}
+		}
+	}'
+	AND
+	j.blob = $1
+);
+	`;
+
+	result row is (
+		answer bool
+	);
+}
+
+query is_tag_url(brr.udig)
+  when
+  	is_json_mydash.is_mydash == true
+;
+
+sql query tag_url_exist row
+{
+	statement = `
+SELECT EXISTS (
+  SELECT
+	tu.blob
+  FROM
+  	mydash.tag_url tu
+  WHERE
+  	tu.blob = $1
+);
+	`;
+	result row is (
+		tag_url_exits bool
+	);
+}
+
+query tag_url_exist(brr.udig)
+  when
+  	is_tag_url.answer == true
+;
