@@ -41,7 +41,7 @@ distclean:
 	rm -rf $(WWW_PREFIX)/lib/setcore.d
 	rm -f $(WWW_PREFIX)/lib/setcore.cgi
 
-setcore: setcore.cgi
+setcore setcore.d/help.pl: setcore.cgi
 	cgi2perl5 --source-path setcore.cgi
 	chmod a+rx setcore
 
