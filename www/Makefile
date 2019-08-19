@@ -1,6 +1,8 @@
 #
 #  Synopsis:
 #	Makefile for www development environment of $(SETSPACE_ROOT)
+#  Note:
+#	Move "ifdef DASH_DNS_VHOST_SUFFIX" into dash/Makefile
 #
 include ../local.mk
 include ../setspace.mk
