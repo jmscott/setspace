@@ -3,13 +3,15 @@
  *	PostgreSQL schema for data related to a user on www dash.setspace.com
  */
 
-\set ON_ERROR_STOP
+\set ON_ERROR_STOP 1
 SET search_path to mydash,public;
-
 
 BEGIN;
 DROP SCHEMA IF EXISTS mydash CASCADE;
 CREATE SCHEMA mydash;
+COMMENT ON SCHEMA mydash IS
+  'Tables describing state of dashboard for a setspace user'
+;
 
 CREATE TABLE tag_url
 (
@@ -21,7 +23,8 @@ CREATE TABLE tag_url
 			),
 	url		text CHECK (
 				length(url) < 1024
-			)
+			),
+	discover_time	timestamp
 );
 
 COMMIT;
