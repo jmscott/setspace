@@ -102,7 +102,3 @@ distclean:
 #  frisk the flow file
 ff frisk:
 	flowd frisk drblob.flow.example
-
-dev-links:
-	test -e etc || ln -s . etc
-	test -e lib || ln -s . lib

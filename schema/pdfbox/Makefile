@@ -37,13 +37,6 @@ distclean:
 	rm -rf $(PDFBOX_PREFIX)/src
 	rm -rf $(PDFBOX_PREFIX)/sbin
 
-dev-links:
-	test -e lib || ln -s . lib
-	test -e sbin || ln -s . sbin
-	test -e log || ln -s . log
-	test -e etc || ln -s . etc
-	test -e run || ln -s . run
-
 putPDDocument.class:  putPDDocument.java
 	javac -cp $(PDFBOX_APP2_JAR) putPDDocument.java
 

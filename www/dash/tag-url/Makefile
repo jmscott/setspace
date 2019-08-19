@@ -22,8 +22,7 @@ install: all
 	install -d $(WWW_PREFIX)/lib/tag-url.d
 	install -d $(WWW_PREFIX)/htdocs/tag-url
 	install -d $(WWW_PREFIX)/cgi-bin
-	test -L $(WWW_PREFIX)/cgi-bin/tag-url				||\
-		install tag-url $(WWW_PREFIX)/cgi-bin
+	install tag-url $(WWW_PREFIX)/cgi-bin
 
 	install								\
 		tag-url.d/a.pl						\
@@ -42,18 +41,16 @@ install: all
 	install								\
 		index.shtml						\
 		$(WWW_PREFIX)/htdocs/tag-url
-	test -L $(WWW_PREFIX)/lib/tag-url.cgi				||\
-		install							\
+	install								\
 		tag-url.cgi						\
 		tag-url.js						\
 		$(WWW_PREFIX)/lib
 
 distclean:
-	#  on zap copied versions
-	test -L $(WWW_PREFIX)/cgi-bin/tag-url				||\
-		rm -f $(WWW_PREFIX)/cgi-bin/tag-url
-	test -L $(WWW_PREFIX)/lib/tag-url.d 				||\
-		rm -rf $(WWW_PREFIX)/lib/tag-url.d
+	rm -f $(WWW_PREFIX)/cgi-bin/tag-url
+	rm -rf $(WWW_PREFIX)/lib/tag-url.d
+	rm -f $(WWW_PREFIX)/lib/tag-url.cgi
+	rm -f $(WWW_PREFIX)/lib/tag-url.js
 
 tag-url: tag-url.cgi
 	cgi2perl5 --source-path tag-url.cgi

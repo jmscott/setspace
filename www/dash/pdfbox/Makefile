@@ -22,7 +22,6 @@ install: all
 	install -d $(WWW_PREFIX)/lib/pdfbox.d
 	install -d $(WWW_PREFIX)/htdocs/pdfbox
 	install -d $(WWW_PREFIX)/cgi-bin
-	test -L $(WWW_PREFIX)/cgi-bin/pdfbox && exit 0
 	install pdfbox $(WWW_PREFIX)/cgi-bin
 
 	install								\
@@ -46,16 +45,12 @@ install: all
 		detail-tsv.shtml					\
 		index.shtml						\
 		$(WWW_PREFIX)/htdocs/pdfbox
-	test -L $(WWW_PREFIX)/lib/pdfbox.cgi				||\
-		install pdfbox.cgi $(WWW_PREFIX)/lib
+	install pdfbox.cgi $(WWW_PREFIX)/lib
 
 distclean:
-	test -L $(WWW_PREFIX)/cgi-bin/pdfbox				||\
-		rm -f $(WWW_PREFIX)/cgi-bin/pdfbox
-	test -L $(WWW_PREFIX)/lib/pdfbox.d 				||\
-		rm -rf $(WWW_PREFIX)/lib/pdfbox.d
-	test -L $(WWW_PREFIX)/lib/pdfbox.cgi 				||\
-		rm -f $(WWW_PREFIX)/lib/pdfbox.cgi
+	rm -f $(WWW_PREFIX)/cgi-bin/pdfbox
+	rm -rf $(WWW_PREFIX)/lib/pdfbox.d
+	rm -f $(WWW_PREFIX)/lib/pdfbox.cgi
 
 pdfbox: pdfbox.cgi
 	cgi2perl5 --source-path pdfbox.cgi

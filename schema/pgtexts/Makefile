@@ -35,12 +35,6 @@ merge-stdin-text_utf8:							\
 			-o merge-stdin-text_utf8 -L$(PGLIB) -lecpg
 	rm merge-stdin-text_utf8.c
 
-dev-links:
-	test -e lib || ln -s . lib
-	test -e sbin || ln -s . sbin
-	test -e log || ln -s . log
-	test -e etc || ln -s . etc
-
 install: all
 	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
 		-d $(PGTEXTS_PREFIX)
