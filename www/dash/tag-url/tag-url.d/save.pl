@@ -12,6 +12,7 @@ our %QUERY_ARG;
 
 my $url = utf82json_string($QUERY_ARG{url});
 my $title = utf82json_string($QUERY_ARG{title});
+my $unix_epoch = time();
 
 select STDOUT; $| = 1;		#  flush the output
 
@@ -25,7 +26,8 @@ my $json =<<END;
 			"title": $title
 		},
 		"environment": $env
-	}
+	},
+	"unix-epoch": $unix_epoch
 }
 END
 
