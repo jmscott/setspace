@@ -1,3 +1,5 @@
 --  investigate why pdf bc160:949b8f60bc7faca24182bdc1a3c389f46c0492cb
     does not index the author name Giacomo Zuccarini in the first page.
-    
+
+--  investigate why the subject os displayed in the title for the
+    blob bc160:6f4316bd2e4d0b2d264b3b9ecf94396f2dce04d8
