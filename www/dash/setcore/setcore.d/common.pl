@@ -14,6 +14,8 @@ sub recent_sql
 SELECT
 	s.blob,
 	s.discover_time,
+	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
+		AS discover_elapsed,
 	bc.byte_count,
 	u8.is_utf8,
 	bit.bitmap,
@@ -40,6 +42,7 @@ SELECT
 #  Target List:
 #	blob,
 #	discover_time
+#	discover_elapsed
 #	byte_count
 #	is_utf8
 #	bit.bitmap

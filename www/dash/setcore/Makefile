@@ -26,6 +26,7 @@ install: all
 
 	install								\
 		setcore.d/common.pl					\
+		setcore.d/dl.pl					\
 		setcore.d/help.pl					\
 		setcore.d/span.nav.pl					\
 		setcore.d/table.pl					\
