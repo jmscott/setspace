@@ -17,6 +17,7 @@ LIBs=									\
 all:
 	cd setcore && $(MAKE) $(MFLAGS) all
 	cd jsonorg && $(MAKE) $(MFLAGS) all
+	cd expat2 && $(MAKE) $(MFLAGS) all
 	cd libxml2 && $(MAKE) $(MFLAGS) all
 	cd mycore && $(MAKE) $(MFLAGS) all
 	cd mydash && $(MAKE) $(MFLAGS) all
@@ -32,6 +33,7 @@ createdb:
 clean:
 	cd setcore && $(MAKE) $(MFLAGS) clean
 	cd jsonorg && $(MAKE) $(MFLAGS) clean
+	cd expat2 && $(MAKE) $(MFLAGS) clean
 	cd libxml2 && $(MAKE) $(MFLAGS) clean
 	cd mycore && $(MAKE) $(MFLAGS) clean
 	cd mydash && $(MAKE) $(MFLAGS) clean
@@ -44,6 +46,7 @@ clean:
 install:
 	cd setcore && $(MAKE) $(MFLAGS) install
 	cd jsonorg && $(MAKE) $(MFLAGS) install
+	cd expat2 && $(MAKE) $(MFLAGS) install
 	cd libxml2 && $(MAKE) $(MFLAGS) install
 	cd mycore && $(MAKE) $(MFLAGS) install
 	cd mydash && $(MAKE) $(MFLAGS) install
@@ -61,6 +64,7 @@ install:
 distclean:
 	cd setcore && $(MAKE) $(MFLAGS) distclean
 	cd jsonorg && $(MAKE) $(MFLAGS) distclean
+	cd expat2 && $(MAKE) $(MFLAGS) distclean
 	cd libxml2 && $(MAKE) $(MFLAGS) distclean
 	cd mycore && $(MAKE) $(MFLAGS) distclean
 	cd mydash && $(MAKE) $(MFLAGS) distclean
