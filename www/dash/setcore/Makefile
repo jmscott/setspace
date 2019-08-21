@@ -26,8 +26,9 @@ install: all
 
 	install								\
 		setcore.d/common.pl					\
-		setcore.d/table.pl					\
 		setcore.d/help.pl					\
+		setcore.d/span.nav.pl					\
+		setcore.d/table.pl					\
 		$(WWW_PREFIX)/lib/setcore.d
 	install								\
 		index.shtml						\
