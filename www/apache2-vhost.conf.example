@@ -59,8 +59,11 @@ Define SETSPACE_BLOBIO_ALGORITHM bc160
 #
 Listen ${SETSPACE_APACHE2_SERVER_PORT}
 <VirtualHost ${SETSPACE_APACHE2_SERVER_NAME}:${SETSPACE_APACHE2_SERVER_PORT}>
-	LogLevel warn
         ServerName ${SETSPACE_APACHE2_SERVER_NAME}
+
+	CustomLog ${APACHE_LOG_DIR}/${SETSPACE_APACHE2_SERVER_NAME}-access.log common
+	ErrorLog ${APACHE_LOG_DIR}/${SETSPACE_APACHE2_SERVER_NAME}-error.log
+
 	SetEnv SETSPACE_ROOT ${SETSPACE_ROOT}
 	SetEnv SERVER_ROOT ${SETSPACE_WWW_ROOT}
 
@@ -86,13 +89,6 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
 
 	DocumentRoot "${SETSPACE_WWW_ROOT}/htdocs"
 
-	#  Disable chatty logging to preserve write limits on secure drives.
-
-	CustomLog ${APACHE_LOG_DIR}/${SETSPACE_APACHE2_SERVER_NAME}-access.log common
-
-	#  Note: log to syslog to improved secure drive write limits
-
-	ErrorLog ${APACHE_LOG_DIR}/${SETSPACE_APACHE2_SERVER_NAME}-error.log
 
 	<Directory />
             AllowOverride all
