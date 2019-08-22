@@ -18,13 +18,9 @@ $(error DASH_DNS_VHOST_SUFFIX is not set)
 endif
 
 all:
-	cd setcore && $(MAKE) $(MFLAGS) all
-	cd pdfbox && $(MAKE) $(MFLAGS) all
-	cd tag-url && $(MAKE) $(MFLAGS) all
+	cd schema && $(MAKE) $(MFLAGS) all
 clean:
-	cd setcore && $(MAKE) $(MFLAGS) clean
-	cd pdfbox && $(MAKE) $(MFLAGS) clean
-	cd tag-url && $(MAKE) $(MFLAGS) clean
+	cd schema && $(MAKE) $(MFLAGS) clean
 
 install: all
 
@@ -56,14 +52,10 @@ install: all
 		ln -s $(SETSPACE_PREFIX)/www/htdocs/icon		\
 		      $(WWW_PREFIX)/htdocs/icon
 
-	cd setcore && $(MAKE) $(MFLAGS) install
-	cd pdfbox && $(MAKE) $(MFLAGS) install
-	cd tag-url && $(MAKE) $(MFLAGS) install
+	cd schema && $(MAKE) $(MFLAGS) install
 
 distclean:
-	cd setcore && $(MAKE) $(MFLAGS) distclean
-	cd pdfbox && $(MAKE) $(MFLAGS) distclean
-	cd tag-url && $(MAKE) $(MFLAGS) distclean
+	cd schema && $(MAKE) $(MFLAGS) distclean
 	rm -rf $(WWW_PREFIX)/lib
 	rm -rf $(WWW_PREFIX)/cgi-bin
 	rm -rf $(WWW_PREFIX)/htdocs

@@ -8,10 +8,10 @@
 #	Need to add permissions to install invocation, in particular,
 #	cgi-bin/
 #
-include ../../../local.mk
-include ../../../jmscott.mk
-include ../../../setspace.mk
-include ../dash.mk
+include ../../../../local.mk
+include ../../../../jmscott.mk
+include ../../../../setspace.mk
+include ../../dash.mk
 
 all: setcore setcore.d/help.pl
 clean:
