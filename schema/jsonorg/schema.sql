@@ -50,7 +50,7 @@ CREATE TABLE jsonb_255
 			NOT NULL
 );
 COMMENT ON TABLE jsonb_255 IS
-  'A queryable, jsonb internal version of the blob' 
+  'A queryable, jsonb internal version of the blob in table checker_255' 
 ;
 
 DROP FUNCTION IF EXISTS check_jsonability();
@@ -81,6 +81,9 @@ CREATE OR REPLACE FUNCTION check_jsonability() RETURNS TRIGGER
 	;
   END $$ LANGUAGE plpgsql
 ;
+COMMENT ON FUNCTION check_jsonability IS
+  'Trigger function to coercability into json: checker_255.is_json == true'
+;
 
 CREATE TRIGGER check_jsonability AFTER INSERT
   ON
@@ -89,9 +92,6 @@ CREATE TRIGGER check_jsonability AFTER INSERT
   	check_jsonability()
 ;
 
-COMMENT ON TABLE jsonb_255 IS
-	'Binary encoding of valid json document from table checker_255'
-;
 
 DROP INDEX IF EXISTS idx_jsonb_255_gin CASCADE;
 CREATE INDEX idx_jsonb_255_gin
