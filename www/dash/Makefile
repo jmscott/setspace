@@ -25,6 +25,10 @@ clean:
 install: all
 
 	install -d $(WWW_PREFIX)/etc
+	test -e $(WWW_PREFIX)/etc/passwd				||\
+		install -m u=rw,g=r,o=					\
+			../apache2-passwd.example 			\
+			$(WWW_PREFIX)/etc/passwd
 	install -d $(WWW_PREFIX)/lib
 	install -d $(WWW_PREFIX)/cgi-bin
 	install -d $(WWW_PREFIX)/htdocs
