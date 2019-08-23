@@ -1,6 +1,8 @@
 #
 #  Synopsis:
 #	Build an html <dl> results set of tagged uri.
+#  Note:
+#	Need to strip the english 'ago' verbage in discover_elapsed.
 #
 
 require 'dbi.pl';

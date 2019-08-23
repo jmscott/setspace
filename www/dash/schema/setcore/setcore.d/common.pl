@@ -1,6 +1,8 @@
 #
 #  Synopsis:
 #	Common routines for full text search.
+#  Note:
+#	Need to strip the english 'ago' verbage in discover_elapsed.
 #
 
 use utf8;
