@@ -48,7 +48,7 @@ while (my $r = $qh->fetchrow_hashref()) {
 	print <<END;
  <dt>Page $r->{page_number}</dt>
  <dd>
-  <a href="/pdfbox/detail-tsv.shtml?blob=$blob">$txt</a>
+  <a href="/schema/pdfbox/detail-tsv.shtml?blob=$blob">$txt</a>
  </dd>
 END
 }

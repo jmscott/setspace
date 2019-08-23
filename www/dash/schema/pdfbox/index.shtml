@@ -24,7 +24,7 @@
     >
      <input
        name="in"
-       type="hidden"
+      type="hidden"
        value="post.q"
      />
      <!--#include virtual=

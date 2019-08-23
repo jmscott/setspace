@@ -51,6 +51,7 @@ distclean:
 	rm -rf $(WWW_PREFIX)/lib/tag-url.d
 	rm -f $(WWW_PREFIX)/lib/tag-url.cgi
 	rm -f $(WWW_PREFIX)/lib/tag-url.js
+	rm -rf $(WWW_PREFIX)/htdocs/tag-url
 
 tag-url: tag-url.cgi
 	cgi2perl5 --source-path tag-url.cgi

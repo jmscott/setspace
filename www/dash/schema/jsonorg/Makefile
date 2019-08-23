@@ -20,7 +20,7 @@ clean:
 install: all
 
 	install -d $(WWW_PREFIX)/lib/jsonorg.d
-	install -d $(WWW_PREFIX)/htdocs/jsonorg
+	install -d $(WWW_PREFIX)/htdocs/schema/jsonorg
 	install -d $(WWW_PREFIX)/cgi-bin
 	install jsonorg $(WWW_PREFIX)/cgi-bin
 
@@ -34,13 +34,14 @@ install: all
 		index.shtml						\
 		nav.shtml						\
 		schema.shtml						\
-		$(WWW_PREFIX)/htdocs/jsonorg
+		$(WWW_PREFIX)/htdocs/schema/jsonorg
 	install jsonorg.cgi $(WWW_PREFIX)/lib
 
 distclean:
 	rm -f $(WWW_PREFIX)/cgi-bin/jsonorg
 	rm -rf $(WWW_PREFIX)/lib/jsonorg.d
 	rm -f $(WWW_PREFIX)/lib/jsonorg.cgi
+	rm -rf $(WWW_PREFIX)/htdocs/schema/jsonorg
 
 jsonorg jsonorg.d/help.pl: jsonorg.cgi
 	cgi2perl5 --source-path jsonorg.cgi

@@ -20,7 +20,7 @@ clean:
 install: all
 
 	install -d $(WWW_PREFIX)/lib/setcore.d
-	install -d $(WWW_PREFIX)/htdocs/setcore
+	install -d $(WWW_PREFIX)/htdocs/schema/setcore
 	install -d $(WWW_PREFIX)/cgi-bin
 	install setcore $(WWW_PREFIX)/cgi-bin
 
@@ -35,13 +35,14 @@ install: all
 		index.shtml						\
 		nav.shtml						\
 		schema.shtml						\
-		$(WWW_PREFIX)/htdocs/setcore
+		$(WWW_PREFIX)/htdocs/schema/setcore
 	install setcore.cgi $(WWW_PREFIX)/lib
 
 distclean:
 	rm -f $(WWW_PREFIX)/cgi-bin/setcore
 	rm -rf $(WWW_PREFIX)/lib/setcore.d
 	rm -f $(WWW_PREFIX)/lib/setcore.cgi
+	rm -rf $(WWW_PREFIX)/htdocs/schema/setcore
 
 setcore setcore.d/help.pl: setcore.cgi
 	cgi2perl5 --source-path setcore.cgi

@@ -51,7 +51,7 @@ distclean:
 	rm -f $(WWW_PREFIX)/cgi-bin/pdfbox
 	rm -rf $(WWW_PREFIX)/lib/pdfbox.d
 	rm -f $(WWW_PREFIX)/lib/pdfbox.cgi
-	rm -f $(WWW_PREFIX)/htdocs/schema/pdfbox
+	rm -rf $(WWW_PREFIX)/htdocs/schema/pdfbox
 
 pdfbox: pdfbox.cgi
 	cgi2perl5 --source-path pdfbox.cgi

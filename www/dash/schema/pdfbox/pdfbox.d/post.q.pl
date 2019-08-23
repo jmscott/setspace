@@ -9,6 +9,6 @@ my $qtype = $POST_VAR{qtype};
 
 print <<END;
 Status: 302
-Location: /pdfbox/index.shtml?q=$q&qtype=$qtype
+Location: /schema/pdfbox/index.shtml?q=$q&qtype=$qtype
 
 END
