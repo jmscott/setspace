@@ -32,6 +32,7 @@ CREATE TABLE checker_255
 COMMENT ON TABLE checker_255 IS
   'The json blob passes the checker at json.org, with nesting up to 255 levels'
 ;
+CREATE INDEX idx_checker_255 ON checker_255 USING hash(blob);
 
 /*
  *  Binary json document that passes the json.org checker.
@@ -52,6 +53,7 @@ CREATE TABLE jsonb_255
 COMMENT ON TABLE jsonb_255 IS
   'A queryable, jsonb internal version of the blob in table checker_255' 
 ;
+CREATE INDEX idx_jsonb_255 ON jsonb_255 USING hash(blob);
 
 DROP FUNCTION IF EXISTS check_jsonability();
 CREATE OR REPLACE FUNCTION check_jsonability() RETURNS TRIGGER
