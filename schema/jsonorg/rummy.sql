@@ -2,6 +2,9 @@
  *  Synopsis:
  *	Find candidate blobs for json analysis.
  *  Note:
+ *	Scalars are not candidates for json blobs, despite being valid
+ *	syntactically valid json.
+ *
  *	The regular expressions are assumed to be extended, allowing
  *	logical or.  Need to investigate forcing the RE to be extended.
  */
