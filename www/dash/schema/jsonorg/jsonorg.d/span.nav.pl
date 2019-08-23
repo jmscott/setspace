@@ -15,7 +15,7 @@ use utf8;
 binmode(STDOUT, ":utf8");
 
 require 'dbi-pg.pl';
-require 'setcore.d/common.pl';
+require 'jsonorg.d/common.pl';
 
 our %QUERY_ARG;
 
@@ -24,17 +24,14 @@ my $limit = 10;
 
 my $r = dbi_pg_select(
 		db =>	dbi_pg_connect(),
-		tag =>	'select-span-stat',
+		tag =>	'jsonorg-select-span-stat',
 		sql => q(
 SELECT
 	count(*) AS blob_count
   FROM
-  	setcore.service s
-	  JOIN setcore.byte_count bc ON (bc.blob = s.blob)
-	  JOIN setcore.is_utf8wf u8 ON (u8.blob = s.blob)
-	  JOIN setcore.byte_bitmap bit ON (bit.blob = s.blob)
-	  JOIN setcore.byte_prefix_32 p32 ON (p32.blob = s.blob)
-	  JOIN setcore.byte_suffix_32 s32 ON (s32.blob = s.blob)
+  	jsonorg.checker_255 c
+	  JOIN setcore.service s ON (s.blob = c.blob)
+	  JOIN jsonorg.jsonb_255 jb ON (jb.blob = c.blob)
 ))->fetchrow_hashref();
 
 my $blob_count = $r->{blob_count};
@@ -48,7 +45,7 @@ END
 
 if ($blob_count == 0) {
 	print <<END;
-No Blobs in Service</span>
+No JSON in Service</span>
 END
 	return 1;
 }
@@ -58,7 +55,7 @@ if ($blob_count <= $limit) {
 	$plural = '' if $blob_count == 1;
 
 	print <<END;
-$blob_count blob$plural in service.
+$blob_count json blob$plural in service.
 END
 	return 1;
 }
@@ -67,7 +64,7 @@ my $arrow_off;
 if ($offset >= $limit) {
 	$arrow_off = $offset - $limit;
 	print <<END;
-<a href="/setcore/index.shtml?offset=$arrow_off">◀</a>
+<a href="/schema/jsonorg/index.shtml?offset=$arrow_off">◀</a>
 END
 }
 
@@ -84,14 +81,14 @@ END
 
 $arrow_off = $offset + $limit;
 print <<END if $arrow_off < $blob_count;
-<a href="/setcore/index.shtml?offset=$arrow_off">▶</a>
+<a href="/schema/jsonorg/index.shtml?offset=$arrow_off">▶</a>
 END
 
 #  add commas to numbers to render human readable
 1 while $blob_count =~ s/^(\d+)(\d{3})/$1,$2/;
 
 print <<END;
-of $blob_count blobs in service
+of $blob_count json blobs in service
 </span>
 END
 
