@@ -28,7 +28,7 @@ while (my $r = $qh->fetchrow_hashref()) {
 	}
 	my $discover_elapsed = encode_html_entities($r->{discover_elapsed});
 	print <<END;
- <dt>$pretty_json_255</dt>
+ <dt><code>$pretty_json_255</code></dt>
  <dd>
    discovered $discover_elapsed ago,
    <a
