@@ -19,8 +19,8 @@
     <ul>
      <li><a href="pdfbox">PDF Box from Apache</a></li>
      <li>
-      JSON Checker from
-      <a href="https://json.org">json.org</a></li>
+      <a href="jsonorg">JSON Checker from json.org</a>
+     </li>
      <li>Fast Free File Command</li>
      <li>XML Expat2 Library</li>
      <li>libXML2 from xmlsoft.org</li>

@@ -26,7 +26,7 @@ install: all
 
 	install								\
 		jsonorg.d/common.pl					\
-		jsonorg.d/dl.pl					\
+		jsonorg.d/dl.pl						\
 		jsonorg.d/help.pl					\
 		jsonorg.d/span.nav.pl					\
 		$(WWW_PREFIX)/lib/jsonorg.d
