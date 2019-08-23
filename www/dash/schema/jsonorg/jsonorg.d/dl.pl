@@ -8,31 +8,41 @@ use Time::HiRes qw(gettimeofday);
 
 require 'dbi-pg.pl';
 require 'httpd2.d/common.pl';
-require 'setcore.d/common.pl';
+require 'jsonorg.d/common.pl';
 
 our %QUERY_ARG;
 
-my $q = $QUERY_ARG{q};
-
 print <<END;
 <dl$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
- <thead>
 END
 
-my $qh = recent_select();
+my $qh = dbi_pg_select(
+		db =>   dbi_pg_connect(),
+		tag =>  'jsonorg-recent_select',
+		argv =>	[
+				$QUERY_ARG{lim},
+				$QUERY_ARG{offset},
+			],
+		sql =>	q(
+SELECT
+	c.blob
+  FROM
+  	jsonorg.checker_255 c
+	  JOIN setcore.service s ON (s.blob = c.blob)
+	  JOIN jsonorg.jsonb_255 jb ON (jb.blob = c.blob)
+  ORDER BY
+  	s.discover_time desc
+  LIMIT
+  	$1
+  OFFSET
+  	$2
+;
+		)
 
 #  Write the matching blobs <tr>
 
 while (my $r = $qh->fetchrow_hashref()) {
 	my $blob = encode_html_entities($r->{blob});
-	my $discover_elapsed = encode_html_entities($r->{discover_elapsed});
-	my $byte_count = $r->{byte_count};
-	my $bitmap = $r->{bitmap};
-	$bitmap =~ s/0//g;
-	my $byte_density = sprintf('%.1f %%', 100 * length($bitmap) / 256);
-	my $is_utf8 = $r->{is_utf8};
-	my $prefix = encode_html_entities($r->{prefix});
-	my $suffix = encode_html_entities($r->{suffix});
 	print <<END;
  <dt>$blob</dt>
  <dd>

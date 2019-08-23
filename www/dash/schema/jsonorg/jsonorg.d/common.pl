@@ -3,61 +3,56 @@
 #	Common routines for full text search.
 #
 
+require 'dbi-pg.pl';
+
 use utf8;
 
 our %QUERY_ARG;
 
 #  assemble sql for all core blobs ordered by dsicover_time
-sub recent_sql
+sub sql_recent
 {
 	return q(
 SELECT
-	s.blob,
+	c.blob,
+	substr(jsonb_pretty(jb.doc), 1, 255) AS pretty_json_255,
 	s.discover_time,
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
+	regexp_replace(age(now(), s.discover_time)::text, '\..*', '')
 		AS discover_elapsed,
-	bc.byte_count,
-	u8.is_utf8,
-	bit.bitmap,
-	p32.prefix,
-	s32.suffix
+	length(jsonb_pretty(jb.doc)) AS pretty_char_count
   FROM
-  	setcore.service s
-	  JOIN setcore.byte_count bc ON (bc.blob = s.blob)
-	  JOIN setcore.is_utf8wf u8 ON (u8.blob = s.blob)
-	  JOIN setcore.byte_bitmap bit ON (bit.blob = s.blob)
-	  JOIN setcore.byte_prefix_32 p32 ON (p32.blob = s.blob)
-	  JOIN setcore.byte_suffix_32 s32 ON (s32.blob = s.blob)
+  	jsonorg.checker_255 c
+	  JOIN setcore.service s ON (s.blob = c.blob)
+	  JOIN jsonorg.jsonb_255 jb ON (jb.blob = c.blob)
   ORDER BY
-  	s.discover_time DESC
+  	s.discover_time desc
   LIMIT
   	$1
   OFFSET
   	$2
+;
+;
 );}
 
 #
-#  Return recent blobs, sorted by discover_time descending.
+#  Return recent json blobs, sorted by discover_time descending.
 #
 #  Target List:
-#	blob,
+#	blob
+#	pretty_json_255
 #	discover_time
 #	discover_elapsed
-#	byte_count
-#	is_utf8
-#	bit.bitmap
-#	prefix
-#	suffix
+#	pretty_char_count
 #
-sub recent_select
+sub select_recent
 {
 	return dbi_pg_select(
 		db =>   dbi_pg_connect(),
-		tag =>  'pdfbox-recent_select',
+		tag =>  'jsonorg-recent_select',
 		argv =>	[
 				$QUERY_ARG{lim},
 				$QUERY_ARG{offset},
 			],
-		sql =>	recent_sql()
+		sql =>	sql_recent()
 	);
 }

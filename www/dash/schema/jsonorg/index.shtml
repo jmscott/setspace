@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
  <head>
-  <title>JSONOrg Schema</title>
+  <title>JSON Org Schema</title>
   <meta charset="UTF-8" />
   <link
     href="/screen.css"
@@ -13,10 +13,10 @@
  <body>
   <div id="container">
    <!--#include virtual="/header.shtml" -->
-   <!--#include virtual="/jsonorg/nav.shtml" -->
+   <!--#include virtual="nav.shtml" -->
    <div id="content">
-    <h2>Search Core Blobs</h2>
-    <!--#include virtual="/cgi-bin/jsonorg?out=dl&${QUERY_STRING}" -->
+    <h2>Search JSON Blobs</h2>
+    <!--#include virtual="/cgi-bin/jsonorg?out=table&${QUERY_STRING}" -->
     <!--#include virtual="/cgi-bin/jsonorg?out=span.nav&${QUERY_STRING}" -->
    </div>
    <!--#include virtual="/footer.shtml" -->

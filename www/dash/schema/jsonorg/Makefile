@@ -29,6 +29,7 @@ install: all
 		jsonorg.d/dl.pl						\
 		jsonorg.d/help.pl					\
 		jsonorg.d/span.nav.pl					\
+		jsonorg.d/table.pl					\
 		$(WWW_PREFIX)/lib/jsonorg.d
 	install								\
 		index.shtml						\
@@ -52,3 +53,10 @@ world:
 	$(MAKE) $(MFLAGS) all
 	$(MAKE) $(MFLAGS) distclean
 	$(MAKE) $(MFLAGS) install
+
+i:
+	$(MAKE) $(MFLAGS) install
+c:
+	$(MAKE) $(MFLAGS) clean
+w:
+	$(MAKE) $(MFLAGS) world
