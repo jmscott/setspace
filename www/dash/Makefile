@@ -41,7 +41,6 @@ install: all
 		index.shtml						\
 		navigation.shtml					\
 		screen.css						\
-		sql-schema.shtml					\
 		template.shtml						\
 		$(WWW_PREFIX)/htdocs
 

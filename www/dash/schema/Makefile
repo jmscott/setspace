@@ -27,6 +27,11 @@ clean:
 	cd tag-url && $(MAKE) $(MFLAGS) clean
 
 install: all
+	install -d $(WWW_PREFIX)/htdocs/schema
+	install 							\
+		index.shtml						\
+		$(WWW_PREFIX)/htdocs/schema
+
 	cd setcore && $(MAKE) $(MFLAGS) install
 	cd pdfbox && $(MAKE) $(MFLAGS) install
 	cd tag-url && $(MAKE) $(MFLAGS) install
@@ -35,6 +40,7 @@ distclean:
 	cd setcore && $(MAKE) $(MFLAGS) distclean
 	cd pdfbox && $(MAKE) $(MFLAGS) distclean
 	cd tag-url && $(MAKE) $(MFLAGS) distclean
+	rm -rf $(WWW_PREFIX)/htdocs/schema
 
 world:
 	$(MAKE) $(MFLAGS) clean

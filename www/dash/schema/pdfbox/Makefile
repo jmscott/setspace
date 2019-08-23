@@ -20,7 +20,7 @@ clean:
 install: all
 
 	install -d $(WWW_PREFIX)/lib/pdfbox.d
-	install -d $(WWW_PREFIX)/htdocs/pdfbox
+	install -d $(WWW_PREFIX)/htdocs/schema/pdfbox
 	install -d $(WWW_PREFIX)/cgi-bin
 	install pdfbox $(WWW_PREFIX)/cgi-bin
 
@@ -44,13 +44,14 @@ install: all
 		detail.shtml						\
 		detail-tsv.shtml					\
 		index.shtml						\
-		$(WWW_PREFIX)/htdocs/pdfbox
+		$(WWW_PREFIX)/htdocs/schema/pdfbox
 	install pdfbox.cgi $(WWW_PREFIX)/lib
 
 distclean:
 	rm -f $(WWW_PREFIX)/cgi-bin/pdfbox
 	rm -rf $(WWW_PREFIX)/lib/pdfbox.d
 	rm -f $(WWW_PREFIX)/lib/pdfbox.cgi
+	rm -f $(WWW_PREFIX)/htdocs/schema/pdfbox
 
 pdfbox: pdfbox.cgi
 	cgi2perl5 --source-path pdfbox.cgi

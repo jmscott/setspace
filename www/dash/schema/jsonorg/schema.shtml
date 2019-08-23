@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>SetCore Schema</title>
+  <meta charset="UTF-8" />
+  <link
+    href="/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <style> /* <![CDATA[ */
+  #content h3
+  {
+  	text-align:		left;
+  }
+  #content dl
+  {
+  	margin-left:		2em;
+  }
+  /*]]>*/ </style>
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/jsonorg/nav.shtml" -->
+   <div id="content">
+    <h2>SQL Objects in Schema <code>jsonorg</code></h2>
+
+    <h3>Tables</h3>
+    <dl>
+     <dt>checker_255</dt>
+     <dd>All Blobs Verified by Syntax Checker at
+      <a href="https://www.json.org">
+       <code>www.json.org</code>,
+       where maximum depth is less than 256 levels.
+      </a>
+     </dd>
+
+     <dt>jsonb_255</dt>
+     <dd>
+       The jsonb cversion of a successfully parsed json object in
+       table <code>checker_255</code>.
+     </dd>
+
+    </dl>
+
+    <h3>Functions</h3>
+    <dl>
+     <dt>check_jsonability()</dt>
+     <dd></dd>
+    </dl>
+
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

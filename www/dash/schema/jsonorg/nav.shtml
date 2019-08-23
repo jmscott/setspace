@@ -1,0 +1,7 @@
+<div id="navigation">
+ <ul>
+  <li><a href="/">Dashboard</a></li>
+  <li><a href="/jsonorg/index.shtml">Search JSON Blobs</a></li>
+  <li><a href="/jsonorg/schema.shtml">JSONOrg Schema</a></li>
+ </ul>
+</div>
