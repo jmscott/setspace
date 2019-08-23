@@ -28,6 +28,7 @@ install: all
 		jsonorg.d/common.pl					\
 		jsonorg.d/dl.pl						\
 		jsonorg.d/help.pl					\
+		jsonorg.d/mime.json.pl					\
 		jsonorg.d/span.nav.pl					\
 		jsonorg.d/table.pl					\
 		$(WWW_PREFIX)/lib/jsonorg.d
@@ -35,6 +36,7 @@ install: all
 		index.shtml						\
 		nav.shtml						\
 		schema.shtml						\
+		screen.css						\
 		$(WWW_PREFIX)/htdocs/schema/jsonorg
 	install jsonorg.cgi $(WWW_PREFIX)/lib
 

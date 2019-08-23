@@ -94,6 +94,21 @@ print <<'END';
   </dl>
 </div>
      </dd>
+     <dt>mime.json</dt>
+     <dd>
+<div class="query-args">
+ <h4>Query Args</h4>
+ <dl>
+  <dt>udig</dt>
+  <dd>
+   <ul>
+    <li><code>perl5_re:</code> [a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}</li>
+    <li><code>required:</code> yes</li>
+   </ul>
+  </dd>
+  </dl>
+</div>
+     </dd>
   </dl>
  </div>
 </div>

@@ -16,42 +16,25 @@ print <<END;
 <dl$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END
 
-my $qh = dbi_pg_select(
-		db =>   dbi_pg_connect(),
-		tag =>  'jsonorg-recent_select',
-		argv =>	[
-				$QUERY_ARG{lim},
-				$QUERY_ARG{offset},
-			],
-		sql =>	q(
-SELECT
-	c.blob
-  FROM
-  	jsonorg.checker_255 c
-	  JOIN setcore.service s ON (s.blob = c.blob)
-	  JOIN jsonorg.jsonb_255 jb ON (jb.blob = c.blob)
-  ORDER BY
-  	s.discover_time desc
-  LIMIT
-  	$1
-  OFFSET
-  	$2
-;
-		)
-
-#  Write the matching blobs <tr>
+my $qh = select_recent();
 
 while (my $r = $qh->fetchrow_hashref()) {
+	my $li_json_class = 'json';
 	my $blob = encode_html_entities($r->{blob});
+	my $pretty_json_255 = encode_html_entities($r->{pretty_json_255});
+	if ($r->{pretty_char_count} > 255) {
+		$li_json_class .= ' truncated';
+		$pretty_json_255 .= ' <span class="truncate">...</span>';
+	}
+	my $discover_elapsed = encode_html_entities($r->{discover_elapsed});
 	print <<END;
- <dt>$blob</dt>
+ <dt>$pretty_json_255</dt>
  <dd>
-   discovered: $discover_elapsed,
-   size: $byte_count bytes,
-   utf8: $is_utf8,
-   byte density: $byte_density,
-   prefix: $prefix,
-   suffix: $suffix
+   discovered $discover_elapsed ago,
+   <a
+     href="/cgi-bin/jsonorg?out=mime.json&udig=$blob"
+     title="$blob"
+   >View</a>
  </dd>
 END
 }

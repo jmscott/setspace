@@ -42,7 +42,7 @@ $CGI{GET}->{out}->{'query-args'}->{arg}->{class} = {
 #  'out' query argument must match one of the out putter names.
 #
 $CGI{GET}->{out}->{'query-args'}->{arg}->{out} = {
-	perl5_re	=> 	'dl|table|(?:span[.]nav)|help',
+	perl5_re	=> 	'dl|table|(?:span[.]nav)|(?:mime[.]json)|help',
 	default		=>	'help',
 };
 #
@@ -108,6 +108,27 @@ $CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{offset} = {
 
 #
 #  END: /cgi/GET/out/putter[@name='span.nav']
+#
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name='mime.json']
+#
+$CGI{GET}->{out}->{putter}->{'mime.json'}->{name} = 'mime.json';
+$CGI{GET}->{out}->{putter}->{'mime.json'}->{'content-type'} = 'application/json';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=mime.json]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'mime.json'}->{'query-args'}->{arg}->{udig} = {
+	perl5_re	=>	'[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}',
+	required	=>	'yes',
+};
+#
+#  END: /cgi/GET/out/putter[@name=mime.json]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='mime.json']
 #
 
 $CGI{GET}->{out}->{putter}->{help}->{name} = 'help';
