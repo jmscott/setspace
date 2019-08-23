@@ -67,7 +67,7 @@ my $arrow_off;
 if ($offset >= $limit) {
 	$arrow_off = $offset - $limit;
 	print <<END;
-<a href="/setcore/index.shtml?offset=$arrow_off">◀</a>
+<a href="/schema/setcore/index.shtml?offset=$arrow_off">◀</a>
 END
 }
 
@@ -84,7 +84,7 @@ END
 
 $arrow_off = $offset + $limit;
 print <<END if $arrow_off < $blob_count;
-<a href="/setcore/index.shtml?offset=$arrow_off">▶</a>
+<a href="/schema/setcore/index.shtml?offset=$arrow_off">▶</a>
 END
 
 #  add commas to numbers to render human readable

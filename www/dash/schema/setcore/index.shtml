@@ -13,7 +13,7 @@
  <body>
   <div id="container">
    <!--#include virtual="/header.shtml" -->
-   <!--#include virtual="/setcore/nav.shtml" -->
+   <!--#include virtual="/schema/setcore/nav.shtml" -->
    <div id="content">
     <h2>Search Core Blobs</h2>
     <!--#include virtual="/cgi-bin/setcore?out=dl&${QUERY_STRING}" -->
