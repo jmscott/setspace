@@ -8,6 +8,9 @@
  *  See:
  *	https://pdfbox.apache.org
  *  Note:
+ *	Is the rum index implicitly dependent on on the default ts_config,
+ *	as the gin index on jsonb?
+ *
  *	Think about disjointness for extract_pages_utf8 when multiple langauges
  *	are described via ts_conf
  */
