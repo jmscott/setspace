@@ -19,15 +19,14 @@ select STDOUT; $| = 1;		#  flush the output
 my $env = env2json(2);
 my $json =<<END;
 {
-	"setspace.com": {
-		"schema.setspace.com": "mydash.schema.setspace.com",
+	"mydash.schema.setspace.com": {
 		"tag-url": {
 			"url": $url,
 			"title": $title,
 			"discover-time-epoch": $unix_epoch
-		},
-		"environment": $env
-	}
+		}
+	},
+	"environment": $env
 }
 END
 
