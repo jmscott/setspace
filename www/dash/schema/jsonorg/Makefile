@@ -28,6 +28,7 @@ install: all
 		jsonorg.d/common.pl					\
 		jsonorg.d/dl.pl						\
 		jsonorg.d/help.pl					\
+		jsonorg.d/input.pl					\
 		jsonorg.d/mime.json.pl					\
 		jsonorg.d/span.nav.pl					\
 		jsonorg.d/table.pl					\

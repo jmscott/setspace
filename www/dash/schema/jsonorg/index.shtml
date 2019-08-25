@@ -13,6 +13,13 @@
     rel="stylesheet"
     type="text/css"
   />
+  <style> /*<![CDATA[*/
+  #inputq
+  {
+  	width:		66%;
+  }
+
+  /*]]>*/ </style>
  </head>
 
  <body>
@@ -21,6 +28,15 @@
    <!--#include virtual="nav.shtml" -->
    <div id="content">
     <h2>Search JSON Blobs</h2>
+    <form method="GET">
+     <!--#include virtual=
+       "/cgi-bin/jsonorg?out=input&id=inputq&${QUERY_STRING}" -->
+     <input
+       type="submit"
+       value="Find JSON Blobs"
+     />
+    </form>
+
     <!--#include virtual="/cgi-bin/jsonorg?out=dl&${QUERY_STRING}" -->
     <!--#include virtual="/cgi-bin/jsonorg?out=span.nav&${QUERY_STRING}" -->
    </div>

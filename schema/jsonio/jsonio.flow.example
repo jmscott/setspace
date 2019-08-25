@@ -43,7 +43,7 @@ tail jsonorg
 }
 
 #
-#  Schema MyCore: "schema.setspace.com": "mycore.schema.setspace.com"
+#  Route to schema when top level object "mycore.schema.setspace.com" exits.
 #
 sql query is_mycore_json row
 {
@@ -56,12 +56,7 @@ SELECT EXISTS (
     WHERE
     	j.blob = $1
 	AND
-        doc @> '{
-                "setspace.com": {
-                        "schema.setspace.com":"mycore.schema.setspace.com"
-                }
-        }'
-);
+        doc ? 'mycore.schema.setspace.com'
 	`;
 	result row is (
 		exists bool
@@ -91,7 +86,7 @@ call append_mycore_brr(
 ;
 
 #
-#  Schema MyDash: "schema.setspace.com": "mydash.schema.setspace.com"
+#  Schema MyDash: top level object: "mydash.schema.setspace.com"
 #
 sql query is_mydash_json row
 {
@@ -105,8 +100,7 @@ SELECT EXISTS (
     	j.blob = $1
 	AND
         doc @> '{
-                "setspace.com": {
-                        "schema.setspace.com":"mydash.schema.setspace.com"
+                        "schema.setspace.com":{}
                 }
         }'
 );

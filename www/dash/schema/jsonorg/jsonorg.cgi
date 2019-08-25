@@ -13,6 +13,15 @@
   </examples>
   <out content-type="text/html">
 
+   <putter name="input">
+    <query-args>
+     <arg
+     	name="q"
+	perl5_re=".{0,255}"
+     />
+    </query-args>
+   </putter>
+
    <putter name="dl">
     <query-args>
      <arg
