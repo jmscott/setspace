@@ -99,7 +99,7 @@ END
 
 if ($pdf_count == 0) {
 	print <<END;
-No Documents Matched</span>
+No pdf documents.</span>
 END
 	return 1;
 }
