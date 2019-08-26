@@ -16,7 +16,12 @@ print <<END;
 <dl$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END
 
-my $qh = select_recent();
+my $qh;
+if ($QUERY_ARG{q} =~ /[[:graph:]]/) {
+	$qh = select_json_query();
+} else {
+	$qh = select_recent();
+}
 
 while (my $r = $qh->fetchrow_hashref()) {
 	my $li_json_class = 'json';

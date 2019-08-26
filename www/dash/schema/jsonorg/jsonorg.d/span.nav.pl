@@ -26,8 +26,7 @@ my $limit = 10;
 my $r;
 
 #  fetch json docs with top level key
-
-if ($q =~ /[[:graph:]]/) {
+if ($q =~ m/[[:graph:]]/) {
 	$q =~ s/^\s*|\s*$//g;
 	$r = dbi_pg_select(
 		db =>	dbi_pg_connect(),

@@ -54,6 +54,12 @@ print <<'END';
 <div class="query-args">
  <h4>Query Args</h4>
  <dl>
+  <dt>q</dt>
+  <dd>
+   <ul>
+    <li><code>perl5_re:</code> .{0,255}</li>
+   </ul>
+  </dd>
   <dt>lim</dt>
   <dd>
    <ul>
@@ -98,6 +104,19 @@ print <<'END';
 <div class="query-args">
  <h4>Query Args</h4>
  <dl>
+  <dt>q</dt>
+  <dd>
+   <ul>
+    <li><code>perl5_re:</code> .{0,255}</li>
+   </ul>
+  </dd>
+  <dt>lim</dt>
+  <dd>
+   <ul>
+    <li><code>default:</code> 10</li>
+    <li><code>perl5_re:</code> [1-9][0-9]{0,3}</li>
+   </ul>
+  </dd>
   <dt>offset</dt>
   <dd>
    <ul>

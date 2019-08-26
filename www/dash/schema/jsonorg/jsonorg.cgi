@@ -25,6 +25,10 @@
    <putter name="dl">
     <query-args>
      <arg
+     	name="q"
+	perl5_re=".{0,255}"
+     />
+     <arg
      	name="lim"
 	perl5_re="[1-9][0-9]{0,3}"
 	default="10"
@@ -54,6 +58,15 @@
 
    <putter name="span.nav">
     <query-args>
+     <arg
+     	name="q"
+	perl5_re=".{0,255}"
+     />
+     <arg
+     	name="lim"
+	perl5_re="[1-9][0-9]{0,3}"
+	default="10"
+     />
      <arg
      	name="offset"
 	perl5_re="[+0-9]{1,10}"
