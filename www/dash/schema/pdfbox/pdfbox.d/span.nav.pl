@@ -102,7 +102,9 @@ if ($pdf_count == 0) {
 No Documents Matched</span>
 END
 	return 1;
-} elsif ($pdf_count <= $limit) {
+}
+
+if ($pdf_count <= $limit) {
 	my $plural = 's';
 	my $page_plural = 's';
 	$plural = '' if $pdf_count == 1;
