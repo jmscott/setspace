@@ -19,22 +19,46 @@ require 'jsonorg.d/common.pl';
 
 our %QUERY_ARG;
 
+my $q = $QUERY_ARG{q};
 my $offset = $QUERY_ARG{offset};
 my $limit = 10;
 
-my $r = dbi_pg_select(
+my $r;
+
+#  fetch json docs with top level key
+
+if ($q =~ /[[:graph:]]/) {
+	$q =~ s/^\s*|\s*$//g;
+	$r = dbi_pg_select(
 		db =>	dbi_pg_connect(),
-		tag =>	'jsonorg-select-span-stat',
+		tag =>	'jsonorg-select-all-span-stat',
+		argv =>	[
+				$q
+			],
 		sql => q(
 SELECT
 	count(*) AS blob_count
   FROM
-  	jsonorg.checker_255 c
-	  JOIN setcore.service s ON (s.blob = c.blob)
-	  JOIN jsonorg.jsonb_255 jb ON (jb.blob = c.blob)
-))->fetchrow_hashref();
+	jsonorg.jsonb_255 jb
+	  JOIN setcore.service s ON (s.blob = jb.blob)
+  WHERE
+  	jb.doc \? $1
+));
+	$q = encode_url_query_arg($q);
+} else {
+	$r = dbi_pg_select(
+		db =>	dbi_pg_connect(),
+		tag =>	'jsonorg-select-query-span-stat',
+		sql => q(
+SELECT
+	count(*) AS blob_count
+  FROM
+	jsonorg.jsonb_255 jb
+	  JOIN setcore.service s ON (s.blob = jb.blob)
+));
+}
 
-my $blob_count = $r->{blob_count};
+my $blob_count = $r->fetchrow_hashref()->{blob_count};
 
 print <<END;
 <span
@@ -45,7 +69,7 @@ END
 
 if ($blob_count == 0) {
 	print <<END;
-No JSON in Service</span>
+No JSON blobs.</span>
 END
 	return 1;
 }
@@ -55,7 +79,7 @@ if ($blob_count <= $limit) {
 	$plural = '' if $blob_count == 1;
 
 	print <<END;
-$blob_count json blob$plural in service.
+$blob_count json blob$plural matched
 END
 	return 1;
 }
@@ -64,7 +88,7 @@ my $arrow_off;
 if ($offset >= $limit) {
 	$arrow_off = $offset - $limit;
 	print <<END;
-<a href="/schema/jsonorg/index.shtml?offset=$arrow_off">◀</a>
+<a href="/schema/jsonorg/index.shtml?offset=$arrow_off&q=$q">◀</a>
 END
 }
 
@@ -81,7 +105,7 @@ END
 
 $arrow_off = $offset + $limit;
 print <<END if $arrow_off < $blob_count;
-<a href="/schema/jsonorg/index.shtml?offset=$arrow_off">▶</a>
+<a href="/schema/jsonorg/index.shtml?offset=$arrow_off&q=$q">▶</a>
 END
 
 #  add commas to numbers to render human readable
