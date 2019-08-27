@@ -57,6 +57,7 @@ SELECT EXISTS (
     	j.blob = $1
 	AND
         doc ? 'mycore.schema.setspace.com'
+)
 	`;
 	result row is (
 		exists bool
@@ -95,14 +96,11 @@ SELECT EXISTS (
   SELECT
   	blob
     FROM
-	jsonorg.jsonb_255 j
+	jsonorg.jsonb_255
     WHERE
-    	j.blob = $1
+    	blob = $1
 	AND
-        doc @> '{
-                        "schema.setspace.com":{}
-                }
-        }'
+        doc ? 'mydash.schema.setspace.com'
 );
 	`;
 	result row is (
