@@ -85,7 +85,6 @@ SELECT EXISTS (
   	utf8wf u8
 	  JOIN setcore.byte_prefix_32 p32 ON (p32.blob = u8.blob)
 	  JOIN setcore.byte_suffix_32 s32 ON (s32.blob = u8.blob)
-	  LEFT OUTER JOIN jsonorg.checker_255 js ON (js.blob = u8.blob)
     WHERE
     	/*
 	 *  Consult the hex versions of the prefix/suffix, since
@@ -104,8 +103,6 @@ SELECT EXISTS (
 		AND
 		s32.suffix::text ~ '^\\x.*5d(09|0a|20|0d)*$'
 	))
-	AND
-	js.blob IS NULL
 );
 	`;
 
@@ -211,7 +208,6 @@ SELECT EXISTS (
   	utf8wf u8
 	  JOIN setcore.byte_prefix_32 p32 ON (p32.blob = u8.blob)
 	  JOIN setcore.byte_suffix_32 s32 ON (s32.blob = u8.blob)
-	  LEFT OUTER JOIN expat2.xmlwf_utf8 xml ON (xml.blob = u8.blob)
     WHERE
     	/*
 	 *  Consult the hex versions of the prefix/suffix, since
@@ -223,8 +219,6 @@ SELECT EXISTS (
 		AND
 		s32.suffix::text ~ '^\\x.*3e(09|0a|20|0d)*$'
 	)
-	AND
-	xml.blob IS NULL
 );
 	`;
 
