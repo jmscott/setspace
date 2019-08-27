@@ -18,8 +18,20 @@
   {
   	width:		66%;
   }
-
+  body
+  {
+  	cursor:	wait;
+  }
   /*]]>*/ </style>
+
+  <script type="text/javascript">  /*<![CDATA[*/
+
+    window.onload=function() {
+	document.body.style.cursor='default';
+    }
+
+    /*]]>*/
+  </script>
  </head>
 
  <body>
