@@ -33,8 +33,15 @@ if ($q =~ m/^\s*[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}\s*$/) {
 	];
 	$sql = q(
 SELECT
-	1 AS pdf_count,
-	sum(pd.number_of_pages) AS pdf_page_count
+	count(pd.blob) AS pdf_count,
+	CASE
+	  WHEN
+	  	sum(pd.number_of_pages) IS NULL
+	  THEN
+	  	0
+	  ELSE
+	  	sum(pd.number_of_pages)
+	END AS pdf_page_count
   FROM
   	pdfbox.pddocument pd
   WHERE

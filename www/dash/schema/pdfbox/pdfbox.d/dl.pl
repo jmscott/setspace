@@ -31,7 +31,7 @@ my $q = $QUERY_ARG{q};
 #  recent pdf files.
 
 if ($q =~ m/^\s*[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}\s*$/) {	#  find blob
-	$qh = blob_select();
+	$qh = select_pdf_blob();
 } elsif ($q =~ m/[[:graph:]]/) {				#  text query
 	my $qtype = $QUERY_ARG{qtype};
 

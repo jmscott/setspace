@@ -633,7 +633,7 @@ sub websearch_select
 	);
 }
 
-sub blob_sql
+sub sql_pdf_blob
 {
 	return q(
 SELECT
@@ -659,7 +659,7 @@ SELECT
   	pdf.blob = $1
 );}
 
-sub blob_select
+sub select_pdf_blob
 {
 	my $blob = $QUERY_ARG{q};
 	$blob =~ s/\s*//g;
@@ -670,7 +670,7 @@ sub blob_select
 		argv =>	[
 			$blob
 		],
-		sql =>	blob_sql()
+		sql =>	sql_pdf_blob()
 	);
 }
 
