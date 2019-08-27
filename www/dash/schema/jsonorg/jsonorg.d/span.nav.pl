@@ -111,7 +111,7 @@ END
 1 while $blob_count =~ s/^(\d+)(\d{3})/$1,$2/;
 
 print <<END;
-of $blob_count json blobs in service
+of $blob_count json blobs matched
 </span>
 END
 
