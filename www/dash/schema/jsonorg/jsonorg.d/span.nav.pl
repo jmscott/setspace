@@ -39,7 +39,6 @@ SELECT
 	count(*) AS blob_count
   FROM
 	jsonorg.jsonb_255 jb
-	  JOIN setcore.service s ON (s.blob = jb.blob)
   WHERE
   	jb.doc \? $1
 ));
@@ -48,12 +47,12 @@ SELECT
 	$r = dbi_pg_select(
 		db =>	dbi_pg_connect(),
 		tag =>	'jsonorg-select-query-span-stat',
+		dump => '>>x.sql',
 		sql => q(
 SELECT
 	count(*) AS blob_count
   FROM
 	jsonorg.jsonb_255 jb
-	  JOIN setcore.service s ON (s.blob = jb.blob)
 ));
 }
 
