@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>PDFBox Schema</title>
+  <meta charset="UTF-8" />
+  <link
+    href="/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <style> /* <![CDATA[ */
+  #content h3
+  {
+  	text-align:		left;
+  }
+  #content dl
+  {
+  	margin-left:		2em;
+  }
+
+  #content dl dt
+  {
+  	font-family: monospace;
+  }
+  /*]]>*/ </style>
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/schema/pdfbox/nav.shtml" -->
+   <div id="content">
+    <h2>SQL Objects in Schema <code>pdfbox</code></h2>
+
+    <h3>Tables</h3>
+    <dl>
+     <dt>pddocument</dt>
+     <dd>
+       Output of pdf parsed by java class
+       <a href=
+         "https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/pdmodel/PDDocument.html"
+       >org.apache.pdfbox.pdmodel.PDDocument</a>
+     </dd>
+
+     <dt>pddocument_information</dt>
+     <dd>
+       PDDocumentInformation scalar fields from Java Object in
+       <a href=
+       "https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/pdmodel/PDDocumentInformation.html"
+       >org.apache.pdfbox.pdmodel.PDDocumentInformation</a>
+     </dd>
+
+     <dt>extract_pages_utf8</dt>
+     <dd>
+       Pages of UTF8 Text extracted by setspace java class ExtractPagesUTF8.
+       The underlying class is pdfbox 
+       <a href=
+         "https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/text/PDFTextStripper.html"
+	>PDFTextStripper</a>
+     </dd>
+
+     <dt>page_text_utf8</dt>
+     <dd>Individual Pages of UTF8 Text extracted from a pdf blob</dd>
+
+     <dt>page_tsv_utf8</dt>
+     <dd>
+       Text search vectors for Pages of UTF8 Text extracted from a pdf blob.
+     </dd>
+
+    </dl>
+
+    <h3>Functions</h3>
+    <dl>
+     <dt>is_pddocument_disjoint()</dt>
+     <dd>
+       Verify the pdf is not in both tables pddocument and fault.
+     </dd>
+
+     <dt>is_pddocument_information_disjoint()</dt>
+     <dd>
+       Verify the pdf is not in both tables pddocument_information and fault.
+     </dd>
+
+     <dt>is_extract_pages_utf8_disjoint()</dt>
+     <dd>
+       Verify the pdf is not in both tables extract_pages_utf8 and fault.
+     </dd>
+
+     <dt>is_fault_extract_pages_utf8_disjoint()</dt>
+     <dd>
+       Verify a faulted blob is not in both tables extract_pages_utf8 and fault.
+       A second function is needed 
+       - instead of using is_extract_pages_utf8_disjoint() -
+       due to the sql qwualification on the extract_pages_utf8.pdf_blob
+       versus qualifyiung on fault.blob.
+     </dd>
+
+    </dl>
+
+    <h3>Domains</h3>
+    <dl>
+     <dt>dval32</dt>
+     <dd>
+       PDF Dictionary value &gt; 32768 chars,
+       with no carriage-return or line-feed
+     </dd>
+    </dl>
+
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

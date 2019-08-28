@@ -1,0 +1,7 @@
+<div id="navigation">
+ <ul>
+  <li><a href="/">Dashboard</a></li>
+  <li><a href="/schema/pdfbox/index.shtml">Search PDF</a></li>
+  <li><a href="/schema/pdfbox/schema.shtml">PDFBox Schema</a></li>
+ </ul>
+</div>

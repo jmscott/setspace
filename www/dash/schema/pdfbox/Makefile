@@ -44,6 +44,8 @@ install: all
 		detail.shtml						\
 		detail-tsv.shtml					\
 		index.shtml						\
+		nav.shtml						\
+		schema.shtml						\
 		$(WWW_PREFIX)/htdocs/schema/pdfbox
 	install pdfbox.cgi $(WWW_PREFIX)/lib
 
