@@ -108,3 +108,35 @@ sub select_json_query
 		sql =>	sql_json_query()
 	);
 }
+
+sub sql_json_blob
+{
+	return q(
+SELECT
+	jb.blob,
+	substr(jsonb_pretty(jb.doc), 1, 255) AS pretty_json_255,
+	s.discover_time,
+	regexp_replace(age(now(), s.discover_time)::text, '\..*', '')
+		AS discover_elapsed,
+	length(jsonb_pretty(jb.doc)) AS pretty_char_count
+  FROM
+	jsonorg.jsonb_255 jb
+	  JOIN setcore.service s ON (s.blob = jb.blob)
+  WHERE
+  	jb.blob = $1
+);}
+
+sub select_json_blob
+{
+	my $blob = $QUERY_ARG{q};
+	$blob =~ s/\s*//g;
+
+	return dbi_pg_select(
+		db =>	dbi_pg_connect(),
+		tag =>	'jsonorg-select-blob',
+		argv =>	[
+			$blob
+		],
+		sql =>	sql_json_blob()
+	);
+}

@@ -17,7 +17,9 @@ print <<END;
 END
 
 my $qh;
-if ($QUERY_ARG{q} =~ /[[:graph:]]/) {
+if ($QUERY_ARG{q} =~ m/^\s*[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}\s*$/) {
+	$qh = select_json_blob();
+} elsif ($QUERY_ARG{q} =~ /[[:graph:]]/) {
 	$qh = select_json_query();
 } else {
 	$qh = select_recent();

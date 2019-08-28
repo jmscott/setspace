@@ -20,17 +20,33 @@ require 'jsonorg.d/common.pl';
 our %QUERY_ARG;
 
 my $q = $QUERY_ARG{q};
+$q =~ s/^\s*|\s*$//g;		#  strip white space
+
 my $offset = $QUERY_ARG{offset};
 my $limit = 10;
 
 my $r;
 
-#  fetch json docs with top level key
-if ($q =~ m/[[:graph:]]/) {
-	$q =~ s/^\s*|\s*$//g;
+#  fetch json docs by top level key, particular udig or all json.
+if ($q =~ m/^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$/) {	#  find udig
 	$r = dbi_pg_select(
 		db =>	dbi_pg_connect(),
-		tag =>	'jsonorg-select-all-span-stat',
+		tag =>	'jsonorg-select-blob-span-stat',
+		argv =>	[
+				$q
+			],
+		sql => q(
+SELECT
+	count(blob) AS blob_count
+  FROM
+  	jsonorg.jsonb_255
+  WHERE
+  	blob = $1
+));
+} elsif ($q =~ m/[[:graph:]]/) {
+	$r = dbi_pg_select(
+		db =>	dbi_pg_connect(),
+		tag =>	'jsonorg-select-query-span-stat',
 		argv =>	[
 				$q
 			],
