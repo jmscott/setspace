@@ -13,6 +13,7 @@ set search_path to
 	jsonorg,
 	libxml2,
 	pdfbox,
+	mydash,
 	public
 ;
 -- Show how long each query takes to execute
