@@ -103,7 +103,7 @@ CREATE OR REPLACE FUNCTION is_pddocument_disjoint() RETURNS TRIGGER
   LANGUAGE plpgsql
 ;
 COMMENT ON FUNCTION is_pddocument_disjoint IS
-  'Check the blob is not in both table pddocument and fault_pddocument'
+  'Verify that the pdf is not in both table pddocument and fault_pddocument'
 ;
 
 CREATE TRIGGER is_pddocument_disjoint AFTER INSERT ON pddocument
@@ -121,7 +121,7 @@ CREATE DOMAIN dval32 AS text
   )
 ;
 COMMENT ON DOMAIN dval32 IS
-  'PDF Dictionary value < 32768 chars, with not carriage-return or line-feed'
+  'PDF Dictionary value < 32768 chars, with no carriage-return or line-feed'
 ;
 
 /*
@@ -194,7 +194,7 @@ CREATE OR REPLACE FUNCTION is_pddocument_information_disjoint() RETURNS TRIGGER
   LANGUAGE plpgsql
 ;
 COMMENT ON FUNCTION is_pddocument_information_disjoint IS
-  'Tables pddocument_information and fault are disjoint'
+  'Verify tables pddocument_information and fault are disjoint'
 ;
 
 CREATE TRIGGER is_pddocument_information_disjoint
@@ -281,7 +281,7 @@ CREATE OR REPLACE FUNCTION is_extract_pages_utf8_disjoint()
   LANGUAGE plpgsql
 ;
 COMMENT ON FUNCTION is_extract_pages_utf8_disjoint IS
-  'Check the new pdf for extract_pages_utf8 is not in fault'
+  'Verify the pdf for extract_pages_utf8 is not in fault'
 ;
 
 DROP TRIGGER IF EXISTS is_extract_pages_utf8_disjoint
@@ -334,7 +334,7 @@ CREATE OR REPLACE FUNCTION is_fault_extract_pages_utf8_disjoint()
   LANGUAGE plpgsql
 ;
 COMMENT ON FUNCTION is_fault_extract_pages_utf8_disjoint IS
-  'Check the pdf is not in both tables [fault_]extract_pages_utf8_count'
+  'Verify the pdf is not in both tables fault and extract_pages_utf8'
 ;
 
 DROP TRIGGER IF EXISTS is_fault_extract_pages_utf8_disjoint
@@ -410,30 +410,7 @@ CREATE INDEX rumidx ON page_tsv_utf8
   	rum (tsv rum_tsvector_ops)
 ;
 COMMENT ON TABLE page_tsv_utf8 IS
-  'Individual Pages of UTF8 Text extracted from a pdf blob'
+  'Text search vectors for Pages of UTF8 Text extracted from a pdf blob'
 ;
 
-/*
- *  PDDocumentInformation custom metadata fields string fields from Java Object
- */
-DROP TABLE IF EXISTS pddocument_information_metadata_custom CASCADE;
-CREATE TABLE pddocument_information_metadata_custom
-(
-	blob		udig
-				REFERENCES
-				   pddocument_information(blob)
-				ON DELETE CASCADE,
-	key		dval32 check (
-				length(key) < 256
-				AND
-				position(': ' in key) < 1
-			) NOT NULL,
-	value		dval32 NOT NULL,
-
-	PRIMARY KEY	(blob, key)
-);
-COMMENT ON TABLE pddocument_information_metadata_custom IS
-  'Key/Value metadata fetched by java class PDDocumentInformation'
-;
-
-COMMIT;
+--COMMIT;
