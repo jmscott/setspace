@@ -23,7 +23,7 @@ my $json =<<END;
 		"tag-url": {
 			"url": $url,
 			"title": $title,
-			"discover-time-epoch": $unix_epoch
+			"discover-unix-epoch": $unix_epoch
 		}
 	},
 	"environment": $env
