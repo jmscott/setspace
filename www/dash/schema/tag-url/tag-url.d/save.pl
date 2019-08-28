@@ -26,7 +26,7 @@ my $json =<<END;
 			"discover-unix-epoch": $unix_epoch
 		}
 	},
-	"environment": $env
+	"cgi-bin-environment": $env
 }
 END
 
