@@ -20,11 +20,18 @@ CREATE TABLE tag_url
 				PRIMARY KEY,
 	title		text CHECK (
 				length(title) < 1024
-			),
+			) NOT NULL,
+	--  the url must be normalized!
 	url		text CHECK (
 				length(url) < 1024
-			),
-	discover_time	timestamp
+			) NOT NULL,
+	discover_time	timestamp CHECK (
+				discover_time >
+					'1970-01-01 00:00:00-00'
+			) NOT NULL
 );
+COMMENT ON TABLE tag_url IS
+  'Table of urls tagged in a browser in the dashboard'
+;
 
 COMMIT;

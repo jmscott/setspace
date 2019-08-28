@@ -5,6 +5,11 @@
 #  	flowd server mydash.conf
 #  See:
 #  	mydash/lib/schema.sql
+#  Note:
+#	Need a better method for cleanup than waiting on all possible
+#	combinations of exit status.  at the very least a compact,
+#	vectorized version would be better than simple minded, error prone
+#	enumeration.
 #
 
 boot
@@ -54,6 +59,8 @@ command lock_in_flight
         };
 }
 
+call lock_in_flight(brr.udig);
+
 command unlock_in_flight
 {
 	path = "tas-run-unlock";
@@ -63,91 +70,120 @@ command unlock_in_flight
 }
 
 #
-#  Is the blob a json object matching
+#  Is the blob a request to tag a url and does it already exist
+#  in the database.
 #
-#	{
-#		"setspace.com": {
-#			"schema.setspace.com": "mydash.schema.setspace.com"
-#		}
+#	"mydash.schema.setspace.com": {
+#		"tag-url": {}
 #	}
 #
 
-sql query is_json_mydash row
+sql query is_tag_url_json row
 {
 	statement = `
-SELECT EXISTS (
-  SELECT
-	j.blob
-    FROM
-  	jsonorg.jsonb_255 j
-    WHERE
-  	j.doc @> '{
-		"setspace.com": {
-			"schema.setspace.com": "mydash.schema.setspace.com"
-		}
-	}'
-	AND
-	j.blob = $1
-);
-	`;
+SELECT
+	EXISTS (
+	  SELECT
+		blob
+	    FROM
+		jsonorg.jsonb_255
+	    WHERE
+		doc @> '{
+			"mydash.schema.setspace.com":{
+				"tag-url":{}
+			}
+		}'
+		AND
+		blob = $1::udig
+	),
+	EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	mydash.tag_url
+	    WHERE
+	    	blob = $1::udig
+	);`;
 
 	result row is (
-		is_mydash bool
+		is_tag_url bool,
+		tag_url_exists bool
 	);
 }
 
-query is_json_mydash(brr.udig)
+query is_tag_url_json(brr.udig)
   when
   	lock_in_flight.exit_status == 0
 ;
 
-sql query is_tag_url row
+sql exec merge_tag_url
 {
 	statement = `
-SELECT EXISTS (
+INSERT INTO mydash.tag_url (
+	blob,
+	url,
+	title,
+	discover_time
+)
+WITH request AS (
   SELECT
-	j.blob
-  from
-  	jsonorg.jsonb_255 j
-  where
-  	j.doc @> '{
-		"setspace.com": {
+	doc->'mydash.schema.setspace.com'->'tag-url' AS tag_url
+    FROM
+  	jsonorg.jsonb_255
+    WHERE
+  	doc @> '{
+		"mydash.schema.setspace.com":{
 			"tag-url":{}
 		}
 	}'
 	AND
-	j.blob = $1
-);
+	blob = $1::udig
+) SELECT
+  	$1::udig,
+  	tag_url->'url',
+	tag_url->'title',
+	timestamptz 'epoch' +
+		(tag_url->'discover-unix-epoch')::bigint * interval '1 second'
+    FROM
+    	request
+    WHERE
+    	length(tag_url->>'discover-unix-epoch') > 0
+  ON CONFLICT
+  	DO NOTHING
+;
+;
 	`;
-
-	result row is (
-		answer bool
-	);
 }
 
-query is_tag_url(brr.udig)
+query merge_tag_url(brr.udig)
   when
-  	is_json_mydash.is_mydash == true
+  	is_tag_url_json.is_tag_url == true
+	and
+	is_tag_url_json.tag_url_exists == false
 ;
 
-sql query tag_url_exist row
-{
-	statement = `
-SELECT EXISTS (
-  SELECT
-	tu.blob
-  FROM
-  	mydash.tag_url tu
-  WHERE
-  	tu.blob = $1
-);
-	`;
-	result row is (
-		tag_url_exits bool
-	);
-}
-
-query tag_url_exist(brr.udig)
+#
+#  Note:
+#	Need a better method for cleanup than waiting on all possible
+#	combinations of exit status.  at the very least a compact,
+#	vectorized version would be better than simple minded, error prone
+#	enumeration.
+#
+call unlock_in_flight(brr.udig)
   when
-  	is_tag_url.answer == true
+  	lock_in_flight.exit_status == 0
+	and
+	(
+		is_tag_url_json.is_tag_url == false
+		or
+		(
+			is_tag_url_json.is_tag_url == true
+			and
+			(
+				merge_tag_url.rows_affected == 0
+				or
+				merge_tag_url.rows_affected == 1
+			)
+		)
+	)
 ;

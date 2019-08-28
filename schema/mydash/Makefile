@@ -33,6 +33,8 @@ install:
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
 				-d $(MYDASH_PREFIX)/tmp
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
+		mydash.flow.example					\
+		profile.example						\
 		psqlrc.example						\
 		schema.sql						\
 		$(MYDASH_PREFIX)/lib

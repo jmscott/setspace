@@ -1,1 +1,1 @@
-set search_path to mydash,jsonorg,setcore,public;
+set search_path to mydash,jsonorg,mycore,setcore,public;
