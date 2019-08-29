@@ -39,25 +39,24 @@ command brr_on_network
 }
 
 call brr_on_network()
-  when
-  (
-        (
-		brr.verb == "put"
-		or
-		brr.verb == "get"
-		or
-		brr.verb == "eat"
-		or
-		brr.verb == "wrap"
-		or
-		brr.verb == "roll"
-	)
-	and
-	brr.chat_history == "ok"
-  ) or (
+  when (
+	brr.verb == "put"
+	or
+	brr.verb == "get"
+	or
+	brr.verb == "eat"
+	or
+	brr.verb == "wrap"
+	or
+	brr.verb == "roll"
+	or
 	brr.verb == "give"
-	and
+  ) and (
+	brr.chat_history == "ok"
+	or
 	brr.chat_history == "ok,ok"
+	or
+	brr.chat_history == "ok,ok,ok"
   )
 ;
 
