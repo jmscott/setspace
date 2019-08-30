@@ -36,8 +36,9 @@ Define SETSPACE_PGDATABASE setspace
 Define SETSPACE_PATH ${SETSPACE_PGHOME}/bin:${SETSPACE_BLOBIO_ROOT}/bin:/usr/bin:/bin
 
 Define SETSPACE_APACHE2_SERVER_NAME ${SETSPACE_DNS_VHOST_PREFIX}.setspace.${SETSPACE_DNS_VHOST_SUFFIX}
-Define SETSPACE_WWW_ROOT ${SETSPACE_ROOT}/www/vhost/${SETSPACE_APACHE2_SERVER_NAME}
-Define SETSPACE_PERL5LIB ${SETSPACE_JMSCOTT_ROOT}/www/lib:${SETSPACE_WWW_ROOT}/lib
+Define SETSPACE_WWW_ROOT ${SETSPACE_ROOT}/www
+Define SETSPACE_VHOST_ROOT ${SETSPACE_ROOT}/www/vhost/${SETSPACE_APACHE2_SERVER_NAME}
+Define SETSPACE_PERL5LIB ${SETSPACE_VHOST_ROOT}/lib:${SETSPACE_WWW_ROOT}:${SETSPACE_JMSCOTT_ROOT}/www/lib
 
 #  always encrypted
 Define SETSPACE_APACHE2_SERVER_PORT 443
@@ -65,7 +66,7 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
 	ErrorLog ${APACHE_LOG_DIR}/${SETSPACE_APACHE2_SERVER_NAME}-error.log
 
 	SetEnv SETSPACE_ROOT ${SETSPACE_ROOT}
-	SetEnv SERVER_ROOT ${SETSPACE_WWW_ROOT}
+	SetEnv SERVER_ROOT ${SETSPACE_VHOST_ROOT}
 
 	SetEnv PGHOST ${SETSPACE_PGHOST}
 	SetEnv PGPORT ${SETSPACE_PGPORT}
@@ -87,7 +88,7 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
 	#
 	SetEnv PERL5LIB ${SETSPACE_PERL5LIB}
 
-	DocumentRoot "${SETSPACE_WWW_ROOT}/htdocs"
+	DocumentRoot "${SETSPACE_VHOST_ROOT}/htdocs"
 
 
 	<Directory />
@@ -95,7 +96,7 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
             Require all granted
         </Directory>
 
-	<Directory "${SETSPACE_WWW_ROOT}">
+	<Directory "${SETSPACE_VHOST_ROOT}">
 		Options Indexes FollowSymLinks
 		AllowOverride None
 		Require all granted
@@ -103,7 +104,7 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
 
 	DirectoryIndex index.shtml
 
-	<Directory "${SETSPACE_WWW_ROOT}/htdocs">
+	<Directory "${SETSPACE_VHOST_ROOT}/htdocs">
                 Options +ExecCGI +Includes +FollowSymLinks
 
                 AddType text/html .shtml
@@ -111,14 +112,14 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
 
 		AuthType Basic
 		AuthName "${SETSPACE_APACHE2_SERVER_NAME}"
-		AuthUserFile ${SETSPACE_WWW_ROOT}/etc/passwd
+		AuthUserFile ${SETSPACE_VHOST_ROOT}/etc/passwd
 		Require valid-user
 	</Directory>
 
 	ScriptAlias /cgi-bin/jmscott/ "${SETSPACE_JMSCOTT_ROOT}/www/cgi-bin/"
-	ScriptAlias /cgi-bin/ "${SETSPACE_WWW_ROOT}/cgi-bin/"
+	ScriptAlias /cgi-bin/ "${SETSPACE_VHOST_ROOT}/cgi-bin/"
 
-	<Directory "${SETSPACE_WWW_ROOT}/cgi-bin">
+	<Directory "${SETSPACE_VHOST_ROOT}/cgi-bin">
                 AllowOverride all
                 Allow from all
 
@@ -127,7 +128,7 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
                 AuthType Basic
                 AuthName "Login ${SETSPACE_APACHE2_SERVER_NAME}"
                 AuthBasicProvider file
-		AuthUserFile ${SETSPACE_WWW_ROOT}/etc/passwd
+		AuthUserFile ${SETSPACE_VHOST_ROOT}/etc/passwd
                 Require valid-user
         </Directory>
 
@@ -140,7 +141,7 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
                 AuthType Basic
                 AuthName "Login ${SETSPACE_APACHE2_SERVER_NAME}"
                 AuthBasicProvider file
-		AuthUserFile ${SETSPACE_WWW_ROOT}/etc/passwd
+		AuthUserFile ${SETSPACE_VHOST_ROOT}/etc/passwd
                 Require valid-user
         </Directory>
 
