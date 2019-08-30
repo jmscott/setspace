@@ -6,6 +6,11 @@
 #
 use utf8;
 
+require 'string2blob.pl';
+
+#  unbuffer output
+select(STDOUT);  $| = 1;
+
 #  stop apache log message 'Wide character in print at ...' from arrow chars
 binmode(STDOUT, ":utf8");
 
@@ -106,3 +111,5 @@ END
 print <<END;
 </dl>
 END
+
+

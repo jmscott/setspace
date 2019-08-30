@@ -1,5 +1,18 @@
-#  Put a string to a blob, digesting as $ENV{BLOBIO_ALGORITHM}, returning
-#  the udig of the blob
+#
+#  Synopsis:
+#	Put a string to a blob, digesting as $ENV{BLOBIO_ALGORITHM}, returning
+#	the udig of the blob
+#  Usage:
+#	string2blob('pdfbox-search', <<END);
+#	{
+#		"mydash.schema.setspace.com": {
+#			"pdfbox-search": {
+#				"q": "christopher potts stanford",
+#				...
+#			}
+#		}
+#	}
+#
 
 sub string2blob
 {
@@ -12,7 +25,7 @@ sub string2blob
 
 	#  put_string2blob() not reentrant!
 
-	our $path = "$ENV{TMPDIR}/put_string2blob.$$";
+	our $path = "$ENV{TMPDIR}/$what.$$";
 	die "refuse to overwrite existing temp file: $path" if -e $path;
 
 	my $TMP;
