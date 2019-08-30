@@ -1,6 +1,9 @@
 #
 #  Synopsis:
 #       Template apache2 vhost config for {www,dash,noc}.setspace...
+#  Note:
+#	Perl needs DBD/Pg.pm in path.  Add /opt/local/bin for perl managed
+#	by mac ports or /usr/local/bin for homebrew.
 #
 
 #  See https://github.com/jmscott/setspace
@@ -33,12 +36,15 @@ Define SETSPACE_PGDATABASE setspace
 
 #  probably no need to change remaining
 
+#  Perl needs DBD/Pg.pm in path.  Add /opt/local/bin for perl managed
+#  by mac ports or /usr/local/bin for homebrew.
+
 Define SETSPACE_PATH ${SETSPACE_PGHOME}/bin:${SETSPACE_BLOBIO_ROOT}/bin:/usr/bin:/bin
 
 Define SETSPACE_APACHE2_SERVER_NAME ${SETSPACE_DNS_VHOST_PREFIX}.setspace.${SETSPACE_DNS_VHOST_SUFFIX}
 Define SETSPACE_WWW_ROOT ${SETSPACE_ROOT}/www
 Define SETSPACE_VHOST_ROOT ${SETSPACE_ROOT}/www/vhost/${SETSPACE_APACHE2_SERVER_NAME}
-Define SETSPACE_PERL5LIB ${SETSPACE_VHOST_ROOT}/lib:${SETSPACE_WWW_ROOT}:${SETSPACE_JMSCOTT_ROOT}/www/lib
+Define SETSPACE_PERL5LIB ${SETSPACE_VHOST_ROOT}/lib:${SETSPACE_WWW_ROOT}/lib:${SETSPACE_JMSCOTT_ROOT}/www/lib
 
 #  always encrypted
 Define SETSPACE_APACHE2_SERVER_PORT 443
