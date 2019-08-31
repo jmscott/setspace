@@ -31,7 +31,6 @@ print STDERR 'pdfbox-full-text-search-click: ', utf82blob(<<END);
 {
 	"mydash.schema.setspace.com": {
 		"pdfbox-full-text-search-click": {
-			"q": $q,
 			"qtype": $qtype,
 			"discover-unix-epoch": $unix_epoch,
 			"pdf_blob": $udig
