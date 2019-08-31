@@ -5,20 +5,19 @@
 #	/cgi-bin/pdfbox?out=dl&q=neural+cryptography
 #
 use utf8;
+use Time::HiRes qw(gettimeofday);
 
 require 'utf82blob.pl';
+require 'dbi-pg.pl';
+require 'common-json.pl';
+require 'httpd2.d/common.pl';
+require 'pdfbox.d/common.pl';
 
 #  unbuffer output
 select(STDOUT);  $| = 1;
 
 #  stop apache log message 'Wide character in print at ...' from arrow chars
 binmode(STDOUT, ":utf8");
-
-use Time::HiRes qw(gettimeofday);
-
-require 'dbi-pg.pl';
-require 'httpd2.d/common.pl';
-require 'pdfbox.d/common.pl';
 
 our %QUERY_ARG;
 
@@ -111,3 +110,25 @@ END
 print <<END;
 </dl>
 END
+
+#  save the user text search as a json blob in mydash.schema.setspace.com
+
+$q = utf82json_string($QUERY_ARG{q});
+my $qtype = utf82json_string($QUERY_ARG{qtype});
+my $unix_epoch = time();
+
+my $env = env2json(2);
+
+print STDERR 'pdfbox-full-text-search: ', utf82blob(<<END);
+{
+	"mydash.schema.setspace.com": {
+		"pdfbox-full-text-search": {
+			"q": $q,
+			"qtype": $qtype,
+			"discover-unix-epoch": $unix_epoch
+		}
+	},
+	"cgi-bin-environment": $env
+}
+END
+;
