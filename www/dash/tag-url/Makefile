@@ -28,7 +28,6 @@ install: all
 	install								\
 		tag-url.d/a.pl						\
 		tag-url.d/click.pl					\
-		tag-url.d/common.pl					\
 		tag-url.d/div.err.pl					\
 		tag-url.d/div.nav.pl					\
 		tag-url.d/dl.pl						\

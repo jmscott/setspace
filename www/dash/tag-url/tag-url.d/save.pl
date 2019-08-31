@@ -5,7 +5,7 @@
 #  	Do not require user to be logged in.
 #  	Shouldn't the user be logged in?
 #
-require 'tag-url.d/common.pl';
+require 'common-json.pl';
 require 'utf82blob.pl';
 
 select STDOUT; $| = 1;		#  flush the output

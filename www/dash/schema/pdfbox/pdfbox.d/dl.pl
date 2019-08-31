@@ -6,7 +6,7 @@
 #
 use utf8;
 
-require 'string2blob.pl';
+require 'utf82blob.pl';
 
 #  unbuffer output
 select(STDOUT);  $| = 1;
@@ -111,5 +111,3 @@ END
 print <<END;
 </dl>
 END
-
-

@@ -48,6 +48,7 @@ install:
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
 		apache2-vhost.conf.example				\
 		apache2-passwd.example					\
+		common-json.pl						\
 		utf82blob.pl						\
 		$(WWW_ROOT)/lib
 ifdef DASH_DNS_VHOST_SUFFIX
