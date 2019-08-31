@@ -5,6 +5,9 @@
 #	WTF?  No validation is done on the blob.  In fact, the blob is
 #	assumed to exist and be correct.  Terrible.
 #
+require 'utf82blob.pl';
+require 'common-json.pl';
+
 our %QUERY_ARG;
 
 my $udig = $QUERY_ARG{udig};
@@ -15,4 +18,27 @@ print STDERR "pdfbox.d/blob: blobio get $udig: exit status=$status\n"
 	unless $status == 0
 ;
 
+#  save the blob fetched and details of search
+
+my $q = utf82json_string($QUERY_ARG{q});
+my $qtype = utf82json_string($QUERY_ARG{qtype});
+my $unix_epoch = time();
+$udig = utf82json_string($udig);
+
+my $env = env2json(2);
+
+print STDERR 'pdfbox-full-text-search-click: ', utf82blob(<<END);
+{
+	"mydash.schema.setspace.com": {
+		"pdfbox-full-text-search-click": {
+			"q": $q,
+			"qtype": $qtype,
+			"discover-unix-epoch": $unix_epoch,
+			"pdf_blob": $udig
+		}
+	},
+	"cgi-bin-environment": $env
+}
+END
+;
 1;
