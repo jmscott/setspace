@@ -5,9 +5,10 @@
 #  	Do not require user to be logged in.
 #  	Shouldn't the user be logged in?
 #
-select STDOUT; $| = 1;		#  flush the output
-
 require 'tag-url.d/common.pl';
+require 'utf82blob.pl';
+
+select STDOUT; $| = 1;		#  flush the output
 
 our %QUERY_ARG;
 
