@@ -111,7 +111,7 @@ print <<END;
 </dl>
 END
 
-return unless $q;		#  no search so nothing to record
+return 1 unless $q;		#  no search so nothing to record
 
 #  save the user text search as a json blob in mydash.schema.setspace.com
 
