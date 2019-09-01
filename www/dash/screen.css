@@ -360,7 +360,7 @@ dt.no-title
 #q
 {
 	font-size:		larger;
-	width:			100%;
+	width:			66%;
 	background-color:	black;
 	color:			lightgreen;
 	font:			monospace;
@@ -386,3 +386,7 @@ dl.query span.detail
 	display:	block;
 }
 
+.udig
+{
+	font-family:	monospace;
+}
