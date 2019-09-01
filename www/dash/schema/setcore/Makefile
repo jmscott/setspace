@@ -36,6 +36,7 @@ install: all
 		index.shtml						\
 		nav.shtml						\
 		schema.shtml						\
+		screen.css						\
 		$(WWW_PREFIX)/htdocs/schema/setcore
 	install setcore.cgi $(WWW_PREFIX)/lib
 

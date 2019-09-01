@@ -42,19 +42,18 @@ while (my $r = $qh->fetchrow_hashref()) {
 	my $byte_count = $r->{byte_count};
 	my $bitmap = $r->{bitmap};
 	$bitmap =~ s/0//g;
-	my $byte_density = sprintf('%.1f %%', 100 * length($bitmap) / 256);
+	my $byte_coverage = sprintf('%.1f %%', 100 * length($bitmap) / 256);
 	my $is_utf8 = $r->{is_utf8};
 	my $prefix = encode_html_entities($r->{prefix});
 	my $suffix = encode_html_entities($r->{suffix});
 	print <<END;
- <dt>$blob</dt>
+ <dt class="udig">$blob</dt>
  <dd>
-   discovered: $discover_elapsed,
-   size: $byte_count bytes,
-   utf8: $is_utf8,
-   byte density: $byte_density,
-   prefix: $prefix,
-   suffix: $suffix
+  $discover_elapsed,
+  $byte_count bytes,
+  $byte_coverage bytes covered,
+  <span class="prefix">$prefix</span> ...
+  <span class="suffix">$suffix</span>
  </dd>
 END
 }

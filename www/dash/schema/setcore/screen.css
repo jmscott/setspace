@@ -1,0 +1,11 @@
+#dl-setcore dd
+{
+	font-size:	smaller;
+}
+
+#dl-setcore span.prefix, #dl-setcore span.suffix
+{
+	font-size:		x-small;
+	background-color:	black;
+	color:			lightgreen;
+}
