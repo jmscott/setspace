@@ -35,6 +35,20 @@ print <<'END';
     <div class="handlers">
     <h3>Output Scripts in <code>$SERVER_ROOT/lib/setcore.d</code></h3>
     <dl>
+     <dt>input</dt>
+     <dd>
+<div class="query-args">
+ <h4>Query Args</h4>
+ <dl>
+  <dt>q</dt>
+  <dd>
+   <ul>
+    <li><code>perl5_re:</code> .{0,255}</li>
+   </ul>
+  </dd>
+  </dl>
+</div>
+     </dd>
      <dt>dl</dt>
      <dd>
 <div class="query-args">
@@ -52,6 +66,12 @@ print <<'END';
    <ul>
     <li><code>default:</code> 0</li>
     <li><code>perl5_re:</code> [+0-9]{1,10}</li>
+   </ul>
+  </dd>
+  <dt>q</dt>
+  <dd>
+   <ul>
+    <li><code>perl5_re:</code> .{0,255}</li>
    </ul>
   </dd>
   </dl>
@@ -89,6 +109,12 @@ print <<'END';
    <ul>
     <li><code>default:</code> 0</li>
     <li><code>perl5_re:</code> [+0-9]{1,10}</li>
+   </ul>
+  </dd>
+  <dt>q</dt>
+  <dd>
+   <ul>
+    <li><code>perl5_re:</code> .{0,255}</li>
    </ul>
   </dd>
   </dl>

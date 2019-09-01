@@ -8,6 +8,28 @@
     rel="stylesheet"
     type="text/css"
   />
+  <style>
+    /*<![CDATA[*/
+    #inputq
+    {
+  	width:		66%;
+    }
+    body
+    {
+	cursor:	wait;
+    }
+    /*]]>*/
+  </style>
+
+  <script type="text/javascript">
+    /*<![CDATA[*/
+
+    window.onload=function() {
+	document.body.style.cursor='default';
+    }
+
+    /*]]>*/
+  </script>
  </head>
 
  <body>
@@ -16,6 +38,15 @@
    <!--#include virtual="/schema/setcore/nav.shtml" -->
    <div id="content">
     <h2>Search Core Blobs</h2>
+    <form method="GET">
+     <!--#include virtual=
+       "/cgi-bin/setcore?out=input&id=inputq&${QUERY_STRING}"
+     -->
+     <input
+       type="submit"
+       value="Find Blob"
+     />
+    </form>
     <!--#include virtual="/cgi-bin/setcore?out=dl&${QUERY_STRING}" -->
     <!--#include virtual="/cgi-bin/setcore?out=span.nav&${QUERY_STRING}" -->
    </div>

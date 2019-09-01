@@ -13,13 +13,26 @@ require 'setcore.d/common.pl';
 our %QUERY_ARG;
 
 my $q = $QUERY_ARG{q};
+$q =~ s/^\s+|\s+$//g;
 
 print <<END;
 <dl$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
- <thead>
 END
 
-my $qh = recent_select();
+print STDERR "WTF: q=$q\n";
+
+my $qh;
+if ($q =~ /^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$/) {		# blob
+	$qh = select_blob($q);
+} elsif ($q) {
+	print <<END;
+  Query must be either a blob (udig) or empty.
+</dl>
+END
+	return 1;
+} else {
+	$qh = select_recent();
+}
 
 #  Write the matching blobs <tr>
 

@@ -13,6 +13,15 @@
   </examples>
   <out content-type="text/html">
 
+   <putter name="input">
+    <query-args>
+     <arg
+     	name="q"
+	perl5_re=".{0,255}"
+     />
+    </query-args>
+   </putter>
+
    <putter name="dl">
     <query-args>
      <arg
@@ -24,6 +33,10 @@
      	name="offset"
 	perl5_re="[+0-9]{1,10}"
 	default="0"
+     />
+     <arg
+     	name="q"
+	perl5_re=".{0,255}"
      />
     </query-args>
    </putter>
@@ -49,6 +62,10 @@
      	name="offset"
 	perl5_re="[+0-9]{1,10}"
 	default="0"
+     />
+     <arg
+     	name="q"
+	perl5_re=".{0,255}"
      />
     </query-args>
    </putter>

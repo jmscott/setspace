@@ -19,13 +19,23 @@ require 'setcore.d/common.pl';
 
 our %QUERY_ARG;
 
+my $q = $QUERY_ARG{q};
+$q =~ s/^\s+|\s+$//g;
 my $offset = $QUERY_ARG{offset};
 my $limit = 10;
 
+my $WHERE;
+if ($q =~ /^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$/) {		# blob
+	$WHERE =<<END;
+WHERE
+  	s.blob = '$q'::udig
+END
+}
+
 my $r = dbi_pg_select(
 		db =>	dbi_pg_connect(),
-		tag =>	'select-span-stat',
-		sql => q(
+		tag =>	'setcore-select-span-stat',
+		sql => <<END
 SELECT
 	count(*) AS blob_count
   FROM
@@ -35,7 +45,9 @@ SELECT
 	  JOIN setcore.byte_bitmap bit ON (bit.blob = s.blob)
 	  JOIN setcore.byte_prefix_32 p32 ON (p32.blob = s.blob)
 	  JOIN setcore.byte_suffix_32 s32 ON (s32.blob = s.blob)
-))->fetchrow_hashref();
+  $WHERE
+END
+)->fetchrow_hashref();
 
 my $blob_count = $r->{blob_count};
 

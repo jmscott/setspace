@@ -44,9 +44,28 @@ $CGI{GET}->{out}->{'query-args'}->{arg}->{class} = {
 #  'out' query argument must match one of the out putter names.
 #
 $CGI{GET}->{out}->{'query-args'}->{arg}->{out} = {
-	perl5_re	=> 	'dl|table|(?:span[.]nav)|help',
+	perl5_re	=> 	'input|dl|table|(?:span[.]nav)|help',
 	default		=>	'help',
 };
+#
+#  BEGIN: /cgi/GET/out/putter[@name='input']
+#
+$CGI{GET}->{out}->{putter}->{'input'}->{name} = 'input';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=input]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'input'}->{'query-args'}->{arg}->{q} = {
+	perl5_re	=>	'.{0,255}',
+};
+#
+#  END: /cgi/GET/out/putter[@name=input]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='input']
+#
+
 #
 #  BEGIN: /cgi/GET/out/putter[@name='dl']
 #
@@ -61,6 +80,9 @@ $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{lim} = {
 };
 $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{offset} = {
 	perl5_re	=>	'[+0-9]{1,10}',
+};
+$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{q} = {
+	perl5_re	=>	'.{0,255}',
 };
 #
 #  END: /cgi/GET/out/putter[@name=dl]/query-args
@@ -103,6 +125,9 @@ $CGI{GET}->{out}->{putter}->{'span.nav'}->{name} = 'span.nav';
 #
 $CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{offset} = {
 	perl5_re	=>	'[+0-9]{1,10}',
+};
+$CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{q} = {
+	perl5_re	=>	'.{0,255}',
 };
 #
 #  END: /cgi/GET/out/putter[@name=span.nav]/query-args
