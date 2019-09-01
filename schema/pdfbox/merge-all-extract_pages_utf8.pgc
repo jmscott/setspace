@@ -13,6 +13,17 @@
  *	3	error reading from file system
  *	4	sql error
  *	5	sql warning
+ *  Note:
+ *	Should warns be logged but no cause an abort.  In particluar
+ *	the error
+ *
+ *		'SQLWARNING: 54000: word is too long to be indexed'
+ *
+ *	seems to be harmless.  See pdf blob
+ *
+ *		bc160:47478b37abe3005eeaca9e1ef0c21788676d26e5
+ *
+ *	for an example of pages with words that can not be indexed.
  */
 
 static char progname[] = "merge-all-extract_pages_utf8";
