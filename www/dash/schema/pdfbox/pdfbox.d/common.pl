@@ -2,6 +2,8 @@
 #  Synopsis:
 #	Common routines for full text search.
 #  Note:
+#       for web search sunstitute | with OR amd ! WITH -
+#
 #	Need to strip the english 'ago' verbage in discover_elapsed.
 #
 
