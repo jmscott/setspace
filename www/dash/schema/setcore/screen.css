@@ -9,4 +9,15 @@
 	font-size:		x-small;
 	background-color:	black;
 	color:			lightgreen;
+	display:		inline-block;
+}
+
+pre.hexdump
+{
+	width:			100%;
+	font-size:		larger;
+	font-family:		monospace;
+	background-color:	black;
+	color:			lightgreen;
+	display:		inline-block;
 }

@@ -19,8 +19,6 @@ print <<END;
 <dl$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END
 
-print STDERR "WTF: q=$q\n";
-
 my $qh;
 if ($q =~ /^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$/) {		# blob
 	$qh = select_blob($q);
@@ -56,6 +54,10 @@ while (my $r = $qh->fetchrow_hashref()) {
   $byte_coverage coverage,
   <span class="bytedump">$prefix</span> ...
   <span class="bytedump">$suffix</span>
+  <a
+    title="$blob Detail in SetCore"
+    href="detail.shtml?blob=$blob"
+  >Detail</a>
  </dd>
 END
 }
