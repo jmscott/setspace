@@ -51,9 +51,9 @@ while (my $r = $qh->fetchrow_hashref()) {
  <dd>
   $discover_elapsed,
   $byte_count bytes,
-  $byte_coverage bytes covered,
-  <span class="prefix">$prefix</span> ...
-  <span class="suffix">$suffix</span>
+  $byte_coverage coverage,
+  <span class="bytedump">$prefix</span> ...
+  <span class="bytedump">$suffix</span>
  </dd>
 END
 }

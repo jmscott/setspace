@@ -3,8 +3,9 @@
 	font-size:	smaller;
 }
 
-#dl-setcore span.prefix, #dl-setcore span.suffix
+#dl-setcore span.bytedump
 {
+	font-family:		monospace;
 	font-size:		x-small;
 	background-color:	black;
 	color:			lightgreen;
