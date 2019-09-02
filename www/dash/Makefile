@@ -34,6 +34,7 @@ install: all
 	install -d $(WWW_PREFIX)/lib
 	install -d $(WWW_PREFIX)/cgi-bin
 	install -d $(WWW_PREFIX)/htdocs
+	install -m a=rwx -d $(WWW_PREFIX)/tmp
 
 	install 							\
 		env.shtml						\
