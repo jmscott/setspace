@@ -25,11 +25,11 @@ SELECT
 	s32.suffix
   FROM
   	setcore.service s
-	  JOIN setcore.byte_count bc ON (bc.blob = s.blob)
-	  JOIN setcore.is_utf8wf u8 ON (u8.blob = s.blob)
-	  JOIN setcore.byte_bitmap bit ON (bit.blob = s.blob)
-	  JOIN setcore.byte_prefix_32 p32 ON (p32.blob = s.blob)
-	  JOIN setcore.byte_suffix_32 s32 ON (s32.blob = s.blob)
+	  LEFT JOIN setcore.byte_count bc ON (bc.blob = s.blob)
+	  LEFT JOIN setcore.is_utf8wf u8 ON (u8.blob = s.blob)
+	  LEFT JOIN setcore.byte_bitmap bit ON (bit.blob = s.blob)
+	  LEFT JOIN setcore.byte_prefix_32 p32 ON (p32.blob = s.blob)
+	  LEFT JOIN setcore.byte_suffix_32 s32 ON (s32.blob = s.blob)
   ORDER BY
   	s.discover_time DESC
   LIMIT

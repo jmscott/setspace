@@ -39,12 +39,7 @@ my $r = dbi_pg_select(
 SELECT
 	count(*) AS blob_count
   FROM
-  	setcore.service s
-	  JOIN setcore.byte_count bc ON (bc.blob = s.blob)
-	  JOIN setcore.is_utf8wf u8 ON (u8.blob = s.blob)
-	  JOIN setcore.byte_bitmap bit ON (bit.blob = s.blob)
-	  JOIN setcore.byte_prefix_32 p32 ON (p32.blob = s.blob)
-	  JOIN setcore.byte_suffix_32 s32 ON (s32.blob = s.blob)
+  	setcore.service
   $WHERE
 END
 )->fetchrow_hashref();
