@@ -2,6 +2,10 @@
 #  Synopsis:
 #       Template apache2 vhost config for {www,dash,noc}.setspace...
 #  Note:
+#	Need to add variable for SSL_CERT_PATH.  The current path values
+#	are for mac ports apache, which requires rewriting on various
+#	linuces.
+#
 #	Perl needs DBD/Pg.pm in path.  Add /opt/local/bin for perl managed
 #	by mac ports or /usr/local/bin for homebrew.
 #
@@ -73,6 +77,9 @@ Listen ${SETSPACE_APACHE2_SERVER_PORT}
 
 	SetEnv SETSPACE_ROOT ${SETSPACE_ROOT}
 	SetEnv SERVER_ROOT ${SETSPACE_VHOST_ROOT}
+	<IfDefine !TMPDIR>
+		SetEnv TMPDIR ${SETSPACE_VHOST_ROOT}/tmp
+	</IfDefine>
 
 	SetEnv PGHOST ${SETSPACE_PGHOST}
 	SetEnv PGPORT ${SETSPACE_PGPORT}
