@@ -24,6 +24,9 @@ install:
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		-d $(WWW_ROOT)/htdocs
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+		-m a+wrx						\
+		-d $(WWW_ROOT)/tmp
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		-d $(WWW_ROOT)/htdocs/icon
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
