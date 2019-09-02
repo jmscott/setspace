@@ -43,7 +43,8 @@ while (my $r = $qh->fetchrow_hashref()) {
 	my $bitmap = $r->{bitmap};
 	$bitmap =~ s/0//g;
 	my $byte_coverage = sprintf('%.1f %%', 100 * length($bitmap) / 256);
-	my $is_utf8 = $r->{is_utf8};
+	my $is_utf8 = 'UTF8';
+	$is_utf8 = 'not UTF8' unless $r->{is_utf8};
 	my $prefix = encode_html_entities($r->{prefix});
 	my $suffix = encode_html_entities($r->{suffix});
 	print <<END;
@@ -51,6 +52,7 @@ while (my $r = $qh->fetchrow_hashref()) {
  <dd>
   $discover_elapsed,
   $byte_count bytes,
+  $is_utf8,
   $byte_coverage coverage,
   <span class="bytedump">$prefix</span> ...
   <span class="bytedump">$suffix</span>
