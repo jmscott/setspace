@@ -1,12 +1,12 @@
 #
 #  Synopsis:
-#	Write <div> help page for script tag-url.
+#	Write <div> help page for script tag-http.
 #  Source Path:
-#	tag-url.cgi
+#	tag-http.cgi
 #  Source SHA1 Digest:
 #	No SHA1 Calculated
 #  Note:
-#	tag-url.d/help.pl was generated automatically by cgi2perl5.
+#	tag-http.d/help.pl was generated automatically by cgi2perl5.
 #
 #	Do not make changes directly to this script.
 #
@@ -17,14 +17,14 @@ print <<END;
 <div$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END
 print <<'END';
- <h1>Help Page for <code>/cgi-bin/tag-url</code></h1>
+ <h1>Help Page for <code>/cgi-bin/tag-http</code></h1>
  <div class="overview">
   <h2>Overview</h2>
   <dl>
 <dt>Title</dt>
-<dd>/cgi-bin/tag-url</dd>
+<dd>/cgi-bin/tag-http</dd>
 <dt>Synopsis</dt>
-<dd>HTTP CGI Script /cgi-bin/tag-url</dd>
+<dd>HTTP CGI Script /cgi-bin/tag-http</dd>
 <dt>Blame</dt>
 <dd>jmscott</dd>
   </dl>
@@ -33,7 +33,7 @@ print <<'END';
   <h2><code>GET</code> Request.</h2>
    <div class="out">
     <div class="handlers">
-    <h3>Output Scripts in <code>$SERVER_ROOT/lib/tag-url.d</code></h3>
+    <h3>Output Scripts in <code>$SERVER_ROOT/lib/tag-http.d</code></h3>
     <dl>
      <dt>a</dt>
      <dd>
@@ -182,8 +182,8 @@ print <<'END';
 <div class="examples">
  <h3>Examples</h3>
  <dl>
-   <dt><a href="/cgi-bin/tag-url?/cgi-bin/tag-url?help">/cgi-bin/tag-url?/cgi-bin/tag-url?help</a></dt>
-   <dd>Generate This Help Page for the CGI Script /cgi-bin/tag-url</dd>
+   <dt><a href="/cgi-bin/tag-http?/cgi-bin/tag-http?help">/cgi-bin/tag-http?/cgi-bin/tag-http?help</a></dt>
+   <dd>Generate This Help Page for the CGI Script /cgi-bin/tag-http</dd>
  </dl>
 </div>
  </div>

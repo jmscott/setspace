@@ -20,7 +20,7 @@ my $env = env2json(2);
 my $json =<<END;
 {
 	"mydash.schema.setspace.com": {
-		"tag-url": {
+		"tag-http": {
 			"url": $url,
 			"title": $title,
 			"discover-unix-epoch": $unix_epoch
@@ -31,7 +31,7 @@ my $json =<<END;
 END
 
 my $udig = utf82blob($json);
-print STDERR "tag-url: json request: udig=$udig\n";
+print STDERR "tag-http: json request: udig=$udig\n";
 
 print <<END;
 Status: 303

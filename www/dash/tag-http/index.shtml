@@ -62,7 +62,7 @@
    <div id="content">
     <h2>How to add the "Tag" button to Your Browser</h2>
     <button onclick="copy_button_js()">Copy Javascript</button>
-    <!--#include virtual="/cgi-bin/tag-url?out=textarea&id=tag-button-js" -->
+    <!--#include virtual="/cgi-bin/tag-http?out=textarea&id=tag-button-js" -->
    </div>
    <!--#include virtual="/footer.shtml" -->
   </div>

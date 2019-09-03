@@ -19,10 +19,10 @@ endif
 
 all:
 	cd schema && $(MAKE) $(MFLAGS) all
-	cd tag-url && $(MAKE) $(MFLAGS) all
+	cd tag-http && $(MAKE) $(MFLAGS) all
 clean:
 	cd schema && $(MAKE) $(MFLAGS) clean
-	cd tag-url && $(MAKE) $(MFLAGS) clean
+	cd tag-http && $(MAKE) $(MFLAGS) clean
 
 install: all
 
@@ -59,11 +59,11 @@ install: all
 		      $(WWW_PREFIX)/htdocs/icon
 
 	cd schema && $(MAKE) $(MFLAGS) install
-	cd tag-url && $(MAKE) $(MFLAGS) install
+	cd tag-http && $(MAKE) $(MFLAGS) install
 
 distclean:
 	cd schema && $(MAKE) $(MFLAGS) distclean
-	cd tag-url && $(MAKE) $(MFLAGS) distclean
+	cd tag-http && $(MAKE) $(MFLAGS) distclean
 	rm -rf $(WWW_PREFIX)/lib
 	rm -rf $(WWW_PREFIX)/cgi-bin
 	rm -rf $(WWW_PREFIX)/htdocs

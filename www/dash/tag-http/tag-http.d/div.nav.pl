@@ -48,8 +48,8 @@ END
 
 my $Q = dbi_select(
 	db	=>	dbi_connect(),
-	tag	=>	'tag-url-div.nav-count',
-	#dump	=>	'>/tmp/tag-url-div.nav-count.sql',
+	tag	=>	'tag-http-div.nav-count',
+	#dump	=>	'>/tmp/tag-http-div.nav-count.sql',
 	sql	=>	<<END
 select
 	count(distinct u.uri) as uri_count

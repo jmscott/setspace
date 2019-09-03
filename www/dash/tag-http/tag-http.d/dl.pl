@@ -79,8 +79,8 @@ END
 
 my $Q = dbi_select(
 	db	=>	dbi_connect(),
-	tag	=>	'tag-url-dl',
-	#dump	=>	'>/tmp/tag-url-dl.sql',
+	tag	=>	'tag-http-dl',
+	#dump	=>	'>/tmp/tag-http-dl.sql',
 	sql	=>	<<END
 /*
  *  Table is composed of search results in common table expression joined
@@ -145,7 +145,7 @@ while (my $r = $Q->fetchrow_hashref()) {
  <a
    title="$title"
    target="_blank"
-   href="/cgi-bin/tag-url?out=click&amp;udig=$blob">$title</a>
+   href="/cgi-bin/tag-http?out=click&amp;udig=$blob">$title</a>
 </dt>
 <dd>
  <div class="meta">

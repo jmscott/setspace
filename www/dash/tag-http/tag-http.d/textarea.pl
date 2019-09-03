@@ -2,17 +2,17 @@
 #  Synopsis:
 #	Write http <textarea> of javascript code to tag a url.
 #  See:
-#	$SETSPACE_ROOT/schema/mydash/lib/tag-url.js
+#	$SETSPACE_ROOT/schema/mydash/lib/tag-http.js
 #
 
 our %QUERY_ARG;
 
-my $JS_PATH = "$ENV{SERVER_ROOT}/lib/tag-url.js";
+my $JS_PATH = "$ENV{SERVER_ROOT}/lib/tag-http.js";
 my $JS;
 
 sub _die
 {
-	die "ERROR: tag-url/textarea: $_[0]";
+	die "ERROR: tag-http/textarea: $_[0]";
 }
 
 #  slurp up 

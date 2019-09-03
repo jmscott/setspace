@@ -46,8 +46,8 @@ our %QUERY_ARG;
 my ($udig, $uri) = (text2xml($QUERY_ARG{udig}));
 my $q = dbi_select(
 	db	=>	dbi_connect(),
-	tag	=>	'tag-url-click',
-	#dump	=>	'>/tmp/tag-url-click.sql',
+	tag	=>	'tag-http-click',
+	#dump	=>	'>/tmp/tag-http-click.sql',
 	#trace	=>	15,
 	sql	=>	<<END
 select

@@ -24,7 +24,7 @@ print <<END;
 END
 
 my $q = dbi_select(
-		tag =>	'tag-url-host-select',
+		tag =>	'tag-http-host-select',
 		sql =>	<<END
 select
 	h.value as "hostname",
