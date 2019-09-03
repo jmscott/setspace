@@ -90,4 +90,51 @@ CREATE TRIGGER insert_tag_http_title_tsv AFTER INSERT
   ON tag_http_title FOR EACH ROW EXECUTE PROCEDURE insert_tag_http_title_tsv()
 ;
 
+DROP TABLE IF EXISTS trace_fdr CASCADE;
+CREATE TABLE trace_fdr
+(
+	start_time	timestamptz CHECK(
+				start_time >= '1970/01/01'
+			) NOT NULL,
+	blob		udig
+				REFERENCES setcore.service
+				NOT NULL,
+	ok_count	bigint CHECK (
+				ok_count >= 0
+			) NOT NULL,
+	fault_count	bigint CHECK (
+				fault_count >= 0
+			) NOT NULL,
+	wall_duration	interval CHECK (
+				wall_duration >= '0 seconds'
+			) NOT NULL,
+	log_sequence	bigint CHECK (
+				flow_sequence >= 0
+			) NOT NULL,
+
+	PRIMARY KEY	(start_time, flow_sequence, blob)
+);
+COMMENT ON TABLE trace_fdr IS
+  'Trace history of Flow Detail Record for a blob'
+;
+
+COMMENT ON COLUMN trace_fdr.start_time IS
+  'When the flow started'
+;
+COMMENT ON COLUMN trace_fdr.blob IS
+  'The blob processed by the flow'
+;
+COMMENT ON COLUMN trace_fdr.ok_count IS
+  'Count of execution of processes (xdr) with known exit status'
+;
+COMMENT ON COLUMN trace_fdr.fault_count IS
+  'Count of execution of processes (xdr) with unknown exit status'
+;
+COMMENT ON COLUMN trace_fdr.wall_duration IS
+  'Duration of flow for all processes and queries'
+;
+COMMENT ON COLUMN trace_fdr.log_sequence IS
+  'Sequence of flow in current fdr log file'
+;
+
 COMMIT;
