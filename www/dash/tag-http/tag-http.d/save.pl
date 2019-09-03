@@ -1,9 +1,6 @@
 #
 #  Synopsis
-#	tag a url and redirect to that url.
-#  Note:
-#  	Do not require user to be logged in.
-#  	Shouldn't the user be logged in?
+#	tag an http/s web page and redirect to that page.
 #
 require 'common-json.pl';
 require 'utf82blob.pl';
