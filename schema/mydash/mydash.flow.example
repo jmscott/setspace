@@ -74,11 +74,11 @@ command unlock_in_flight
 #  in the database.
 #
 #	"mydash.schema.setspace.com": {
-#		"tag-url": {}
+#		"tag-http": {}
 #	}
 #
 
-sql query is_tag_url_json row
+sql query is_tag_http_json row
 {
 	statement = `
 SELECT
@@ -90,7 +90,7 @@ SELECT
 	    WHERE
 		doc @> '{
 			"mydash.schema.setspace.com":{
-				"tag-url":{}
+				"tag-http":{}
 			}
 		}'
 		AND
@@ -100,54 +100,52 @@ SELECT
 	  SELECT
 	  	blob
 	    FROM
-	    	mydash.tag_url
+	    	mydash.tag_http
 	    WHERE
 	    	blob = $1::udig
 	);`;
 
 	result row is (
-		is_tag_url bool,
-		tag_url_exists bool
+		is_tag_http bool,
+		tag_http_exists bool
 	);
 }
 
-query is_tag_url_json(brr.udig)
+query is_tag_http_json(brr.udig)
   when
   	lock_in_flight.exit_status == 0
 ;
 
-sql exec merge_tag_url
+sql exec merge_tag_http
 {
 	statement = `
-INSERT INTO mydash.tag_url (
+INSERT INTO mydash.tag_http (
 	blob,
 	url,
-	title,
 	discover_time
 )
 WITH request AS (
   SELECT
-	doc->'mydash.schema.setspace.com'->'tag-url' AS tag_url
+	doc->'mydash.schema.setspace.com'->'tag-http' AS tag_http
     FROM
   	jsonorg.jsonb_255
     WHERE
   	doc @> '{
 		"mydash.schema.setspace.com":{
-			"tag-url":{}
+			"tag-http":{}
 		}
 	}'
 	AND
 	blob = $1::udig
 ) SELECT
   	$1::udig,
-  	tag_url->'url',
-	tag_url->'title',
+  	tag_http->'url',
 	timestamptz 'epoch' +
-		(tag_url->'discover-unix-epoch')::bigint * interval '1 second'
+		(tag_http->'discover-unix-epoch')::bigint * interval '1 second'
     FROM
     	request
     WHERE
-    	length(tag_url->>'discover-unix-epoch') > 0
+    	length(tag_http->>'discover-unix-epoch') > 0
   ON CONFLICT
   	DO NOTHING
 ;
@@ -155,11 +153,11 @@ WITH request AS (
 	`;
 }
 
-query merge_tag_url(brr.udig)
+query merge_tag_http(brr.udig)
   when
-  	is_tag_url_json.is_tag_url == true
+  	is_tag_http_json.is_tag_http == true
 	and
-	is_tag_url_json.tag_url_exists == false
+	is_tag_http_json.tag_http_exists == false
 ;
 
 #
@@ -174,15 +172,15 @@ call unlock_in_flight(brr.udig)
   	lock_in_flight.exit_status == 0
 	and
 	(
-		is_tag_url_json.is_tag_url == false
+		is_tag_http_json.is_tag_http == false
 		or
 		(
-			is_tag_url_json.is_tag_url == true
+			is_tag_http_json.is_tag_http == true
 			and
 			(
-				merge_tag_url.rows_affected == 0
+				merge_tag_http.rows_affected == 0
 				or
-				merge_tag_url.rows_affected == 1
+				merge_tag_http.rows_affected == 1
 			)
 		)
 	)
