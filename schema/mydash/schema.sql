@@ -13,7 +13,7 @@ COMMENT ON SCHEMA mydash IS
   'Tables describing state of dashboard for a setspace user'
 ;
 
-CREATE TABLE tag_url
+CREATE TABLE tag_http
 (
 	blob		udig
 				REFERENCES setcore.service
@@ -24,13 +24,15 @@ CREATE TABLE tag_url
 	--  the url must be normalized!
 	url		text CHECK (
 				length(url) < 1024
+				AND
+				url ~ '^http[s]?'
 			) NOT NULL,
 	discover_time	timestamp CHECK (
 				discover_time >
 					'1970-01-01 00:00:00-00'
 			) NOT NULL
 );
-COMMENT ON TABLE tag_url IS
+COMMENT ON TABLE tag_http IS
   'Table of urls tagged in a browser in the dashboard'
 ;
 
