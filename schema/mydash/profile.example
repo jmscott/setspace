@@ -15,9 +15,6 @@ export MYDASH_ROOT=${MYDASH_ROOT:=$SCHEMA_ROOT}
 #  create the spool file so tail doesn't abort.
 #  Note: got to be a better way. perhaps flowd.tail ought to create the file.
 touch $SCHEMA_ROOT/spool/jsonio.brr
-chmod u=rw,g=w,o= $SCHEMA_ROOT/spool/prefixio.brr
+chmod u=rw,g=w,o= $SCHEMA_ROOT/spool/jsonio.brr
 
 PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
-
-export MYDASH_APP_JAR=${MYDASH_APP_JAR:=/usr/local/lib/pdfbox-app-2.jar}
-export CLASSPATH=$MYDASH_ROOT/lib:$MYDASH_APP_JAR:$CLASSPATH
