@@ -405,7 +405,7 @@ CREATE TABLE page_tsv_utf8
 				)
 				ON DELETE CASCADE
 );
-CREATE INDEX rumidx ON page_tsv_utf8
+CREATE INDEX page_tsv_utf8_rumidx ON page_tsv_utf8
   USING
   	rum (tsv rum_tsvector_ops)
 ;
