@@ -109,10 +109,10 @@ CREATE TABLE trace_fdr
 				wall_duration >= '0 seconds'
 			) NOT NULL,
 	log_sequence	bigint CHECK (
-				flow_sequence >= 0
+				log_sequence >= 0
 			) NOT NULL,
 
-	PRIMARY KEY	(start_time, flow_sequence, blob)
+	PRIMARY KEY	(start_time, log_sequence, blob)
 );
 COMMENT ON TABLE trace_fdr IS
   'Trace history of Flow Detail Record for a blob'
