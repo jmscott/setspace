@@ -93,6 +93,8 @@ CREATE TRIGGER insert_tag_http_title_tsv AFTER INSERT
 DROP TABLE IF EXISTS trace_fdr CASCADE;
 CREATE TABLE trace_fdr
 (
+	schema_name	name
+				NOT NULL,
 	start_time	timestamptz CHECK(
 				start_time >= '1970/01/01'
 			) NOT NULL,
@@ -112,10 +114,16 @@ CREATE TABLE trace_fdr
 				log_sequence >= 0
 			) NOT NULL,
 
-	PRIMARY KEY	(start_time, log_sequence, blob)
+	PRIMARY KEY	(start_time, log_sequence, schema_name)
 );
+CREATE INDEX trace_fdr_idx ON trace_fdr(blob);
+
 COMMENT ON TABLE trace_fdr IS
   'Trace history of Flow Detail Record for a blob'
+;
+
+COMMENT ON COLUMN trace_fdr.start_time IS
+  'Schema the logs describe'
 ;
 
 COMMENT ON COLUMN trace_fdr.start_time IS
@@ -136,5 +144,49 @@ COMMENT ON COLUMN trace_fdr.wall_duration IS
 COMMENT ON COLUMN trace_fdr.log_sequence IS
   'Sequence of flow in current fdr log file'
 ;
+
+DROP TABLE IF EXISTS trace_xdr CASCADE;
+CREATE TABLE trace_xdr
+(
+	schema_name		name
+					NOT NULL,
+	start_time		timestamptz CHECK(
+					start_time >= '1970/01/01'
+				) NOT NULL,
+	log_sequence		bigint CHECK (
+					log_sequence >= 0
+				) NOT NULL,
+	command_name		text CHECK (
+					command_name ~ '^[[:graph:]]{1,64}$'
+				) NOT NULL,
+
+	termination_class	text CHECK (
+					termination_class IN (
+						'OK',	--  exit OK
+						'ERR',	--  exit no OK
+						'SIG',	--  exit via signal
+						'NOPS'	--  no process status
+					)
+				) NOT NULL,
+	blob			udig
+					REFERENCES setcore.service
+					NOT NULL,
+	termination_code	int CHECK (
+					termination_code >= 0
+					AND
+					termination_code < 256
+				) NOT NULL,
+	wall_duration		interval CHECK (
+					wall_duration >= '0 seconds'
+				) NOT NULL,
+	system_duration		interval CHECK (
+					system_duration >= '0 seconds'
+				) NOT NULL,
+	user_duration		interval CHECK (
+					user_duration >= '0 seconds'
+				) NOT NULL,
+	PRIMARY KEY		(start_time, log_sequence, schema_name)
+);
+CREATE INDEX trace_xdr_idx ON trace_xdr(blob);
 
 COMMIT;
