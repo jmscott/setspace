@@ -23,6 +23,18 @@ COMMENT ON SCHEMA setcore IS
 	'Core setspace tables for common facts about blobs'
 ;
 
+CREATE DOMAIN rfc1123_hostname AS text
+  CHECK (
+  	length(VALUE) < 255
+	AND (
+		--  ip4
+		VALUE ~ '^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]).){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$'::text
+		OR
+		--  english domain name
+		--  Note:  replace [a-z] with alpha?
+		VALUE ~ '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]).)+([a-zA-Z0-9]{2,5}).?$'::text)
+);
+
 --  existing blobs
 
 DROP TABLE IF EXISTS setcore.service CASCADE;
@@ -151,4 +163,6 @@ CREATE DOMAIN unix_process_exit_status AS int2
 COMMENT ON DOMAIN unix_process_exit_status IS
   	'Exit status of Unix process'
 ;
+
+
 COMMIT;
