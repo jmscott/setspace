@@ -192,7 +192,7 @@ COMMENT ON TABLE trace_xdr IS
   'Trace flow of process execution records'
 ;
 COMMENT ON COLUMN trace_xdr.start_time IS
-  'Starting time of the process execution in a particular flow'
+  'Starting time of a particular process execution in a flow'
 ;
 COMMENT ON COLUMN trace_xdr.log_sequence IS
   'Log sequence number for a log file of a process execution in particular flow'
@@ -218,5 +218,70 @@ COMMENT ON COLUMN trace_xdr.system_duration IS
 COMMENT ON COLUMN trace_xdr.user_duration IS
   'The duration in user space (rusage) of process execution'
 ;
+
+DROP TABLE IF EXISTS trace_qdr CASCADE;
+CREATE TABLE trace_qdr
+(
+	schema_name		name
+					NOT NULL,
+	start_time		timestamptz CHECK(
+					start_time >= '1970/01/01'
+				) NOT NULL,
+	log_sequence		bigint CHECK (
+					log_sequence >= 0
+				) NOT NULL,
+	query_name		text CHECK (
+					query_name ~ '^[[:graph:]]{1,64}$'
+				) NOT NULL,
+	termination_class	text CHECK (
+					termination_class IN (
+						'OK',		--  exit OK
+						'ERR'		--  exit no OK
+					)
+				) NOT NULL,
+	blob			udig
+					NOT NULL,
+	sqlstate		text CHECK (
+					sqlstate ~ '^[0-9A-Z]{5}$'
+				) NOT NULL,
+	rows_affected		bigint CHECK (
+					rows_affected >= 0
+				),
+	wall_duration		interval CHECK (
+					wall_duration >= '0 seconds'
+				) NOT NULL,
+	query_duration		interval CHECK (
+					query_duration >= '0 seconds'
+				) NOT NULL,
+	PRIMARY KEY		(start_time, log_sequence, schema_name)
+);
+COMMENT ON TABLE trace_qdr IS
+  'Trace SQL queries across flows and schemas'
+;
+COMMENT ON COLUMN trace_qdr.start_time IS
+  'Starting time of the particular SQL query in a flow'
+;
+COMMENT ON COLUMN trace_qdr.log_sequence IS
+  'Log sequence in a log file of a particular SQL query in a flow'
+;
+COMMENT ON COLUMN trace_qdr.query_name IS
+  'Name of a particular SQL query in flow config for a flow on a blob'
+;
+COMMENT ON COLUMN trace_qdr.blob IS
+  'Blob of the SQL query in a particular flow'
+;
+COMMENT ON COLUMN trace_qdr.sqlstate IS
+  'The SQL state of a particular SQL query on a flow over a blob'
+;
+COMMENT ON COLUMN trace_qdr.rows_affected IS
+  'How many rows where affected in a particular SQL Query over a blob'
+;
+COMMENT ON COLUMN trace_qdr.wall_duration IS
+  'Wall clock duration of a particular sql query over a blob in a flow'
+;
+COMMENT ON COLUMN trace_qdr.query_duration IS
+  'The database duration of a particular sql query over a blob in a flow'
+;
+
 
 COMMIT;
