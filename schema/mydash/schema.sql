@@ -188,5 +188,35 @@ CREATE TABLE trace_xdr
 	PRIMARY KEY		(start_time, log_sequence, schema_name)
 );
 CREATE INDEX trace_xdr_idx ON trace_xdr(blob);
+COMMENT ON TABLE trace_xdr IS
+  'Trace flow of process execution records'
+;
+COMMENT ON COLUMN trace_xdr.start_time IS
+  'Starting time of the process execution in a particular flow'
+;
+COMMENT ON COLUMN trace_xdr.log_sequence IS
+  'Log sequence number for a log file of a process execution in particular flow'
+;
+COMMENT ON COLUMN trace_xdr.command_name IS
+  'Name of command in flow config of a process execution'
+;
+COMMENT ON COLUMN trace_xdr.termination_class IS
+  'How the process in flow terminated: OK, ERR, SIG, NOPS'
+;
+COMMENT ON COLUMN trace_xdr.blob IS
+  'The uniform digest of the blob processed by the executable'
+;
+COMMENT ON COLUMN trace_xdr.termination_code IS
+  'The unix exit status of the invocation of the process'
+;
+COMMENT ON COLUMN trace_xdr.wall_duration IS
+  'The wall clock duration of a unix process execution on a particular blob'
+;
+COMMENT ON COLUMN trace_xdr.system_duration IS
+  'The duration in the system space (rusage) of process execution'
+;
+COMMENT ON COLUMN trace_xdr.user_duration IS
+  'The duration in user space (rusage) of process execution'
+;
 
 COMMIT;
