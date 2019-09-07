@@ -7,6 +7,13 @@
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
  *  Note:
+ *	The maximum length for  domain rfc1123_hostname is one char too short
+ *	according to this article.
+ *
+ *		https://github.com/selfboot/AnnotatedShadowSocks/issues/41
+ *
+ *	Seems that the length be <= 255 ascii chars.
+ *
  *	Think about function has_utf8_prefix('prefix', bytea) that will hide
  *	exceptions for byte strings that are not castable to utf8.
  */
