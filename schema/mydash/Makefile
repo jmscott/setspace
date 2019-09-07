@@ -33,7 +33,7 @@ install:
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
 				-d $(MYDASH_PREFIX)/tmp
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
-		copy-remember_uri.sql					\
+		select-remember_uri.sql					\
 		mydash.flow.example					\
 		profile.example						\
 		psqlrc.example						\

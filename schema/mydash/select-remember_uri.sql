@@ -3,22 +3,19 @@
  *	Copy rows from version 1 table remember_uri to file remember_uri.row
  *  Usage:
  *	PGDATABASE=condor
- *	psql -f copy-remember_uri.sql
+ *	psql -f select-remember_uri.sql | head -1 | remember_uri2tag_http
  */
-\set ON_ERROR_STOP 1
-
+\set QUIET 1
 \pset tuples_only
 \pset format unaligned
 \pset fieldsep '\t'
-
-\o remember_uri.row
 
 SELECT
 	r.blob,
 	r.uri as url,
 	t.value as title,
 	h.value as host,
-	b.discover_time
+	extract(epoch from b.discover_time)::bigint as discover_unix_epoch
   FROM
   	remember_uri r
 	  JOIN blob b ON (b.id = r.blob)
@@ -28,4 +25,6 @@ SELECT
   	substring(r.uri, E'\t') IS NULL
 	AND
   	substring(t.value, E'\t') IS NULL
+	AND
+	r.uri ~ '^http(s)?:'
 ;
