@@ -283,5 +283,25 @@ COMMENT ON COLUMN trace_qdr.query_duration IS
   'The database duration of a particular sql query over a blob in a flow'
 ;
 
+DROP TABLE IF EXISTS tag_http_host;
+CREATE TABLE tag_http_host
+(
+	blob	udig
+			REFERENCES tag_http
+			ON DELETE CASCADE
+			PRIMARY KEY,
+	host	rfc1123_hostname
+			NOT NULL
+);
+COMMENT ON TABLE tag_http_host IS
+  'The dns host name or ip4 address for the tagged http url'
+;
+
+COMMENT ON COLUMN tag_http_host.blob IS
+  'Blob of request to tag a url'
+;
+COMMENT ON COLUMN tag_http_host.host IS
+  'The dns host name or ip4 address for the tagged http url'
+;
 
 COMMIT;
