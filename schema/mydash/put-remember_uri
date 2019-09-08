@@ -81,10 +81,11 @@ psql $V1_PGDATABASE							\
 		blobio eat --algorithm $BLOBIO_ALGORITHM --input-path $TMP_JSON
 	)
 	test $? = 0 || die "blobio eat failed: exit status=$?" 
+	JSON_UDIG=$BLOBIO_ALGORITHM:$DIGEST
 	blobio put							\
-		--udig $BLOBIO_ALGORITHM:$DIGEST			\
+		--udig $JSON_UDIG					\
 		--input-path $TMP_JSON					\
 		--service $BLOBIO_SERVICE
 	test $? = 0 || die "blobio put failed: exit status=$?"
-	echo ">$BLOB"
+	log ">$JSON_UDIG"
   done
