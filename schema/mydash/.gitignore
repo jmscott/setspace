@@ -1,9 +1,5 @@
-cgi-bin
 etc
-htdocs
-icon
-jmscott
 lib
 log
-passwd
-spool
+profile
+run
