@@ -42,16 +42,22 @@ trap leave EXIT
 log "SETSPACE_ROOT=$SETSPACE_ROOT"
 log "BLOBIO_SERVICE=$BLOBIO_SERVICE"
 log "BLOBIO_ALGORITHM=$BLOBIO_ALGORITHM"
+REMEMBER_URI_SQL=$SETSPACE_ROOT/schema/mydash/lib/select-remember_uri.sql
 
 log "v1 PGHOST: $V1_PGHOST"
 log "v1 PGPORT: $V1_PGPORT"
 log "v1 PGUSER: $V1_PGUSER"
 log "v1 PGDATABASE: $V1_PGDATABASE"
+log "select remember_uri sql: $REMEMBER_URI_SQL"
+test -r $REMEMBER_URI_SQL || die "can not read sql file: $REMEMBER_URI_SQL"
 
 cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed: exit status=$?"
 
 test -e etc/profile || die "missing expected file: $(pwd)/etc/profile"
 . etc/profile
+
+PATH="$SETSPACE_ROOT/schema/mydash/sbin:$PATH"
+log "PATH: $PATH"
 
 log "PGHOST: $PGHOST"
 log "PGPORT: $PGPORT"
@@ -60,7 +66,7 @@ log "PGDATABASE: $PGDATABASE"
 log "tmp json: $TMP_JSON"
 
 psql $V1_PGDATABASE							\
-	--file lib/select-remember_uri.sql				\
+	--file $REMEMBER_URI_SQL					\
 	--host $V1_PGHOST						\
 	--port $V1_PGPORT						\
 	--user $V1_PGUSER						\
