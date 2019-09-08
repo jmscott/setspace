@@ -41,6 +41,7 @@ install:
 		$(MYDASH_PREFIX)/lib
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
 		put-remember_uri					\
+		remember_uri2tag_http					\
 		$(MYDASH_PREFIX)/sbin
 
 distclean:
