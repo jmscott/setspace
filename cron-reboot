@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 #  Synopsis:
 #	Cron script to reboot all setspace flow schema processes
@@ -13,6 +14,7 @@
 #
 
 PROG=$(basename $0)
+PKILL_PAUSE=10
 
 log()
 {
@@ -40,6 +42,16 @@ test -n "$SETSPACE_ROOT" ||
 log "SETSPACE_ROOT=$SETSPACE_ROOT"
 
 cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
+
+if [ $USER = setspace ];  then
+	log 'user is setspace, so process controled by launchd or systemd'
+	log 'doing pkill -u setspace flowd'
+	pkill -u setspace flowd
+	log "pausing $PKILL_PAUSE seconds ..."
+	sleep $PKILL_PAUSE
+	run-stat-report
+	exit
+fi
 
 . etc/profile
 log "path to flowd executable: $(which flowd)"
