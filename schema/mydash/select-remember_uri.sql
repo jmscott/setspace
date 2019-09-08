@@ -10,10 +10,22 @@
 \pset format unaligned
 \pset fieldsep '\t'
 
+--  bash/zsh compress incorrectly contiguous empty fields into a single field,
+--  render impossible proper parsing for tab separated chars.
+
+\pset null NULL
+
 SELECT
 	r.blob,
 	r.uri as url,
-	t.value as title,
+	CASE
+	  WHEN
+	  	t.value ~ '^[[:space:]]*$'
+	  THEN
+	  	NULL
+	  ELSE
+	  	t.value
+	  END AS title,
 	h.value as host,
 	extract(epoch from b.discover_time)::bigint as discover_unix_epoch
   FROM

@@ -38,8 +38,13 @@ sub utf82json_string
 
 die 'wrong number of arguments' unless @ARGV == 0;
 
+sub read_tuple
+{
+	return split("\t");
+}
+
 while (<STDIN>) {
-	my ($blob, $url, $title, $host, $discover_unix_epoch) = split("\t");
+	my ($blob, $url, $title, $host, $discover_unix_epoch) = read_tuple;
 
 	die "field #1: blob: not a udig: $blob"
 		unless $blob =~ m/^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$/;

@@ -39,9 +39,13 @@ install:
 		psqlrc.example						\
 		schema.sql						\
 		$(MYDASH_PREFIX)/lib
+	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
+		put-remember_uri					\
+		$(MYDASH_PREFIX)/sbin
 
 distclean:
 	rm -rf $(MYDASH_PREFIX)/lib
+	rm -rf $(MYDASH_PREFIX)/sbin
 clean:
 
 world:
@@ -52,5 +56,7 @@ clean:
 frisk:
 	flowd frisk mydash.flow.example
 dev:
-	test -e run || ln -s . run
+	test -e etc || ln -s . etc
+	test -e lib || ln -s . lib
 	test -e log || ln -s . log
+	test -e run || ln -s . run
