@@ -53,8 +53,8 @@ ifdef SETCORE_PREFIX
 		service-xor						\
 		$(SETCORE_ROOT)/sbin
 
-	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 		\
-		com.setspace.schema.setcore.flowd.plist.example	\
+	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
+		com.setspace.schema.setcore.flowd.plist.example		\
 		profile.example						\
 		psqlrc.example						\
 		rummy.sql						\
@@ -63,7 +63,7 @@ ifdef SETCORE_PREFIX
 		setspace.schema.setcore.flowd.plist.example		\
 		$(SETCORE_ROOT)/lib
 
-	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)		\
+	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)			\
 		byte-bitmap.c						\
 		byte-count.c						\
 		byte-prefix-32.c					\

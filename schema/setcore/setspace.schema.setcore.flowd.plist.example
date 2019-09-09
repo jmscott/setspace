@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>com.setspace.schema.setcore.flowd</string>
+  <string>setspace.schema.setcore.flowd</string>
 
   <key>KeepAlive</key>
   <true/>
@@ -55,7 +55,7 @@
 
   <key>ProgramArguments</key>
   <array>
-	<string>/usr/local/bin/launchd-log</string>
+	<string>/usr/local/jmscott/sbin/launchd-log</string>
 	<string>flowd</string>
 	<!-- Note:
 		ps-title hack must first argument in order to change what

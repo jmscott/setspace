@@ -33,11 +33,12 @@ install:
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
 				-d $(MYDASH_PREFIX)/tmp
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
-		select-remember_uri.sql					\
 		mydash.flow.example					\
 		profile.example						\
 		psqlrc.example						\
 		schema.sql						\
+		select-remember_uri.sql					\
+		setspace.schema.mydash.flowd.plist.example		\
 		$(MYDASH_PREFIX)/lib
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
 		put-remember_uri					\

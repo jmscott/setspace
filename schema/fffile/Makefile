@@ -45,7 +45,6 @@ install: all
 		$(SBINs) 						\
 		$(FFFILE_PREFIX)/sbin
 	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) -m a=r		\
-		com.setspace.schema.fffile.flowd.plist.example		\
 		fffile.flow.example					\
 		profile.example						\
 		psqlrc.example						\

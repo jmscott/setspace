@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>com.setspace.schema.expat2.flowd</string>
+  <string>setspace.schema.expat2.flowd</string>
 
   <key>KeepAlive</key>
   <true/>

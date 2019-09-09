@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>com.setspace.schema.jsonio.flowd</string>
+  <string>setspace.schema.jsonio.flowd</string>
 
   <key>KeepAlive</key>
   <true/>

@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>setspace.schema.jsonorg.flowd</string>
+  <string>setspace.schema.mydash.flowd</string>
 
   <key>KeepAlive</key>
   <true/>
@@ -20,7 +20,7 @@
   <key>EnvironmentVariables</key>
   <dict>
   	<key>PATH</key>
-	<string>/usr/local/setspace/schema/jsonorg/sbin:/usr/local/setspace/sbin:/usr/local/setspace/bin:/usr/local/blobio/bin:/usr/local/pgsql/bin:/usr/bin:/bin</string>
+	<string>sbin:/usr/local/setspace/sbin:/usr/local/setspace/bin:/usr/local/blobio/bin:/usr/local/pgsql/bin:/usr/bin:/bin</string>
 
 	<key>SETSPACE_ROOT</key>
 	<string>/usr/local/setspace</string>
@@ -32,7 +32,7 @@
 	<string>bc160</string>
 
 	<key>BLOBIO_SERVICE</key>
-	<string>bio4:localhost:1797</string>
+	<string>bio4:127.0.0.1:1797</string>
 
 	<key>BLOBIO_GET_SERVICE</key>
 	<string>fs:/usr/local/blobio</string>
@@ -55,8 +55,14 @@
 
   <key>ProgramArguments</key>
   <array>
-	<string>/usr/local/setspace/sbin/launchd-flowd</string>
-	<string>etc/jsonorg.flow</string>
+	<string>/usr/local/jmscott/sbin/launchd-log</string>
+	<string>flowd</string>
+	<!-- Note:
+		ps-title hack must first argument in order to change what
+		appears in the process table.
+	-->
+	<string>server</string>
+	<string>etc/mydash.flow</string>
   </array>
 
   <key>Disabled</key>
@@ -69,13 +75,13 @@
   <string>staff</string>
 
   <key>WorkingDirectory</key>
-  <string>/usr/local/setspace/schema/jsonorg</string>
+  <string>/usr/local/setspace/schema/mydash</string>
 
   <key>StandardErrorPath</key>
-  <string>/usr/local/setspace/schema/jsonorg/log/launchd-flowd.log</string>
+  <string>/usr/local/setspace/schema/mydash/log/launchd-flowd.log</string>
 
   <key>StandardOutPath</key>
-  <string>/usr/local/setspace/schema/jsonorg/log/launchd-flowd.log</string>
+  <string>/usr/local/setspace/schema/mydash/log/launchd-flowd.log</string>
 
 </dict>
 </plist>
