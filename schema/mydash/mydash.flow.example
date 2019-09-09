@@ -139,7 +139,7 @@ WITH request AS (
 	blob = $1::udig
 ) SELECT
   	$1::udig,
-  	tag_http->'url',
+  	tag_http->>'url',
 	timestamptz 'epoch' +
 		(tag_http->'discover-unix-epoch')::bigint * interval '1 second'
     FROM
@@ -148,7 +148,6 @@ WITH request AS (
     	length(tag_http->>'discover-unix-epoch') > 0
   ON CONFLICT
   	DO NOTHING
-;
 ;
 	`;
 }
