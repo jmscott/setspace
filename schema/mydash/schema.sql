@@ -290,7 +290,7 @@ CREATE TABLE tag_http_host
 			REFERENCES tag_http
 			ON DELETE CASCADE
 			PRIMARY KEY,
-	host	rfc1123_hostname
+	host	setcore.rfc1123_hostname
 			NOT NULL
 );
 COMMENT ON TABLE tag_http_host IS
