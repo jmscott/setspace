@@ -58,6 +58,7 @@ clean:
 frisk:
 	flowd frisk mydash.flow.example
 dev:
+	test -e spool || ln -s . spool
 	test -e etc || ln -s . etc
 	test -e lib || ln -s . lib
 	test -e log || ln -s . log
