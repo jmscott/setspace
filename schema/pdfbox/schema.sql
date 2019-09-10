@@ -413,4 +413,4 @@ COMMENT ON TABLE page_tsv_utf8 IS
   'Text search vectors for Pages of UTF8 Text extracted from a pdf blob'
 ;
 
---COMMIT;
+COMMIT;
