@@ -21,9 +21,13 @@ CREATE TABLE tag_http
 				PRIMARY KEY,
 	--  the url must be normalized!
 	url		text CHECK (
-				length(url) < 1024
+				length(url) < 8000	--  rfc7230
 				AND
-				url ~ '^http[s]?'
+				(
+					lower(substring(url, 1, 7)) = 'http://'
+					OR
+					lower(substring(url, 1,8)) = 'https://'
+				)
 			) NOT NULL,
 	discover_time	timestamp CHECK (
 				discover_time >
@@ -56,6 +60,8 @@ CREATE TABLE tag_http_title_tsv
 				REFERENCES tag_http_title
 				ON DELETE CASCADE
 				PRIMARY KEY,
+	ts_conf		regconfig
+				NOT NULL,
 	tsv		tsvector
 				NOT NULL
 );
@@ -65,29 +71,6 @@ CREATE INDEX tag_http_title_tsv_rumidx ON tag_http_title_tsv
 ;
 COMMENT ON TABLE tag_http_title IS
   'Text Search Vector of title of a tagged web page'
-;
-
-CREATE OR REPLACE FUNCTION insert_tag_http_title_tsv() RETURNS TRIGGER AS
-  $$ begin
-	INSERT INTO tag_http_title_tsv(
-		blob,
-		tsv
-	) VALUES (
-		new.blob,
-		to_tsvector(new.title)
-	) ON CONFLICT
-		DO NOTHING
-	;
-  end $$
-  LANGUAGE plpgsql
-;
-COMMENT ON FUNCTION insert_tag_http_title_tsv IS
-  'Update text search vector for table tag_http_title_tsv'
-;
-
-DROP TRIGGER IF EXISTS insert_tag_http_title_tsv ON tag_http_title;
-CREATE TRIGGER insert_tag_http_title_tsv AFTER INSERT
-  ON tag_http_title FOR EACH ROW EXECUTE PROCEDURE insert_tag_http_title_tsv()
 ;
 
 DROP TABLE IF EXISTS trace_fdr CASCADE;
