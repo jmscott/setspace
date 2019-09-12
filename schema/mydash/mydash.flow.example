@@ -116,17 +116,38 @@ query is_tag_http_json(brr.udig)
   	lock_in_flight.exit_status == 0
 ;
 
+#
+#  Extract and merge fields from json object
+#
+#	"mydash.schema.setspace.com": {
+#		"tag-http":{
+#			"url":
+#			"title":
+#			"discover-unix-epoch"
+#		}
+#
+#  into the tables tag_http, tag_http_title, tag_http_title_tsv,
+#  tag_http_host.
+#
+#  We can not update tag_http_title_tsv in a trigger, as is typical,
+#  since the trigger has no idea of the ts_conf object.
+#
 sql exec merge_tag_http
 {
 	statement = `
-INSERT INTO mydash.tag_http (
-	blob,
-	url,
-	discover_time
-)
-WITH request AS (
+WITH request(url, title, discover_time) AS (
+  /*
+   *  Extract all the fields from the json object.
+   */
   SELECT
-	doc->'mydash.schema.setspace.com'->'tag-http' AS tag_http
+	doc->'mydash.schema.setspace.com'->'tag-http'->>'url',
+	doc->'mydash.schema.setspace.com'->'tag-http'->>'title',
+	timestamptz 'epoch' + (
+		doc
+			->'mydash.schema.setspace.com'
+			->'tag-http'
+			->'discover-unix-epoch'
+		)::bigint * interval '1 second'
     FROM
   	jsonorg.jsonb_255
     WHERE
@@ -137,17 +158,89 @@ WITH request AS (
 	}'
 	AND
 	blob = $1::udig
-) SELECT
+), insert_tag_http (blob) AS (
+
+  INSERT INTO mydash.tag_http (
+  	blob,
+	url,
+	discover_time
+  ) SELECT
   	$1::udig,
-  	tag_http->>'url',
-	timestamptz 'epoch' +
-		(tag_http->'discover-unix-epoch')::bigint * interval '1 second'
+	url,
+	discover_time
+      FROM
+      	request
+      ON CONFLICT
+      	DO NOTHING
+      RETURNING
+      	blob
+), insert_tag_http_title AS (
+  INSERT INTO mydash.tag_http_title (
+  	blob,
+	title
+  ) SELECT
+  	$1,
+	title
+      FROM
+      	request
+      WHERE
+        --  insure insert_tag_http has completed
+      	(SELECT
+		count(*)
+	    FROM
+	    	insert_tag_http
+	) IS NOT NULL
+   ON CONFLICT
+   	DO NOTHING
+   RETURNING
+   	blob
+), insert_tag_http_title_tsv_english AS (
+
+  /*
+   *  Note:
+   *	Sadly, a trigger can not know the english ts_config,
+   *	hence we excplitly do the insert of the ts vector
+   */
+  INSERT INTO mydash.tag_http_title_tsv (
+  	blob,
+	ts_conf,
+	tsv
+  ) SELECT
+  	$1,
+	'english'::regconfig,
+	to_tsvector('english'::regconfig, title)
+      FROM
+      	request
+      WHERE
+        --  insure insert_tag_http_title has been merged
+      	(SELECT
+		count(*)
+	   FROM
+	    	insert_tag_http_title
+	) IS NOT NULL
+  ON CONFLICT
+  	DO NOTHING
+  RETURNING
+      	true
+) INSERT INTO mydash.tag_http_host (blob, host)
+    SELECT
+    	$1::udig,
+  	regexp_replace(regexp_replace(url, '^[^:]+://', ''), '/.*', '')
     FROM
     	request
     WHERE
-    	length(tag_http->>'discover-unix-epoch') > 0
-  ON CONFLICT
-  	DO NOTHING
+        --  insure all table have been merged
+      	(SELECT
+		count(*)
+	   FROM
+	    	insert_tag_http,
+		insert_tag_http_title,
+		insert_tag_http_title_tsv_english
+	) IS NOT NULL
+    ON CONFLICT
+    	DO NOTHING
+    RETURNING
+    	true
 ;
 	`;
 }
@@ -171,6 +264,7 @@ call unlock_in_flight(brr.udig)
   	lock_in_flight.exit_status == 0
 	and
 	(
+		#  no a tag-http:{} json blob
 		is_tag_http_json.is_tag_http == false
 		or
 		(
