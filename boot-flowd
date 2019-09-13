@@ -10,17 +10,12 @@
 #	0	flowd appears to have booted
 #	1	no profile or flow file in directory <schema>/etc/<schema>.flow
 #	2	unknown error, flowd may not have started
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
 #  Note:
-#	Think about isolating lock files in run/flowd/ instead of in run/
+#	Call jmscott/bin/zap-proc to force process exit before proceeding.
 #
 
 PROG=$(basename $0)
 
-#  pause after either stopping or starting flowd
-#  need a better way.  perhaps a lightweight launchd thingy, written in go.
 FLOWD_PAUSE=3
 FLOWD_PAUSE_LIMIT=6
 SCHEMA=
@@ -82,7 +77,10 @@ test -e $FLOW || die "no flow file: $FLOW"
 RUN_PID=run/flowd.pid
 test -e $RUN_PID &&
 	die "run/flowd.pid exists: is another flowd running #$(cat $RUN_PID)"
-rm -f run/*.lock || die "rm -f run/pid failed: exit status=$?"
+find run -name '*.lock' | while read LOCK;  do
+	log "WARN: removing lock file: $LOCK"
+	rm -f $LOCK || die "rm -f $LOCK failed: exit status=$?"
+done
 
 log "starting flowd server: $FLOW"
 flowd server $FLOW &
