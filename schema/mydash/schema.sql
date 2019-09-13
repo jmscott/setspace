@@ -18,6 +18,7 @@ CREATE TABLE tag_http
 (
 	blob		udig
 				REFERENCES setcore.service
+				ON DELETE CASCADE
 				PRIMARY KEY,
 	--  the url must be normalized!
 	url		text CHECK (
