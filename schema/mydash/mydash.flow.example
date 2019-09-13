@@ -6,10 +6,7 @@
 #  See:
 #  	mydash/lib/schema.sql
 #  Note:
-#	Need a better method for cleanup than waiting on all possible
-#	combinations of exit status.  at the very least a compact,
-#	vectorized version would be better than simple minded, error prone
-#	enumeration.
+#	An error on query merge_tag_url leaves a lock file in directory run/.
 #
 
 boot
@@ -230,7 +227,7 @@ WITH request(url, title, discover_time) AS (
     FROM
     	request
     WHERE
-        --  insure all table have been merged
+        --  insure all tables have been merged
       	(SELECT
 		count(*)
 	   FROM
@@ -246,9 +243,46 @@ WITH request(url, title, discover_time) AS (
 	`;
 }
 
-query merge_tag_http(brr.udig)
+command lock_merge_tag_http
+{
+	path = "tas-run-lock";
+	argv = (
+		"merge-tag_http"
+	);
+	exit_status is OK when in {
+                0,			#  ok, lock file created
+                1			#  lock already exists
+        };
+}
+
+command unlock_merge_tag_http
+{
+	path = "tas-run-unlock";
+	argv = (
+		"merge-tag_http"
+	);
+	exit_status is OK when in {
+                0,			#  ok, lock file created
+                1			#  lock already exists
+        };
+}
+
+call lock_merge_tag_http(brr.udig)
   when
   	is_tag_http_json.is_tag_http == true
 	and
 	is_tag_http_json.tag_http_exists == false
+;
+
+query merge_tag_http(brr.udig)
+  when
+  	lock_merge_tag_http.exit_status == 0
+;
+
+#  Note: lock file not removed upon sql error in query merge_tag_http
+call unlock_merge_tag_http(brr.udig)
+  when
+  	merge_tag_http.rows_affected == 0
+	or
+  	merge_tag_http.rows_affected == 1
 ;
