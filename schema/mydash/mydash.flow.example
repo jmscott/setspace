@@ -47,28 +47,6 @@ tail brr
 	path = "spool/jsonio.brr";
 }
 
-command lock_in_flight
-{
-	path = "tas-run-lock";
-	argv = (
-		"in-flight"
-	);
-	exit_status is OK when in {
-                0,			#  ok, lock file created
-                1			#  blob already in flight
-        };
-}
-
-call lock_in_flight(brr.udig);
-
-command unlock_in_flight
-{
-	path = "tas-run-unlock";
-	argv = (
-		"in-flight"
-	);
-}
-
 #
 #  Is the blob a request to tag a url and does it already exist
 #  in the database.
@@ -103,7 +81,33 @@ SELECT
 	    	mydash.tag_http
 	    WHERE
 	    	blob = $1::udig
-	);`;
+	) AND EXISTS ( 
+	  --  Note: what about blob with no title?
+	  SELECT
+	  	blob
+	    FROM
+	    	mydash.tag_http_title
+	    WHERE
+	    	blob = $1::udig
+	) AND EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	mydash.tag_http_title_tsv
+	    WHERE
+	    	blob = $1::udig
+		AND
+		ts_conf = 'english'::regconfig
+	) AND  EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	mydash.tag_http_host
+	    WHERE
+	    	blob = $1::udig
+	)
+;
+	;`;
 
 	result row is (
 		is_tag_http bool,
@@ -111,10 +115,7 @@ SELECT
 	);
 }
 
-query is_tag_http_json(brr.udig)
-  when
-  	lock_in_flight.exit_status == 0
-;
+query is_tag_http_json(brr.udig);
 
 #
 #  Extract and merge fields from json object
@@ -250,31 +251,4 @@ query merge_tag_http(brr.udig)
   	is_tag_http_json.is_tag_http == true
 	and
 	is_tag_http_json.tag_http_exists == false
-;
-
-#
-#  Note:
-#	Need a better method for cleanup than waiting on all possible
-#	combinations of exit status.  at the very least a compact,
-#	vectorized version would be better than simple minded, error prone
-#	enumeration.
-#
-call unlock_in_flight(brr.udig)
-  when
-  	lock_in_flight.exit_status == 0
-	and
-	(
-		#  no a tag-http:{} json blob
-		is_tag_http_json.is_tag_http == false
-		or
-		(
-			is_tag_http_json.is_tag_http == true
-			and
-			(
-				merge_tag_http.rows_affected == 0
-				or
-				merge_tag_http.rows_affected == 1
-			)
-		)
-	)
 ;
