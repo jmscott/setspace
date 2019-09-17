@@ -38,6 +38,7 @@ install: all
 		profile.example						\
 		psqlrc.example						\
 		schema.sql						\
+		select-my_title.sql					\
 		$(MYCORE_PREFIX)/lib
 
 distclean:
