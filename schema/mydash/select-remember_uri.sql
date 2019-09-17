@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Copy rows from version 1 table remember_uri to file remember_uri.row
+ *	Copy rows from version 1 table remember_uri to standard output.
  *  Usage:
  *	PGDATABASE=condor
  *	psql -f select-remember_uri.sql | head -1 | remember_uri2tag_http
