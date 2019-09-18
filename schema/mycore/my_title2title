@@ -59,7 +59,7 @@ while (<STDIN>) {
 	print <<END;
 {
 	"mycore.schema.setspace.com": {
-		"set-title": {
+		"title": {
 			"blob": $blob,
 			"title": $title,
 			"discover-unix-epoch": $discover_unix_epoch

@@ -36,6 +36,7 @@ install: all
 				-d $(MYCORE_PREFIX)/tmp
 	install 							\
 		my_title2title						\
+		put-my_table						\
 		$(MYCORE_PREFIX)/sbin
 
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) -m a=r		\

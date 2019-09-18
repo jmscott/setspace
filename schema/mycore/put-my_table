@@ -1,0 +1,92 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Put version1 blob titles to json for mycore.title tables.
+#  Usage:
+#	put-my_title <v1-pghost> <v1-pgport> <v1-pguser> <v1-pgdatabase>
+#
+
+TMP_JSON=${TMPDIR:=/tmp}/$(basename $0)-json.$$
+
+leave()
+{
+	rm -f $TMP_JSON ||
+			echo "ERROR: rm $TMP_JSON failed: exit status=$?" 2>&1
+	log 'good bye, cruel world'
+}
+
+log()
+{
+	echo "$(date +'%Y/%m/%d %H:%M:%S'): $@"
+}
+
+die()
+{
+	log "ERROR: $@" >&2
+	exit 1
+}
+
+test $# = 4 || die "wrong number of arguments: got $#, expected 4"
+V1_PGHOST=$1
+V1_PGPORT=$2
+V1_PGUSER=$3
+V1_PGDATABASE=$4
+
+test -n "$SETSPACE_ROOT" || die 'environment var not defined: SETSPACE_ROOT'
+test -n "$BLOBIO_SERVICE" || die 'environment var not defined: BLOBIO_SERVICE'
+test -n "$BLOBIO_ALGORITHM" ||
+			die 'environment var not defined: BLOBIO_ALGORITHM'
+log 'hello, world'
+trap leave EXIT
+
+log "SETSPACE_ROOT=$SETSPACE_ROOT"
+log "BLOBIO_SERVICE=$BLOBIO_SERVICE"
+log "BLOBIO_ALGORITHM=$BLOBIO_ALGORITHM"
+log "PATH=$PATH"
+MY_TITLE_SQL=$SETSPACE_ROOT/schema/mycore/lib/select-my_title.sql
+
+log "v1 PGHOST: $V1_PGHOST"
+log "v1 PGPORT: $V1_PGPORT"
+log "v1 PGUSER: $V1_PGUSER"
+log "v1 PGDATABASE: $V1_PGDATABASE"
+log "select my_title sql: $MY_TITLE_SQL"
+test -r $MY_TITLE_SQL || die "can not read sql file: $MY_TITLE_SQL"
+
+cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed: exit status=$?"
+
+test -e etc/profile || die "missing expected file: $(pwd)/etc/profile"
+. etc/profile
+
+PATH="$SETSPACE_ROOT/schema/mydash/sbin:$PATH"
+log "PATH: $PATH"
+
+log "PGHOST: $PGHOST"
+log "PGPORT: $PGPORT"
+log "PGUSER: $PGUSER"
+log "PGDATABASE: $PGDATABASE"
+log "tmp json: $TMP_JSON"
+
+psql $V1_PGDATABASE							\
+	--file $MY_TITLE_SQL					\
+	--host $V1_PGHOST						\
+	--port $V1_PGPORT						\
+	--user $V1_PGUSER						\
+	--no-psqlrc							|
+  while IFS=$'\t' read -r BLOB TITLE EPOCH;  do
+  	echo "$BLOB	$TITLE	$EPOCH"			|
+		my_title2title >$TMP_JSON
+	STATUS=${PIPESTATUS[*]}
+	test "$STATUS" = '0 0' ||
+		die "my_title2title failed: exit status=$STATUS"
+	DIGEST=$(
+		blobio eat --algorithm $BLOBIO_ALGORITHM --input-path $TMP_JSON
+	)
+	test $? = 0 || die "blobio eat failed: exit status=$?" 
+	JSON_UDIG=$BLOBIO_ALGORITHM:$DIGEST
+	blobio put							\
+		--udig $JSON_UDIG					\
+		--input-path $TMP_JSON					\
+		--service $BLOBIO_SERVICE
+	test $? = 0 || die "blobio put failed: exit status=$?"
+	log ">$JSON_UDIG"
+  done
