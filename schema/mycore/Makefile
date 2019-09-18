@@ -34,6 +34,10 @@ install: all
 				-d $(MYCORE_PREFIX)/sbin
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
 				-d $(MYCORE_PREFIX)/tmp
+	install 							\
+		my_title2title						\
+		$(MYCORE_PREFIX)/sbin
+
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) -m a=r		\
 		profile.example						\
 		psqlrc.example						\

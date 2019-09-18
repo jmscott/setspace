@@ -1,0 +1,71 @@
+#!/usr/bin/env perl
+#
+#  Synopsis:
+#	Convert my_title rows into json requests for mycore.title.
+#  Usage:
+#	psql -f select-my_title.sql | head -1 | my_title2title
+#  See Also:
+#	select-my_title.sql
+#
+
+#  Code lifted from JSON-Tiny
+my %ESCAPE = (
+	'"'     => '"',
+	'\\'    => '\\',
+	'b'     => "\x08",
+	'f'     => "\x0c",
+	'n'     => "\x0a",
+	'r'     => "\x0d",
+	't'     => "\x09",
+	'u2028' => "\x{2028}",		#  unicode line-separator
+	'u2029' => "\x{2029}"		#  unicode paragraph-separator
+);
+
+my %REVERSE = map { $ESCAPE{$_} => "\\$_" } keys %ESCAPE;
+
+for(0x00 .. 0x1f) {
+	my $packed = pack 'C', $_;
+	$REVERSE{$packed} = sprintf '\u%.4X', $_
+			unless defined $REVERSE{$packed};
+}
+
+sub utf82json_string
+{
+	my $str = shift;
+	$str =~ s!([\x00-\x1f\x{2028}\x{2029}\\"])!$REVERSE{$1}!gs;
+	return "\"$str\"";
+}
+
+die 'wrong number of arguments' unless @ARGV == 0;
+
+sub read_tuple
+{
+	return split("\t");
+}
+
+while (<STDIN>) {
+	my ($blob, $title, $discover_unix_epoch) = read_tuple;
+
+	die "field #1: blob: not a udig: $blob"
+		unless $blob =~ m/^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$/;
+	die "field #3: title: longer than 511 chars: $title"
+					unless length($title) < 512; 
+
+	#  Note: not fully match time: 2012-10-18 16:59:21.747884-05
+	die "field #5: discover_unix_epoch: not digits: $discover_unix_epoch"
+				unless $discover_unix_epoch =~ m/^\d{10}$/;
+	$blob = utf82json_string($blob);
+	$title = utf82json_string($title);
+	print <<END;
+{
+	"mycore.schema.setspace.com": {
+		"set-title": {
+			"blob": $blob,
+			"title": $title,
+			"discover-unix-epoch": $discover_unix_epoch
+		}
+	},
+	"note": "batch loaded by jmscott with script sbin/my_title2title"
+}
+END
+}
