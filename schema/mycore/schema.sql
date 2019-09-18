@@ -21,7 +21,7 @@ CREATE TABLE title
 			ON DELETE CASCADE
 			PRIMARY KEY,
 	title	text	CHECK (
-				length(title) < 255
+				length(title) < 256
 				AND
 				--  not all spaces
 				title ~ '[[:graph:]]'
