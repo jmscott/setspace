@@ -62,7 +62,14 @@ while (<STDIN>) {
 		"title": {
 			"blob": $blob,
 			"title": $title,
-			"discover-unix-epoch": $discover_unix_epoch
+			"insert-unix-epoch": $discover_unix_epoch
+		}
+	},
+	"version1.schema.setspace.com": {
+		"my_title.public": {
+			"blob": $blob,
+			"title": $title,
+			"blob-discover-unix-epoch": $discover_unix_epoch"
 		}
 	},
 	"note": "batch loaded by jmscott with script sbin/my_title2title"
