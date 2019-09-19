@@ -12,16 +12,17 @@
 boot
 {
 	brr_capacity = 256;
-	flow_worker_count = 4;
+	flow_worker_count = 24
 
 	#
-	#  No processes are invoked
+	#  Only fast test-and-set lock is called, so only a few
+	#  workers.
 	#
 	#  Note:
 	#	Since no workers can we set to 0?
 	#
-	os_exec_worker_count = 1;
-	os_exec_capacity = 1;
+	os_exec_worker_count = 2;
+	os_exec_capacity = 2;
 
 	xdr_roll_duration = "24h";
 	fdr_roll_duration = "24h";
@@ -36,7 +37,9 @@ sql database setspace
 	data_source_name =
 		"fallback_application_name=mydash.flow sslmode=disable";
 	max_idle_conns = 0;
-	max_open_conns = 4;
+
+	#  mydash is interactive, so lots of database connections
+	max_open_conns = 16;
 }
 
 tail brr
