@@ -69,7 +69,7 @@ while (<STDIN>) {
 		"my_title.public": {
 			"blob": $blob,
 			"title": $title,
-			"blob-discover-unix-epoch": $discover_unix_epoch"
+			"blob-discover-unix-epoch": $discover_unix_epoch
 		}
 	},
 	"note": "batch loaded by jmscott with script sbin/my_title2title"
