@@ -19,10 +19,12 @@ endif
 
 all:
 	cd setcore && $(MAKE) $(MFLAGS) all
+	cd mycore && $(MAKE) $(MFLAGS) all
 	cd jsonorg && $(MAKE) $(MFLAGS) all
 	cd pdfbox && $(MAKE) $(MFLAGS) all
 clean:
 	cd setcore && $(MAKE) $(MFLAGS) clean
+	cd mycore && $(MAKE) $(MFLAGS) clean
 	cd jsonorg && $(MAKE) $(MFLAGS) clean
 	cd pdfbox && $(MAKE) $(MFLAGS) clean
 
@@ -33,11 +35,13 @@ install: all
 		$(WWW_PREFIX)/htdocs/schema
 
 	cd setcore && $(MAKE) $(MFLAGS) install
+	cd mycore && $(MAKE) $(MFLAGS) install
 	cd jsonorg && $(MAKE) $(MFLAGS) install
 	cd pdfbox && $(MAKE) $(MFLAGS) install
 
 distclean:
 	cd setcore && $(MAKE) $(MFLAGS) distclean
+	cd mycore && $(MAKE) $(MFLAGS) distclean
 	cd jsonorg && $(MAKE) $(MFLAGS) distclean
 	cd pdfbox && $(MAKE) $(MFLAGS) distclean
 	rm -rf $(WWW_PREFIX)/htdocs/schema

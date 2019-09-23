@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>MyCore Schema</title>
+  <meta charset="UTF-8" />
+  <link
+    href="/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="nav.shtml" -->
+   <div id="content">
+    <h2>My Core Blobs</h2>
+    <!-- #include virtual="/cgi-bin/mycore?out=dl&${QUERY_STRING}" -->
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>
