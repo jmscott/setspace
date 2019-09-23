@@ -19,7 +19,7 @@ SELECT
 	pdf.number_of_pages,
 	CASE
 	  WHEN
-	  	myt.title ~ '[[:graph:]]'
+	  	myt.title IS NOT NULL
 	  THEN
 	  	myt.title
 	  ELSE
