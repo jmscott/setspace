@@ -23,11 +23,11 @@ CREATE DOMAIN title_255 AS text CHECK (
 	AND
 	value !~ '[[:cntrl:]]'		--  no ascii control chars
 	AND
-	value !~ '^[[:space:]]+'	--  no runs of 2+ spaces
+	value !~ '^[[:space:]]+'	--  no leading space
 	AND
-	value !~ '[[:space:]]+$'	--  no leading spaces
+	value !~ '[[:space:]]+$'	--  no trailing space
 	AND
-	value !~ '[[:space:]][[:space:]]'	--  no trailing spaces
+	value !~ '[[:space:]][[:space:]]'	--  multiple spaces
 );
 
 DROP TABLE IF EXISTS title;
