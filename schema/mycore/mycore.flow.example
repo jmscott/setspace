@@ -133,14 +133,14 @@ WITH request(title) AS (
 		}
 	}'
 	AND
-	blob = :blob::udig
+	blob = $1::udig
 ), insert_title (blob) AS (
 
   INSERT INTO mycore.title (
   	blob,
 	title
   ) SELECT
-  	:blob::udig,
+  	$1::udig,
 	title
       FROM
       	request
@@ -159,7 +159,7 @@ WITH request(title) AS (
 	ts_conf,
 	tsv
   ) SELECT
-  	:blob,
+  	$1,
 	'english'::regconfig,
 	to_tsvector('english'::regconfig, title)
       FROM
