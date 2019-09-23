@@ -1,0 +1,222 @@
+#
+#  Synopsis:
+#	Merge blobs into tables in schema mycore.
+#  Usage:
+#  	flowd server mycore.conf
+#  See:
+#  	mycore/lib/schema.sql
+#  Note:
+#	An error on query merge_title leaves a lock file in directory run/.
+#
+
+boot
+{
+	brr_capacity = 256;
+	flow_worker_count = 24;
+
+	#
+	#  Only fast test-and-set lock is called, so only a few
+	#  workers.
+	#
+	#  Note:
+	#	Since no workers can we set to 0?
+	#
+	os_exec_worker_count = 2;
+	os_exec_capacity = 2;
+
+	xdr_roll_duration = "24h";
+	fdr_roll_duration = "24h";
+	qdr_roll_duration = "24h";
+
+	heartbeat_duration = "10s";
+}
+
+sql database setspace
+{
+	driver_name = "postgres";
+	data_source_name =
+		"fallback_application_name=mycore.flow sslmode=disable";
+	max_idle_conns = 0;
+
+	#  mydash is interactive, so lots of database connections
+	max_open_conns = 16;
+}
+
+tail brr
+{
+	path = "spool/jsonio.brr";
+}
+
+#
+#  Is the blob a request to title a url and does it already exist
+#  in the database.
+#
+#	"mycore.schema.setspace.com": {
+#		"title": {}
+#	}
+#
+
+sql query is_title_json row
+{
+	statement = `
+SELECT
+	EXISTS (
+	  SELECT
+		blob
+	    FROM
+		jsonorg.jsonb_255
+	    WHERE
+		doc @> '{
+			"mycore.schema.setspace.com":{
+				"title":{}
+			}
+		}'
+		AND
+		blob = $1::udig
+	),
+	EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	mycore.title
+	    WHERE
+	    	blob = $1::udig
+	) AND EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	mycore.title_tsv
+	    WHERE
+	    	blob = $1::udig
+		AND
+		ts_conf = 'english'::regconfig
+	)
+;
+	;`;
+
+	result row is (
+		is_title_request bool,
+		title_exists bool
+	);
+}
+
+query is_title_json(brr.udig);
+
+#
+#  Extract and merge fields from json object
+#
+#	"mydash.schema.setspace.com": {
+#		"tag-http":{
+#			"url":
+#			"title":
+#			"discover-unix-epoch"
+#		}
+#
+#  into the tables title, title_title, title_title_tsv,
+#  title_host.
+#
+#  We can not update title_title_tsv in a trigger, as is typical,
+#  since the trigger has no idea of the ts_conf object.
+#
+sql exec merge_title
+{
+	statement = `
+WITH request(title) AS (
+  SELECT
+	doc->'mycore.schema.setspace.com'->'title'->>'title'
+    FROM
+  	jsonorg.jsonb_255
+    WHERE
+  	doc @> '{
+		"mycore.schema.setspace.com":{
+			"title":{}
+		}
+	}'
+	AND
+	blob = :blob::udig
+), insert_title (blob) AS (
+
+  INSERT INTO mycore.title (
+  	blob,
+	title
+  ) SELECT
+  	:blob::udig,
+	title
+      FROM
+      	request
+   ON CONFLICT
+   	DO NOTHING
+   RETURNING
+   	blob
+)
+  /*
+   *  Note:
+   *	Sadly, a trigger can not know the english ts_config,
+   *	hence we excplitly do the insert of the ts vector
+   */
+  INSERT INTO mycore.title_tsv (
+  	blob,
+	ts_conf,
+	tsv
+  ) SELECT
+  	:blob,
+	'english'::regconfig,
+	to_tsvector('english'::regconfig, title)
+      FROM
+      	request
+      WHERE
+        --  insure insert_title has been merged
+      	(SELECT
+		count(*)
+	   FROM
+	    	insert_title
+	) IS NOT NULL
+    ON CONFLICT
+  	DO NOTHING
+;
+	`;
+}
+
+command lock_merge_title
+{
+	path = "tas-run-lock";
+	argv = (
+		"merge-title"
+	);
+	exit_status is OK when in {
+                0,			#  ok, lock file created
+                1			#  lock already exists
+        };
+}
+
+command unlock_merge_title
+{
+	path = "tas-run-unlock";
+	argv = (
+		"merge-title"
+	);
+	exit_status is OK when in {
+                0,			#  ok, lock file created
+                1			#  lock already exists
+        };
+}
+
+call lock_merge_title(brr.udig)
+  when
+  	is_title_json.is_title_request == true
+	and
+	is_title_json.title_exists == false
+;
+
+query merge_title(brr.udig)
+  when
+  	lock_merge_title.exit_status == 0
+;
+
+#  Note: lock file not removed upon sql error in query merge_title
+call unlock_merge_title(brr.udig)
+  when
+  	merge_title.rows_affected == 0
+	or
+  	merge_title.rows_affected == 1
+;

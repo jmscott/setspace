@@ -40,6 +40,7 @@ install: all
 		$(MYCORE_PREFIX)/sbin
 
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) -m a=r		\
+		mycore.flow.example					\
 		profile.example						\
 		psqlrc.example						\
 		schema.sql						\
