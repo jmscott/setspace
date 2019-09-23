@@ -6,6 +6,8 @@
 #  See:
 #  	mycore/lib/schema.sql
 #  Note:
+#	No test for blob getting the title!
+#
 #	An error on query merge_title leaves a lock file in directory run/.
 #
 
@@ -121,8 +123,9 @@ query is_title_json(brr.udig);
 sql exec merge_title
 {
 	statement = `
-WITH request(title) AS (
+WITH request(blob, title) AS (
   SELECT
+	(doc->'mycore.schema.setspace.com'->'title'->>'blob')::udig,
 	doc->'mycore.schema.setspace.com'->'title'->>'title'
     FROM
   	jsonorg.jsonb_255
@@ -140,7 +143,7 @@ WITH request(title) AS (
   	blob,
 	title
   ) SELECT
-  	$1::udig,
+  	blob,
 	title
       FROM
       	request
@@ -152,14 +155,14 @@ WITH request(title) AS (
   /*
    *  Note:
    *	Sadly, a trigger can not know the english ts_config,
-   *	hence we excplitly do the insert of the ts vector
+   *	hence we explicitly do the insert of the ts vector
    */
   INSERT INTO mycore.title_tsv (
   	blob,
 	ts_conf,
 	tsv
   ) SELECT
-  	$1,
+  	blob,
 	'english'::regconfig,
 	to_tsvector('english'::regconfig, title)
       FROM
