@@ -8,6 +8,8 @@
 #	select-my_title.sql
 #
 
+use utf8;
+
 #  Code lifted from JSON-Tiny
 my %ESCAPE = (
 	'"'     => '"',
@@ -40,39 +42,55 @@ die 'wrong number of arguments' unless @ARGV == 0;
 
 sub read_tuple
 {
+	chomp;
 	return split("\t");
 }
 
 while (<STDIN>) {
-	my ($blob, $title, $discover_unix_epoch) = read_tuple;
+	my ($blob, $title, $blob_discover_unix_epoch) = read_tuple;
 
 	die "field #1: blob: not a udig: $blob"
 		unless $blob =~ m/^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$/;
-	die "field #3: title: longer than 511 chars: $title"
+	die "field #2: title: longer than 511 chars: $title"
 					unless length($title) < 512; 
 
 	#  Note: not fully match time: 2012-10-18 16:59:21.747884-05
-	die "field #5: discover_unix_epoch: not digits: $discover_unix_epoch"
-				unless $discover_unix_epoch =~ m/^\d{10}$/;
+	die "field #3: blob_discover_unix_epoch: not digits: " .
+	    "$blob_discover_unix_epoch"
+				unless $blob_discover_unix_epoch =~ m/^\d{10}$/;
 	$blob = utf82json_string($blob);
+
+	my $new_title = $title;
+
+	#  control characters replaced with space
+	$new_title =~ s/[[:cntrl:]]+/ /g;
+	
+	#  strip leading an trailing space
+	$new_title =~ s/^[[:space:]]+|[[:space:]]+$//g;
+
+	#  compress white space
+	$new_title =~ s/[[:space:]]{2,}//g;
+
 	$title = utf82json_string($title);
+	$new_title = utf82json_string($new_title);
+	my $request_unix_epoch = time();
 	print <<END;
 {
 	"mycore.schema.setspace.com": {
 		"title": {
 			"blob": $blob,
-			"title": $title,
-			"insert-unix-epoch": $discover_unix_epoch
+			"title": $new_title
 		}
 	},
 	"version1.schema.setspace.com": {
 		"my_title.public": {
 			"blob": $blob,
 			"title": $title,
-			"blob-discover-unix-epoch": $discover_unix_epoch
+			"blob-discover-unix-epoch": $blob_discover_unix_epoch
 		}
 	},
-	"note": "batch loaded by jmscott with script sbin/my_title2title"
+	"note": "batch loaded by jmscott with script sbin/my_title2title",
+	"request-unix-epoch": $request_unix_epoch
 }
 END
 }

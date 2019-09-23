@@ -126,17 +126,7 @@ sql exec merge_title
 WITH request(blob, title) AS (
   SELECT
 	(doc->'mycore.schema.setspace.com'->'title'->>'blob')::udig,
-	regexp_replace(
-		regexp_replace(
-			regexp_replace(
-				doc->'mycore.schema.setspace.com'->
-					'title'->>'title',
-				'^[[:space:]]+', ''
-			),
-			'[[:space:]]+$', ''
-		),
-		'[[:space:]][[:space:]]+', ' ', 'g'
-	)
+	doc->'mycore.schema.setspace.com'->'title'->>'title'
     FROM
   	jsonorg.jsonb_255
     WHERE
