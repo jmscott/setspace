@@ -200,7 +200,7 @@ WITH request(url, title, discover_time) AS (
   /*
    *  Note:
    *	Sadly, a trigger can not know the english ts_config,
-   *	hence we excplitly do the insert of the ts vector
+   *	hence we explicitly do the insert of the ts vector
    */
   INSERT INTO mydash.tag_http_title_tsv (
   	blob,
