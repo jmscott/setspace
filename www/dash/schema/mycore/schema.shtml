@@ -56,7 +56,7 @@
 
      <dt>tags</dt>
      <dd>
-       Tags used by blobs.  A tag con
+       Tags used by blobs.  A tag consists of only graphics characters.
      </dd>
 
      <dt>tag</dt>
