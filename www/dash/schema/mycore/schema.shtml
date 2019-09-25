@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>MyCore Schema</title>
+  <meta charset="UTF-8" />
+  <link
+    href="/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <style> /* <![CDATA[ */
+  #content h3
+  {
+  	text-align:		left;
+  }
+  #content dl
+  {
+  	margin-left:		2em;
+  }
+
+  #content dl dt
+  {
+  	font-family: monospace;
+  }
+  /*]]>*/ </style>
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/schema/mycore/nav.shtml" -->
+   <div id="content">
+    <h2>SQL Objects in Schema <code>mycore</code></h2>
+
+    <h3>Tables</h3>
+    <dl>
+     <dt>title</dt>
+     <dd>
+       Curated title for a blob owned by me.
+     </dd>
+
+     <dt>title_tsv</dt>
+     <dd>
+       Text Search Vector for title of my blob.
+     </dd>
+
+     <dt>note</dt>
+     <dd>
+       Notes associated with my blob.
+     </dd>
+
+     <dt>note_tsv</dt>
+     <dd>
+       Configured text search vector of a note asscociated with my blob.
+     </dd>
+
+     <dt>tags</dt>
+     <dd>
+       Tags used by blobs.  A tag con
+     </dd>
+
+     <dt>tag</dt>
+     <dd>
+       Tag associated 
+     </dd>
+
+    </dl>
+
+    <h3>Domains</h3>
+    <dl>
+     <dt>title_255</dt>
+     <dd>
+       Curated title, with compressed white space and at least
+       one graphic character and less than 256 characters.
+     </dd>
+    </dl>
+
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

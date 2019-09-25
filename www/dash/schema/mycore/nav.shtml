@@ -2,5 +2,6 @@
  <ul>
   <li><a href="/">Home</a></li>
   <li><a href="/schema/mycore/index.shtml">Search Core Blobs</a></li>
+  <li><a href="/schema/mycore/schema.shtml">SQL Schema</a></li>
  </ul>
 </div>

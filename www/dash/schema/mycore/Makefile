@@ -32,6 +32,7 @@ install: all
 	install								\
 		index.shtml						\
 		nav.shtml						\
+		schema.shtml						\
 		$(WWW_PREFIX)/htdocs/schema/mycore
 	install mycore.cgi $(WWW_PREFIX)/lib
 
