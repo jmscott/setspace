@@ -110,29 +110,26 @@ COMMENT ON TABLE note_tsv IS
 DROP TABLE IF EXISTS tags CASCADE;
 CREATE TABLE tags
 (
-	tag	text	CHECK (
-				tag ~ '[[:graph:]]'
-				AND
-				length(tag) < 32
-			)
-			PRIMARY KEY
+        tag     text    CHECK (
+                                tag ~ '^[[:graph:]]{1,32}$'
+                        )
+                        PRIMARY KEY
 );
 COMMENT ON TABLE tags IS
-	'All my tags for my blobs'
+        'All my tags for my blobs'
 ;
 
 DROP TABLE IF EXISTS tag;
 CREATE TABLE tag
 (
-	blob	udig
-			REFERENCES setcore.service
-			ON DELETE CASCADE,
-	tag	text	REFERENCES tags
-			ON DELETE CASCADE,
-	PRIMARY KEY	(blob, tag)
+        blob    udig
+                        REFERENCES setcore.service
+                        ON DELETE CASCADE,
+        tag     text    REFERENCES tags
+                        ON DELETE CASCADE,
+        PRIMARY KEY     (blob, tag)
 );
 COMMENT ON TABLE tags IS
-	'Tags for my blobs'
+        'Tags for my blobs'
 ;
-
 COMMIT;
