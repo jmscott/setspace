@@ -30,6 +30,16 @@ COMMENT ON SCHEMA setcore IS
 	'Core setspace tables for common facts about blobs'
 ;
 
+DROP DOMAIN IF EXISTS inception CASCADE;
+CREATE DOMAIN inception AS timestamptz
+  CHECK (
+  	value >= '2019-10-02 08:43:42-05'
+  )
+;
+COMMENT ON DOMAIN inception IS
+  'Timestamp TZ always after inception of setspace software'
+;
+
 CREATE DOMAIN rfc1123_hostname AS text
   CHECK (
   	length(VALUE) < 255
