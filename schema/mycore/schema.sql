@@ -64,6 +64,25 @@ COMMENT ON TABLE title_tsv IS
   'Text Search Vector of title of a blob'
 ;
 
+DROP TABLE IF EXISTS title_request;
+CREATE TABLE title_request
+(
+	request_blob	udig
+				REFERENCES jsonorg.jsonb_255(blob)
+				ON DELETE CASCADE
+				PRIMARY KEY,
+	core_blob	udig
+				REFERENCES title(blob)
+				ON DELETE CASCADE,
+	request_time	setcore.inception
+				NOT NULL,
+	UNIQUE		(core_blob, request_time)
+);
+CREATE INDEX title_request_time ON title_request USING brin(request_time);
+COMMENT ON TABLE title_request IS
+  'JSON Request to change the title of blob'
+;
+
 DROP TABLE IF EXISTS note;
 CREATE TABLE note
 (
