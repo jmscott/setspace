@@ -33,7 +33,7 @@ COMMENT ON SCHEMA setcore IS
 DROP DOMAIN IF EXISTS inception CASCADE;
 CREATE DOMAIN inception AS timestamptz
   CHECK (
-  	value >= '2019-10-02 08:43:42-05'
+  	value >= '2008-05-17 10:06:42-05'	--  birthday of blobio
   )
 ;
 COMMENT ON DOMAIN inception IS
