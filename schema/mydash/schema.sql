@@ -30,10 +30,8 @@ CREATE TABLE tag_http
 					lower(substring(url, 1,8)) = 'https://'
 				)
 			) NOT NULL,
-	discover_time	timestamp CHECK (
-				discover_time >
-					'1970-01-01 00:00:00-00'
-			) NOT NULL
+	discover_time	setcore.inception
+				NOT NULL
 );
 COMMENT ON TABLE tag_http IS
   'Table of urls tagged in a browser in the dashboard'
@@ -79,9 +77,8 @@ CREATE TABLE trace_fdr
 (
 	schema_name	name
 				NOT NULL,
-	start_time	timestamptz CHECK(
-				start_time >= '1970/01/01'
-			) NOT NULL,
+	start_time	setcore.inception
+				NOT NULL,
 	blob		udig
 				REFERENCES setcore.service
 				NOT NULL,
@@ -134,9 +131,8 @@ CREATE TABLE trace_xdr
 (
 	schema_name		name
 					NOT NULL,
-	start_time		timestamptz CHECK(
-					start_time >= '1970/01/01'
-				) NOT NULL,
+	start_time		setcore.inception
+					NOT NULL,
 	log_sequence		bigint CHECK (
 					log_sequence >= 0
 				) NOT NULL,
@@ -208,9 +204,8 @@ CREATE TABLE trace_qdr
 (
 	schema_name		name
 					NOT NULL,
-	start_time		timestamptz CHECK(
-					start_time >= '1970/01/01'
-				) NOT NULL,
+	start_time		setcore.inception
+					NOT NULL,
 	log_sequence		bigint CHECK (
 					log_sequence >= 0
 				) NOT NULL,
