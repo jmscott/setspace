@@ -6,6 +6,10 @@
 #  See:
 #  	mycore/lib/schema.sql
 #  Note:
+#	Not correctly comparing most recent request row in table title.
+#	A more recent request should update the title table instead of
+#	BO NOTHING!
+#
 #	No test for blob getting the title!
 #
 #	An error on query merge_title leaves a lock file in directory run/.
@@ -92,6 +96,13 @@ SELECT
 	    	blob = $1::udig
 		AND
 		ts_conf = 'english'::regconfig
+	) AND EXISTS (
+	  SELECT
+	  	request_blob
+	    FROM
+	    	mycore.title_request
+	    WHERE
+	    	request_blob = $1::udig
 	)
 ;
 	;`;
@@ -151,7 +162,26 @@ WITH request(blob, title) AS (
    	DO NOTHING
    RETURNING
    	blob
+), insert_title_request(blob) AS (
+  
+  INSERT INTO mycore.title_request (
+  	request_blob,
+	core_blob,
+	request_time
+  ) SELECT
+  	$1::udig,
+	(j.doc->'mycore.schema.setspace.com'->'title'->>'blob')::udig,
+	to_timestamp((j.doc->'request-unix-epoch')::bigint)::timestamptz
+      FROM
+      	jsonorg.jsonb_255 j
+      WHERE
+      	j.blob = $1::udig
+    ON CONFLICT
+    	DO NOTHING
+    RETURNING
+    	$1::udig
 )
+
   /*
    *  Note:
    *	Sadly, a trigger can not know the english ts_config,
@@ -174,6 +204,13 @@ WITH request(blob, title) AS (
 	   FROM
 	    	insert_title
 	) IS NOT NULL
+	AND
+      	(SELECT
+		count(*)
+	   FROM
+	    	insert_title_request
+	) IS NOT NULL
+
     ON CONFLICT
   	DO NOTHING
 ;
