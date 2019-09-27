@@ -11,6 +11,9 @@
 #  Exit Status:
 #	0	all flowd process rebooted
 #	1	unknown error, processes may not have rebooted
+#  Note:
+#	Ought to attempt to boot all flowd processes instead of aborting
+#	upon the first failure.
 #
 
 PROG=$(basename $0)
