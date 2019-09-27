@@ -12,6 +12,10 @@
  *	\include ../create-fault.sql
  *
  *	COMMIT;
+ *  Note:
+ *	An exit_status == 0 is assumed to never be a fault,
+ *	which is not correct in the flowd language.  Need to update
+ *	the constraint in attribute fault_process.exit_status.
  */
 
 DROP TABLE IF EXISTS fault_table CASCADE;
@@ -65,7 +69,7 @@ CREATE TABLE fault_process
 				REFERENCES fault_program
 				ON DELETE CASCADE
 				NOT NULL,
-	exit_status	setcore.unix_process_exit_status CHECK (
+	exit_status	setcore.uni_xstatus CHECK (
 				exit_status > 0
 			)
 			NOT NULL,

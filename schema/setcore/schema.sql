@@ -170,15 +170,15 @@ COMMENT ON TABLE byte_suffix_32 IS
 CREATE INDEX byte_suffix_32_blob ON byte_suffix_32 USING hash(blob);
 CREATE INDEX byte_suffix_32_suffix ON byte_suffix_32(suffix);
 
-CREATE DOMAIN unix_process_exit_status AS int2
+CREATE DOMAIN uni_xstatus AS int2
   CHECK (
         value >= 0
         AND
         value <= 255
   )
 ;
-COMMENT ON DOMAIN unix_process_exit_status IS
-  	'Exit status of Unix process'
+COMMENT ON DOMAIN uni_xstatus IS
+  	'Exit status of Unix process, 0 <= 255'
 ;
 
 
