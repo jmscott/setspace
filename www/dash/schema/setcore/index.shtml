@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+<!--
+  Note:
+  	Need to add binary search to search input.
+-->
 <html>
  <head>
   <title>SetCore Schema</title>
