@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<!--
+  Note:
+  	Need to add to search the phrase "page:1" or "page:1-3"
+	to limit the searches.
+-->
+
 <html>
  <head>
   <title>PDFBox Schema</title>
