@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Generate text an object comment in pdfbox schema.
+#	Generate text of an object comment in pdfbox schema.
 #  Usage:
 #	/cgi-bin/pdfbox?out=text.objdesc&name=pddocument
 #  Note:
