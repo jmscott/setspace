@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<!--
+  Note:
+  	Detail needs to break down all tables exactly AND do a hex dump.
+	The hexdump needs to be paginated in, say, 64k chunks.
+-->
 <html>
  <head>
   <title>Detail of Blob</title>
