@@ -10,6 +10,7 @@ require 'common-json.pl';
 our %POST_VAR;
 
 my $blob = utf82json_string($POST_VAR{blob});
+die 'POST_VAR: blob is empty' if $blob eq '""';
 my $title = $POST_VAR{title};
 
 #  strip compress white space
@@ -62,8 +63,10 @@ my $request_blob = utf82blob(<<END);
 END
 print STDERR "post.mytitle: json request blob: $request_blob";
 
+#  pause while title syncs, returning uri of request
+sleep 2;
 print <<END;
-Status: 401
+Status: 303
 Location: $ENV{HTTP_REFERER}
 
 END
