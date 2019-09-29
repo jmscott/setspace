@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <!--
   Note:
+  	Time to create dedicated CSS for pdfbox: /schema/pdfbox/screen.css
+
   	Need to paginate the pdf pages.
 -->
 <html>
@@ -12,24 +14,57 @@
     rel="stylesheet"
     type="text/css"
   />
-  <style>
-  #extpg
-  {
-  	font-size:	smaller;
-  }
-  </style>
+  <style> /* <![CDATA[ */
+	#extpg
+	{
+		font-size:	smaller;
+	}
+	#mytitle
+	{
+		font-size:		larger;
+		width:			100%;
+		background-color:	black;
+		color:			lightgreen;
+		font:			monospace;
+	}
+  /* ]]> */ </style>
  </head>
 
  <body>
   <div id="container">
    <!--#include virtual="/header.shtml" -->
-   <!--#include virtual="/navigation.shtml" -->
+   <!--#include virtual="nav.shtml" -->
    <div id="content">
-    <h2>PDF Detail</h2>
-    <h3>
-     <!--#include
-       virtual="/cgi-bin/jmscott/env?out=text&qarg=blob&${QUERY_STRING}"
+
+    <h2>Title in Schema MyCore</h2>
+    <form
+      name="mytitle"
+      method="POST"
+      action="/cgi-bin/pdfbox"
+    >
+     <!--#include virtual=
+       "/cgi-bin/pdfbox?out=input.mytitle&id=mytitle&${QUERY_STRING}"
      -->
+     <input
+       type="submit"
+       value="Update Title"
+     />
+     <input
+       name="in"
+       type="hidden"
+       value="post.mytitle"
+     />
+     <!--#include virtual=
+       "/cgi-bin/jmscott/env?out=input&qarg=blob&inty=hidden&${QUERY_STRING}"
+     -->
+    </form>
+
+    <h2>PDF Detail</h2>
+
+    <h3>
+    <!--#include virtual=
+      "/cgi-bin/jmscott/env?out=text&qarg=blob&${QUERY_STRING}"
+    -->
     </h3>
 
     <h3><!--#include virtual=

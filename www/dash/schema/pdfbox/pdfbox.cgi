@@ -113,6 +113,19 @@
     </query-args>
    </putter>
 
+   <putter name="input.mytitle">
+    <query-args>
+     <arg
+     	name="blob"
+	perl5_re="[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}"
+     />
+     <arg
+     	name="title"
+	perl5_re=".*{1,255}"
+     />
+    </query-args>
+   </putter>
+
    <putter
      name="mime.pdf"
      content-type="application/pdf"
@@ -191,6 +204,20 @@
      <var
        name="qtype"
        perl5_re="web|key|phrase|fts"
+     />
+    </vars>
+   </putter>
+
+   <putter name="post.mytitle">
+    <title>Update PDF tite in mycore.title</title>
+    <vars>
+     <var
+       name="blob"
+       perl5_re="[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}"
+     />
+     <var
+       name="title"
+       perl5_re=".{1,255}"
      />
     </vars>
    </putter>

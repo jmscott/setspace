@@ -183,6 +183,26 @@ print <<'END';
   </dl>
 </div>
      </dd>
+     <dt>input.mytitle</dt>
+     <dd>
+<div class="query-args">
+ <h4>Query Args</h4>
+ <dl>
+  <dt>blob</dt>
+  <dd>
+   <ul>
+    <li><code>perl5_re:</code> [a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}</li>
+   </ul>
+  </dd>
+  <dt>title</dt>
+  <dd>
+   <ul>
+    <li><code>perl5_re:</code> .*{1,255}</li>
+   </ul>
+  </dd>
+  </dl>
+</div>
+     </dd>
      <dt>mime.pdf</dt>
      <dd>
 <div class="query-args">

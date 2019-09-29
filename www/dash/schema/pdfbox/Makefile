@@ -31,9 +31,11 @@ install: all
 		pdfbox.d/dl.pdinfo.pl					\
 		pdfbox.d/dl.pl						\
 		pdfbox.d/help.pl					\
+		pdfbox.d/input.mytitle.pl				\
 		pdfbox.d/input.pl					\
 		pdfbox.d/mime.pdf.pl					\
 		pdfbox.d/post.q.pl					\
+		pdfbox.d/post.mytitle.pl				\
 		pdfbox.d/select.qtype.pl				\
 		pdfbox.d/span.nav.pl					\
 		pdfbox.d/table.exttsv.pl				\
