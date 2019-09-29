@@ -4,6 +4,9 @@
 #	Convert my_title rows into json requests for mycore.title.
 #  Usage:
 #	psql -f select-my_title.sql | head -1 | my_title2title
+#	my_title2title <<END
+#	sha:47754bff255677801b9f7d46586af5b947a63a08\tHamlet\t1554311194
+#	END
 #  See Also:
 #	select-my_title.sql
 #
@@ -40,14 +43,9 @@ sub utf82json_string
 
 die 'wrong number of arguments' unless @ARGV == 0;
 
-sub read_tuple
-{
-	chomp;
-	return split("\t");
-}
-
 while (<STDIN>) {
-	my ($blob, $title, $blob_discover_unix_epoch) = read_tuple;
+	chomp;
+	my ($blob, $title, $blob_discover_unix_epoch) = split("\t");
 
 	die "field #1: blob: not a udig: $blob"
 		unless $blob =~ m/^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$/;
