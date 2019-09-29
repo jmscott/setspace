@@ -12,7 +12,7 @@
 boot
 {
 	brr_capacity = 256;
-	flow_worker_count = 24
+	flow_worker_count = 24;
 
 	#
 	#  Only fast test-and-set lock is called, so only a few
