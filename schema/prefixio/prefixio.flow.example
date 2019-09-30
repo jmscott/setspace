@@ -13,6 +13,11 @@
 #  See:
 #  	prefixio/lib/schema.sql
 #  Note:
+#	Appears that PDF files begin with new-line before the
+#	prefix %PDF are parsable. For example, see blob
+#
+#		bc160:e294cd8ae0247bcb7f7c7ad43570c9213e7b0dd0
+#
 #	Can we set os_exec_worker_count == 0?
 #
 #	Only need to append requests that proof existence.
@@ -143,6 +148,12 @@ command append_pdfbox_brr
 
 #
 #  The prefix of blob matches '^%PDF-'
+#
+#  Note:
+#	Appears that PDF files begin with new-line before the
+#	prefix %PDF are parsable. For example, see blob
+#
+#		bc160:e294cd8ae0247bcb7f7c7ad43570c9213e7b0dd0
 #
 sql query prefix_is_percentPDF row
 {
