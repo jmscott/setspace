@@ -182,7 +182,7 @@ print <<'END';
 <div class="examples">
  <h3>Examples</h3>
  <dl>
-   <dt><a href="/cgi-bin/tag-http?/cgi-bin/tag-http?help">/cgi-bin/tag-http?/cgi-bin/tag-http?help</a></dt>
+   <dt><a href="/cgi-bin/jmscott/tag-http?/cgi-bin/tag-http?help">/cgi-bin/jmscott/tag-http?/cgi-bin/tag-http?help</a></dt>
    <dd>Generate This Help Page for the CGI Script /cgi-bin/tag-http</dd>
  </dl>
 </div>

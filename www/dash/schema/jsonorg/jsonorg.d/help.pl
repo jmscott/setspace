@@ -148,7 +148,7 @@ print <<'END';
 <div class="examples">
  <h3>Examples</h3>
  <dl>
-   <dt><a href="/cgi-bin/jsonorg?/cgi-bin/jsonorg?help">/cgi-bin/jsonorg?/cgi-bin/jsonorg?help</a></dt>
+   <dt><a href="/cgi-bin/jmscott/jsonorg?/cgi-bin/jsonorg?help">/cgi-bin/jmscott/jsonorg?/cgi-bin/jsonorg?help</a></dt>
    <dd>Generate This Help Page for the CGI Script /cgi-bin/jsonorg</dd>
  </dl>
 </div>
