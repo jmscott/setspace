@@ -65,47 +65,44 @@ tail brr
 sql query is_title_json row
 {
 	statement = `
-SELECT
-	EXISTS (
-	  SELECT
-		blob
-	    FROM
-		jsonorg.jsonb_255
-	    WHERE
-		doc @> '{
-			"mycore.schema.setspace.com":{
-				"title":{}
-			}
-		}'
-		AND
-		blob = $1::udig
+WITH request(request_blob, core_blob, request_time) AS (
+  SELECT
+  	:blob::udig,
+	(doc->'mycore.schema.setspace.com'->'title'->>'blob')::udig,
+	doc->'mycore.schema.setspace.com'->'title'->>'title',
+	to_timestamp((doc->'request-unix-epoch')::bigint)::timestamptz
+    FROM
+    	jsonorg.jsonb_255
+    WHERE
+	doc @> '{
+		"mycore.schema.setspace.com":{
+			"title":{}
+		}
+	}'
+	AND
+	blob = :blob::udig
+) SELECT
+	(SELECT
+		count(*) = 1
+	  FROM
+	  	request
 	),
-	EXISTS (
-	  SELECT
-	  	blob
-	    FROM
-	    	mycore.title
-	    WHERE
-	    	blob = $1::udig
-	) AND EXISTS (
-	  SELECT
-	  	blob
-	    FROM
-	    	mycore.title_tsv
-	    WHERE
-	    	blob = $1::udig
+	(SELECT
+		t.blob IS NOT NULL
 		AND
-		ts_conf = 'english'::regconfig
-	) AND EXISTS (
-	  SELECT
-	  	request_blob
-	    FROM
-	    	mycore.title_request
-	    WHERE
-	    	request_blob = $1::udig
-	)
-;
-	;`;
+		tsv.blob IS NOT NULL
+		AND
+		tr.request_blob IS NOT NULL
+	  FROM
+	  	request r
+		  LEFT OUTER JOIN mycore.title t ON (t.blob = r.core_blob)
+		  LEFT OUTER JOIN mycore.title_tsv tsv ON (
+		  	tsv.blob = r.core_blob
+		  )
+		  LEFT OUTER JOIN mycore.title_request tr ON (
+		  	tr.request_blob = r.request_blob
+		  )
+	);`;
 
 	result row is (
 		is_title_request bool,
