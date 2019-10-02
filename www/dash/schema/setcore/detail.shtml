@@ -28,7 +28,7 @@
     <h2>Detail of SetCore Blob</h2>
     <h3>
      <!--#include virtual=
-       "/cgi-bin/jmscott/env?out=text&qarg=blob&${QUERY_STRING}"
+       "/cgi-bin/jmscott/env?out=text&src=QS&name=blob&${QUERY_STRING}"
      -->
     </h3>
     <h3>Hexdump of First 64K bytes</h3>

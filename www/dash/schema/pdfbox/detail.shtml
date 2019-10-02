@@ -55,7 +55,7 @@
        value="post.mytitle"
      />
      <!--#include virtual=
-       "/cgi-bin/jmscott/env?out=input&qarg=blob&inty=hidden&${QUERY_STRING}"
+       "/cgi-bin/jmscott/env?out=input&src=QS&name=blob&type=hidden&${QUERY_STRING}"
      -->
     </form>
 
@@ -63,7 +63,7 @@
 
     <h3>
     <!--#include virtual=
-      "/cgi-bin/jmscott/env?out=text&qarg=blob&${QUERY_STRING}"
+      "/cgi-bin/jmscott/env?out=text&src=QS&name=blob&${QUERY_STRING}"
     -->
     </h3>
 

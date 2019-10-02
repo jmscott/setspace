@@ -24,7 +24,7 @@
     <h2>PDF Text Search Vector Details</h2>
     <h3>
      <!--#include
-       virtual="/cgi-bin/jmscott/env?out=text&qarg=blob&${QUERY_STRING}"
+       virtual="/cgi-bin/jmscott/env?out=text&src=QS&name=blob&${QUERY_STRING}"
      -->
     </h3>
 
