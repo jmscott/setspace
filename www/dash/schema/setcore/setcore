@@ -4,8 +4,6 @@
 #	Implements argument processing for /cgi-bin/setcore.
 #  Source Path:
 #	setcore.cgi
-#  Source SHA1 Digest:
-#	No SHA1 Calculated
 #  Note:
 #	/cgi-bin/setcore was generated automatically by cgi2perl5.
 #

@@ -3,8 +3,6 @@
 #	Write <div> help page for script jsonorg.
 #  Source Path:
 #	jsonorg.cgi
-#  Source SHA1 Digest:
-#	No SHA1 Calculated
 #  Note:
 #	jsonorg.d/help.pl was generated automatically by cgi2perl5.
 #
@@ -148,7 +146,7 @@ print <<'END';
 <div class="examples">
  <h3>Examples</h3>
  <dl>
-   <dt><a href="/cgi-bin/jsonorg?/cgi-bin/jsonorg?help">/cgi-bin/jsonorg?/cgi-bin/jsonorg?help</a></dt>
+   <dt><a href="/cgi-bin/jmscott/jsonorg?/cgi-bin/jsonorg?help">/cgi-bin/jmscott/jsonorg?/cgi-bin/jsonorg?help</a></dt>
    <dd>Generate This Help Page for the CGI Script /cgi-bin/jsonorg</dd>
  </dl>
 </div>

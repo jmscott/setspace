@@ -4,8 +4,6 @@
 #	Implements argument processing for /cgi-bin/pdfbox.
 #  Source Path:
 #	pdfbox.cgi
-#  Source SHA1 Digest:
-#	No SHA1 Calculated
 #  Note:
 #	/cgi-bin/pdfbox was generated automatically by cgi2perl5.
 #
