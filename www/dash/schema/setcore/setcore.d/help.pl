@@ -141,7 +141,7 @@ print <<'END';
 <div class="examples">
  <h3>Examples</h3>
  <dl>
-   <dt><a href="/cgi-bin/jmscott/setcore?/cgi-bin/setcore?help">/cgi-bin/jmscott/setcore?/cgi-bin/setcore?help</a></dt>
+   <dt><a href="/cgi-bin/setcore?/cgi-bin/setcore?help">/cgi-bin/setcore?/cgi-bin/setcore?help</a></dt>
    <dd>Generate This Help Page for the CGI Script /cgi-bin/setcore</dd>
  </dl>
 </div>
