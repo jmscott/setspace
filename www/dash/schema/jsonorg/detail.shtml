@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Detail of JSONOrg Blob</title>
+  <meta charset="UTF-8" />
+  <link
+    href="/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="nav.shtml" -->
+   <div id="content">
+    <h2>Detail of Blob in JSONOrg Schema</h2>
+    <h3>
+     <!--#include virtual=
+       "/cgi-bin/jmscott/env?out=text&name=blob&src=QS&${QUERY_STRING}"
+     -->
+    </h3>
+    <!--#include virtual="/cgi-bin/jsonorg?out=pre&${QUERY_STRING}" -->
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

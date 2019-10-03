@@ -56,21 +56,31 @@
     </query-args>
    </putter>
 
+   <putter name="pre">
+    <query-args>
+     <arg
+       name="blob"
+       perl5_re="[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}"
+       required="yes"
+     />
+    </query-args>
+   </putter>
+
    <putter name="span.nav">
     <query-args>
      <arg
-     	name="q"
-	perl5_re=".{0,255}"
+       name="q"
+       perl5_re=".{0,255}"
      />
      <arg
-     	name="lim"
-	perl5_re="[1-9][0-9]{0,3}"
-	default="10"
+       name="lim"
+       perl5_re="[1-9][0-9]{0,3}"
+       default="10"
      />
      <arg
-     	name="offset"
-	perl5_re="[+0-9]{1,10}"
-	default="0"
+       name="offset"
+       perl5_re="[+0-9]{1,10}"
+       default="0"
      />
     </query-args>
    </putter>

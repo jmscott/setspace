@@ -30,10 +30,12 @@ install: all
 		jsonorg.d/help.pl					\
 		jsonorg.d/input.pl					\
 		jsonorg.d/mime.json.pl					\
+		jsonorg.d/pre.pl					\
 		jsonorg.d/span.nav.pl					\
 		jsonorg.d/table.pl					\
 		$(WWW_PREFIX)/lib/jsonorg.d
 	install								\
+		detail.shtml						\
 		index.shtml						\
 		nav.shtml						\
 		schema.shtml						\
