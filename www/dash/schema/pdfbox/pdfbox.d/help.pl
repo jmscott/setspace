@@ -3,6 +3,8 @@
 #	Write <div> help page for script pdfbox.
 #  Source Path:
 #	pdfbox.cgi
+#  Source SHA1 Digest:
+#	No SHA1 Calculated
 #  Note:
 #	pdfbox.d/help.pl was generated automatically by cgi2perl5.
 #
@@ -297,7 +299,7 @@ print <<'END';
 <div class="examples">
  <h3>Examples</h3>
  <dl>
-   <dt><a href="/cgi-bin/jmscott/pdfbox?/cgi-bin/pdfbox?help">/cgi-bin/jmscott/pdfbox?/cgi-bin/pdfbox?help</a></dt>
+   <dt><a href="/cgi-bin/pdfbox?/cgi-bin/pdfbox?help">/cgi-bin/pdfbox?/cgi-bin/pdfbox?help</a></dt>
    <dd>Generate This Help Page for the CGI Script /cgi-bin/pdfbox</dd>
  </dl>
 </div>
