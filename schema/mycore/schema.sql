@@ -2,6 +2,13 @@
  *  Synopsis:
  *	Personal metadata about blobs, like title, notes and tags.
  *  Note:
+ *	Not clear if title_request.core_blob should point to title.blob
+ *	or just point to setcore.title or even exist at all.  In other words,
+ *	should table title_request simply summarize the json, with no
+ *	implications of existence of the blob?  Does the exitence of
+ *	and entry in table title imply an entry in table title_request ...
+ *	probably not.  not sure.
+ *	
  *	What is the unicode generalization of space and vertical breaks?
  */
 \set ON_ERROR_STOP on
@@ -64,6 +71,11 @@ COMMENT ON TABLE title_tsv IS
   'Text Search Vector of title of a blob'
 ;
 
+/*
+ *  Note:
+ *	Should att core_blob refer to title(blob) or setcore(blob) or
+ *	any blob at all?
+ */
 DROP TABLE IF EXISTS title_request;
 CREATE TABLE title_request
 (
