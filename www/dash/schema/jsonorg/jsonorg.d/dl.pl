@@ -39,9 +39,9 @@ while (my $r = $qh->fetchrow_hashref()) {
  <dd>
    discovered $discover_elapsed ago,
    <a
-     href="/cgi-bin/jsonorg?out=mime.json&udig=$blob"
+     href="/schema/jsonorg/detail.shtml?blob=$blob"
      title="$blob"
-   >View</a>
+   >Detail</a>
  </dd>
 END
 }
