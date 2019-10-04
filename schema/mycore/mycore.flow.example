@@ -67,7 +67,7 @@ sql query is_title_json row
 	statement = `
 WITH request(request_blob, core_blob, request_time) AS (
   SELECT
-  	:blob::udig,
+  	$1::udig,
 	(doc->'mycore.schema.setspace.com'->'title'->>'blob')::udig,
 	doc->'mycore.schema.setspace.com'->'title'->>'title',
 	to_timestamp((doc->'request-unix-epoch')::bigint)::timestamptz
@@ -80,7 +80,7 @@ WITH request(request_blob, core_blob, request_time) AS (
 		}
 	}'
 	AND
-	blob = :blob::udig
+	blob = $1::udig
 ) SELECT
 	(SELECT
 		count(*) = 1
@@ -131,48 +131,82 @@ query is_title_json(brr.udig);
 sql exec merge_title
 {
 	statement = `
-WITH request(blob, title) AS (
+WITH json_request(core_blob, title, request_time) AS (
   SELECT
-	(doc->'mycore.schema.setspace.com'->'title'->>'blob')::udig,
-	doc->'mycore.schema.setspace.com'->'title'->>'title'
+	(j.doc->'mycore.schema.setspace.com'->'title'->>'blob')::udig,
+	j.doc->'mycore.schema.setspace.com'->'title'->>'title',
+	to_timestamp((j.doc->'request-unix-epoch')::bigint)::timestamptz
     FROM
-  	jsonorg.jsonb_255
+  	jsonorg.jsonb_255 j
     WHERE
-  	doc @> '{
+  	j.doc @> '{
 		"mycore.schema.setspace.com":{
 			"title":{}
 		}
 	}'
 	AND
-	blob = $1::udig
-), insert_title (blob) AS (
+	j.doc->>'request-unix-epoch' ~ '^\d{10,}$'
+	AND
+	j.blob = $1::udig
+), request(core_blob, title, request_time) AS (
+  SELECT
+  	jr.core_blob,
+	jr.title,
+	jr.request_time
+    FROM
+    	json_request jr
+    WHERE
+    	NOT EXISTS (
+		SELECT
+			tr.request_blob
+      		  FROM
+			mycore.title_request tr
+			  LEFT OUTER JOIN mycore.title t ON (
+			  	t.blob = tr.core_blob
+			  )
+		  WHERE
+		  	--  a more recent request already exists.
+		  	(
+				tr.core_blob = jr.core_blob
+				AND
+				tr.request_time > jr.request_time
+			)
+			OR
+			(
+				--  current json request already processed
+				tr.request_blob = $1::udig
+				AND
+				jr.title = t.title
+			)
+	)
+),
+
+insert_title (blob) AS (
 
   INSERT INTO mycore.title (
   	blob,
 	title
   ) SELECT
-  	blob,
+  	core_blob,
 	title
       FROM
       	request
-   ON CONFLICT
-   	DO NOTHING
+   ON CONFLICT(blob)
+     DO UPDATE SET
+	title =  EXCLUDED.title
    RETURNING
-   	blob
+   	$1::udig
 ), insert_title_request(blob) AS (
-  
   INSERT INTO mycore.title_request (
   	request_blob,
 	core_blob,
 	request_time
   ) SELECT
   	$1::udig,
-	(j.doc->'mycore.schema.setspace.com'->'title'->>'blob')::udig,
-	to_timestamp((j.doc->'request-unix-epoch')::bigint)::timestamptz
+	core_blob,
+	request_time
       FROM
-      	jsonorg.jsonb_255 j
-      WHERE
-      	j.blob = $1::udig
+      	request
     ON CONFLICT
     	DO NOTHING
     RETURNING
@@ -181,15 +215,15 @@ WITH request(blob, title) AS (
 
   /*
    *  Note:
-   *	Sadly, a trigger can not know the english ts_config,
-   *	hence we explicitly do the insert of the ts vector
+   *	Since a trigger cannot know the ts_config we explcitly insert
+   *	here.
    */
   INSERT INTO mycore.title_tsv (
   	blob,
 	ts_conf,
 	tsv
   ) SELECT
-  	blob,
+  	core_blob,
 	'english'::regconfig,
 	to_tsvector('english'::regconfig, title)
       FROM
@@ -208,8 +242,9 @@ WITH request(blob, title) AS (
 	    	insert_title_request
 	) IS NOT NULL
 
-    ON CONFLICT
-  	DO NOTHING
+    ON CONFLICT(blob, ts_conf)
+     DO UPDATE SET
+	tsv =  EXCLUDED.tsv
 ;
 	`;
 }
