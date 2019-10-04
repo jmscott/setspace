@@ -31,11 +31,12 @@ install: all
 		pdfbox.d/dl.pdinfo.pl					\
 		pdfbox.d/dl.pl						\
 		pdfbox.d/help.pl					\
+		pdfbox.d/iframe.pdf.pl					\
 		pdfbox.d/input.mytitle.pl				\
 		pdfbox.d/input.pl					\
 		pdfbox.d/mime.pdf.pl					\
-		pdfbox.d/post.q.pl					\
 		pdfbox.d/post.mytitle.pl				\
+		pdfbox.d/post.q.pl					\
 		pdfbox.d/select.qtype.pl				\
 		pdfbox.d/span.nav.pl					\
 		pdfbox.d/table.exttsv.pl				\
@@ -43,11 +44,13 @@ install: all
 		pdfbox.d/text.objdesc.pl				\
 		$(WWW_PREFIX)/lib/pdfbox.d
 	install								\
-		detail.shtml						\
 		detail-tsv.shtml					\
+		detail.shtml						\
 		index.shtml						\
 		nav.shtml						\
 		schema.shtml						\
+		screen.css						\
+		title.shtml						\
 		$(WWW_PREFIX)/htdocs/schema/pdfbox
 	install pdfbox.cgi $(WWW_PREFIX)/lib
 

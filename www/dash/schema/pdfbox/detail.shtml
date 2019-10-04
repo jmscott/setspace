@@ -14,18 +14,15 @@
     rel="stylesheet"
     type="text/css"
   />
+  <link
+    href="/schema/pdfbox/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
   <style> /* <![CDATA[ */
 	#extpg
 	{
 		font-size:	smaller;
-	}
-	#mytitle
-	{
-		font-size:		larger;
-		width:			100%;
-		background-color:	black;
-		color:			lightgreen;
-		font:			monospace;
 	}
   /* ]]> */ </style>
  </head>

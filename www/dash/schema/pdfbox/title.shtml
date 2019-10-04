@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Title on PDF</title>
+  <meta charset="UTF-8" />
+  <link
+    href="/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <link
+    href="/schema/pdfbox/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <style>
+  #pdf-frame
+  {
+  	width:		100%;
+  	height:		80em;
+  }
+  </style>
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="nav.shtml" -->
+   <div id="content">
+    <h2>Title for PDF</h2>
+    <form
+      name="mytitle"
+      method="POST"
+      action="/cgi-bin/pdfbox"
+    >
+     <!--#include virtual=
+       "/cgi-bin/pdfbox?out=input.mytitle&id=mytitle&${QUERY_STRING}"
+     -->
+     <input
+       type="submit"
+       value="Update Title"
+     />
+     <input
+       name="in"
+       type="hidden"
+       value="post.mytitle"
+     />
+     <!--#include virtual=
+       "/cgi-bin/jmscott/env?out=input&src=QS&name=blob&type=hidden&${QUERY_STRING}"
+     -->
+    </form>
+    <!--#include virtual=
+      "/cgi-bin/pdfbox?out=iframe.pdf&id=pdf-frame&${QUERY_STRING}"
+    -->
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

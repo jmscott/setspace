@@ -25,6 +25,7 @@ SELECT
 	  ELSE
 		pi.title
 	END AS title,
+	myt.title IS NULL AS mytitle_is_null,
 	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
 		AS discover_elapsed
   FROM
@@ -82,6 +83,8 @@ sub recent_select
 #	rank
 #	snippet
 #	title
+#	mytitle_is_null
+#	discover_time
 #
 sub keyword_sql
 {
@@ -170,6 +173,7 @@ WITH pdf_page_match AS (
 	  ELSE
 		pi.title
 	END AS title,
+	myt.title IS NULL AS mytitle_is_null,
 	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
 		AS discover_elapsed
   FROM
@@ -220,6 +224,7 @@ sub keyword_select
 #	rank
 #	snippet
 #	title
+#	mytitle_is_null
 #  Argument Vector:
 #	$1	query keywords
 #	$2	text search configuration (english, russian, etc)
@@ -314,6 +319,7 @@ WITH pdf_page_match AS (
 	  ELSE
 		pi.title
 	END AS title,
+	myt.title IS NULL AS mytitle_is_null,
 	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
 		AS discover_elapsed
   FROM
@@ -363,6 +369,7 @@ sub phrase_select
 #	rank
 #	snippet
 #	title
+#	mytitle_is_null
 #  Argument Vector:
 #	$1	full text search syntax
 #	$2	text search configuration (english, russian, etc)
@@ -504,7 +511,9 @@ sub fts_select
 #	page_count
 #	rank
 #	snippet
-#	title
+#	title,
+#	mytitle_is_null
+#	discover_elapsed
 #  Argument Vector:
 #	$1	full text search syntax
 #	$2	text search configuration (english, russian, etc)
@@ -600,7 +609,8 @@ WITH pdf_page_match AS (
 		pi.title
 	END AS title,
 	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
-		AS discover_elapsed
+		AS discover_elapsed,
+	myt.title IS NULL AS mytitle_is_null
   FROM
   	pdf_page_match pp
 	  JOIN setcore.service s ON (s.blob = pp.blob)
@@ -649,6 +659,7 @@ SELECT
 	  ELSE
 		pi.title
 	END AS title,
+	myt.title IS NULL AS mytitle_is_null,
 	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
 		AS discover_elapsed
   FROM

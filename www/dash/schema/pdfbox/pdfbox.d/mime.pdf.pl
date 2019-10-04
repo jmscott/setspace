@@ -2,6 +2,10 @@
 #  Synopsis:
 #	Fetch a blob as a pdf mime type.
 #  Note:
+#	The pdfbox-full-text-search-click needs to move to a separate
+#	cgi-bin widget callable from web page!  Simply displaying a pdf
+#	blob triggers a json blob for a web search!
+#
 #	WTF?  No validation is done on the blob.  In fact, the blob is
 #	assumed to exist and be correct.  Terrible.
 #

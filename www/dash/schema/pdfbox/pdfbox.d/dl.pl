@@ -82,11 +82,15 @@ END
 	my $plural_nop = 's';
 	$plural_nop = '' if $number_of_pages == 1;
 
+	my $mytitle_is_null = $r->{mytitle_is_null};
 	my $snippet = $r->{snippet};
 	my $span_snippet = <<END if $snippet =~ /[[:graph:]]/;
    <span class="snippet">$snippet</span>
 END
 
+	my $a_title =<<END if $mytitle_is_null eq '1';
+<a href="/schema/pdfbox/title.shtml?blob=$blob">, Title</a>
+END
 	#  build the row
 	print <<END;
  <dt$dt_class>
@@ -101,7 +105,7 @@ END
        class="detail"
        href="/schema/pdfbox/detail.shtml?blob=$blob"
        title="$blob"
-     >Detail</a>
+     >Detail</a>$a_title
    </span>
  </dd>
 END
