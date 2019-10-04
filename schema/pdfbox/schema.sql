@@ -8,6 +8,8 @@
  *  See:
  *	https://pdfbox.apache.org
  *  Note:
+ *	Need to create tsv on colums pddocument_information.{title,author}
+ *
  *	Is the rum index implicitly dependent on on the default ts_config,
  *	as the gin index on jsonb?
  *
