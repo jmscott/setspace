@@ -350,6 +350,8 @@ CREATE TRIGGER is_fault_extract_pages_utf8_disjoint
 
 /*
  *  Text of individual pages of a pdf blob
+ *  Individual pages exist for headline/snippet generation in
+ *  text search.
  */
 DROP TABLE IF EXISTS page_text_utf8 CASCADE;
 CREATE TABLE page_text_utf8
