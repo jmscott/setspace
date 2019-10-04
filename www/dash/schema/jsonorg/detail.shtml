@@ -8,6 +8,11 @@
     rel="stylesheet"
     type="text/css"
   />
+  <link
+    href="/schema/jsonorg/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
  </head>
 
  <body>
@@ -21,7 +26,9 @@
        "/cgi-bin/jmscott/env?out=text&name=blob&src=QS&${QUERY_STRING}"
      -->
     </h3>
-    <!--#include virtual="/cgi-bin/jsonorg?out=pre&${QUERY_STRING}" -->
+    <!--#include virtual=
+      "/cgi-bin/jsonorg?out=pre&class=json&${QUERY_STRING}"
+    -->
    </div>
    <!--#include virtual="/footer.shtml" -->
   </div>
