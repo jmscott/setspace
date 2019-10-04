@@ -1,7 +1,11 @@
 <div id="navigation">
  <ul>
   <li><a href="/">Home</a></li>
-  <li><a href="/schema/pdfbox/index.shtml">Search PDF</a></li>
-  <li><a href="/schema/pdfbox/schema.shtml">PDFBox Schema</a></li>
+  <li><a href="/schema/pdfbox/index.shtml">Search PDFs</a></li>
+  <li>
+   <a href="/schema/pdfbox/schema.shtml">
+     SQL Schema</code>
+   </a>
+  </li>
  </ul>
 </div>

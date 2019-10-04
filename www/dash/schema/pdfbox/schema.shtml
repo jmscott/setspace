@@ -9,9 +9,17 @@
     type="text/css"
   />
   <style> /* <![CDATA[ */
-  #content h3
+  /*
+   *  Note:
+   *	Need to generalize into css class .schema!
+   */
+  #content h3, #content h4
   {
   	text-align:		left;
+  }
+  #content h4
+  {
+  	font-size:		smaller;
   }
   #content dl
   {
@@ -40,6 +48,19 @@
        <a href=
          "https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/pdmodel/PDDocument.html"
        >org.apache.pdfbox.pdmodel.PDDocument</a>
+       <h4>Columns</h4>
+       <dl>
+        <dt>blob</dt>
+	<dd>The PDF blob</dd>
+
+	<dt>number_of_pages</dt>
+	<dd>Total number of pages, as stored in the dictionary.</dd>
+
+	<dt>document_id</dt>
+	<dt>version</dt>
+	<dt>is_all_security_to_be_removed</dt>
+	<dt>is_encrypted</dt>
+       </dl>
      </dd>
 
      <dt>pddocument_information</dt>
@@ -48,6 +69,21 @@
        <a href=
        "https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/pdmodel/PDDocumentInformation.html"
        >org.apache.pdfbox.pdmodel.PDDocumentInformation</a>
+
+       <h4>Columns</h4>
+       <dl>
+        <dt>blob</dt>
+	<dd>The PDF blob, referencing <code>pddocument.blob</code></dd>
+	<dt>title</dt>
+	<dt>author</dt>
+	<dt>creation_date_string</dt>
+	<dt>creator</dt>
+	<dt>keywords</dt>
+	<dt>modification_date_string</dt>
+	<dt>producer</dt>
+	<dt>subject</dt>
+	<dt>trapped</dt>
+       </dl>
      </dd>
 
      <dt>extract_pages_utf8</dt>
@@ -56,15 +92,55 @@
        The underlying class is pdfbox 
        <a href=
          "https://pdfbox.apache.org/docs/2.0.13/javadocs/org/apache/pdfbox/text/PDFTextStripper.html"
-	>PDFTextStripper</a>
+       >PDFTextStripper</a>
+       <h4>Columns</h4>
+       <dl>
+        <dt>pdf_blob</dt>
+	<dd>The PDF blob, referencing <code>pddocument.blob</code></dd>
+
+	<dt>page_blob</dt>
+	<dd>The UTF8 text blob from particular page</dd>
+
+	<dt>page_number</dt>
+       </dl>
      </dd>
 
      <dt>page_text_utf8</dt>
-     <dd>Individual Pages of UTF8 Text extracted from a pdf blob</dd>
+     <dd>
+       Individual Pages of UTF8 Text extracted from a pdf blob
+       <h4>Columns</h4>
+       <dl>
+        <dt>pdf_blob</dt>
+	<dd>The PDF blob, referencing <code>pddocument.blob</code></dd>
+
+	<dt>page_blob</dt>
+	<dd>
+	  The uniform digest of a blob of UTF8 text of particular page
+	  in the pdf document.
+	</dd>
+
+	<dt>txt</dt>
+	<dd>The utf8 text of a particular page in pdf blob</dd>
+       </dl>
+     </dd>
 
      <dt>page_tsv_utf8</dt>
      <dd>
        Text search vectors for Pages of UTF8 Text extracted from a pdf blob.
+       <h4>Columns</h4>
+       <dl>
+        <dt>pdf_blob</dt>
+	<dd>The PDF blob, referencing <code>pddocument.blob</code></dd>
+
+	<dt>page_blob</dt>
+	<dd>
+	  The uniform digest of a blob of UTF8 text of particular page
+	  in the pdf document.
+	</dd>
+
+	<dt>tsv</dt>
+	<dd>The text search vector of a particular page of a pdf document</dd>
+       </dl>
      </dd>
 
     </dl>
