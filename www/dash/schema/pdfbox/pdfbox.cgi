@@ -149,6 +149,21 @@
     </query-args>
    </putter>
 
+   <putter name="utf8.pg1">
+    <query-args>
+     <arg
+     	name="blob"
+	perl5_re="[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}"
+	required="yes"
+     />
+     <arg
+     	name="lim"
+	perl5_re="\d{1,10}"
+	default="65535"
+     />
+    </query-args>
+   </putter>
+
    <putter name="dl.pddoc">
     <query-args>
      <arg

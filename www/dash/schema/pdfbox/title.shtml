@@ -50,6 +50,9 @@
      -->
     </form>
     <!--#include virtual=
+      "/cgi-bin/pdfbox?out=utf8.pg1&lim=256&${QUERY_STRING}"
+    -->
+    <!--#include virtual=
       "/cgi-bin/pdfbox?out=iframe.pdf&id=pdf-frame&${QUERY_STRING}"
     -->
    </div>

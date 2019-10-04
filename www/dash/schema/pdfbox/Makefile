@@ -42,6 +42,7 @@ install: all
 		pdfbox.d/table.exttsv.pl				\
 		pdfbox.d/table.pl					\
 		pdfbox.d/text.objdesc.pl				\
+		pdfbox.d/utf8.pg1.pl					\
 		$(WWW_PREFIX)/lib/pdfbox.d
 	install								\
 		detail-tsv.shtml					\
