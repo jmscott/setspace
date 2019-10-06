@@ -42,10 +42,12 @@ CREATE TABLE pddocument
 				PRIMARY KEY,
 	/*
 	 *  Note:
-	 *	Spec not clear if number_of_pages > 0 of >= 0.
+	 *	Spec not clear if number_of_pages > 0 is always true.
+	 *	However, knowing that number_of_pages > 0 simplifies
+	 *	text ranking algorithms, so we cheat.
 	 */
 	number_of_pages int CHECK (
-				number_of_pages >= 0
+				number_of_pages > 0
 			) NOT NULL,
 
 	document_id	bigint,		-- is document_id always > 0
