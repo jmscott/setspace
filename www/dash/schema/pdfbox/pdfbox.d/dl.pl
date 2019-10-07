@@ -22,7 +22,7 @@ binmode(STDOUT, ":utf8");
 our %QUERY_ARG;
 
 print <<END;
-<dl $QUERY_ARG{id_att}$QUERY_ARG{class_att}>
+<dl$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END
 
 my $qh;

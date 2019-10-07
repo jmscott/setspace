@@ -517,7 +517,7 @@ sub fts_select
 #  Argument Vector:
 #	$1	full text search syntax
 #	$2	text search configuration (english, russian, etc)
-#	$3	rank norm algorithm
+#	$3	rank norm algorithm code: [1-14], see pg docs
 #	$4	limit number of results returned
 #	$5	start row offset
 #
