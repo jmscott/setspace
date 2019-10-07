@@ -39,7 +39,7 @@ my $r = dbi_pg_select(
 SELECT
 	count(*) AS blob_count
   FROM
-  	setcore.service
+  	setcore.service s
   $WHERE
 END
 )->fetchrow_hashref();
