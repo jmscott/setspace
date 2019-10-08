@@ -524,38 +524,61 @@ sub fts_select
 sub websearch_sql
 {
 	return q(
-WITH pdf_page_match AS (
+/*
+ *  CTE mytitle_match:
+ *	Find the pdfs for which the title ranking is the highest.
+ */
+WITH mytitle_match AS (
+  SELECT
+  	tsv.blob AS blob,
+	ts_rank_cd(tsv.tsv, q, :rnorm)::float8 AS rank_sum,
+	tsv.tsv
+    FROM
+    	mycore.title_tsv tsv,
+	websearch_to_tsquery(:ts_conf, :q) AS q
+    WHERE
+    	tsv.tsv @@ q
+	AND
+	tsv.ts_conf = :ts_conf::regconfig
+  ORDER BY
+  	rank_sum desc
+  LIMIT
+  	:lim
+  OFFSET
+  	:offset
+),
+/*
+ *  CTE page_match:
+ *	Find the pdfs for which the sum of the ranks on the matching pages is
+ *	highest.
+ */
+page_match AS (
   SELECT
 	tsv.pdf_blob AS blob,
-	sum(ts_rank_cd(tsv.tsv, q, $3))::float8 AS page_rank_sum,
-	count(tsv.pdf_blob)::float8 AS match_page_count
+	sum(ts_rank_cd(tsv.tsv, q, :rnorm))::float8 AS rank_sum,
+	count(tsv.pdf_blob)::float8 AS match_count
   FROM
 	pdfbox.page_tsv_utf8 tsv,
-	websearch_to_tsquery($2, $1) AS q
+	websearch_to_tsquery(:ts_conf, :q) AS q
   WHERE
   	tsv.tsv @@ q
 	AND
-	tsv.ts_conf = $2::regconfig
+	tsv.ts_conf = :ts_conf::regconfig
   GROUP BY
-  	1
+  	tsv.pdf_blob
   ORDER BY
-  	page_rank_sum desc,
-	match_page_count desc
+  	rank_sum desc,
+	match_count desc
   LIMIT
-  	$4
+  	:lim
   OFFSET
-  	$5
+  	:offset
 )
   SELECT
   	pd.blob,
-	match_page_count,
+	match_count,
 	pd.number_of_pages,
-	/*
-	 *  Note:
-	 *	Unfortunately the schema allows number_of_pages == 0,
-	 *	so this code could break!
-	 */
-  	max(page_rank_sum * (match_page_count / pd.number_of_pages)) AS rank,
+  	max(rank_sum * (match_count / pd.number_of_pages)) AS rank,
 
 	/*
 	 *  Extract a headline of matching terms from the highest ranking page
@@ -564,15 +587,15 @@ WITH pdf_page_match AS (
 
 	(WITH max_ranked_tsv AS (
 	    SELECT
-	    	sum(ts_rank_cd(tsv.tsv, q, $3))::float8,
+	    	sum(ts_rank_cd(tsv.tsv, q, :rnorm))::float8,
 		tsv.page_number
 	    FROM
 		pdfbox.page_tsv_utf8 tsv,
-		websearch_to_tsquery($2, $1) AS q
+		websearch_to_tsquery(:ts_conf, :q) AS q
 	    WHERE
   		tsv.tsv @@ q
 		AND
-		tsv.ts_conf = $2::regconfig
+		tsv.ts_conf = :ts_conf::regconfig
 		AND
 		tsv.pdf_blob = pd.blob
 	    GROUP BY
@@ -584,7 +607,7 @@ WITH pdf_page_match AS (
 	    	1
 	  ) SELECT
 	  	ts_headline(
-			$2::regconfig,
+			:ts_conf::regconfig,
 			(SELECT
 				maxtxt.txt
 			    FROM
@@ -597,7 +620,7 @@ WITH pdf_page_match AS (
 			q
 		) || ' @ Page #' || maxts.page_number
 	    FROM
-	    	websearch_to_tsquery($2, $1) AS q,
+	    	websearch_to_tsquery(:ts_conf, :q) AS q,
 		max_ranked_tsv maxts
 	) AS snippet,
 	CASE
@@ -612,20 +635,23 @@ WITH pdf_page_match AS (
 		AS discover_elapsed,
 	myt.title IS NULL AS mytitle_is_null
   FROM
-  	pdf_page_match pp
+  	page_match pp
 	  JOIN setcore.service s ON (s.blob = pp.blob)
 	  JOIN pdfbox.pddocument pd ON (pd.blob = pp.blob)
 	  LEFT OUTER JOIN mycore.title myt ON (myt.blob = pp.blob)
-	  LEFT OUTER JOIN pdfbox.pddocument_information pi ON (pi.blob = pp.blob)
+	  LEFT OUTER JOIN pdfbox.pddocument_information pi
+	    ON (
+	    	pi.blob = pp.blob
+	  )
   GROUP BY
   	pd.blob,
-	match_page_count,
+	match_count,
 	myt.title,
 	pi.title,
 	s.discover_time
   ORDER BY
   	rank desc,
-	match_page_count desc
+	match_count desc
 	);
 }
 
