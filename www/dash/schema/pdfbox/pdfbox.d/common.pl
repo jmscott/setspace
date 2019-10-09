@@ -531,21 +531,21 @@ sub websearch_sql
 WITH mytitle_match AS (
   SELECT
   	tsv.blob AS blob,
-	ts_rank_cd(tsv.tsv, q, :rnorm)::float8 AS rank_sum,
+	ts_rank_cd(tsv.tsv, q, $3)::float8 AS rank_sum,
 	tsv.tsv
     FROM
     	mycore.title_tsv tsv,
-	websearch_to_tsquery(:ts_conf, :q) AS q
+	websearch_to_tsquery($2, $1) AS q
     WHERE
     	tsv.tsv @@ q
 	AND
-	tsv.ts_conf = :ts_conf::regconfig
+	tsv.ts_conf = $2::regconfig
   ORDER BY
   	rank_sum desc
   LIMIT
-  	:lim
+  	$4
   OFFSET
-  	:offset
+  	$5
 ),
 /*
  *  CTE page_match:
@@ -555,24 +555,24 @@ WITH mytitle_match AS (
 page_match AS (
   SELECT
 	tsv.pdf_blob AS blob,
-	sum(ts_rank_cd(tsv.tsv, q, :rnorm))::float8 AS rank_sum,
+	sum(ts_rank_cd(tsv.tsv, q, $3))::float8 AS rank_sum,
 	count(tsv.pdf_blob)::float8 AS match_count
   FROM
 	pdfbox.page_tsv_utf8 tsv,
-	websearch_to_tsquery(:ts_conf, :q) AS q
+	websearch_to_tsquery($2, $1) AS q
   WHERE
   	tsv.tsv @@ q
 	AND
-	tsv.ts_conf = :ts_conf::regconfig
+	tsv.ts_conf = $2::regconfig
   GROUP BY
   	tsv.pdf_blob
   ORDER BY
   	rank_sum desc,
 	match_count desc
   LIMIT
-  	:lim
+  	$4
   OFFSET
-  	:offset
+  	$5
 )
   SELECT
   	pd.blob,
@@ -587,15 +587,15 @@ page_match AS (
 
 	(WITH max_ranked_tsv AS (
 	    SELECT
-	    	sum(ts_rank_cd(tsv.tsv, q, :rnorm))::float8,
+	    	sum(ts_rank_cd(tsv.tsv, q, $3))::float8,
 		tsv.page_number
 	    FROM
 		pdfbox.page_tsv_utf8 tsv,
-		websearch_to_tsquery(:ts_conf, :q) AS q
+		websearch_to_tsquery($2, $1) AS q
 	    WHERE
   		tsv.tsv @@ q
 		AND
-		tsv.ts_conf = :ts_conf::regconfig
+		tsv.ts_conf = $2::regconfig
 		AND
 		tsv.pdf_blob = pd.blob
 	    GROUP BY
@@ -607,7 +607,7 @@ page_match AS (
 	    	1
 	  ) SELECT
 	  	ts_headline(
-			:ts_conf::regconfig,
+			$2::regconfig,
 			(SELECT
 				maxtxt.txt
 			    FROM
@@ -620,7 +620,7 @@ page_match AS (
 			q
 		) || ' @ Page #' || maxts.page_number
 	    FROM
-	    	websearch_to_tsquery(:ts_conf, :q) AS q,
+	    	websearch_to_tsquery($2, $1) AS q,
 		max_ranked_tsv maxts
 	) AS snippet,
 	CASE
