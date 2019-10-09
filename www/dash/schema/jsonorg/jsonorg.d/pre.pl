@@ -19,7 +19,7 @@ my $status = system("blobio get --udig $blob --service $service");
 if ($status == 1) {
 	print "JSON Blob not found: $blob";
 } elsif ($status > 0) {
-	print "ERROR: fetching JSON blob: $blob";
+	print "ERROR: fetching JSON blob: exit status: $status: $blob";
 }
 
 1;
