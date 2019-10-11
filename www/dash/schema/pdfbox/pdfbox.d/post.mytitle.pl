@@ -64,7 +64,31 @@ END
 print STDERR "post.mytitle: json request blob: $request_blob";
 
 #  pause while title syncs, returning uri of request
-sleep 2;
+my $cmd = "spin-wait-blob jsonorg.jsonb_255 blob 4 $request_blob";
+my $status = system($cmd);
+unless ($status == 0) {
+	$status = $status >> 8;
+	print STDERR 'post.mytitle: ',
+	             "system(spin-wait-blob) failed: exit status=$status)";
+	print STDERR "post.mytitle: $cmd";
+	if ($status > 1) {
+		print <<END;
+Status: 500
+Content-Type: text/plain
+
+ERROR: unexpected reply for json request: status=$status: $request_blob
+END
+	} elsif ($status == 1) {
+		print <<END;
+Status: 503
+Content-Type: text/plain
+
+ERROR: no json request blob in sql database after 4sec: $request_blob
+END
+	}
+	return 1;
+}
+
 print <<END;
 Status: 303
 Location: $ENV{HTTP_REFERER}
