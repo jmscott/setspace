@@ -531,8 +531,7 @@ sub websearch_sql
 WITH mytitle_match AS (
   SELECT
   	tsv.blob AS blob,
-	ts_rank_cd(tsv.tsv, q, $3)::float8 AS rank_sum,
-	tsv.tsv
+	ts_rank_cd(tsv.tsv, q, $3)::float8 AS rank
     FROM
     	mycore.title_tsv tsv,
 	websearch_to_tsquery($2, $1) AS q
@@ -540,11 +539,11 @@ WITH mytitle_match AS (
     	tsv.tsv @@ q
 	AND
 	tsv.ts_conf = $2::regconfig
-  ORDER BY
-  	rank_sum desc
-  LIMIT
+    ORDER BY
+  	rank desc
+    LIMIT
   	$4
-  OFFSET
+    OFFSET
   	$5
 ),
 /*
@@ -555,7 +554,7 @@ WITH mytitle_match AS (
 page_match AS (
   SELECT
 	tsv.pdf_blob AS blob,
-	sum(ts_rank_cd(tsv.tsv, q, $3))::float8 AS rank_sum,
+	sum(ts_rank_cd(tsv.tsv, q, $3))::float8 AS rank,
 	count(tsv.pdf_blob)::float8 AS match_count
   FROM
 	pdfbox.page_tsv_utf8 tsv,
@@ -567,24 +566,44 @@ page_match AS (
   GROUP BY
   	tsv.pdf_blob
   ORDER BY
-  	rank_sum desc,
+  	rank desc,
 	match_count desc
   LIMIT
   	$4
   OFFSET
   	$5
-)
+), merge_pdf AS (
+  /*
+   *  Merge matching pdfs to eliminate duplicate matches across both title
+   *  and pages.  This set may be less than 2 * limit elements, since sometimes
+   *  both the title and pages are in the top 10 of their respecitve match sets.
+   */
   SELECT
-  	pd.blob,
-	match_count,
-	pd.number_of_pages,
-  	max(rank_sum * (match_count / pd.number_of_pages)) AS rank,
-
+  	blob
+    FROM
+    	mytitle_match
+  UNION
+  SELECT
+  	blob
+    FROM
+    	page_match
+), merge_ranked AS (
+  SELECT
+  	pdf.blob,
+	mtm.rank AS mytitle_rank,
+	pm.rank AS page_rank,
+	greatest(mtm.rank, pm.rank) AS greatest_rank,
+	pm.match_count AS match_page_count
+    FROM
+    	merge_pdf pdf
+	  LEFT OUTER JOIN mytitle_match mtm ON (mtm.blob = pdf.blob)
+	  LEFT OUTER JOIN page_match pm ON (pm.blob = pdf.blob)
+) SELECT
+	mr.blob,
+	mr.match_page_count,
 	/*
-	 *  Extract a headline of matching terms from the highest ranking page
-	 *  within a particular ranked pdf blob.
+	 *  Assemble the snippet
 	 */
-
 	(WITH max_ranked_tsv AS (
 	    SELECT
 	    	sum(ts_rank_cd(tsv.tsv, q, $3))::float8,
@@ -597,7 +616,7 @@ page_match AS (
 		AND
 		tsv.ts_conf = $2::regconfig
 		AND
-		tsv.pdf_blob = pd.blob
+		tsv.pdf_blob = mr.blob
 	    GROUP BY
 	    	tsv.page_number
 	    ORDER BY
@@ -613,7 +632,7 @@ page_match AS (
 			    FROM
 			    	pdfbox.page_text_utf8 maxtxt
 			    WHERE
-			    	maxtxt.pdf_blob = pd.blob
+			    	maxtxt.pdf_blob = mr.blob
 				AND
 				maxtxt.page_number = maxts.page_number
 			),
@@ -625,33 +644,28 @@ page_match AS (
 	) AS snippet,
 	CASE
 	  WHEN
-		length(myt.title) > 0
+	  	myt.title IS NOT NULL
 	  THEN
 	  	myt.title
 	  ELSE
 		pi.title
 	END AS title,
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
-		AS discover_elapsed,
-	myt.title IS NULL AS mytitle_is_null
-  FROM
-  	page_match pp
-	  JOIN setcore.service s ON (s.blob = pp.blob)
-	  JOIN pdfbox.pddocument pd ON (pd.blob = pp.blob)
-	  LEFT OUTER JOIN mycore.title myt ON (myt.blob = pp.blob)
-	  LEFT OUTER JOIN pdfbox.pddocument_information pi
-	    ON (
-	    	pi.blob = pp.blob
+	myt.title IS NULL AS mytitle_is_null,
+	pd.number_of_pages
+    FROM
+    	merge_ranked mr
+	  LEFT JOIN pdfbox.pddocument_information pi ON (
+	  	pi.blob = mr.blob
 	  )
-  GROUP BY
-  	pd.blob,
-	match_count,
-	myt.title,
-	pi.title,
-	s.discover_time
-  ORDER BY
-  	rank desc,
-	match_count desc
+	  JOIN pdfbox.pddocument pd ON (
+	  	pd.blob = mr.blob
+	  )
+	  LEFT OUTER JOIN mycore.title myt ON (myt.blob = mr.blob)
+    ORDER BY
+    	greatest_rank DESC
+    LIMIT
+    	$4
+;
 	);
 }
 

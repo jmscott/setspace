@@ -34,6 +34,7 @@ my $q = $QUERY_ARG{q};
 #  either find a particular pdf, do a full text search or get most
 #  recent pdf files.
 
+my $query_start_time = time();
 if ($q =~ m/^\s*[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}\s*$/) {	#  find blob
 	$qh = select_pdf_blob();
 } elsif ($q =~ m/[[:graph:]]/) {				#  text query
@@ -51,6 +52,7 @@ if ($q =~ m/^\s*[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}\s*$/) {	#  find blob
 } else {
 	$qh = recent_select();
 }
+my $elapsed_query_time = time() - $query_start_time;
 
 #  write the <dt> as <a>title<a> link to the pdf blob
 #  write the <dt> as the details of the pdf blob
@@ -132,7 +134,8 @@ print STDERR 'pdfbox-full-text-search: ', utf82blob(<<END);
 			"q": $q,
 			"qtype": $qtype,
 			"discover-unix-epoch": $unix_epoch
-		}
+		},
+		"elapsed-query-seconds": $elapsed_query_seconds
 	},
 	"cgi-bin-environment": $env
 }
