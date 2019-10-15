@@ -66,7 +66,7 @@ fi
 cd $SPOOL || die "cd $SPOOL failed: exit status=$?"
 
 log 'finding active blob request log files ...'
-find . -name '*.brr' -type f -maxdepth 1				|
+find . -maxdepth 1 -name '*.brr' -type f 				|
 	grep -v '[-][0-9][0-9]*.*[.]brr$'				|
 
 	while read BRR;  do
