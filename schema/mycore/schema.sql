@@ -88,6 +88,8 @@ CREATE TABLE title_request
 				ON DELETE CASCADE,
 	request_time	setcore.inception
 				NOT NULL,
+
+	--  requests are strictly ordered by time
 	UNIQUE		(core_blob, request_time)
 );
 CREATE INDEX title_request_time ON title_request USING brin(request_time);
