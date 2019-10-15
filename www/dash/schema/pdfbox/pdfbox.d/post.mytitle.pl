@@ -29,7 +29,7 @@ if (length($title) == 0) {
 }
 
 if ($error_403) {
-	print STDERR "post.mytitle.pl: $error_403";
+	print STDERR "post.mytitle.pl: $error_403\n";
 	print <<END;
 Status: 403
 Content-Type: text/plain
@@ -61,16 +61,16 @@ my $request_blob = utf82blob(<<END);
 	"cgi-bin-environment": $env
 }
 END
-print STDERR "post.mytitle: json request blob: $request_blob";
+print STDERR "post.mytitle: json request blob: $request_blob\n";
 
 #  pause while title syncs, returning uri of request
 my $cmd = "spin-wait-blob jsonorg.jsonb_255 blob 4 $request_blob";
-my $status = system($cmd);
-unless ($status == 0) {
-	$status = $status >> 8;
+unless (system($cmd) == 0) {
+	my $status = $?;
 	print STDERR 'post.mytitle: ',
-	             "system(spin-wait-blob) failed: exit status=$status)";
-	print STDERR "post.mytitle: $cmd";
+	             "system(spin-wait-blob) failed: exit status=$status\n";
+	print STDERR "post.mytitle: $cmd\n";
+	$status = ($status >> 8) & 0xFF;
 	if ($status > 1) {
 		print <<END;
 Status: 500
