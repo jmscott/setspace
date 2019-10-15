@@ -31,7 +31,8 @@ $udig = utf82json_string($udig);
 
 my $env = env2json(2);
 
-print STDERR 'pdfbox-full-text-search-click: ', utf82blob(<<END);
+#  Note: add the array of matching blob?
+print STDERR 'pdfbox-full-text-search-click: json: ', utf82blob(<<END), "\n";
 {
 	"mydash.schema.setspace.com": {
 		"pdfbox-full-text-search-click": {

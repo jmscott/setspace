@@ -127,7 +127,9 @@ my $unix_epoch = time();
 
 my $env = env2json(2);
 
-print STDERR 'pdfbox-full-text-search: ', utf82blob(<<END), "\n";
+#  Note: add the array of matching blob?
+
+print STDERR 'pdfbox-full-text-search: json: ', utf82blob(<<END), "\n";
 {
 	"mydash.schema.setspace.com": {
 		"pdfbox-full-text-search": {
