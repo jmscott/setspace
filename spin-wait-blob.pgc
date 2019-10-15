@@ -1,28 +1,48 @@
 /*
  *  Synopsis:
- *	Spin wait for a blob to appear in a table, backing off exponentially.
+ *	Spin wait on a blob in an SQL table, up to a timeout seconds.
+ *  Description:
+ *	Spin wait for a blob to appear in an SQL table, backing off
+ *	exponentially until more seconds than timeout has expired.
+ *	Execute the following SQL query for existence:
+ *
+ *		SELECT EXISTS (
+ *	  	  SELECT
+ *			<column_name>
+ *		    FROM
+ *			<table_name>
+ *		    WHERE
+ *			<column_name> = <blob>::udig
+ *	  	)
+ *
+ *	The sleep duration is doubled after each failure.
  *  Usage:
  *	spin-wait-blob <table> <row> <timeout> <blob udig>
  *  Exit Status:
  *	0	blob appeared
  *	1	blob never appeared
- *	2	wrong number of arguments
- *	3	bad timeout seconds
- *	4	sql warning
- *	5	sql error
+ *	2	invocation error
+ *	3	sql warning
+ *	4	sql error
  *  Note:
+ *	For fast syncing environments, adding a back-off algorithm might
+ *	be reasonable.
+ *
+ *		spin-wait-blob plus1 ...
+ *		spin-wait-blob double
+ *
  *	spin-wait-blob is a desparate but effective hack.  hopefully pg logical
- *	replication will alleviate the need.
+ *	replication will alleviate the need for wating on sunk data to appear
+ *	in the database.
  */
 
 static char progname[] = "spin-wait-blob";
 
 #define EXIT_OK		0
 #define EXIT_NO_BLOB	1
-#define EXIT_BAD_ARGC	2
-#define EXIT_BAD_TMOUT	3
-#define EXIT_SQLWARN	4
-#define EXIT_SQLERROR	5
+#define EXIT_BAD_INVO	2
+#define EXIT_SQLWARN	3
+#define EXIT_SQLERROR	4
 
 #define COMMON_NEED_DIE2
 #include "common.c"
@@ -37,17 +57,17 @@ int
 main(int argc, char **argv)
 {
 	int timeout, waited = 0, pause = 0;
-	char *table_name, *row_name, *blob;
+	char *table_name, *column_name, *blob;
 EXEC SQL BEGIN DECLARE SECTION;
 	bool blob_exists;
 	char query[4096];
 EXEC SQL END DECLARE SECTION;
 
 	if (argc != 5)
-		die(EXIT_BAD_ARGC, "wrong number of arguments");
+		die(EXIT_BAD_INVO, "wrong number of arguments");
 
 	table_name = argv[1];
-	row_name = argv[2];
+	column_name = argv[2];
 	blob = argv[4];
 
 	/*
@@ -58,11 +78,11 @@ EXEC SQL END DECLARE SECTION;
 		size_t len = strlen(sec);
 
 		if (len < 1 || len > 19)
-			die2(EXIT_BAD_TMOUT,
+			die2(EXIT_BAD_INVO,
 				"timeout second not > 0 and < 20 chars", sec);
 		timeout = atoi(sec);
 		if (timeout <= 0)
-			die2(EXIT_BAD_TMOUT, "timeout second <= 0", sec);
+			die2(EXIT_BAD_INVO, "timeout second <= 0", sec);
 	}
 
 	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error(
@@ -76,22 +96,22 @@ EXEC SQL END DECLARE SECTION;
 	/*
 	 *  Build the query:
 	 *
-	 *	select exists (
-	 *	  select
-	 *		<row_name>
-	 *	  from
+	 *	SELECT EXISTS (
+	 *	  SELECT
+	 *		<column_name>
+	 *	    FROM
 	 *		<table_name>
-	 *	  where
-	 *		<row_name> = <blob>::udig
-	 *	)
+	 *	    WHERE
+	 *		<column_name> = <blob>::udig
+	 *	  )
 	 */
 	query[0] = 0;
-	_strcat(query, sizeof query, "select exists (select ");
-	_strcat(query, sizeof query, row_name);
-	_strcat(query, sizeof query, " from ");
+	_strcat(query, sizeof query, "SELECT EXISTS (SELECT ");
+	_strcat(query, sizeof query, column_name);
+	_strcat(query, sizeof query, " FROM ");
 	_strcat(query, sizeof query, table_name);
-	_strcat(query, sizeof query, " where ");
-	_strcat(query, sizeof query, row_name);
+	_strcat(query, sizeof query, " WHERE ");
+	_strcat(query, sizeof query, column_name);
 	_strcat(query, sizeof query, " = '");
 	_strcat(query, sizeof query, blob);
 	_strcat(query, sizeof query, "'::udig)");
