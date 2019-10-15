@@ -30,6 +30,11 @@ COMMENT ON SCHEMA setcore IS
 	'Core setspace tables for common facts about blobs'
 ;
 
+/*
+ *  Note:
+ *	Is "inception" correct?  Inception is a particular date.
+ *	Perhaps inception_time is better?
+ */
 DROP DOMAIN IF EXISTS inception CASCADE;
 CREATE DOMAIN inception AS timestamptz
   CHECK (
