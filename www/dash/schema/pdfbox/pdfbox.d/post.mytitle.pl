@@ -13,9 +13,11 @@ my $blob = utf82json_string($POST_VAR{blob});
 die 'POST_VAR: blob is empty' if $blob eq '""';
 my $title = $POST_VAR{title};
 
-#  strip compress white space
-$title =~ s/^[[:space:]]{2,}/ /g;
-$title =~ s/^[[:space:]+]|[[:space:]]+$//g;
+#  strip leading/trailing white space
+$title =~ s/^[[:space:]]*|[[:space:]]*$//g;
+
+#  compress white space
+$title =~ s/[[:space:]]+/ /g;
 
 my $error_403;
 if (length($title) == 0) {
