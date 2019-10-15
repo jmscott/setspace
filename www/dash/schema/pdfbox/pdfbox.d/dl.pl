@@ -52,7 +52,7 @@ if ($q =~ m/^\s*[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}\s*$/) {	#  find blob
 } else {
 	$qh = recent_select();
 }
-my $elapsed_query_time = time() - $query_start_time;
+my $elapsed_query_seconds = time() - $query_start_time;
 
 #  write the <dt> as <a>title<a> link to the pdf blob
 #  write the <dt> as the details of the pdf blob
@@ -127,7 +127,7 @@ my $unix_epoch = time();
 
 my $env = env2json(2);
 
-print STDERR 'pdfbox-full-text-search: ', utf82blob(<<END);
+print STDERR 'pdfbox-full-text-search: ', utf82blob(<<END), "\n";
 {
 	"mydash.schema.setspace.com": {
 		"pdfbox-full-text-search": {
