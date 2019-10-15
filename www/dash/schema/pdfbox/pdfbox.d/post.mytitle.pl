@@ -1,6 +1,8 @@
 #
 #  Synopsis:
 #	Redirect a full text search to pdfbox/index page seeded with query.
+#  Note:
+#	No explanation for delays in spin-wait-blob.  
 #
 use utf8;
 
@@ -65,8 +67,7 @@ my $request_blob = utf82blob(<<END);
 END
 print STDERR "post.mytitle: json request blob: $request_blob\n";
 
-#  pause while title syncs, returning uri of request
-my $cmd = "spin-wait-blob jsonorg.jsonb_255 blob 4 $request_blob";
+my $cmd = "spin-wait-blob mycore.title_request request_blob 4 $request_blob";
 unless (system($cmd) == 0) {
 	my $status = $?;
 	print STDERR 'post.mytitle: ',
