@@ -95,6 +95,10 @@ END
 	return 1;
 }
 
+#  wait for any title to appear in table mycore.title
+$cmd = "spin-wait-blob mycore.title blob 4 $blob";
+print STDERR "ERROR: $cmd failed: exit status=$?\n" unless system($cmd) == 0;
+
 print <<END;
 Status: 303
 Location: $ENV{HTTP_REFERER}
