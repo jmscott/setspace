@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
  <head>
-  <title>Edit Title on PDF in Schema MyCore</title>
+  <title>Edit Title of PDF in Schema MyCore</title>
   <meta charset="UTF-8" />
   <link
     href="/screen.css"
@@ -27,7 +27,7 @@
    <!--#include virtual="/header.shtml" -->
    <!--#include virtual="nav.shtml" -->
    <div id="content">
-    <h2>Add/Edit Title for PDF in Schema MyCore</h2>
+    <h2>Add/Edit Title of PDF in Schema MyCore</h2>
     <form
       name="mytitle"
       method="POST"
