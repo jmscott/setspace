@@ -70,6 +70,7 @@ my $request_blob = utf82blob(<<END);
 END
 print STDERR "post.mytitle: json request blob: $request_blob\n";
 
+#  wait for json request blob to appear in request table.
 my $cmd = "spin-wait-blob mycore.title_request request_blob 4 $request_blob";
 unless (system($cmd) == 0) {
 	my $status = $?;
