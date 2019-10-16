@@ -15,6 +15,9 @@ my $blob = utf82json_string($POST_VAR{blob});
 die 'POST_VAR: blob is empty' if $blob eq '""';
 my $title = $POST_VAR{title};
 
+#  convert new line, carriage return or form feed to space
+$title =~ s/[\n\r\f]+/ /g;
+
 #  strip leading/trailing white space
 $title =~ s/^[[:space:]]*|[[:space:]]*$//g;
 
