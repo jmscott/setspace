@@ -58,7 +58,7 @@
  <body>
   <div id="container">
    <!--#include virtual="/header.shtml" -->
-   <!--#include virtual="/navigation.shtml" -->
+   <!--#include virtual="/nav.shtml" -->
    <div id="content">
     <h2>How to add the "Tag" button to Your Browser</h2>
     <button onclick="copy_button_js()">Copy Javascript</button>

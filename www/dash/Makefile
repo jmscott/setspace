@@ -42,7 +42,7 @@ install: all
 		footer.shtml						\
 		header.shtml						\
 		index.shtml						\
-		navigation.shtml					\
+		nav.shtml						\
 		screen.css						\
 		template.shtml						\
 		$(WWW_PREFIX)/htdocs

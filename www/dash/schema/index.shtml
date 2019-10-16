@@ -13,7 +13,7 @@
  <body>
   <div id="container">
    <!--#include virtual="/header.shtml" -->
-   <!--#include virtual="/navigation.shtml" -->
+   <!--#include virtual="/nav.shtml" -->
    <div id="content">
     <h2>SQL Schemas</h2>
     <ul>
