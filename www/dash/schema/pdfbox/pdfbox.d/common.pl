@@ -651,15 +651,18 @@ page_match AS (
 		pi.title
 	END AS title,
 	myt.title IS NULL AS mytitle_is_null,
-	pd.number_of_pages
+	pd.number_of_pages,
+	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
+		AS discover_elapsed
     FROM
     	merge_ranked mr
-	  LEFT JOIN pdfbox.pddocument_information pi ON (
+	  JOIN pdfbox.pddocument_information pi ON (
 	  	pi.blob = mr.blob
 	  )
 	  JOIN pdfbox.pddocument pd ON (
 	  	pd.blob = mr.blob
 	  )
+	  JOIN setcore.service s ON (s.blob = mr.blob)
 	  LEFT OUTER JOIN mycore.title myt ON (myt.blob = mr.blob)
     ORDER BY
     	greatest_rank DESC
