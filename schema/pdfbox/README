@@ -1,4 +1,11 @@
 Synopsis
 	Schema for the well known apache pdfbox, version 2, java library.
 Note:
+	Investigate why "repeatable read" not match a websearch on pdf
+
+		sha:adc367863280e2883ca0ce7cb3f95169081287cc
+
+	On page 11, words repeatable read are quoted in the document.
+	Could the quotes be confusing the rum tokenizer?
+
 	The encoding is assumed to be UTF-8.
