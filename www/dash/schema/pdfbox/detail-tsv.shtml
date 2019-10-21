@@ -19,7 +19,7 @@
  <body>
   <div id="container">
    <!--#include virtual="/header.shtml" -->
-   <!--#include virtual="/navigation.shtml" -->
+   <!--#include virtual="/nav.shtml" -->
    <div id="content">
     <h2>PDF Text Search Vector Details</h2>
     <h3>
