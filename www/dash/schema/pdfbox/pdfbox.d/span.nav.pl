@@ -133,10 +133,14 @@ END
 }
 
 my $doc_lower = $offset + 1;
-1 while $doc_lower =~ s/^(\d+)(\d{3})/$1,$2/;
-
 my $doc_up = $doc_lower + $limit - 1;
 $doc_up = $pdf_count if $doc_up > $pdf_count;
+
+#  Note:
+#	Rewrite with commas, english style.
+#	Need a library here.
+#
+1 while $doc_lower =~ s/^(\d+)(\d{3})/$1,$2/;
 1 while $doc_up =~ s/^(\d+)(\d{3})/$1,$2/;
 
 print <<END;
