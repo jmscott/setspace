@@ -57,11 +57,8 @@
     </form>
 
     <h2>PDF Detail</h2>
-
     <h3>
-    <!--#include virtual=
-      "/cgi-bin/jmscott/env?out=text&src=QS&name=blob&${QUERY_STRING}"
-    -->
+     <!--#include virtual="/cgi-bin/pdfbox?out=a.mime&${QUERY_STRING}" -->
     </h3>
 
     <h3><!--#include virtual=
