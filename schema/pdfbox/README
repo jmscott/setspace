@@ -9,3 +9,20 @@ Note:
 	Could the quotes be confusing the rum tokenizer?
 
 	The encoding is assumed to be UTF-8.
+
+	Regarding similarity measures, Investigate pdf
+	
+		sha:99ed438bba0c88ea856979e449b1b1eb7eb70de2
+
+	using search terms
+	
+		viterbi hidden markov
+
+	three other blobs match with different enough page counts
+	to stress test a similarity search.  here are the other three
+	pdf blobs:
+
+		sha:034558551250f1d404cd274c19a731df465db509
+		sha:497f2c06ab838cc8bf21736b9a70773efcafe670
+		bc160:764c75f8caa62f4660f5930d02fb305e1d7b9a4d
+
