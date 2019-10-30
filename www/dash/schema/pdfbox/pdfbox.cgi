@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Note:
+	need to standardize on either "udig" or "blob" but not both
+	in query arguments!
+-->
+
 <cgi name="pdfbox">
  <title>/cgi-bin/pdfbox</title>
  <synopsis>HTTP CGI Script /cgi-bin/pdfbox</synopsis>
@@ -133,6 +138,19 @@
     <query-args>
      <arg
      	name="udig"
+	perl5_re="[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}"
+	required="yes"
+     />
+    </query-args>
+   </putter>
+
+   <putter
+     name="a.mime"
+     content-type="application/pdf"
+   >
+    <query-args>
+     <arg
+     	name="blob"
 	perl5_re="[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}"
 	required="yes"
      />

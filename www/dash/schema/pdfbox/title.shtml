@@ -28,6 +28,9 @@
    <!--#include virtual="nav.shtml" -->
    <div id="content">
     <h2>Add/Edit Title of PDF in Schema MyCore</h2>
+    <h3>
+     <!--#include virtual="/cgi-bin/pdfbox?out=a.mime&${QUERY_STRING}" -->
+    </h3>
     <form
       name="mytitle"
       method="POST"

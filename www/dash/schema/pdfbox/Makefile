@@ -25,6 +25,7 @@ install: all
 	install pdfbox $(WWW_PREFIX)/cgi-bin
 
 	install								\
+		pdfbox.d/a.mime.pl					\
 		pdfbox.d/common.pl					\
 		pdfbox.d/dl.extpg.pl					\
 		pdfbox.d/dl.pddoc.pl					\
