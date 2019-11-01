@@ -8,6 +8,8 @@
  *  See:
  *	https://pdfbox.apache.org
  *  Note:
+ *	Create int domain pdf_page_number impsoing limit < 2603538.
+ *
  *	Need to create tsv on colums pddocument_information.{title,author}
  *
  *	Is the rum index implicitly dependent on on the default ts_config,
@@ -403,7 +405,7 @@ CREATE TABLE page_tsv_utf8
 				NOT NULL,
 	tsv		tsvector
 				NOT NULL,
-	PRIMARY KEY	(pdf_blob, page_number),
+	PRIMARY KEY	(pdf_blob, page_number, ts_conf),
 	FOREIGN KEY	(pdf_blob, page_number)
 				REFERENCES extract_pages_utf8(
 					pdf_blob,
