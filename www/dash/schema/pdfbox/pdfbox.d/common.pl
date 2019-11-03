@@ -2,9 +2,23 @@
 #  Synopsis:
 #	Common routines for full text search.
 #  Note:
-#       for web search sunstitute | with OR amd ! WITH -
+#	-  Duplicates in search across pages for
 #
-#	Need to strip the english 'ago' verbage in discover_elapsed.
+#		"surreal numbers"
+#
+#	The pdf
+#
+#		sha:03ca67996ca3b180fc395831194195646d7c2adc
+#
+#	appears on the second page and again on the sixth page.
+#
+#       -  For web search substitute | with OR amd ! WITH -
+#
+#	-  Need to strip the english 'ago' verbage in discover_elapsed.
+#
+#	-  no matching page count for search
+#
+#		voodoo vector
 #
 
 use utf8;
