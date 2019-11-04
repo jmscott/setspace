@@ -89,7 +89,7 @@ command append_libxml2_brr
 
 call append_libxml2_brr(
 	brr.start_time,
-	brr.netflow,
+	brr.transport,
 	brr.verb,
 	brr.udig,
 	brr.chat_history,

@@ -5,7 +5,7 @@
  *  	append-brr							\
  *		/path/to/file
  *  		start_request_time					\
- *		netflow							\
+ *		transport						\
  *		verb							\
  *		algorithm:digest					\
  *		chat_history						\
@@ -99,7 +99,7 @@ main(int argc, char **argv)
 	 */
 	b = brr;
 	arg2brr("start request time", argv[2], 10+1+8+1+9+1+6, &b);
-	arg2brr("netflow", argv[3], 8+1+128, &b);
+	arg2brr("transport", argv[3], 8+1+128, &b);
 	arg2brr("verb", argv[4], 8, &b);
 	arg2brr("udig", argv[5], 8+1+128, &b);
 	arg2brr("chat history", argv[6], 8, &b);

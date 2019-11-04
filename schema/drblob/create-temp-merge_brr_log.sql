@@ -15,10 +15,10 @@ CREATE TEMPORARY TABLE merge_brr_log
 (
 	start_time	timestamptz
 				NOT NULL,
-	netflow		text
+	transport		text
 				CHECK (
 					-- see blobio/README
-					netflow ~
+					transport ~
 				       '^[a-z][a-z0-9]{0,7}~[[:graph:]]{1,128}$'
 				)
 				NOT NULL,

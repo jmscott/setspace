@@ -144,7 +144,7 @@ sql query has_brr_chars row
 	statement = `
 
 	SELECT
-		--  netflow contains the tilde character
+		--  transport contains the tilde character
 		tilde = (bm.bitmap & tilde) and
 
 		--  chat history must contain either "no" or "ok".

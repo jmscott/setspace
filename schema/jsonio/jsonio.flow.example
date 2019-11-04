@@ -76,7 +76,7 @@ command append_mycore_brr
 
 call append_mycore_brr(
        jsonorg.start_time,
-       jsonorg.netflow,
+       jsonorg.transport,
        jsonorg.verb,
        jsonorg.udig,
        jsonorg.chat_history,
@@ -119,7 +119,7 @@ command append_mydash_brr
 
 call append_mydash_brr(
        jsonorg.start_time,
-       jsonorg.netflow,
+       jsonorg.transport,
        jsonorg.verb,
        jsonorg.udig,
        jsonorg.chat_history,

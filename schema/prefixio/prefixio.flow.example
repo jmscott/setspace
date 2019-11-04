@@ -128,7 +128,7 @@ command append_jsonorg_brr
 
 call append_jsonorg_brr(
 	brr.start_time,
-	brr.netflow,
+	brr.transport,
 	brr.verb,
 	brr.udig,
 	brr.chat_history,
@@ -176,7 +176,7 @@ query prefix_is_percentPDF(brr.udig);
 
 call append_pdfbox_brr(
 	brr.start_time,
-	brr.netflow,
+	brr.transport,
 	brr.verb,
 	brr.udig,
 	brr.chat_history,

@@ -7,7 +7,7 @@
  *
  *		start time: YYYY-MM-DDTHH:MM:SS.NS9(([-+]hh:mm)|Z)
  *		\t
- *		netflow: matches perl5 re:
+ *		transport: matches perl5 re:
  *
  *			[a-z][a-z0-9]{,7}~[[:graph:]]{1,128})
  *
