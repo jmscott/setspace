@@ -34,23 +34,20 @@ my $q = $QUERY_ARG{q};
 #  either find a particular pdf, do a full text search or get most
 #  recent pdf files.
 
+my $qtype;
 my $query_start_time = time();
 if ($q =~ m/^\s*[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}\s*$/) {	#  find blob
 	$qh = select_pdf_blob();
+	$qtype = 'blob';
+} elsif ($q =~ /^\s*=/) {
+	$qh = fts_select();
+	$qtype = 'fts';
 } elsif ($q =~ m/[[:graph:]]/) {				#  text query
-	my $qtype = $QUERY_ARG{qtype};
-
-	if ($qtype eq 'phrase') {
-		$qh = phrase_select();
-	} elsif ($qtype eq 'fts') {
-		$qh = fts_select();
-	} elsif ($qtype eq 'key') {
-		$qh = keyword_select();
-	} else {
-		$qh = websearch_select();
-	}
+	$qh = websearch_select();
+	$qtype = 'web';
 } else {
 	$qh = recent_select();
+	$qtype = 'recent';
 }
 my $elapsed_query_seconds = time() - $query_start_time;
 
@@ -122,7 +119,6 @@ return 1 unless $q;		#  no search so nothing to record
 #  save the user text search as a json blob in mydash.schema.setspace.com
 
 $q = utf82json_string($QUERY_ARG{q});
-my $qtype = utf82json_string($QUERY_ARG{qtype});
 my $unix_epoch = time();
 
 my $env = env2json(2);

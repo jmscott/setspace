@@ -38,7 +38,6 @@ install: all
 		pdfbox.d/mime.pdf.pl					\
 		pdfbox.d/post.mytitle.pl				\
 		pdfbox.d/post.q.pl					\
-		pdfbox.d/select.qtype.pl				\
 		pdfbox.d/span.nav.pl					\
 		pdfbox.d/table.exttsv.pl				\
 		pdfbox.d/table.pl					\

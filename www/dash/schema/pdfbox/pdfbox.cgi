@@ -72,11 +72,6 @@
 	perl5_re="[+0-9]{1,10}"
 	default="0"
      />
-     <arg
-     	name="qtype"
-	perl5_re="web|key|phrase|fts"
-	default="web"
-     />
     </query-args>
    </putter>
 
@@ -90,21 +85,6 @@
      	name="offset"
 	perl5_re="[+0-9]{1,10}"
 	default="0"
-     />
-     <arg
-     	name="qtype"
-	perl5_re="web|key|phrase|fts"
-	default="web"
-     />
-    </query-args>
-   </putter>
-
-   <putter name="select.qtype">
-    <query-args>
-     <arg
-     	name="qtype"
-	perl5_re="web|key|phrase|fts"
-	default="web"
      />
     </query-args>
    </putter>
@@ -243,10 +223,6 @@
      <var
        name="q"
        perl5_re=".{0,255}"
-     />
-     <var
-       name="qtype"
-       perl5_re="web|key|phrase|fts"
      />
     </vars>
    </putter>

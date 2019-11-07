@@ -36,9 +36,6 @@
      <!--#include virtual=
        "/cgi-bin/pdfbox?out=input&id=q&${QUERY_STRING}"
      -->
-     <!--#include virtual=
-       "/cgi-bin/pdfbox?out=select.qtype&${QUERY_STRING}"
-     -->
      <input
        type="submit"
        value="Find PDF"

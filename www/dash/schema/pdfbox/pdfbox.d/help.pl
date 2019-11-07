@@ -116,13 +116,6 @@ print <<'END';
     <li><code>perl5_re:</code> [+0-9]{1,10}</li>
    </ul>
   </dd>
-  <dt>qtype</dt>
-  <dd>
-   <ul>
-    <li><code>default:</code> web</li>
-    <li><code>perl5_re:</code> web|key|phrase|fts</li>
-   </ul>
-  </dd>
   </dl>
 </div>
      </dd>
@@ -142,28 +135,6 @@ print <<'END';
    <ul>
     <li><code>default:</code> 0</li>
     <li><code>perl5_re:</code> [+0-9]{1,10}</li>
-   </ul>
-  </dd>
-  <dt>qtype</dt>
-  <dd>
-   <ul>
-    <li><code>default:</code> web</li>
-    <li><code>perl5_re:</code> web|key|phrase|fts</li>
-   </ul>
-  </dd>
-  </dl>
-</div>
-     </dd>
-     <dt>select.qtype</dt>
-     <dd>
-<div class="query-args">
- <h4>Query Args</h4>
- <dl>
-  <dt>qtype</dt>
-  <dd>
-   <ul>
-    <li><code>default:</code> web</li>
-    <li><code>perl5_re:</code> web|key|phrase|fts</li>
    </ul>
   </dd>
   </dl>
