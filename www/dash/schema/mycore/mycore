@@ -67,6 +67,15 @@ $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{q} = {
 #  END: /cgi/GET/out/putter[@name='dl']
 #
 
+
+#
+#  BEGIN: /cgi/POST/in/putter[@name='post.mime']
+#
+$CGI{POST}->{in}->{putter}->{'post.mime'}->{name} = 'post.mime';
+#
+#  END: /cgi/POST/in/putter[@name='post.mime']
+#
+
 $CGI{GET}->{out}->{putter}->{help}->{name} = 'help';
 $CGI{GET}->{out}->{putter}->{help}->{'content-type'} = 'text/html';
 

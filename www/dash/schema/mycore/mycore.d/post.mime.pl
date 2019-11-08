@@ -1,25 +1,61 @@
 #
 #  Synopsis:
 #	Post multipart mime blobs to user dash board.
+#  Note:
+#	Not clear if script should by in schema mycore versus mydash.
 #
 use utf8;
 
 our %POST_VAR;
 
-my $tmp_path = "/tmp/post.mime.$$.out";
+print <<END;
+Status: 202
+Content-Type: text/html
 
-END 
-{
-	unlink($tmp_path);
-};
+END
 
-my $TMP;
-open($TMP, ">$tmp_path") or die "open(tmp >$tmp_path) failed: $!";
+print <<END;
+<h1>Process Environment</h1>
+<dl>
+END
 
-my $buf;
-while ((my $nr = sysread(STDIN, $buf, 4096)) > 0) {
-	my $nw = syswrite($TMP, $buf);
-	die "syswrite($nr) failed: $!" if $nw < 0;
-	die "system: too few bytes written to temp: $nw < $nr" if $nr <$nw;
+#  post environment variables
+my ($dt_text, $dd_text);
+for (sort keys %ENV) {
+	$dt_text = &encode_html_entities($_);
+	$dd_text = &encode_html_entities($ENV{$_});
+	print <<END;
+ <dt>$dt_text</dt>
+ <dd>$dd_text</dd>
+END
 }
-close($TMP) or die "close(tmp $tmp_path) failed: $!"
+print <<END;
+</dl>
+
+<h1>Contents of %POST_VAR</h1>
+<dl>
+END
+for (sort keys %POST_VAR) {
+	$dt_text = &encode_html_entities($_);
+	$dd_text = &encode_html_entities($POST_VAR{$_});
+	print <<END;
+ <dt>$dt_text</dt>
+ <dd>$dd_text</dd>
+END
+}
+
+
+print <<END;
+</dl>
+
+<h1>Standard Input</h1>
+<pre>
+END
+
+while (my $line = <STDIN>) {
+	print STDOUT encode_html_entities($line);
+}
+
+print <<END;
+</pre>
+END

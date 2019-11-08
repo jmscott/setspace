@@ -7,11 +7,12 @@
  <GET>
   <examples>
    <example
-   	query="/cgi-bin/mycore?help"
+     query="/cgi-bin/mycore?help"
    >
     Generate This Help Page for the CGI Script /cgi-bin/mycore
    </example>
   </examples>
+
   <out>
    <putter name="dl">
     <query-args>
@@ -33,4 +34,12 @@
    </putter>
   </out>
  </GET>
+
+ <POST>
+  <in>
+   <putter name="post.mime">
+    <title>POST blob as mime multipart form</title>
+   </putter>
+  </in>
+ </POST>
 </cgi>

@@ -25,9 +25,10 @@ install: all
 	install mycore $(WWW_PREFIX)/cgi-bin
 
 	install								\
-		mycore.d/dl.pl						\
 		mycore.d/common.pl					\
+		mycore.d/dl.pl						\
 		mycore.d/help.pl					\
+		mycore.d/post.mime.pl					\
 		$(WWW_PREFIX)/lib/mycore.d
 	install								\
 		index.shtml						\
