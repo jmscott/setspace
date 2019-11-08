@@ -11,6 +11,8 @@ require 'common-json.pl';
 
 our %POST_VAR;
 
+my $spin_rate = 8;
+
 my $blob = utf82json_string($POST_VAR{blob});
 die 'POST_VAR: blob is empty' if $blob eq '""';
 my $title = $POST_VAR{title};
@@ -71,7 +73,8 @@ END
 print STDERR "post.mytitle: json request blob: $request_blob\n";
 
 #  wait for json request blob to appear in request table.
-my $cmd = "spin-wait-blob mycore.title_request request_blob 4 $request_blob";
+my $cmd =
+   "spin-wait-blob mycore.title_request request_blob $spin_rate $request_blob";
 unless (system($cmd) == 0) {
 	my $status = $?;
 	print STDERR 'post.mytitle: ',
