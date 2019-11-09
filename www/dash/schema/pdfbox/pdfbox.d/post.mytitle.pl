@@ -89,11 +89,12 @@ Content-Type: text/plain
 ERROR: unexpected reply for json request: status=$status: $request_blob
 END
 	} elsif ($status == 1) {
+		my $duration = $spin_rate ^ 2 -1;
 		print <<END;
 Status: 503
 Content-Type: text/plain
 
-ERROR: no json request blob in sql database after 4sec: $request_blob
+ERROR: no json request blob in sql database after $duration seconds: $request_blob
 END
 	}
 	return 1;
