@@ -1,3 +1,16 @@
 <header>
   <h1>Dashboard for SetSpace</h1>
+  <h2>
+    PostgreSQL Database:
+    <code>
+      <!--#include
+        virtual="/cgi-bin/jmscott/env?out=text&name=PGDATABASE&src=env"
+      -->@<!--#include
+        virtual="/cgi-bin/jmscott/env?out=text&name=PGHOST&src=env"
+      -->:<!--#include
+        virtual="/cgi-bin/jmscott/env?out=text&name=PGPORT&src=env"
+      -->
+    </code>
+
+  </h2>
 </header>
