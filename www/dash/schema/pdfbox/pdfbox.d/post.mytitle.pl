@@ -4,8 +4,6 @@
 #  Note:
 #	No explanation for delays in spin-wait-blob.  
 #
-use utf8;
-
 require 'utf82blob.pl';
 require 'common-json.pl';
 
@@ -16,6 +14,7 @@ my $spin_rate = 8;
 my $blob = utf82json_string($POST_VAR{blob});
 die 'POST_VAR: blob is empty' if $blob eq '""';
 my $title = $POST_VAR{title};
+utf8::upgrade($title);
 
 #  convert new line, carriage return or form feed to space
 $title =~ s/[\n\r\f]+/ /g;
@@ -33,8 +32,6 @@ if (length($title) == 0) {
 	$error_403 = 'Submitted title > 255 UTF8 characters';
 } elsif ($title !~ m/[[:graph:]]/) {
 	$error_403 = 'No graphics characters in title';
-} elsif ($title =~ m/[[:cntrl:]]/) {
-	$error_403 = 'Control character in title';
 }
 
 if ($error_403) {
