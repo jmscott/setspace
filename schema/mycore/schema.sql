@@ -28,8 +28,6 @@ CREATE DOMAIN title_255 AS text CHECK (
 	AND
 	value ~ '[[:graph:]]'		--  at least something to display
 	AND
-	value !~ '[[:cntrl:]]'		--  no ascii control chars
-	AND
 	value !~ '^[[:space:]]+'	--  no leading space
 	AND
 	value !~ '[[:space:]]+$'	--  no trailing space
