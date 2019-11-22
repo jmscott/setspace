@@ -7,6 +7,11 @@
 require 'utf82blob.pl';
 require 'common-json.pl';
 
+sub gripe
+{
+	print STDERR 'post.mytitle: ERROR: ', join(':', @_), "\n";
+}
+
 our %POST_VAR;
 
 my $spin_rate = 8;
@@ -35,7 +40,7 @@ if (length($title) == 0) {
 }
 
 if ($error_403) {
-	print STDERR "post.mytitle.pl: $error_403\n";
+	gripe $error_403;
 	print <<END;
 Status: 403
 Content-Type: text/plain
@@ -67,16 +72,15 @@ my $request_blob = utf82blob(<<END);
 	"cgi-bin-environment": $env
 }
 END
-print STDERR "post.mytitle: json request blob: $request_blob\n";
 
 #  wait for json request blob to appear in request table.
+
 my $cmd =
    "spin-wait-blob mycore.title_request request_blob $spin_rate $request_blob";
+
 unless (system($cmd) == 0) {
 	my $status = $?;
-	print STDERR 'post.mytitle: ',
-	             "system(spin-wait-blob) failed: exit status=$status\n";
-	print STDERR "post.mytitle: $cmd\n";
+	gripe "system(spin-wait-blob request) failed: exit status=$status";
 	$status = ($status >> 8) & 0xFF;
 	if ($status > 1) {
 		print <<END;
@@ -98,8 +102,31 @@ END
 }
 
 #  wait for any title to appear in table mycore.title
+
 $cmd = "spin-wait-blob mycore.title blob 4 $blob";
-print STDERR "ERROR: $cmd failed: exit status=$?\n" unless system($cmd) == 0;
+unless (system($cmd) == 0) {
+	my $status = $?;
+
+	gripe "system(spin-wait-blob title) failed: exit status=$status";
+	$status = ($status >> 8) & 0xFF;
+	if ($status > 1) {
+		print <<END;
+Status: 500
+Content-Type: text/plain
+
+ERROR: unexpected reply for title existence: status=$status: $blob
+END
+	} elsif ($status == 1) {
+		my $duration = $spin_rate ^ 2 - 1;
+		print <<END;
+Status: 503
+Content-Type: text/plain
+
+ERROR: no title for blob in sql database after $duration seconds: $blob
+END
+	}
+	return 1;
+}
 
 print <<END;
 Status: 303
