@@ -6,7 +6,8 @@
 #  See:
 #  	schema/setcore/schema.sql
 #  Note:
-#	
+#	core_exists() is nnot properly waiting for existence in all tables.
+#	need to replace this code with INSERT/ON CONFLICT.
 #
 
 boot
@@ -549,7 +550,9 @@ command core_exists
 #
 #	setcore.{byte_bitmap, byte_count, byte_prefix, is_utf8wf}
 #
-#  All blobs have core facts.
+#  Note:
+#	Not properly waiting for existence in all tables.
+#	Need to replace this code with INSERT/RETURN.
 #
 
 call core_exists()
