@@ -7,7 +7,8 @@
 #  	schema/setcore/schema.sql
 #  Note:
 #	core_exists() is not properly spin waiting for existence in all tables,
-#	so prefix blobs are missed from time to time.
+#	so request records are not properly appened to
+#	prefixio/spool/setcore.brr from time to time.
 #
 
 boot
@@ -549,12 +550,11 @@ command core_exists
 #  Do the core tuples exist in the tables
 #
 #	setcore.{byte_bitmap, byte_count, byte_prefix, is_utf8wf}
-#
 #  Note:
 #	core_exists() is not properly spin waiting for existence in all tables,
-#	so prefix blobs are missed from time to time.
+#	so request records are not properly appened to
+#	prefixio/spool/setcore.brr from time to time.
 #
-
 call core_exists()
   when
 	#
