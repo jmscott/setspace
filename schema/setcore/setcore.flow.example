@@ -5,6 +5,8 @@
 #  	flowd server setcore.conf
 #  See:
 #  	schema/setcore/schema.sql
+#  Note:
+#	
 #
 
 boot
@@ -548,9 +550,6 @@ command core_exists
 #	setcore.{byte_bitmap, byte_count, byte_prefix, is_utf8wf}
 #
 #  All blobs have core facts.
-#
-#  Note:
-#	Do need to test for proper existence in new_line_count?
 #
 
 call core_exists()
