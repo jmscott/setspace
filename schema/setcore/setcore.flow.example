@@ -326,7 +326,7 @@ sql query in_is_utf8wf_table row
 	    WHERE
 		blob = $1::udig
 	  ),
-	 (SELECt
+	 (SELECT
 	  	is_utf8
 	    FROM
 	    	setcore.is_utf8wf
