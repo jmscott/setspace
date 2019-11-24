@@ -6,8 +6,8 @@
 #  See:
 #  	schema/setcore/schema.sql
 #  Note:
-#	core_exists() is nnot properly waiting for existence in all tables.
-#	need to replace this code with INSERT/ON CONFLICT.
+#	core_exists() is not properly spin waiting for existence in all tables,
+#	so prefix blobs are missed from time to time.
 #
 
 boot
@@ -551,8 +551,8 @@ command core_exists
 #	setcore.{byte_bitmap, byte_count, byte_prefix, is_utf8wf}
 #
 #  Note:
-#	Not properly waiting for existence in all tables.
-#	Need to replace this code with INSERT/RETURN.
+#	core_exists() is not properly spin waiting for existence in all tables,
+#	so prefix blobs are missed from time to time.
 #
 
 call core_exists()
