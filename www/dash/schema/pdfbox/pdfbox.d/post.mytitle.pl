@@ -81,6 +81,7 @@ my $cmd =
 unless (system($cmd) == 0) {
 	my $status = $?;
 	gripe "system(spin-wait-blob request) failed: exit status=$status";
+	gripe "spin-wait-blob request: $request_blob";
 	$status = ($status >> 8) & 0xFF;
 	if ($status > 1) {
 		print <<END;
@@ -108,6 +109,7 @@ unless (system($cmd) == 0) {
 	my $status = $?;
 
 	gripe "system(spin-wait-blob title) failed: exit status=$status";
+	gripe "spin-wait-blob title: $blob";
 	$status = ($status >> 8) & 0xFF;
 	if ($status > 1) {
 		print <<END;
