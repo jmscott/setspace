@@ -80,3 +80,6 @@ world:
 	$(MAKE) $(MFLAGS) all
 	$(MAKE) $(MFLAGS) distclean
 	$(MAKE) $(MFLAGS) install
+
+dev-links:
+	ln -s . lib
