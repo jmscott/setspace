@@ -5,6 +5,10 @@
 #  	flowd server setcore.conf
 #  See:
 #  	schema/setcore/schema.sql
+#  Note:
+#	core_exists() is not properly spin waiting for existence in all tables,
+#	so request records are not properly appened to
+#	prefixio/spool/setcore.brr from time to time.
 #
 
 boot
@@ -323,7 +327,7 @@ sql query in_is_utf8wf_table row
 	    WHERE
 		blob = $1::udig
 	  ),
-	 (SELECt
+	 (SELECT
 	  	is_utf8
 	    FROM
 	    	setcore.is_utf8wf
@@ -546,13 +550,11 @@ command core_exists
 #  Do the core tuples exist in the tables
 #
 #	setcore.{byte_bitmap, byte_count, byte_prefix, is_utf8wf}
-#
-#  All blobs have core facts.
-#
 #  Note:
-#	Do need to test for proper existence in new_line_count?
+#	core_exists() is not properly spin waiting for existence in all tables,
+#	so request records are not properly appened to
+#	prefixio/spool/setcore.brr from time to time.
 #
-
 call core_exists()
   when
 	#
