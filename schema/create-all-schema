@@ -1,0 +1,70 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Create all schemas known to setspace
+#  Usage:
+#	export SETSPACE_ROOT=$HOME/opt/setspace
+#	create-all-schema
+#
+
+PROG=$(basename $0)
+
+log()
+{
+	echo "$PROG: $@"
+}
+
+die()
+{
+	log "ERROR: $@" >&2
+	exit 1
+}
+
+leave()
+{
+	STATUS=$?
+	log 'good bye, cruel world'
+	exit $STATUS
+}
+
+test $# = 0 || die "wrong number of arguments: got $#, expected 0"
+log 'hello, world'
+trap leave EXIT
+
+test -n "$SETSPACE_ROOT" || die 'env not defined: SETSPACE_ROOT'
+cd $SETSPACE_ROOT/schema ||
+	die "cd $SETSPACE_ROOT/schema failed: exit status=$?"
+
+log "SETSPACE_ROOT=$SETSPACE_ROOT"
+log "PGHOST=$PGHOST"
+log "PGPORT=$PGPORT"
+log "PGUSER=$PGUSER"
+log "PGDATABASE=$PGDATABASE"
+
+create_schema()
+{
+	SCHEMA=$1
+	log "create schema: $SCHEMA"
+	SQL=$SCHEMA/lib/schema.sql
+	psql --file $SQL || die "psql $SCHEMA failed: exit status=$?"
+}
+
+#  manually order creation of schemas
+
+create_schema setcore
+create_schema jsonorg
+create_schema mycore
+create_schema fffile
+create_schema expat2
+create_schema libxml2
+create_schema curl7
+create_schema mydash
+
+#  special case for pdfbox depends on fault files.
+#  soon all schemas will have fault tables
+log 'create schema: pdfbox and fault tables'
+
+cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed: exit status=$?"/
+psql --file schema/pdfbox/lib/schema.sql				||
+		die "psql schema: pdfbox and fault"
+	

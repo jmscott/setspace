@@ -14,6 +14,8 @@ LIBs=									\
 	fault-process.sh						\
 	psqlrc.example							\
 	schema-fault.sql
+SBINs=									\
+	create-all-schema
 all:
 	cd setcore && $(MAKE) $(MFLAGS) all
 	cd jsonorg && $(MAKE) $(MFLAGS) all
@@ -27,7 +29,7 @@ all:
 	cd fffile && $(MAKE) $(MFLAGS) all
 	cd curl7 && $(MAKE) $(MFLAGS) all
 
-createdb:
+createpg:
 	createdb setspace --encoding=UTF8 --template template0
 
 clean:
@@ -60,6 +62,10 @@ install:
 		-d $(SETSPACE_PREFIX)/lib
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r	\
 		$(LIBs) $(SETSPACE_PREFIX)/lib
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m u=rwx,go=	\
+		-d $(SETSPACE_PREFIX)/sbin
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m u=rwx,go=	\
+		$(SBINs) $(SETSPACE_PREFIX)/sbin
 
 distclean:
 	cd setcore && $(MAKE) $(MFLAGS) distclean
@@ -73,8 +79,8 @@ distclean:
 	cd pdfbox && $(MAKE) $(MFLAGS) distclean
 	cd fffile && $(MAKE) $(MFLAGS) distclean
 	cd curl7 && $(MAKE) $(MFLAGS) distclean
-	rm -f $(SETSPACE_PREFIX)/lib/psqlrc.example
-	rm -f $(SETSPACE_PREFIX)/lib/fault-process.sh
+	(cd $(SETSPACE_PREFIX)/lib;  rm -f $(LIBs))
+	(cd $(SETSPACE_PREFIX)/sbin;  rm -f $(SBINs))
 world:
 	$(MAKE) $(MFLAGS) clean
 	$(MAKE) $(MFLAGS) all
