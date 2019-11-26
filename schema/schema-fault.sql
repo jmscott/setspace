@@ -9,7 +9,7 @@
  *	...
  *	BEGIN;
  *
- *	\include ../create-fault.sql
+ *	\include ../schema-fault.sql
  *
  *	COMMIT;
  *  Note:
