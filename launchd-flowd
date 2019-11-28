@@ -48,7 +48,8 @@ test -r $PROFILE || die "can not read setspace profile: $PROFILE"
 
 #  source in schema profile
 
-test -r etc/profile || die "can not read schema profile: $(pwd)/etc/profile"
+PROFILE=etc/profile
+test -r etc/profile || die "can not read schema profile: $PROFILE"
 . $PROFILE || die "sourcing schema profile failed: $PROFILE"
 
 rm -f run/flowd.pid || die "rm run/flowd.pid failed: exit status=$?"
