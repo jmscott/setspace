@@ -68,8 +68,13 @@ Define SETSPACE_BLOBIO_ALGORITHM bc160
 #	See toolkit at https://github.com/jmscott/work/tree/master/httpd2
 #	for reference in PERL5LIB to /usr/local/jmscott/httpd2/lib
 #
-Listen ${SETSPACE_APACHE2_SERVER_PORT}
-<VirtualHost ${SETSPACE_APACHE2_SERVER_NAME}:${SETSPACE_APACHE2_SERVER_PORT}>
+#	Remember, VirtualHost directive is really
+#
+#		<virtualHost network-interface:port>
+#
+#	and not related to the server name seen by the public.
+#
+<VirtualHost *:${SETSPACE_APACHE2_SERVER_PORT}>
         ServerName ${SETSPACE_APACHE2_SERVER_NAME}
 
 	CustomLog ${APACHE_LOG_DIR}/${SETSPACE_APACHE2_SERVER_NAME}-access.log common
