@@ -83,18 +83,18 @@ install: all
 		rummy							\
 		run-stat						\
 		run-stat-report						\
-		spin-wait-blob						\
 		tail-flowd						\
 		tas-run-lock						\
 		tas-run-unlock						\
 		$(SETSPACE_PREFIX)/sbin
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-		RFC3339Nano						\
 		append-brr						\
 		escape-json-utf8					\
 		file-stat-size						\
 		is-utf8wf						\
+		RFC3339Nano						\
+		spin-wait-blob						\
 		$(SETSPACE_PREFIX)/bin
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
