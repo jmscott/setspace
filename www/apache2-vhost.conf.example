@@ -38,12 +38,12 @@ Define SETSPACE_PGPORT 5432
 Define SETSPACE_PGUSER postgres
 Define SETSPACE_PGDATABASE setspace 
 
-#  probably no need to change remaining
-
 #  Perl needs DBD/Pg.pm in path.  Add /opt/local/bin for perl managed
 #  by mac ports or /usr/local/bin for homebrew.
 
-Define SETSPACE_PATH ${SETSPACE_ROOT}/sbin:${SETSPACE_ROOT}/bin:${SETSPACE_PGHOME}/bin:${SETSPACE_BLOBIO_ROOT}/bin:${SETSPACE_JMSCOTT_ROOT}/www/bin:/usr/bin:/bin
+Define SETSPACE_PATH ${SETSPACE_ROOT}/bin:${SETSPACE_ROOT}/www/bin:${SETSPACE_PGHOME}/bin:${SETSPACE_BLOBIO_ROOT}/bin:/usr/bin:/bin
+
+#  probably no need to change remaining variables
 
 Define SETSPACE_APACHE2_SERVER_NAME ${SETSPACE_DNS_VHOST_PREFIX}.setspace.${SETSPACE_DNS_VHOST_SUFFIX}
 Define SETSPACE_WWW_ROOT ${SETSPACE_ROOT}/www
