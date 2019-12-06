@@ -54,6 +54,7 @@ my $elapsed_query_seconds = time() - $query_start_time;
 #  write the <dt> as <a>title<a> link to the pdf blob
 #  write the <dt> as the details of the pdf blob
 
+my $now = time();
 while (my $r = $qh->fetchrow_hashref()) {
 	#  every pdf has these four attributes
 	my $blob = $r->{blob};
@@ -65,12 +66,10 @@ while (my $r = $qh->fetchrow_hashref()) {
       $match_page_count matched of
 END
 
-	my $discover_elapsed = $r->{discover_elapsed};
-
-	#  strip off tailing hours:min:sec if more than day elapsed
-	$discover_elapsed =~ s/ \d\d:\d\d:\d\d//
-		if $discover_elapsed =~ m/(?:(day|mon|year)(?:s)?)/;
-	$discover_elapsed = encode_html_entities($discover_elapsed);
+	my $discover_english_text = elapsed_seconds2terse_english(
+					$now - $r->{discover_epoch}
+				) . ' ago' 
+	;
 
 	#  build the <dt> using the title
 	my $dt_class;
@@ -99,7 +98,7 @@ END
    $span_snippet
    <span class="detail">
      $match_page_count_text $number_of_pages page$plural_nop total,
-     $discover_elapsed,
+     $discover_english_text,
      <a
        class="detail"
        href="/schema/pdfbox/detail.shtml?blob=$blob"

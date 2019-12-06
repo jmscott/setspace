@@ -2,6 +2,8 @@
 #  Synopsis:
 #	Common routines for full text search.
 #  Note:
+#	-  Move function elapsed_english() to www/lib/elapsed-english.pl.
+#
 #	-  Search on
 #
 #		"more damned lies"  gelman
@@ -21,8 +23,6 @@
 #	appears on the second page and again on the sixth page.
 #
 #       -  For web search substitute | with OR amd ! WITH -
-#
-#	-  Need to strip the english 'ago' verbage in discover_elapsed.
 #
 #	-  no matching page count for search
 #
@@ -48,8 +48,7 @@ SELECT
 		pi.title
 	END AS title,
 	myt.title IS NULL AS mytitle_is_null,
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
-		AS discover_elapsed
+	EXTRACT(epoch FROM s.discover_time) AS discover_epoch
   FROM
   	pdfbox.pddocument pdf JOIN setcore.service s ON (s.blob = pdf.blob)
 	  LEFT OUTER JOIN mycore.title myt ON (myt.blob = pdf.blob)
@@ -69,7 +68,7 @@ SELECT
 #
 #  Target List:
 #	blob,
-#	discover_elapsed
+#	discover_epoch
 #	number_of_pages
 #	title
 #
@@ -91,7 +90,7 @@ sub recent_select
 #	Full text search across pdf pages, group by pdf, order by rank
 #  Target List:
 #	blob
-#	discover_elapsed
+#	discover_epoch
 #	match_page_count
 #	number_of_pages
 #	page_count
@@ -193,8 +192,7 @@ WITH pdf_page_match AS (
 	  ELSE
 		pi.title
 	END AS title,
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
-		AS discover_elapsed
+	EXTRACT(epoch FROM s.discover_time) AS discover_epoch
   FROM
   	pdf_page_match pp
 	  JOIN setcore.service s ON (s.blob = pp.blob)
@@ -234,7 +232,6 @@ sub fts_select
 #	Typical websearch style query string: keyword/"phrase"/&|!
 #  Target List:
 #	blob
-#	discover_elapsed
 #	match_page_count
 #	number_of_pages
 #	page_count
@@ -242,7 +239,7 @@ sub fts_select
 #	snippet
 #	title,
 #	mytitle_is_null
-#	discover_elapsed
+#	discover_epoch
 #  Argument Vector:
 #	$1	full text search syntax
 #	$2	text search configuration (english, russian, etc)
@@ -381,8 +378,7 @@ page_match AS (
 	END AS title,
 	myt.title IS NULL AS mytitle_is_null,
 	pd.number_of_pages,
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
-		AS discover_elapsed
+	EXTRACT(epoch FROM s.discover_time) AS discover_epoch
     FROM
     	merge_ranked mr
 	  JOIN pdfbox.pddocument_information pi ON (
@@ -432,8 +428,7 @@ SELECT
 		pi.title
 	END AS title,
 	myt.title IS NULL AS mytitle_is_null,
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
-		AS discover_elapsed
+	EXTRACT(epoch FROM s.discover_time) AS discover_epoch
   FROM
   	pdfbox.pddocument pdf JOIN setcore.service s ON (s.blob = pdf.blob)
 	  LEFT OUTER JOIN mycore.title myt ON (myt.blob = pdf.blob)
@@ -457,6 +452,54 @@ sub select_pdf_blob
 		],
 		sql =>	sql_pdf_blob()
 	);
+}
+
+#  convert elapsed seconds to terse english description
+
+sub elapsed_seconds2terse_english
+{
+	my ($elapsed, $units)  = ($_[0]);
+
+	#  > 1 year
+	if ($elapsed > 31536000) {
+		$elapsed /= 31536000;
+		$units = 'yr';
+	}
+
+	#  > 3 months
+
+	elsif ($elapsed > 7776000) {
+		$elapsed /= 2592000;
+		$units = 'mon';
+	}
+
+	#  > 3 weeks
+
+	elsif ($elapsed > 1814400) {
+		$elapsed /= 604800;
+		$units = 'week';
+	}
+
+	#  > 3 days
+	elsif ($elapsed > 259200) {
+		$elapsed /= 86400;
+		$units = 'day';
+
+	#  > 3 hours
+
+	} elsif ($elapsed > 10800) {
+		$elapsed /= 3600;
+		$units = 'hr';
+
+	#  > 3 minutes
+
+	} elsif ($elapsed > 180) {
+		$elapsed /= 60;
+		$units = 'min';
+	} else {
+		$units = 'sec';
+	}
+	return sprintf('%.f %s', $elapsed, $units);
 }
 
 1;
