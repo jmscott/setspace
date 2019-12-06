@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <!--
   Note:
+  	why does display fail for this blob?
+		
+		bc160:9a559665b5b76ce5a898f1e7b071a21f4c73331b
+
   	Detail needs to break down all tables exactly AND do a hex dump.
 	The hexdump needs to be paginated in, say, 64k chunks.
 -->
