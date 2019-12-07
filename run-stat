@@ -1,44 +1,53 @@
-#!/bin/bash
 #
 #  Synopsis:
-#	List running flowd servers based upin schema/*/run/flowd.pid
+#	Summarize process stats and duration by examining *.pid files.
 #  Usage:
 #	run-stat
-#  Exit Status:
-#	0	scanned all running processes
-#	1	unexpected error
+#  Note:
+#	Probing process existence with pgrep might be useful.
+#	Not clear if another script should do this.
 #
+STALE_AFTER=60
 
 die()
 {
-	echo "ERROR: $@" >&2
+	echo "$(basename $0): ERROR: $@" >&2
 	exit 1
 }
 
-test $# = 0 || die "wrong number of arguments: got $#, expected 0"
-test -n "$SETSPACE_ROOT" || die 'env var not defined: SETSPACE_ROOT'
+_stat_pid()
+{
+	SCHEMA=$1
+	PID_PATH=$SCHEMA/run/flowd.pid
+	SINCE=UNKNOWN
 
+	stale-mtime $STALE_AFTER $PID_PATH
+	STATUS=$?
+	case $STATUS in
+	0)
+		SINCE=$(perl -e "print((stat('$PID_PATH'))[9]);")
+		STATE=ZOMBIE
+		;;
+	1)
+		STATE=UP
+		SINCE=$(head -2 $PID_PATH | tail -1)
+		;;
+	2)
+		STATE=DOWN
+		;;
+	*)
+		die "stale-mtime failed: exit status=$?"
+		;;
+	esac
+	echo "$SCHEMA	$STATE	$SINCE"
+}
+
+test $# = 0 || die "wrong number cli arguments: got $#, expected 0"
+
+test -n "$SETSPACE_ROOT" || die "environment not defined: SETSPACE_ROOT"
 SCHEMA=$SETSPACE_ROOT/schema
-cd $SCHEMA || die "cd $SCHEMA failed: exit status=$?"
+cd $SCHEMA || die "cd $SCHEMA exit status=$?"
 
-ls-flow | while read SC;  do
-	SC=$(basename $SC)
-	PID=$SC/run/flowd.pid
-	STATE=DOWN
-
-	#  run the gauntlet on the state of the run/flowd.pid file.
-	if [ -e $PID ];  then
-		#  run/flowd.pid been touched within 2 minutes
-		#
-		#  Note:
-		#	test -a alway evaluates both sides of the expression,
-		#	breaking a $(find) in single invocation.
-		#
-		if [ -n "$(find $PID -mmin -2 -print)" ];  then
-			STATE=UP
-		fi
-	fi
-	echo "$SC	$STATE"
-done | sort --key=2 --key=1 --field-separator='	'
-
-exit 0
+find . -mindepth 1 -maxdepth 1 -type d | while read SCHEMA;  do
+	_stat_pid $(basename $SCHEMA)
+done

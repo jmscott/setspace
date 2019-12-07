@@ -1,11 +1,50 @@
+#!/bin/bash
 #
 #  Synospsis:
-#	Report of running flowd process bound to a schema.
+#	Report of running flowd processes in schema/*/run.
 #  Usage:
 #	run-stat-report
+#  See:
+#	setspace/sbin/run-stat
+#  Note:
+#	Ought to consolidate this script with blobio/sbin/run-stat-report.
+#
+#	Sort is ignoring the second key on linux.  The pain never ends.
 #
 (
-	echo "Schema	Flowd State"
-	echo "------	-----------"
-	run-stat
-) | column -t -s '	'
+	echo "Schema	Status	Duration"
+	echo '-------------	------	-----------'
+	run-stat							|
+		sort --key=2 --key=1 --field-separator=$'\t'		|
+		awk -F'\t' -v NOW=$(date +'%s') '{
+			ELAPSED=NOW - $3;
+			DURATION="unknown";
+			units = "";
+			if ($3 ~ "^[0-9][0-9]*$") {
+
+				#  > 3 days
+				if (ELAPSED > 259200) {
+					DURATION = ELAPSED / 86400;
+					units="day";
+
+				#  > 3 hours
+
+				} else if (ELAPSED > 10800) {
+					DURATION = ELAPSED / 3600;
+					units="hr";
+
+				#  > 3 minutes
+
+				} else if (ELAPSED > 180) {
+					DURATION = ELAPSED / 60;
+					units = "min"
+				} else {
+					DURATION = ELAPSED
+					units = "sec";
+				}
+				DURATION = sprintf("%.0f", DURATION);
+			}
+
+			print $1, FS, $2, FS, DURATION, units;
+		}'
+) | column -s '	' -t | sed 's/ *	//'
