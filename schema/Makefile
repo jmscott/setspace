@@ -27,7 +27,6 @@ all:
 	cd jsonio && $(MAKE) $(MFLAGS) all
 	cd pdfbox && $(MAKE) $(MFLAGS) all
 	cd fffile && $(MAKE) $(MFLAGS) all
-	cd curl7 && $(MAKE) $(MFLAGS) all
 
 createpg:
 	createdb setspace --encoding=UTF8 --template template0
@@ -43,7 +42,6 @@ clean:
 	cd jsonio && $(MAKE) $(MFLAGS) clean
 	cd pdfbox && $(MAKE) $(MFLAGS) clean
 	cd fffile && $(MAKE) $(MFLAGS) clean
-	cd curl7 && $(MAKE) $(MFLAGS) clean
 
 install:
 	cd setcore && $(MAKE) $(MFLAGS) install
@@ -56,7 +54,6 @@ install:
 	cd jsonio && $(MAKE) $(MFLAGS) install
 	cd pdfbox && $(MAKE) $(MFLAGS) install
 	cd fffile && $(MAKE) $(MFLAGS) install
-	cd curl7 && $(MAKE) $(MFLAGS) install
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
 		-d $(SETSPACE_PREFIX)/lib
@@ -78,7 +75,6 @@ distclean:
 	cd jsonio && $(MAKE) $(MFLAGS) distclean
 	cd pdfbox && $(MAKE) $(MFLAGS) distclean
 	cd fffile && $(MAKE) $(MFLAGS) distclean
-	cd curl7 && $(MAKE) $(MFLAGS) distclean
 	(cd $(SETSPACE_PREFIX)/lib;  rm -f $(LIBs))
 	(cd $(SETSPACE_PREFIX)/sbin;  rm -f $(SBINs))
 world:
