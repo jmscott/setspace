@@ -2,16 +2,6 @@
 #  Synopsis:
 #	Common routines for full text search.
 #  Note:
-#	-  Move function elapsed_english() to www/lib/elapsed-english.pl.
-#
-#	-  Search on
-#
-#		"more damned lies"  gelman
-#
-#	   fails to match the following pdf.
-#
-#		sha:6a1ac913585566dd8e302d262461e109f2807b24
-#
 #	-  Duplicates in search across pages for
 #
 #		"surreal numbers"

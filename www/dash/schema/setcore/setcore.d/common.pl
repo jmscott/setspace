@@ -16,8 +16,7 @@ sub sql_recent
 SELECT
 	s.blob,
 	s.discover_time,
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
-		AS discover_elapsed,
+	round(extract(epoch from s.discover_time)) AS discover_epoch,
 	bc.byte_count,
 	u8.is_utf8,
 	bit.bitmap,
@@ -70,8 +69,7 @@ sub sql_blob
 SELECT
 	s.blob,
 	s.discover_time,
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
-		AS discover_elapsed,
+	EXTRACT(EPOCH FROM s.discover_time) AS discover_epoch,
 	bc.byte_count,
 	u8.is_utf8,
 	bit.bitmap,

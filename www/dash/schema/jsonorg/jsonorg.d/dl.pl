@@ -7,6 +7,7 @@
 use Time::HiRes qw(gettimeofday);
 
 require 'dbi-pg.pl';
+require 'common-time.pl';
 require 'httpd2.d/common.pl';
 require 'jsonorg.d/common.pl';
 
@@ -25,6 +26,7 @@ if ($QUERY_ARG{q} =~ m/^\s*[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}\s*$/) {
 	$qh = select_recent();
 }
 
+my $now = time();
 while (my $r = $qh->fetchrow_hashref()) {
 	my $li_json_class = 'json';
 	my $blob = encode_html_entities($r->{blob});
@@ -33,7 +35,11 @@ while (my $r = $qh->fetchrow_hashref()) {
 		$li_json_class .= ' truncated';
 		$pretty_json_255 .= ' <span class="truncate">...</span>';
 	}
-	my $discover_elapsed = encode_html_entities($r->{discover_elapsed});
+	my $discover_elapsed = encode_html_entities(
+				elapsed_seconds2terse_english(
+					$now - $r->{discover_epoch}
+				))
+	;	
 	print <<END;
  <dt><code>$pretty_json_255</code></dt>
  <dd>

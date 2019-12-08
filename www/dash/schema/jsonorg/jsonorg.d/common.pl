@@ -17,8 +17,7 @@ SELECT
 	jb.blob,
 	substr(jsonb_pretty(jb.doc), 1, 255) AS pretty_json_255,
 	s.discover_time,
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '')
-		AS discover_elapsed,
+	EXTRACT(epoch FROM s.discover_time) AS discover_epoch,
 	length(jsonb_pretty(jb.doc)) AS pretty_char_count
   FROM
 	jsonorg.jsonb_255 jb
@@ -65,8 +64,7 @@ SELECT
 	jb.blob,
 	substr(jsonb_pretty(jb.doc), 1, 255) AS pretty_json_255,
 	s.discover_time,
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '')
-		AS discover_elapsed,
+	EXTRACT(epoch FROM s.discover_time) AS discover_epoch,
 	length(jsonb_pretty(jb.doc)) AS pretty_char_count
   FROM
 	jsonorg.jsonb_255 jb
@@ -116,8 +114,7 @@ SELECT
 	jb.blob,
 	substr(jsonb_pretty(jb.doc), 1, 255) AS pretty_json_255,
 	s.discover_time,
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '')
-		AS discover_elapsed,
+	extract(epoch FROM s.discover_time) AS discover_epoch,
 	length(jsonb_pretty(jb.doc)) AS pretty_char_count
   FROM
 	jsonorg.jsonb_255 jb

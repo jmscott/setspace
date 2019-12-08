@@ -41,7 +41,10 @@ install: all
 		schema.shtml						\
 		screen.css						\
 		$(WWW_PREFIX)/htdocs/schema/jsonorg
-	install jsonorg.cgi $(WWW_PREFIX)/lib
+	install								\
+		jsonorg.cgi						\
+		psqlrc.example
+		$(WWW_PREFIX)/lib
 
 distclean:
 	rm -f $(WWW_PREFIX)/cgi-bin/jsonorg

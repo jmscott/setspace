@@ -67,9 +67,8 @@ while (my $r = $qh->fetchrow_hashref()) {
       $match_page_count matched of
 END
 
-	my $discover_epoch = $r->{discover_epoch};
 	my $discover_english_text = elapsed_seconds2terse_english(
-					$now - $discover_epoch
+					$now - $r->{discover_epoch}
 				) . ' ago' 
 	;
 

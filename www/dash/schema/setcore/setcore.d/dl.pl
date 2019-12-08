@@ -7,6 +7,7 @@
 use Time::HiRes qw(gettimeofday);
 
 require 'dbi-pg.pl';
+require 'common-time.pl';
 require 'httpd2.d/common.pl';
 require 'setcore.d/common.pl';
 
@@ -34,9 +35,13 @@ END
 
 #  Write the matching blobs <tr>
 
+my $now = time();
 while (my $r = $qh->fetchrow_hashref()) {
 	my $blob = encode_html_entities($r->{blob});
-	my $discover_elapsed = encode_html_entities($r->{discover_elapsed});
+	my $discover_elapsed = encode_html_entities(
+					elapsed_seconds2terse_english(
+						$now - $r->{discover_epoch}
+				));
 	my $byte_count = $r->{byte_count};
 	my $bitmap = $r->{bitmap};
 	$bitmap =~ s/0//g;
@@ -48,7 +53,7 @@ while (my $r = $qh->fetchrow_hashref()) {
 	print <<END;
  <dt class="udig">$blob</dt>
  <dd>
-  $discover_elapsed,
+  $discover_elapsed ago,
   $byte_count bytes,
   $is_utf8,
   $byte_coverage coverage,
