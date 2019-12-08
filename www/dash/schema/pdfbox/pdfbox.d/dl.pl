@@ -10,6 +10,7 @@ use Time::HiRes qw(gettimeofday);
 require 'utf82blob.pl';
 require 'dbi-pg.pl';
 require 'common-json.pl';
+require 'common-time.pl';
 require 'httpd2.d/common.pl';
 require 'pdfbox.d/common.pl';
 
@@ -66,8 +67,9 @@ while (my $r = $qh->fetchrow_hashref()) {
       $match_page_count matched of
 END
 
+	my $discover_epoch = $r->{discover_epoch};
 	my $discover_english_text = elapsed_seconds2terse_english(
-					$now - $r->{discover_epoch}
+					$now - $discover_epoch
 				) . ' ago' 
 	;
 
@@ -118,7 +120,7 @@ return 1 unless $q;		#  no search so nothing to record
 #  save the user text search as a json blob in mydash.schema.setspace.com
 
 $q = utf82json_string($QUERY_ARG{q});
-my $unix_epoch = time();
+my $query_epoch = time();
 
 my $env = env2json(2);
 
@@ -129,10 +131,10 @@ print STDERR 'pdfbox-full-text-search: json: ', utf82blob(<<END), "\n";
 	"mydash.schema.setspace.com": {
 		"pdfbox-full-text-search": {
 			"q": $q,
-			"qtype": $qtype,
-			"discover-unix-epoch": $unix_epoch
+			"qtype": $qtype
 		},
-		"elapsed-query-seconds": $elapsed_query_seconds
+		"elapsed-query-seconds": $elapsed_query_seconds,
+		"query_epoch": $query_epoch
 	},
 	"cgi-bin-environment": $env
 }

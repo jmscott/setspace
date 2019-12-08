@@ -52,6 +52,7 @@ install:
 		apache2-vhost.conf.example				\
 		apache2-passwd.example					\
 		common-json.pl						\
+		common-time.pl						\
 		utf82blob.pl						\
 		$(WWW_ROOT)/lib
 ifdef DASH_DNS_VHOST_SUFFIX
