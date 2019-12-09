@@ -43,7 +43,7 @@ install: all
 		$(WWW_PREFIX)/htdocs/schema/jsonorg
 	install								\
 		jsonorg.cgi						\
-		psqlrc.example
+		psqlrc.example						\
 		$(WWW_PREFIX)/lib
 
 distclean:
