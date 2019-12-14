@@ -25,6 +25,9 @@
  *	3	sql warning
  *	4	sql error
  *  Note:
+ *	Find a clearer way to assemble the query than appending with
+ *	_strcat().
+ *
  *	For fast syncing environments, adding a back-off algorithm might
  *	be reasonable.
  *
