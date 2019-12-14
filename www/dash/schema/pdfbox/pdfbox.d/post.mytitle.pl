@@ -14,7 +14,7 @@ sub gripe
 
 our %POST_VAR;
 
-my $spin_rate = 8;
+my $spin_rate = 4;
 
 my $blob = utf82json_string($POST_VAR{blob});
 die 'POST_VAR: blob is empty' if $blob eq '""';
@@ -119,7 +119,7 @@ Content-Type: text/plain
 ERROR: unexpected reply for title existence: status=$status: $blob
 END
 	} elsif ($status == 1) {
-		my $duration = $spin_rate ^ 2 - 1;
+		my $duration = $spin_rate * 2 - 1;
 		print <<END;
 Status: 503
 Content-Type: text/plain
