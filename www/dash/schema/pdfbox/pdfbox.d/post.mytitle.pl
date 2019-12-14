@@ -91,7 +91,7 @@ Content-Type: text/plain
 ERROR: unexpected reply for json request: status=$status: $request_blob
 END
 	} elsif ($status == 1) {
-		my $duration = $spin_rate ^ 2 -1;
+		my $duration = $spin_rate * 2 -1;
 		print <<END;
 Status: 503
 Content-Type: text/plain
