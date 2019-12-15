@@ -1,8 +1,8 @@
 #
 #  Synopsis:
-#	Write html <table> of all setcore attributes.
+#	Write html <dl> of all valid json blobs.
 #  Usage:
-#	/cgi-bin/setcore?out=table
+#	/cgi-bin/jsonorg?out=dl
 #
 use Time::HiRes qw(gettimeofday);
 
