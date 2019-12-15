@@ -27,6 +27,7 @@ install: all
 	install								\
 		jsonorg.d/common.pl					\
 		jsonorg.d/dl.pl						\
+		jsonorg.d/dl.fail.pl					\
 		jsonorg.d/help.pl					\
 		jsonorg.d/input.pl					\
 		jsonorg.d/mime.json.pl					\
@@ -36,6 +37,7 @@ install: all
 		$(WWW_PREFIX)/lib/jsonorg.d
 	install								\
 		detail.shtml						\
+		fail.shtml						\
 		index.shtml						\
 		nav.shtml						\
 		schema.shtml						\

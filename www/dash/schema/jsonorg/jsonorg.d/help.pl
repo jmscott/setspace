@@ -77,6 +77,9 @@ print <<'END';
   </dl>
 </div>
      </dd>
+     <dt>dl.fail</dt>
+     <dd>
+     </dd>
      <dt>table</dt>
      <dd>
 <div class="query-args">

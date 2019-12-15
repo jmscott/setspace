@@ -42,7 +42,7 @@ $CGI{GET}->{out}->{'query-args'}->{arg}->{class} = {
 #  'out' query argument must match one of the out putter names.
 #
 $CGI{GET}->{out}->{'query-args'}->{arg}->{out} = {
-	perl5_re	=> 	'input|dl|table|pre|(?:span[.]nav)|(?:mime[.]json)|help',
+	perl5_re	=> 	'input|dl|(?:dl[.]fail)|table|pre|(?:span[.]nav)|(?:mime[.]json)|help',
 	default		=>	'help',
 };
 #
@@ -88,6 +88,18 @@ $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{offset} = {
 
 #
 #  END: /cgi/GET/out/putter[@name='dl']
+#
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name='dl.fail']
+#
+$CGI{GET}->{out}->{putter}->{'dl.fail'}->{name} = 'dl.fail';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=dl.fail]/query-args
+#
+#
+#  END: /cgi/GET/out/putter[@name='dl.fail']
 #
 
 #

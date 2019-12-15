@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Failed JSON Candidate Blobs</title>
+  <meta charset="UTF-8" />
+  <link
+    href="/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <link
+    href="/schema/jsonorg/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <style>
+    /*<![CDATA[*/
+    body
+    {
+	cursor:	wait;
+    }
+    #content dt
+    {
+    	background-color:       white;
+	color:			black;
+    }
+    #content dt a
+    {
+	color:			red;
+    }
+    /*]]>*/
+  </style>
+
+  <script type="text/javascript">
+    /*<![CDATA[*/
+
+    window.onload=function() {
+	document.body.style.cursor='default';
+    }
+
+    /*]]>*/
+  </script>
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="nav.shtml" -->
+   <div id="content">
+    <h2>Failed Candidate JSON Blobs</h2>
+    <!--#include virtual="/cgi-bin/jsonorg?out=dl.fail&${QUERY_STRING}" -->
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

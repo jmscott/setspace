@@ -41,6 +41,9 @@
     </query-args>
    </putter>
 
+   <putter name="dl.fail">
+   </putter>
+
    <putter name="table">
     <query-args>
      <arg

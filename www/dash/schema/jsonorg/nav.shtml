@@ -2,6 +2,7 @@
  <ul>
   <li><a href="/">Home</a></li>
   <li><a href="/schema/jsonorg/index.shtml">Search JSON Blobs</a></li>
+  <li><a href="/schema/jsonorg/fail.shtml">Failed Candidate JSON Blobs</a></li>
   <li><a href="/schema/jsonorg/schema.shtml">JSONOrg Schema</a></li>
  </ul>
 </div>
