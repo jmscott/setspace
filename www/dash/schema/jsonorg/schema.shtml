@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Note: investigate why <h3><h4> are forced back to text-align left. -->
 <html>
  <head>
   <title>SetCore Schema</title>
@@ -9,7 +10,8 @@
     type="text/css"
   />
   <style> /* <![CDATA[ */
-  #content h3
+
+  #content h3, #content h4
   {
   	text-align:		left;
   }
@@ -35,12 +37,26 @@
        <code>www.json.org</code>,
       </a>
       where maximum depth is less than 256 levels.
+      <h4>Columns</h4>
+      <dl>
+       <dt>blob</dt>
+       <dd>The candidate json blob</dd>
+
+       <dt>is_json</dt>
+       <dd>Is the blob valid json according to program checker_255</dd>
+      </dl>
      </dd>
 
      <dt>jsonb_255</dt>
      <dd>
        The jsonb version of a successfully parsed json object in
        table <code>checker_255</code>.
+     </dd>
+
+     <dt>jsonb_255_tsv_simple</dt>
+     <dd>
+       Text vector index with "simple" configuration of
+       <code>jsonb</code> doc in table <code>jsonb_255</code>.
      </dd>
 
     </dl>
@@ -51,6 +67,12 @@
      <dd>
        Integrity trigger function to insure blob foreign key
        reference of jsonb_255.blob satifies checker_255.is_json == true.
+     </dd>
+
+     <dt>jsonb_255_tsv_simple_trigger()</dt>
+     <dd>
+       Integrity trigger function to update table
+       <code>jsonb_255_tsv_simple</code>.
      </dd>
     </dl>
 
