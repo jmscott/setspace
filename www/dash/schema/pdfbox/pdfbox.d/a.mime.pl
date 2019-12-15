@@ -5,7 +5,6 @@
 #	Need to standardize of either "blob" or "udig" but not both in
 #	query arguments to various cgi-bin scripts in schema/pdfbox.
 #
-#  https://dash.stage.setspace.com/cgi-bin/pdfbox?out=mime.pdf&udig=bc160:9ebefc25988794066c7df16d2f0ad048fefdb36f
 
 our %QUERY_ARG;
 

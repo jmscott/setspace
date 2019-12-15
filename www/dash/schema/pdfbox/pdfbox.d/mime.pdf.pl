@@ -25,7 +25,6 @@ print STDERR "pdfbox.d/blob: blobio get $udig: exit status=$status\n"
 #  save the blob fetched and details of search
 
 my $q = utf82json_string($QUERY_ARG{q});
-my $qtype = utf82json_string($QUERY_ARG{qtype});
 my $unix_epoch = time();
 $udig = utf82json_string($udig);
 
@@ -36,7 +35,6 @@ print STDERR 'pdfbox-full-text-search-click: json: ', utf82blob(<<END), "\n";
 {
 	"mydash.schema.setspace.com": {
 		"pdfbox-full-text-search-click": {
-			"qtype": $qtype,
 			"discover-unix-epoch": $unix_epoch,
 			"pdf_blob": $udig
 		}

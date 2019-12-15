@@ -4,7 +4,9 @@
 #  Usage:
 #	/cgi-bin/pdfbox?out=dl&q=neural+cryptography
 #  Note:
-#	The following phrase search with a colon fails
+#	--  investigate why elspased-query-time is not high resolution.
+#
+#	--  The following phrase search with a colon fails
 #
 #		"Picasso: Design and Implementation"
 #
@@ -131,6 +133,7 @@ return 1 unless $q;		#  no search so nothing to record
 #  save the user text search as a json blob in mydash.schema.setspace.com
 
 $q = utf82json_string($QUERY_ARG{q});
+$qtype = utf82json_string($qtype);
 my $query_epoch = time();
 
 my $env = env2json(2);

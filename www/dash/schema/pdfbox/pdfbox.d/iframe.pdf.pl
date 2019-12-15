@@ -1,6 +1,8 @@
 #
 #  Synopsis:
 #	Write html <iframe> of pdf blob.
+#  Note:
+#	Rename query arg "udig" as "blob" for consistency.
 #
 
 require 'httpd2.d/common.pl';

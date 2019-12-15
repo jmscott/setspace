@@ -5,10 +5,9 @@
 our %POST_VAR;
 
 my $q = encode_url_query_arg($POST_VAR{q});
-my $qtype = $POST_VAR{qtype};
 
 print <<END;
 Status: 302
-Location: /schema/pdfbox/index.shtml?q=$q&qtype=$qtype
+Location: /schema/pdfbox/index.shtml?q=$q
 
 END
