@@ -3,6 +3,18 @@
 #	Write html <dl> of pdf documents that match keyword search.
 #  Usage:
 #	/cgi-bin/pdfbox?out=dl&q=neural+cryptography
+#  Note:
+#	The following phrase search with a colon fails
+#
+#		"Picasso: Design and Implementation"
+#
+#	but works without the colon:
+#
+#		"Picasso Design and Implementation"
+#
+#	matching this pdf
+#
+#		bc160:c921ea224158699ffbf7e5353ea811fb1f82255b
 #
 use utf8;
 use Time::HiRes qw(gettimeofday);
