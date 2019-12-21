@@ -2,6 +2,8 @@
 #  Synopsis:
 #	Write html <span> of for navigating search results
 #  Note:
+#	The page count should link to the final search page.
+#
 #	Add query argument "lim"
 #	Consider pretty printing using use POSIX qw(locale_h)
 #	instead of english style 999,999.
