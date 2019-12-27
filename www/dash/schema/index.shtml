@@ -1,4 +1,10 @@
 <!DOCTYPE html>
+<!--
+  Note:
+  	Consider using this javascript to scrape a webpage:
+		
+		http://www.airovic.com/itsjustaniframe.html
+-->
 <html>
  <head>
   <title>SQL Schema</title>
