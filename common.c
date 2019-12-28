@@ -86,7 +86,7 @@
  *  	_strcat(buf, sizeof buf, "good bye, cruel world");
  */
 static void
-_strcat(char *restrict tgt, int tgtsize, char *restrict src)
+_strcat(char *restrict tgt, int tgtsize, const char *restrict src)
 {
 	//  find null terminated end of target buffer
 	while (*tgt++)
