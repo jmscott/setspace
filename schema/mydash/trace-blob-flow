@@ -86,9 +86,11 @@ fgrep_dr()
 		die "find | fgrep $DR_LOG failed: exit status=$STATUS"
 		;;
 	esac
-	test -s $DR_LOG							||
-		rm $DR_LOG						||
-		die "rm empty dr failed: exit status=$?"
+	if [ $KEEP_WORK_DIR = no ];  then
+		test -s $DR_LOG						||
+			rm $DR_LOG					||
+			die "rm empty dr failed: exit status=$?"
+	fi
 }
 
 find-schema | while read SCHEMA;  do
