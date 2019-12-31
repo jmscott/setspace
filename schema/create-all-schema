@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Create all schemas known to setspace
+#	Create all schemas known to setspace in $SETSPACE_ROOT/schema
 #  Usage:
 #	export SETSPACE_ROOT=$HOME/opt/setspace
 #	create-all-schema
@@ -46,6 +46,10 @@ create_schema()
 	SCHEMA=$1
 	log "create schema: $SCHEMA"
 	SQL=$SCHEMA/lib/schema.sql
+	if [ ! -e $SQL ];  then
+		log "WARN: schema.sql does not exist: $SQL"
+		return
+	fi
 	psql --file $SQL || die "psql $SCHEMA failed: exit status=$?"
 }
 
@@ -57,8 +61,11 @@ create_schema mycore
 create_schema fffile
 create_schema expat2
 create_schema libxml2
-create_schema curl7
 create_schema mydash
+
+#  not schema for routers
+#create_schema jsionio
+#create_schema prefixio
 
 #  special case for pdfbox depends on fault files.
 #  soon all schemas will have fault tables
