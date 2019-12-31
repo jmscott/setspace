@@ -103,3 +103,7 @@ find-schema | while read SCHEMA;  do
 	fgrep_dr xdr $SCHEMA
 	fgrep_dr qdr $SCHEMA
 done
+
+cd $WORK_DIR || die "cd work dir failed: exit status=$?"
+
+find . -name '*.[fqx]dr' 
