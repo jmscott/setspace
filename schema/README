@@ -32,6 +32,9 @@ See:
 	https://github.com/openpreserve
 
 Possible Schemas:
+	sheetfu - Python library to interact with Google Sheets V4 API
+	pygsheets - Google Sheets Python API v4
+	Gmail - https://developers.google.com/gmail/api/downloads
 	hyperscan - high performance regex library from intel
 	pcap - Wireshark capture format
 	w3valid - w3 validator of flavors of html
