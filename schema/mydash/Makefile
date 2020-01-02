@@ -33,13 +33,15 @@ install:
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
 				-d $(MYDASH_PREFIX)/tmp
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
+		copy-trace_fdr.sql					\
+		copy-trace_qdr.sql					\
+		copy-trace_xdr.sql					\
 		mydash.flow.example					\
 		profile.example						\
 		psqlrc.example						\
 		schema.sql						\
 		select-remember_uri.sql					\
 		setspace.schema.mydash.flowd.plist.example		\
-		trace-blob-flow.sql					\
 		$(MYDASH_PREFIX)/lib
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
 		put-remember_uri					\

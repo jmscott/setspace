@@ -29,6 +29,22 @@ die()
 	leave 1
 	exit 1
 }
+
+copy_dr()
+{
+	DR=$1
+	SQL=$SETSPACE_ROOT/schema/mydash/lib/copy-trace_$DR.sql
+
+	#  Note:  i wish xargs had the option --no-run-if-empty
+	find . -name "*.$DR"						|
+		xargs cat						|
+		psql --quiet --file $SQL
+	STATUS="${PIPESTATUS[*]}"
+	test "$STATUS" = '0 0 0'					||
+		die "copy_dr $DR failed: exit status=$STATUS"
+}
+
+
 trap 'leave 0' EXIT
 
 PSQL='psql --no-psqlrc --quiet'
@@ -53,9 +69,6 @@ mkdir -p $WORK_DIR || die "mkdir work dir failed: exit status=$?: $WORK_DIR"
 test -n "$SETSPACE_ROOT" || die 'environment var not defined: SETSPACE_ROOT'
 SCHEMA_ROOT=$SETSPACE_ROOT/schema
 cd $SCHEMA_ROOT || die "cd $SCHEMA_ROOT failed: exit status=$?"
-
-SQL=$SETSPACE_ROOT/schema/mydash/lib/trace-blob-flow.sql
-test -r $SQL || die "sql file not readable: $SQL"
 
 #  grep description flow, executable or query description records
 
@@ -93,17 +106,18 @@ fgrep_dr()
 	fi
 }
 
+#  extract the *.[fqx]dr records contraining the blob
 find-schema | while read SCHEMA;  do
 	cd $SCHEMA_ROOT
 	LOG=$SCHEMA/log
 	test -d $LOG || die "schema log dir does not exist: $(pwd)/$LOG"
 	cd $LOG || die "cd schema log failed: exit status=1: $LOG"
 
-	fgrep_dr fdr $SCHEMA
-	fgrep_dr xdr $SCHEMA
-	fgrep_dr qdr $SCHEMA
+	fgrep_dr fdr $SCHEMA						&&
+		fgrep_dr xdr $SCHEMA					&&
+		fgrep_dr qdr $SCHEMA
+	test $? = 0 || exit
 done
 
 cd $WORK_DIR || die "cd work dir failed: exit status=$?"
-
-find . -name '*.[fqx]dr' 
+copy_dr fdr && copy_dr qdr && copy_dr xdr
