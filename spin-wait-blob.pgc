@@ -59,7 +59,7 @@ static char progname[] = "spin-wait-blob";
 int
 main(int argc, char **argv)
 {
-	int timeout, waited = 0, pause = 0;
+	int timeout, waited = 0;
 	char *table_name, *column_name, *blob;
 EXEC SQL BEGIN DECLARE SECTION;
 	bool blob_exists;
@@ -124,19 +124,11 @@ EXEC SQL END DECLARE SECTION;
 again:
 	EXEC SQL EXECUTE get_blob INTO :blob_exists;
 
-	//  tuple exists.
 	if (blob_exists)
 		_exit(EXIT_OK);
 
-	//  pause doubles on each pass
-	if (pause == 0)
-		pause = 1;
-	else
-		pause *= 2;
-
-	if (waited >= timeout)
+	if (waited++ >= timeout)
 		_exit(EXIT_NO_BLOB);
-	sleep(pause);
-	waited += pause;
+	sleep(1);
 	goto again;
 }
