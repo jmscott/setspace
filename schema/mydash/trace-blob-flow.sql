@@ -1,6 +1,9 @@
 /*
  *  Synopsis:
  *	Summarize activity of blobs in tables trace_{fdr,qdr,xdr}.
+ *  Note:
+ *	Multiple flows over same blob are glomed into a single flow,
+ *	which is confusing.
  */
 
 \x
