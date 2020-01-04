@@ -80,7 +80,6 @@ CREATE TABLE trace_fdr
 	start_time	setcore.inception
 				NOT NULL,
 	blob		udig
-				REFERENCES setcore.service
 				NOT NULL,
 	ok_count	bigint CHECK (
 				ok_count >= 0
@@ -149,7 +148,6 @@ CREATE TABLE trace_xdr
 					)
 				) NOT NULL,
 	blob			udig
-					REFERENCES setcore.service
 					NOT NULL,
 	termination_code	int CHECK (
 					termination_code >= 0
