@@ -10,7 +10,11 @@ SELECT
 	'Flow Detail' AS "Summary",
 	'           ' AS " ",
 	blob,
+	MIN(start_time) AS min_start_time,
+	MAX(start_time) - MIN(start_time) AS bounding_wall_duration,
 	COUNT(DISTINCT schema_name) AS schema_count,
+
+	)) AS 
 	SUM(ok_count) AS ok_count,
 	SUM(fault_count) AS fault_count,
 
@@ -80,7 +84,7 @@ SELECT
 ;
 
 SELECT
-	'Queries' AS "Summary",
+	'Database Queries' AS "Summary",
 	'' AS "                        ",
 	blob,
 	COUNT(DISTINCT schema_name) AS schema_count,
