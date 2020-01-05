@@ -6,121 +6,157 @@
  *	which is confusing.
  */
 
+\set ON_ERROR_STOP 1
 \x
 \pset footer off
 
 SELECT
 	'Flow Detail' AS "Summary",
 	'           ' AS " ",
-	blob,
-	MIN(start_time) AS min_start_time,
-	MAX(start_time) - MIN(start_time) AS bounding_wall_duration,
-	COUNT(DISTINCT schema_name) AS schema_count,
 
-	)) AS 
-	SUM(ok_count) AS ok_count,
-	SUM(fault_count) AS fault_count,
+	f.blob,
+	COUNT(f.log_sequence) || ' flows' AS log_sequence_count,
+	MIN(f.start_time) AS min_start_time,
+	MAX(f.start_time) - MIN(f.start_time) AS bounding_wall_duration,
+
+	COUNT(DISTINCT f.schema_name) AS schema_count,
+	ARRAY(SELECT
+		DISTINCT fs.schema_name
+		FROM
+			mydash.trace_fdr fs
+		WHERE
+			fs.blob = f.blob
+		ORDER BY
+			fs.schema_name
+	) AS schemas,
+			
+	SUM(f.ok_count) AS ok_count,
+	SUM(f.fault_count) AS fault_count,
 
 	to_char(
-		AVG(EXTRACT(epoch FROM wall_duration)),
+		AVG(EXTRACT(epoch FROM f.wall_duration)),
 		'FM999999.99'
 	) || ' sec' AS avg_wall_duration,
 	to_char(
-		STDDEV_POP(EXTRACT(epoch FROM wall_duration)),
+		STDDEV_POP(EXTRACT(epoch FROM f.wall_duration)),
 		'FM999999.99'
 	) || ' sec' AS stddev_pop_wall_duration,
 	to_char(
-		MIN(EXTRACT(epoch FROM wall_duration)),
+		MIN(EXTRACT(epoch FROM f.wall_duration)),
 		'FM999999.99'
 	) || ' sec' AS min_wall_duration,
 	to_char(
-		MAX(EXTRACT(epoch FROM wall_duration)),
+		MAX(EXTRACT(epoch FROM f.wall_duration)),
 		'FM999999.99'
 	) || ' sec' AS max_wall_duration
   FROM
-  	mydash.trace_fdr
+  	mydash.trace_fdr f
   GROUP BY
-  	blob
+  	f.blob
   ORDER BY
-  	blob ASC
+  	f.blob ASC
 ;
 
 SELECT
 	'Process Execs' AS "Summary",
 	'' AS "                        ",
-	blob,
-	COUNT(DISTINCT schema_name) AS schema_count,
-	COUNT(DISTINCT command_name) AS command_count,
+	x.blob,
+
+	COUNT(DISTINCT x.schema_name) || ' schemas' AS schema_count,
+	COUNT(DISTINCT x.log_sequence) || ' flows' AS log_sequence_count,
+	ARRAY(SELECT
+		DISTINCT xs.schema_name
+			FROM
+				mydash.trace_xdr xs
+			WHERE
+				xs.blob = x.blob
+			ORDER BY
+				xs.schema_name
+	) AS schemas,
+
+	COUNT(DISTINCT x.command_name) || ' commands' AS command_count,
+	ARRAY(SELECT
+		DISTINCT xc.command_name
+		FROM
+			mydash.trace_xdr xc
+		WHERE
+			xc.blob = x.blob
+		ORDER BY
+			xc.command_name
+	) AS commands,
 
 	to_char(
-		AVG(EXTRACT(epoch FROM wall_duration)),
+		AVG(EXTRACT(epoch FROM x.wall_duration)),
 		'FM99999.99'
-	) AS avg_wall_duration,
+	) || ' sec' AS avg_wall_duration,
 	to_char(
-		STDDEV_POP(EXTRACT(epoch FROM wall_duration)),
+		STDDEV_POP(EXTRACT(epoch FROM x.wall_duration)),
 		'FM99999.99'
-	) AS stddev_pop_wall_duration,
+	) || ' sec' AS stddev_pop_wall_duration,
 	to_char(
-		MAX(EXTRACT(epoch FROM wall_duration)),
+		MAX(EXTRACT(epoch FROM x.wall_duration)),
 		'FM99999.99'
-	) AS max_wall_duration,
+	) || ' sec' AS max_wall_duration,
 
-	COUNT(termination_class)
-		FILTER (WHERE termination_class = 'OK')
-	  	AS OK_count,
-	COUNT(termination_class)
-		FILTER (WHERE termination_class = 'ERR')
-	  	AS ERR_count,
-	COUNT(termination_class)
-		FILTER (WHERE termination_class = 'SIG')
-	  	AS SIG_count,
-	COUNT(termination_class)
-		FILTER (WHERE termination_class = 'NOPS')
-	  	AS NOPS_count
+	COUNT(x.termination_class)
+		FILTER (WHERE x.termination_class = 'OK')
+	  || ' ok exec termination' AS OK_count,
+	COUNT(x.termination_class)
+		FILTER (WHERE x.termination_class = 'ERR')
+	  || ' faulted exec termination' AS ERR_count,
+	COUNT(x.termination_class)
+		FILTER (WHERE x.termination_class = 'SIG')
+  	  || ' signaled exec termination' AS SIG_count,
+	COUNT(x.termination_class)
+		FILTER (WHERE x.termination_class = 'NOPS')
+	  || ' no process state' AS NOPS_count
 
   FROM
-  	mydash.trace_xdr
+  	mydash.trace_xdr x
   GROUP BY
-  	blob
+  	x.blob
   ORDER BY
-  	blob ASC
+  	x.blob ASC
 ;
 
 SELECT
-	'Database Queries' AS "Summary",
+	'PostgreSQL Queries' AS "Summary",
 	'' AS "                        ",
-	blob,
-	COUNT(DISTINCT schema_name) AS schema_count,
-	COUNT(DISTINCT query_name) AS query_count,
+	q.blob,
+	COUNT(DISTINCT q.log_sequence) || ' flows' AS log_sequence_count,
+	COUNT(DISTINCT q.schema_name) || ' schemas' AS schema_count,
+	COUNT(DISTINCT q.query_name) || ' queries' AS query_count,
 
 	to_char(
-		AVG(EXTRACT(epoch FROM wall_duration)),
+		AVG(EXTRACT(epoch FROM q.wall_duration)),
 		'FM99999.99'
-	) AS avg_wall_duration,
+	) || ' sec' AS avg_wall_duration,
 
 	to_char(
-		STDDEV_POP(EXTRACT(epoch FROM wall_duration)),
+		STDDEV_POP(EXTRACT(epoch FROM q.wall_duration)),
 		'FM99999.99'
-	) AS stddev_pop_wall_duration,
+	) || ' sec' AS stddev_pop_wall_duration,
 
 	to_char(
-		MAX(EXTRACT(epoch FROM wall_duration)),
+		MAX(EXTRACT(epoch FROM q.wall_duration)),
 		'FM99999.99'
-	) AS max_wall_duration,
+	) || ' sec' AS max_wall_duration,
 
-	COUNT(DISTINCT sqlstate) AS sqlstate_count,
-	COUNT(termination_class)
-		FILTER (WHERE termination_class = 'OK')
+	COUNT(DISTINCT q.sqlstate) || ' states' AS sqlstate_count,
+	COUNT(q.termination_class)
+		FILTER (WHERE q.termination_class = 'OK')
+	  || ' ok queries'
 	  	AS OK_count,
 	COUNT(termination_class)
-		FILTER (WHERE termination_class = 'ERR')
+		FILTER (WHERE q.termination_class = 'ERR')
+	  || ' failed queries'
 	  	AS ERR_count,
-	SUM(rows_affected) AS rows_affected_total
+	SUM(q.rows_affected) AS rows_affected_total
 
   FROM
-  	mydash.trace_qdr
+  	mydash.trace_qdr q
   GROUP BY
-  	blob
+  	q.blob
   ORDER BY
-  	blob ASC
+  	q.blob ASC
 ;
