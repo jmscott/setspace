@@ -66,23 +66,23 @@ SELECT
 	COUNT(DISTINCT x.log_sequence) || ' flows' AS log_sequence_count,
 	ARRAY(SELECT
 		DISTINCT xs.schema_name
-			FROM
-				mydash.trace_xdr xs
-			WHERE
-				xs.blob = x.blob
-			ORDER BY
-				xs.schema_name
+		FROM
+			mydash.trace_xdr xs
+		WHERE
+			xs.blob = x.blob
+		ORDER BY
+			xs.schema_name
 	) AS schemas,
 
 	COUNT(DISTINCT x.command_name) || ' commands' AS command_count,
 	ARRAY(SELECT
-		DISTINCT xc.command_name
+		DISTINCT xc.schema_name || '.' || xc.command_name
 		FROM
 			mydash.trace_xdr xc
 		WHERE
 			xc.blob = x.blob
 		ORDER BY
-			xc.command_name
+			1 ASC
 	) AS commands,
 
 	to_char(
@@ -125,7 +125,25 @@ SELECT
 	q.blob,
 	COUNT(DISTINCT q.log_sequence) || ' flows' AS log_sequence_count,
 	COUNT(DISTINCT q.schema_name) || ' schemas' AS schema_count,
+	ARRAY(SELECT
+		DISTINCT qs.schema_name
+		FROM
+			mydash.trace_qdr qs
+		WHERE
+			qs.blob = q.blob
+		ORDER BY
+			qs.schema_name
+	) AS schemas,
 	COUNT(DISTINCT q.query_name) || ' queries' AS query_count,
+	ARRAY(SELECT
+		DISTINCT qc.schema_name || '.' || qc.query_name
+		FROM
+			mydash.trace_qdr qc
+		WHERE
+			qc.blob = q.blob
+		ORDER BY
+			1
+	) AS queries,
 
 	to_char(
 		AVG(EXTRACT(epoch FROM q.wall_duration)),
