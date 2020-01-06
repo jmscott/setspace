@@ -42,6 +42,7 @@ install:
 		schema.sql						\
 		select-remember_uri.sql					\
 		setspace.schema.mydash.flowd.plist.example		\
+		trace-flow-schema.sql					\
 		trace-flow.sql						\
 		$(MYDASH_PREFIX)/lib
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
