@@ -15,9 +15,6 @@ SELECT
 	'           ' AS " ",
 
 	f.blob,
-	COUNT(f.log_sequence) || ' flows' AS log_sequence_count,
-	MIN(f.start_time) AS min_start_time,
-	MAX(f.start_time) - MIN(f.start_time) AS bounding_wall_duration,
 
 	COUNT(DISTINCT f.schema_name) AS schema_count,
 	ARRAY(SELECT
@@ -29,6 +26,20 @@ SELECT
 		ORDER BY
 			fs.schema_name
 	) AS schemas,
+
+	COUNT(f.log_sequence) || ' flows' AS log_sequence_count,
+	ARRAY(SELECT
+		DISTINCT fl.log_sequence
+		FROM
+			mydash.trace_fdr fl
+		WHERE
+			fl.blob = f.blob
+		ORDER BY
+			fl.log_sequence ASC
+	) AS log_sequences,
+
+	MIN(f.start_time) AS min_start_time,
+	MAX(f.start_time) - MIN(f.start_time) AS bounding_wall_duration,
 			
 	SUM(f.ok_count) AS ok_count,
 	SUM(f.fault_count) AS fault_count,
@@ -63,7 +74,6 @@ SELECT
 	x.blob,
 
 	COUNT(DISTINCT x.schema_name) || ' schemas' AS schema_count,
-	COUNT(DISTINCT x.log_sequence) || ' flows' AS log_sequence_count,
 	ARRAY(SELECT
 		DISTINCT xs.schema_name
 		FROM
@@ -73,6 +83,17 @@ SELECT
 		ORDER BY
 			xs.schema_name
 	) AS schemas,
+
+	COUNT(DISTINCT x.log_sequence) || ' flows' AS log_sequence_count,
+	ARRAY(SELECT
+		DISTINCT xl.log_sequence
+		FROM
+			mydash.trace_xdr xl
+		WHERE
+			xl.blob = x.blob
+		ORDER BY
+			xl.log_sequence ASC
+	) AS log_sequences,
 
 	COUNT(DISTINCT x.command_name) || ' commands' AS command_count,
 	ARRAY(SELECT
@@ -123,7 +144,6 @@ SELECT
 	'PostgreSQL Queries' AS "Summary",
 	'' AS "                        ",
 	q.blob,
-	COUNT(DISTINCT q.log_sequence) || ' flows' AS log_sequence_count,
 	COUNT(DISTINCT q.schema_name) || ' schemas' AS schema_count,
 	ARRAY(SELECT
 		DISTINCT qs.schema_name
@@ -134,6 +154,18 @@ SELECT
 		ORDER BY
 			qs.schema_name
 	) AS schemas,
+
+	COUNT(DISTINCT q.log_sequence) || ' flows' AS log_sequence_count,
+	ARRAY(SELECT
+		DISTINCT ql.log_sequence
+		FROM
+			mydash.trace_qdr ql
+		WHERE
+			ql.blob = q.blob
+		ORDER BY
+			ql.log_sequence ASC
+	) AS log_sequences,
+
 	COUNT(DISTINCT q.query_name) || ' queries' AS query_count,
 	ARRAY(SELECT
 		DISTINCT qc.schema_name || '.' || qc.query_name
