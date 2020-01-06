@@ -193,6 +193,15 @@ SELECT
 	) || ' sec' AS max_wall_duration,
 
 	COUNT(DISTINCT q.sqlstate) || ' states' AS sqlstate_count,
+	ARRAY(SELECT
+		DISTINCT qs.sqlstate
+		FROM
+			mydash.trace_qdr qs
+		WHERE
+			qs.blob = q.blob
+		ORDER BY
+			1
+	) AS sqlstates,
 	COUNT(q.termination_class)
 		FILTER (WHERE q.termination_class = 'OK')
 	  || ' ok queries'
