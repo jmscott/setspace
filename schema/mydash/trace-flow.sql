@@ -40,9 +40,10 @@ SELECT
 
 	MIN(f.start_time) AS min_start_time,
 	MAX(f.start_time) - MIN(f.start_time) AS bounding_wall_duration,
+	MAX(f.start_time) AS max_start_time,
 			
 	SUM(f.ok_count) || ' ok exec/query terminations' AS ok_count,
-	SUM(f.fault_count) || ' fauled exec/query terminations' AS fault_count,
+	SUM(f.fault_count) || ' failed exec/query terminations' AS fault_count,
 
 	to_char(
 		AVG(EXTRACT(epoch FROM f.wall_duration)),
