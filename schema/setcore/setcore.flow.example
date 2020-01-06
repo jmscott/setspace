@@ -11,6 +11,7 @@
 #	prefixio/spool/setcore.brr from time to time.
 #
 
+
 boot
 {
 	brr_capacity = 256;
@@ -29,6 +30,20 @@ tail brr
 {
 	path = "spool/bio4d.brr";
 }
+
+##########  DEBUG
+command is_put
+{
+	path = "true";
+}
+
+call is_put()
+  when
+	brr.verb == "put"
+	and
+	brr.chat_history == "ok,ok"
+;
+#############
 
 sql database setspace
 {
@@ -207,6 +222,17 @@ command service_exists
 call service_exists(brr.udig)
   when
   	merge_service.rows_affected == 1
+	or
+	#  Another thread merged the tuple into table service
+	#
+	#  Note:
+	#	the sqlstate code is different for exec versus a
+	#	query that returns tuples.  An exec always returns
+	#	00000, regardless is rows_affected == 0, which is not
+	#	true for a query returning tuples, which returns sqlstate
+	#	"02000".
+	#
+	merge_service.sqlstate == "00000"
 	or
 	in_service_table.answer == true
 ;
