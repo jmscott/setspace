@@ -16,7 +16,7 @@ SELECT
 
 	f.blob,
 
-	COUNT(DISTINCT f.schema_name) AS schema_count,
+	COUNT(DISTINCT f.schema_name) || ' schemas' AS schema_count,
 	ARRAY(SELECT
 		DISTINCT fs.schema_name
 		FROM
@@ -41,8 +41,8 @@ SELECT
 	MIN(f.start_time) AS min_start_time,
 	MAX(f.start_time) - MIN(f.start_time) AS bounding_wall_duration,
 			
-	SUM(f.ok_count) AS ok_count,
-	SUM(f.fault_count) AS fault_count,
+	SUM(f.ok_count) || ' ok exec/query terminations' AS ok_count,
+	SUM(f.fault_count) || ' fauled exec/query terminations' AS fault_count,
 
 	to_char(
 		AVG(EXTRACT(epoch FROM f.wall_duration)),
