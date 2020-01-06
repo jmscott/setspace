@@ -4,6 +4,11 @@
 #  Usage:
 #  	flowd server jsonio.conf
 #  Note:
+#	A race condition exists in "query in_jsonb_255_table".  the second
+#	condition may be false if another flow actually first merges tuple
+#	into checker_255.  the first may be to wrap whole session in a lock
+#	or to consulde the sqlstate code.
+#
 #	Think about an SQL table driven route table instead of explicit recipes.
 #
 
