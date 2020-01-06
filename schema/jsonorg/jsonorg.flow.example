@@ -103,7 +103,9 @@ command get_JSON_checker
 	exit_status is OK when in {
 		0,	#  is valid json
 		1,	#  is not valid json
-		2	#  blob does not exist
+		2,	#  blob does not exist
+		3,	#  wrong number of command line arguments
+		4	#  blobio | JSON_checker failed
 	};
 }
 
@@ -171,6 +173,16 @@ query in_jsonb_255_table (brr.udig)
   	is_in_checker_255_table.is_json == true
 	or
 	merge_checker_255.is_json == true
+	or
+
+	#
+	#  insert on conflict do nothing.
+	#
+	(
+		merge_checker_255.sqlstate == "02000"
+		and
+		get_JSON_checker.exit_status == 0
+	)
 ;
 
 command merge_jsonb_255
