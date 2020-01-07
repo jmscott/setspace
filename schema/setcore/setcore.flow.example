@@ -622,6 +622,8 @@ call core_exists()
 			in_is_utf8wf_table.answer == true
 			or
 			merge_is_utf8wf.rows_affected == 1
+			or
+			merge_is_utf8wf.sqlstate == "0200"
 		)
 		or
 		merge_is_utf8wf_not.rows_affected == 1
