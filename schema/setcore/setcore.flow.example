@@ -623,7 +623,7 @@ call core_exists()
 			or
 			merge_is_utf8wf.rows_affected == 1
 			or
-			merge_is_utf8wf.sqlstate == "0200"
+			merge_is_utf8wf.sqlstate == "02000"
 		)
 		or
 		merge_is_utf8wf_not.rows_affected == 1
