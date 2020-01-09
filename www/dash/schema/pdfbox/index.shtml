@@ -21,7 +21,7 @@
    <!--#include virtual="/header.shtml" -->
    <!--#include virtual="nav.shtml" -->
    <div id="content">
-    <h2>PDF Box from Apache</h2>
+    <h2>PDFBox from Apache</h2>
 
     <form
       name="q"
