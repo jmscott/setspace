@@ -11,6 +11,8 @@
 #		sha:03ca67996ca3b180fc395831194195646d7c2adc
 #
 #	appears on the second page and again on the sixth page.
+#	Also try "Chinmayananda", duplicates are #30 and #31 in search
+#	result.
 #
 #       -  For web search substitute | with OR amd ! WITH -
 #
