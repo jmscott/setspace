@@ -115,8 +115,8 @@ WITH pdf_page_match AS (
   GROUP BY
   	1
   ORDER BY
-  	page_rank_sum desc,
-	match_page_count desc
+  	page_rank_sum DESC,
+	match_page_count DESC
   LIMIT
   	$4
   OFFSET
@@ -154,8 +154,8 @@ WITH pdf_page_match AS (
 	    GROUP BY
 	    	tsv.page_number
 	    ORDER BY
-	    	--  order by rank, then page number
-	    	1 desc, 2 asc
+	    	1 DESC,		--  rank
+		2 ASC		--  page number
 	    LIMIT
 	    	1
 	  ) SELECT
@@ -198,8 +198,8 @@ WITH pdf_page_match AS (
 	pi.title,
 	s.discover_time
   ORDER BY
-  	rank desc,
-	match_page_count desc
+  	rank DESC,
+	match_page_count DESC
 	);
 }
 
@@ -258,7 +258,7 @@ WITH mytitle_match AS (
 	AND
 	tsv.ts_conf = $2::regconfig
     ORDER BY
-  	rank desc
+  	rank DESC
     LIMIT
   	$4
     OFFSET
@@ -284,8 +284,8 @@ page_match AS (
   GROUP BY
   	tsv.pdf_blob
   ORDER BY
-  	rank desc,
-	match_count desc
+  	rank DESC,
+	match_count DESC
   LIMIT
   	$4
   OFFSET
@@ -338,8 +338,8 @@ page_match AS (
 	    GROUP BY
 	    	tsv.page_number
 	    ORDER BY
-	    	--  order by rank, then page number
-	    	1 desc, 2 asc
+	    	1 DESC,		--  rank
+		2 ASC		--  page number
 	    LIMIT
 	    	1
 	  ) SELECT
@@ -382,7 +382,14 @@ page_match AS (
 	  JOIN setcore.service s ON (s.blob = mr.blob)
 	  LEFT OUTER JOIN mycore.title myt ON (myt.blob = mr.blob)
     ORDER BY
-    	greatest_rank DESC
+    	greatest_rank DESC,
+	pd.number_of_pages ASC,
+	/*
+	 *  Note:
+	 *	Removing the order by discover_time makes the search
+	 *	about twices as quick on "Chinmayananda".  why?
+	 */
+	s.discover_time DESC
     LIMIT
     	$4
 ;
