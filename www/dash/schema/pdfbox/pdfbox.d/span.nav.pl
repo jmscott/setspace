@@ -4,7 +4,8 @@
 #  Note:
 #	The page count should link to the final search page.
 #
-#	Add query argument "lim"
+#	Remove qtype="" from url.
+#
 #	Consider pretty printing using use POSIX qw(locale_h)
 #	instead of english style 999,999.
 #
@@ -25,7 +26,7 @@ my $q = $QUERY_ARG{q};
 my $offset = $QUERY_ARG{offset};
 my $qtype = $QUERY_ARG{qtype};
 my ($sql, $argv);
-my $limit = 10;
+my $limit = $QUERY_ARG{limit};
 
 if ($q =~ m/^\s*[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}\s*$/) {
 	my $blob = $q;
@@ -130,7 +131,7 @@ $q = encode_url_query_arg($q);
 if ($offset >= $limit) {
 	$arrow_off = $offset - $limit;
 	print <<END;
-<a href="/schema/pdfbox/index.shtml?q=$q&offset=$arrow_off&qtype=$qtype">◀</a>
+<a href="/schema/pdfbox/index.shtml?q=$q&offset=$arrow_off&qtype=$qtype&limit=$limit">◀</a>
 END
 }
 
@@ -151,7 +152,7 @@ END
 
 $arrow_off = $offset + $limit;
 print <<END if $arrow_off < $pdf_count;
-<a href="/schema/pdfbox/index.shtml?q=$q&offset=$arrow_off&qtype=$qtype">▶</a>
+<a href="/schema/pdfbox/index.shtml?q=$q&offset=$arrow_off&qtype=$qtype&limit=$limit">▶</a>
 END
 
 #  add commas to numbers to render human readable

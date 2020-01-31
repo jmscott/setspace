@@ -60,7 +60,7 @@ print <<'END';
     <li><code>perl5_re:</code> [0-9]{1,3}</li>
    </ul>
   </dd>
-  <dt>lim</dt>
+  <dt>limit</dt>
   <dd>
    <ul>
     <li><code>default:</code> 10</li>
@@ -102,7 +102,7 @@ print <<'END';
     <li><code>perl5_re:</code> [0-9]{1,3}</li>
    </ul>
   </dd>
-  <dt>lim</dt>
+  <dt>limit</dt>
   <dd>
    <ul>
     <li><code>default:</code> 10</li>
@@ -135,6 +135,13 @@ print <<'END';
    <ul>
     <li><code>default:</code> 0</li>
     <li><code>perl5_re:</code> [+0-9]{1,10}</li>
+   </ul>
+  </dd>
+  <dt>limit</dt>
+  <dd>
+   <ul>
+    <li><code>default:</code> 10</li>
+    <li><code>perl5_re:</code> [1-9][0-9]{0,3}</li>
    </ul>
   </dd>
   </dl>
@@ -231,7 +238,7 @@ print <<'END';
     <li><code>required:</code> yes</li>
    </ul>
   </dd>
-  <dt>lim</dt>
+  <dt>len</dt>
   <dd>
    <ul>
     <li><code>default:</code> 65535</li>

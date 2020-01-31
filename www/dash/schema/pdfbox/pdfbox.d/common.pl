@@ -70,7 +70,7 @@ sub recent_select
 		db =>   dbi_pg_connect(),
 		tag =>  'pdfbox-recent_select',
 		argv =>	[
-				$QUERY_ARG{lim},
+				$QUERY_ARG{limit},
 				$QUERY_ARG{offset},
 			],
 		sql =>	recent_sql()
@@ -212,7 +212,7 @@ sub fts_select
 			decode_url_query_arg($QUERY_ARG{q}),
 			$QUERY_ARG{tsconf},
 			$QUERY_ARG{rnorm},
-			$QUERY_ARG{lim},
+			$QUERY_ARG{limit},
 			$QUERY_ARG{offset},
 		],
 		sql =>	fts_sql()
@@ -405,7 +405,7 @@ sub websearch_select
 			decode_url_query_arg($QUERY_ARG{q}),
 			$QUERY_ARG{tsconf},
 			$QUERY_ARG{rnorm},
-			$QUERY_ARG{lim},
+			$QUERY_ARG{limit},
 			$QUERY_ARG{offset},
 		],
 		sql =>	websearch_sql()

@@ -11,14 +11,14 @@ require 'httpd2.d/common.pl';
 our %QUERY_ARG;
 
 my $blob = $QUERY_ARG{blob};
-my $lim = $QUERY_ARG{lim};
+my $len = $QUERY_ARG{len};
 
 my $qh = dbi_pg_select(
 	db =>   dbi_pg_connect(),
 	tag =>  'select-pdfbox-pdf-page1',
 	argv => [
                         $blob,
-			$lim
+			$len
                 ],
         sql =>  q(
 SELECT

@@ -34,7 +34,7 @@
 	default="14"
      />
      <arg
-     	name="lim"
+     	name="limit"
 	perl5_re="[1-9][0-9]{0,3}"
 	default="10"
      />
@@ -63,7 +63,7 @@
 	default="14"
      />
      <arg
-     	name="lim"
+     	name="limit"
 	perl5_re="[1-9][0-9]{0,3}"
 	default="10"
      />
@@ -85,6 +85,11 @@
      	name="offset"
 	perl5_re="[+0-9]{1,10}"
 	default="0"
+     />
+     <arg
+     	name="limit"
+	perl5_re="[1-9][0-9]{0,3}"
+	default="10"
      />
     </query-args>
    </putter>
@@ -155,7 +160,7 @@
 	required="yes"
      />
      <arg
-     	name="lim"
+     	name="len"
 	perl5_re="\d{1,10}"
 	default="65535"
      />
