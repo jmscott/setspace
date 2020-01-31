@@ -2,6 +2,10 @@
 #  Synopsis:
 #	Write html <span> of for navigating search results
 #  Note:
+#	no reverse arrow exists for this url.
+#
+#		/schema/pdfbox/index.shtml?q=Mazurkiewicz%20traces&offset=60&imit=100
+
 #	The page count should link to the final search page.
 #
 #	Remove qtype="" from url.
