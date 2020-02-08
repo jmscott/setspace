@@ -96,7 +96,7 @@ END
 	$plural_nop = '' if $number_of_pages == 1;
 
 	my $mytitle_is_null = $r->{mytitle_is_null};
-	my $snippet = $r->{snippet};
+	my $snippet = encode_html_entities($r->{snippet});
 	my $span_snippet = <<END if $snippet =~ /[[:graph:]]/;
    <span class="snippet">$snippet</span>
 END
