@@ -135,7 +135,8 @@ $q = encode_url_query_arg($q);
 if ($offset >= $limit) {
 	$arrow_off = $offset - $limit;
 	print <<END;
-<a href="/schema/pdfbox/index.shtml?q=$q&offset=$arrow_off&qtype=$qtype&limit=$limit">◀</a>
+<a href=
+"/schema/pdfbox/index.shtml?q=$q&amp;offset=$arrow_off&amp;qtype=$qtype&amp;limit=$limit">◀</a>
 END
 }
 
@@ -156,7 +157,7 @@ END
 
 $arrow_off = $offset + $limit;
 print <<END if $arrow_off < $pdf_count;
-<a href="/schema/pdfbox/index.shtml?q=$q&offset=$arrow_off&qtype=$qtype&limit=$limit">▶</a>
+<a href="/schema/pdfbox/index.shtml?q=$q&amp;offset=$arrow_off&amp;qtype=$qtype&amp;limit=$limit">▶</a>
 END
 
 #  add commas to numbers to render human readable
