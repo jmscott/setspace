@@ -32,6 +32,7 @@ See:
 	https://github.com/openpreserve
 
 Possible Schemas:
+	spamhaus - track free data from spamhaus
 	sheetfu - Python library to interact with Google Sheets V4 API
 	pygsheets - Google Sheets Python API v4
 	Gmail - https://developers.google.com/gmail/api/downloads
