@@ -3,9 +3,7 @@
   <li><a href="/">Home</a></li>
   <li><a href="/schema/pdfbox/index.shtml">Search PDFs</a></li>
   <li>
-   <a href="/schema/pdfbox/schema.shtml">
-     SQL Schema</code>
-   </a>
+   <a href="/schema/pdfbox/schema.shtml">SQL Schema</a>
   </li>
  </ul>
 </div>
