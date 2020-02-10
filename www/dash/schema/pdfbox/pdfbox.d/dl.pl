@@ -96,7 +96,14 @@ END
 	$plural_nop = '' if $number_of_pages == 1;
 
 	my $mytitle_is_null = $r->{mytitle_is_null};
-	my $snippet = encode_html_entities($r->{snippet});
+
+	my $snippet = $r->{snippet};
+	$snippet =~ s/<b>/MAGIC_RANDOM_STRING196010915/g;
+	$snippet =~ s@</b>@MAGIC_RANDOM_STRING20380101@g;
+	$snippet = encode_html_entities($snippet);
+	$snippet =~ s@MAGIC_RANDOM_STRING20380101@</b>@g;
+	$snippet =~ s/MAGIC_RANDOM_STRING196010915/<b>/g;
+
 	my $span_snippet = <<END if $snippet =~ /[[:graph:]]/;
    <span class="snippet">$snippet</span>
 END
