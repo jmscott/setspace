@@ -58,8 +58,9 @@ static char progname[] = "merge-all-extract_pages_utf8";
 
 static struct _ecpg_sql_state_fault no_warns[] =
 {
-	{"02000", -1},	//  no data found due to upsert conflict 
-	{(char *)0, -1}
+	{"02000",	-1},	//  no data found due to upsert conflict 
+	{"54000",	-1},	//  word is too long to be indexed
+	{(char *)0,	-1}
 };
 
 int
