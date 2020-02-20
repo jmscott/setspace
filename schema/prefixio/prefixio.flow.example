@@ -154,7 +154,8 @@ sql query prefix_is_percentPDF row
 	statement = `
 
 	SELECT
-		substring(prefix, 1, 5) = '\x255044462d'  -- %PDF
+		--  match up to 27 leading white space chars and %PDF-
+		prefix::text ~ '^\\x((0a)|(0d)|(09)|(20)|(0b))*255044462d'
 	  FROM
 	  	setcore.byte_prefix_32
 	  WHERE
