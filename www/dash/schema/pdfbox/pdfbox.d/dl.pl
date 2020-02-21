@@ -114,7 +114,7 @@ END
 	#  build the row
 	print <<END;
  <dt$dt_class>
-  <a href="/cgi-bin/pdfbox?out=mime.pdf&amp;udig=$blob">$title</a>
+  <a href="/cgi-bin/pdfbox?out=mime.pdf&amp;blob=$blob">$title</a>
  </dt>
  <dd>
    $span_snippet

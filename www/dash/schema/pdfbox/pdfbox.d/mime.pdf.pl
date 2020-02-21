@@ -11,10 +11,65 @@
 #
 require 'utf82blob.pl';
 require 'common-json.pl';
+require 'dbi-pg.pl';
 
 our %QUERY_ARG;
 
-my $udig = $QUERY_ARG{udig};
+my $blob = $QUERY_ARG{blob};
+my $qh = dbi_pg_select(
+		db =>	dbi_pg_connect(),
+		tag =>	'select-mime-pdf',
+		argv =>	[
+			$blob
+		],
+		sql =>	q(
+SELECT
+	bc.byte_count,
+	CASE
+	  WHEN
+	  	myt.title ~ '[[:graph:]]'
+	  THEN
+	  	myt.title
+	  WHEN
+	  	pi.title ~ '[[:graph:]]'
+	  THEN
+	  	pi.title
+	  ELSE
+		$1
+	END AS title
+  FROM
+  	pdfbox.pddocument_information pi
+	  JOIN setcore.service s ON (s.blob = pi.blob)
+	  JOIN setcore.byte_count bc ON (bc.blob = pi.blob)
+	  LEFT OUTER JOIN mycore.title myt ON (myt.blob = pi.blob)
+  WHERE
+  	pi.blob = $1::udig
+;
+));
+
+my $row = $qh->fetchrow_hashref();
+unless ($row) {
+	print <<END;
+Status: 404
+Content-Type: text/html
+
+PDF not found: $blob
+END
+	return;
+}
+
+my $filename = $row->{'title'};
+my $content_length = $row->{'byte_count'};
+$filename =~ s/"/_/g;
+
+print <<END;
+Content-Type: application/pdf
+Content-Disposition: inline;  filename="$filename"
+Content-Length: $content_length
+
+END
+
+#  Note:  need rewrite pdf with title spliced into header.  details.
 
 my $SERVICE = $ENV{BLOBIO_SERVICE};
 my $GET_SERVICE = $ENV{BLOBIO_GET_SERVICE} ? 
@@ -22,9 +77,9 @@ my $GET_SERVICE = $ENV{BLOBIO_GET_SERVICE} ?
 			$SERVICE
 ;
 
-my $status = system("blobio get --service $GET_SERVICE --udig $udig");
+my $status = system("blobio get --service $GET_SERVICE --udig $blob");
 
-print STDERR "pdfbox.d/blob: blobio get $udig: exit status=$status\n"
+print STDERR "pdfbox.d/blob: blobio get $blob: exit status=$status\n"
 	unless $status == 0
 ;
 
@@ -32,17 +87,16 @@ print STDERR "pdfbox.d/blob: blobio get $udig: exit status=$status\n"
 
 my $q = utf82json_string($QUERY_ARG{q});
 my $unix_epoch = time();
-$udig = utf82json_string($udig);
+$blob = utf82json_string($blob);
 
 my $env = env2json(2);
 
-#  Note: add the array of matching blob?
 print STDERR 'pdfbox-full-text-search-click: json: ', utf82blob(<<END), "\n";
 {
 	"mydash.schema.setspace.com": {
 		"pdfbox-full-text-search-click": {
 			"discover-unix-epoch": $unix_epoch,
-			"pdf_blob": $udig
+			"pdf_blob": $blob
 		}
 	},
 	"cgi-bin-environment": $env

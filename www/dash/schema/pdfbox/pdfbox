@@ -24,10 +24,6 @@ our (%CGI);
 
 require 'httpd2.d/common.pl';
 $CGI{name} = 'pdfbox';
-#
-#  Default content type for all elements.
-#
-$CGI{GET}->{out}->{'content-type'} = 'text/html';
 
 #
 #  BEGIN: /cgi/GET/out/query-args
@@ -83,6 +79,7 @@ $CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{offset} = {
 #  BEGIN: /cgi/GET/out/putter[@name='dl']
 #
 $CGI{GET}->{out}->{putter}->{'dl'}->{name} = 'dl';
+$CGI{GET}->{out}->{putter}->{'dl'}->{'content-type'} = 'text/html';
 
 #
 #  BEGIN: /cgi/GET/out/putter[@name=dl]/query-args
@@ -117,6 +114,7 @@ $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{offset} = {
 #  BEGIN: /cgi/GET/out/putter[@name='span.nav']
 #
 $CGI{GET}->{out}->{putter}->{'span.nav'}->{name} = 'span.nav';
+$CGI{GET}->{out}->{putter}->{'span.nav'}->{'content-type'} = 'text/html';
 
 #
 #  BEGIN: /cgi/GET/out/putter[@name=span.nav]/query-args
@@ -143,6 +141,7 @@ $CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{limit} = {
 #  BEGIN: /cgi/GET/out/putter[@name='input']
 #
 $CGI{GET}->{out}->{putter}->{'input'}->{name} = 'input';
+$CGI{GET}->{out}->{putter}->{'input'}->{'content-type'} = 'text/html';
 
 #
 #  BEGIN: /cgi/GET/out/putter[@name=input]/query-args
@@ -162,6 +161,7 @@ $CGI{GET}->{out}->{putter}->{'input'}->{'query-args'}->{arg}->{q} = {
 #  BEGIN: /cgi/GET/out/putter[@name='input.mytitle']
 #
 $CGI{GET}->{out}->{putter}->{'input.mytitle'}->{name} = 'input.mytitle';
+$CGI{GET}->{out}->{putter}->{'input.mytitle'}->{'content-type'} = 'text/html';
 
 #
 #  BEGIN: /cgi/GET/out/putter[@name=input.mytitle]/query-args
@@ -184,12 +184,11 @@ $CGI{GET}->{out}->{putter}->{'input.mytitle'}->{'query-args'}->{arg}->{title} = 
 #  BEGIN: /cgi/GET/out/putter[@name='mime.pdf']
 #
 $CGI{GET}->{out}->{putter}->{'mime.pdf'}->{name} = 'mime.pdf';
-$CGI{GET}->{out}->{putter}->{'mime.pdf'}->{'content-type'} = 'application/pdf';
 
 #
 #  BEGIN: /cgi/GET/out/putter[@name=mime.pdf]/query-args
 #
-$CGI{GET}->{out}->{putter}->{'mime.pdf'}->{'query-args'}->{arg}->{udig} = {
+$CGI{GET}->{out}->{putter}->{'mime.pdf'}->{'query-args'}->{arg}->{blob} = {
 	perl5_re	=>	'[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}',
 	required	=>	'yes',
 };
@@ -205,7 +204,7 @@ $CGI{GET}->{out}->{putter}->{'mime.pdf'}->{'query-args'}->{arg}->{udig} = {
 #  BEGIN: /cgi/GET/out/putter[@name='a.mime']
 #
 $CGI{GET}->{out}->{putter}->{'a.mime'}->{name} = 'a.mime';
-$CGI{GET}->{out}->{putter}->{'a.mime'}->{'content-type'} = 'application/pdf';
+$CGI{GET}->{out}->{putter}->{'a.mime'}->{'content-type'} = 'text/html';
 
 #
 #  BEGIN: /cgi/GET/out/putter[@name=a.mime]/query-args
@@ -226,6 +225,7 @@ $CGI{GET}->{out}->{putter}->{'a.mime'}->{'query-args'}->{arg}->{blob} = {
 #  BEGIN: /cgi/GET/out/putter[@name='iframe.pdf']
 #
 $CGI{GET}->{out}->{putter}->{'iframe.pdf'}->{name} = 'iframe.pdf';
+$CGI{GET}->{out}->{putter}->{'iframe.pdf'}->{'content-type'} = 'text/html';
 
 #
 #  BEGIN: /cgi/GET/out/putter[@name=iframe.pdf]/query-args
@@ -246,6 +246,7 @@ $CGI{GET}->{out}->{putter}->{'iframe.pdf'}->{'query-args'}->{arg}->{blob} = {
 #  BEGIN: /cgi/GET/out/putter[@name='utf8.pg1']
 #
 $CGI{GET}->{out}->{putter}->{'utf8.pg1'}->{name} = 'utf8.pg1';
+$CGI{GET}->{out}->{putter}->{'utf8.pg1'}->{'content-type'} = 'text/html';
 
 #
 #  BEGIN: /cgi/GET/out/putter[@name=utf8.pg1]/query-args
@@ -270,6 +271,7 @@ $CGI{GET}->{out}->{putter}->{'utf8.pg1'}->{'query-args'}->{arg}->{len} = {
 #  BEGIN: /cgi/GET/out/putter[@name='dl.pddoc']
 #
 $CGI{GET}->{out}->{putter}->{'dl.pddoc'}->{name} = 'dl.pddoc';
+$CGI{GET}->{out}->{putter}->{'dl.pddoc'}->{'content-type'} = 'text/html';
 
 #
 #  BEGIN: /cgi/GET/out/putter[@name=dl.pddoc]/query-args
@@ -290,6 +292,7 @@ $CGI{GET}->{out}->{putter}->{'dl.pddoc'}->{'query-args'}->{arg}->{blob} = {
 #  BEGIN: /cgi/GET/out/putter[@name='dl.pdinfo']
 #
 $CGI{GET}->{out}->{putter}->{'dl.pdinfo'}->{name} = 'dl.pdinfo';
+$CGI{GET}->{out}->{putter}->{'dl.pdinfo'}->{'content-type'} = 'text/html';
 
 #
 #  BEGIN: /cgi/GET/out/putter[@name=dl.pdinfo]/query-args
@@ -310,6 +313,7 @@ $CGI{GET}->{out}->{putter}->{'dl.pdinfo'}->{'query-args'}->{arg}->{blob} = {
 #  BEGIN: /cgi/GET/out/putter[@name='dl.extpg']
 #
 $CGI{GET}->{out}->{putter}->{'dl.extpg'}->{name} = 'dl.extpg';
+$CGI{GET}->{out}->{putter}->{'dl.extpg'}->{'content-type'} = 'text/html';
 
 #
 #  BEGIN: /cgi/GET/out/putter[@name=dl.extpg]/query-args
@@ -330,6 +334,7 @@ $CGI{GET}->{out}->{putter}->{'dl.extpg'}->{'query-args'}->{arg}->{blob} = {
 #  BEGIN: /cgi/GET/out/putter[@name='table.exttsv']
 #
 $CGI{GET}->{out}->{putter}->{'table.exttsv'}->{name} = 'table.exttsv';
+$CGI{GET}->{out}->{putter}->{'table.exttsv'}->{'content-type'} = 'text/html';
 
 #
 #  BEGIN: /cgi/GET/out/putter[@name=table.exttsv]/query-args
@@ -350,6 +355,7 @@ $CGI{GET}->{out}->{putter}->{'table.exttsv'}->{'query-args'}->{arg}->{blob} = {
 #  BEGIN: /cgi/GET/out/putter[@name='text.objdesc']
 #
 $CGI{GET}->{out}->{putter}->{'text.objdesc'}->{name} = 'text.objdesc';
+$CGI{GET}->{out}->{putter}->{'text.objdesc'}->{'content-type'} = 'text/html';
 
 #
 #  BEGIN: /cgi/GET/out/putter[@name=text.objdesc]/query-args

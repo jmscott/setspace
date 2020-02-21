@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Note:
-	need to standardize on either "udig" or "blob" but not both
-	in query arguments!
--->
 
 <cgi name="pdfbox">
  <title>/cgi-bin/pdfbox</title>
@@ -16,7 +12,7 @@
     Generate This Help Page for the CGI Script /cgi-bin/pdfbox
    </example>
   </examples>
-  <out content-type="text/html">
+  <out>
    <putter name="table">
     <query-args>
      <arg
@@ -46,7 +42,10 @@
     </query-args>
    </putter>
 
-   <putter name="dl">
+   <putter
+     name="dl"
+     content-type="text/html"
+   >
     <query-args>
      <arg
      	name="q"
@@ -75,7 +74,10 @@
     </query-args>
    </putter>
 
-   <putter name="span.nav">
+   <putter
+     name="span.nav"
+     content-type="text/html"
+   >
     <query-args>
      <arg
      	name="q"
@@ -94,7 +96,10 @@
     </query-args>
    </putter>
 
-   <putter name="input">
+   <putter
+     name="input"
+     content-type="text/html"
+   > 
     <query-args>
      <arg
      	name="q"
@@ -103,7 +108,10 @@
     </query-args>
    </putter>
 
-   <putter name="input.mytitle">
+   <putter
+     name="input.mytitle"
+     content-type="text/html"
+   > 
     <query-args>
      <arg
      	name="blob"
@@ -116,13 +124,10 @@
     </query-args>
    </putter>
 
-   <putter
-     name="mime.pdf"
-     content-type="application/pdf"
-   >
+   <putter name="mime.pdf">
     <query-args>
      <arg
-     	name="udig"
+     	name="blob"
 	perl5_re="[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}"
 	required="yes"
      />
@@ -131,7 +136,7 @@
 
    <putter
      name="a.mime"
-     content-type="application/pdf"
+     content-type="text/html"
    >
     <query-args>
      <arg
@@ -142,7 +147,10 @@
     </query-args>
    </putter>
 
-   <putter name="iframe.pdf">
+   <putter
+     name="iframe.pdf"
+     content-type="text/html"
+   >
     <query-args>
      <arg
      	name="blob"
@@ -152,7 +160,10 @@
     </query-args>
    </putter>
 
-   <putter name="utf8.pg1">
+   <putter
+     name="utf8.pg1"
+     content-type="text/html"
+   >
     <query-args>
      <arg
      	name="blob"
@@ -167,7 +178,10 @@
     </query-args>
    </putter>
 
-   <putter name="dl.pddoc">
+   <putter
+     name="dl.pddoc"
+     content-type="text/html"
+   >
     <query-args>
      <arg
      	name="blob"
@@ -177,7 +191,10 @@
     </query-args>
    </putter>
 
-   <putter name="dl.pdinfo">
+   <putter
+     name="dl.pdinfo"
+     content-type="text/html"
+   >
     <query-args>
      <arg
      	name="blob"
@@ -187,7 +204,10 @@
     </query-args>
    </putter>
 
-   <putter name="dl.extpg">
+   <putter
+     name="dl.extpg"
+     content-type="text/html"
+   >
     <query-args>
      <arg
      	name="blob"
@@ -197,7 +217,10 @@
     </query-args>
    </putter>
 
-   <putter name="table.exttsv">
+   <putter
+     name="table.exttsv"
+     content-type="text/html"
+   > 
     <query-args>
      <arg
      	name="blob"
@@ -207,7 +230,10 @@
     </query-args>
    </putter>
 
-   <putter name="text.objdesc">
+   <putter
+     name="text.objdesc"
+     content-type="text/html"
+   >
     <query-args>
      <arg
      	name="name"
