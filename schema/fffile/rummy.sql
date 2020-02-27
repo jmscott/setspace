@@ -3,7 +3,7 @@
  *	Find recent blobs in service but not in a table in fffile.*
  */
 SELECT
-	s.blob
+	DISTINCT s.blob
   FROM
   	setcore.service s
 	  LEFT OUTER JOIN fffile.file f ON (f.blob = s.blob)
@@ -19,4 +19,13 @@ SELECT
 	)
 	AND
 	s.discover_time between (now() + :since) AND (now() + '-1 minute')
+	AND
+	NOT EXISTS (
+	  SELECT
+	  	flt.blob
+	    FROM
+	    	fffile.fault flt
+	    WHERE
+	    	flt.blob = s.blob
+	)
 ;
