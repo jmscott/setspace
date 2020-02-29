@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Template - EDIT ME</title>
+  <meta charset="UTF-8" />
+  <link
+    href="/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/nav.shtml" -->
+   <div id="content">
+    <h2>Upload Files/Attachments</h2>
+    <p>
+     Files may be uploaded as an attachment in a browser
+     or scripted as an http POST.
+    </p>
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

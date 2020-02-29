@@ -1,0 +1,39 @@
+#!/usr/bin/env perl
+#
+#  Synopsis:
+#	Implements argument processing for /cgi-bin/upload.
+#  Source Path:
+#	upload.cgi
+#  Source SHA1 Digest:
+#	No SHA1 Calculated
+#  Note:
+#	/cgi-bin/upload was generated automatically by cgi2perl5.
+#
+#	Do not make changes directly to this script.
+#
+die "SERVER_ROOT environment variable not defined"
+				unless defined $ENV{SERVER_ROOT};
+
+#
+#  Prepend the $SERVER_ROOT/lib directory
+#  to the load path.
+#
+unshift @INC, "$ENV{SERVER_ROOT}/lib";
+
+our (%CGI);
+
+require 'httpd2.d/common.pl';
+$CGI{name} = 'upload';
+
+#
+#  BEGIN: /cgi/POST/in/putter[@name='post.blob']
+#
+$CGI{POST}->{in}->{putter}->{'post.blob'}->{name} = 'post.blob';
+#
+#  END: /cgi/POST/in/putter[@name='post.blob']
+#
+
+$CGI{GET}->{out}->{putter}->{help}->{name} = 'help';
+$CGI{GET}->{out}->{putter}->{help}->{'content-type'} = 'text/html';
+
+require "httpd2.d/$ENV{REQUEST_METHOD}.pl";
