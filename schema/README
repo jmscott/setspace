@@ -32,6 +32,8 @@ See:
 	https://github.com/openpreserve
 
 Possible Schemas:
+	ostree - File system built on immutable blob
+			https://github.com/ostreedev/ostree
 	gensim – Topic Modelling in Python
 	spamhaus - track free data from spamhaus
 	sheetfu - Python library to interact with Google Sheets V4 API
