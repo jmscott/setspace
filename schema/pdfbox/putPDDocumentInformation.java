@@ -19,8 +19,8 @@
  *
  *	Dates are parsed for correctness using SimpleDateFormat.
  *	Unparsable dates are null and the exit status is set to 1.
- *	Unfortunately unparsable dates seems to be common  - ~10% in academic
- *	sample of 140k pdfs.
+ *	Unfortunately unparsable dates seems to be common in academic papers -
+ *	~10% in sample of 140k pdfs.
  *  Usage:
  *	java putPDDocumentInformation <file.pdf
  *  Depends:
