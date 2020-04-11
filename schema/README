@@ -32,6 +32,8 @@ See:
 	https://github.com/openpreserve
 
 Possible Schemas:
+	rclone - Swiss Army Knife of File Copy
+		https://github.com/rclone/rclone
 	ostree - File system built on immutable blob
 			https://github.com/ostreedev/ostree
 	gensim – Topic Modelling in Python
