@@ -6,10 +6,12 @@
 #	<key>ProgramArguments</key>
 #	  <array>
 #	    <string>/usr/local/setspace/sbin/launchd-flowd</string>
-#	    <string>fffile.flow</string>
+#	    <string>etc/fffile.flow</string>
 #	  </array>
 #	<key>WorkingDirectory</key>
 #	<string>/usr/local/setspace/schema/fffile</string>
+#  Note:
+#	Do we need to call zap-proc run/flowd.pid?
 #
 
 log()
