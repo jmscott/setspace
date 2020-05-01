@@ -55,13 +55,7 @@
 
   <key>ProgramArguments</key>
   <array>
-	<string>/usr/local/sbin/launchd-log</string>
-	<string>flowd</string>
-	<!-- Note:
-		ps-title hack must first argument in order to change what
-		appears in the process table.
-	-->
-	<string>server</string>
+	<string>/usr/local/setspace/sbin/launchd-flowd</string>
 	<string>etc/mycore.flow</string>
   </array>
 
