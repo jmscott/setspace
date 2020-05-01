@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>com.setspace.schema.fffile.flowd</string>
+  <string>setspace.schema.fffile.flowd</string>
 
   <key>KeepAlive</key>
   <true/>
