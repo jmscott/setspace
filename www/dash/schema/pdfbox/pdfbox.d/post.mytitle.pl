@@ -1,6 +1,10 @@
 #
 #  Synopsis:
 #	Redirect a full text search to pdfbox/index page seeded with query.
+#  Note:
+#	Why are utf chars allowed into JSON objects.  See blob
+#
+#		bc160:ab52408675d0e0b3d6854871b0dc90bbdbbbdaf6		
 #
 require 'utf82blob.pl';
 require 'common-json.pl';
