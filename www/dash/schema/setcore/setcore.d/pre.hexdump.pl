@@ -3,6 +3,10 @@
 #	Generate a <pre> than is a "hexdump -C" of first 64k bytes of a blob.
 #  Usage:
 #	/cgi/bin/setcore?out=pre.hexdump&blob=bc160:f033e7065af0463...
+#  Note:
+#	<span> the parts of the hexdump -C output fpr stying.
+#	In particular, the hex portion of the output should be
+#	green.
 #
 
 our %QUERY_ARG;
