@@ -29,6 +29,7 @@ $CGI{name} = 'upload';
 #  BEGIN: /cgi/POST/in/putter[@name='post.blob']
 #
 $CGI{POST}->{in}->{putter}->{'post.blob'}->{name} = 'post.blob';
+$CGI{POST}->{in}->{putter}->{'post.blob'}->{'parse-content'} = 'no';
 #
 #  END: /cgi/POST/in/putter[@name='post.blob']
 #
