@@ -6,7 +6,10 @@
  <blame>jmscott</blame>
  <POST>
   <in>
-   <putter name="post.blob">
+   <putter
+     name="post.blob"
+     parse-content="no"
+   > 
    </putter>
   </in>
  </POST>
