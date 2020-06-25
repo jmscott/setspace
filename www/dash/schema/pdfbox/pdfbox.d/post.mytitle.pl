@@ -5,6 +5,7 @@
 #	Why are utf chars allowed into JSON objects.  See blob
 #
 #		bc160:ab52408675d0e0b3d6854871b0dc90bbdbbbdaf6		
+#		bc160:5aafe3ae324412941eb19de3f95d6fe429072c06
 #
 require 'utf82blob.pl';
 require 'common-json.pl';
