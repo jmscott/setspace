@@ -66,3 +66,4 @@ Possible Schemas:
 	forensic - http://www.capstone-engine.org/showcase.html
 	newscatcher https://newscatcherapi.com/
 	gharchive https://www.gharchive.org/
+	zyantific/zydis@https://github.com/zyantific/zyan-disassembler-engine
