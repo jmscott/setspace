@@ -11,11 +11,11 @@
 #
 #		bc160:be706ffde3a9bf8c5e1af4ed2e1405848b825cd2
 #
-#	for an example failure.  The substitute
+#	for an example failure.  Oddly, the substitute
 #
 #		$title =~ s/[[:space:]]+/ /g
 #
-#	is failing
+#	seems to only fail in mozilla, which makes no sense.
 #
 require 'utf82blob.pl';
 require 'common-json.pl';
