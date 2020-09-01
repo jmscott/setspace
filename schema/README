@@ -66,5 +66,6 @@ Possible Schemas:
 	forensic - http://www.capstone-engine.org/showcase.html
 	newscatcher https://newscatcherapi.com/
 	gharchive https://www.gharchive.org/
+	yfinance https://github.com/ranaroussi/yfinance
 	zyantific/zydis@https://github.com/zyantific/zyan-disassembler-engine
 	dshell - inet forensics - https://github.com/USArmyResearchLab/Dshell
