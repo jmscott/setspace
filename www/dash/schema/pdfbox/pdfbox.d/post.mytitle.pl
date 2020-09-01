@@ -7,6 +7,16 @@
 #		bc160:ab52408675d0e0b3d6854871b0dc90bbdbbbdaf6		
 #		bc160:5aafe3ae324412941eb19de3f95d6fe429072c06
 #
+#	[:space:] are not properly compressed.  See json blob
+#
+#		bc160:be706ffde3a9bf8c5e1af4ed2e1405848b825cd2
+#
+#	for an example failure.  The substitute
+#
+#		$title =~ s/[[:space:]]+/ /g
+#
+#	is failing
+#
 require 'utf82blob.pl';
 require 'common-json.pl';
 
