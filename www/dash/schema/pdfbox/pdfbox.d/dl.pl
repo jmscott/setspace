@@ -4,6 +4,10 @@
 #  Usage:
 #	/cgi-bin/pdfbox?out=dl&q=neural+cryptography
 #  Note:
+#	--  collapse the Detail/Title/✎ glyph into single unicode glyph
+#	    which indicates editing is needed, like adding a title.
+#	    currently tow links are given.
+#
 #	--  investigate why elspased-query-time is not high resolution.
 #
 #	--  The following phrase search with a colon fails
