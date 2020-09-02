@@ -109,7 +109,7 @@ END
 END
 
 	my $a_title =<<END if $mytitle_is_null eq '1';
-<a href="/schema/pdfbox/title.shtml?blob=$blob">, Title</a>
+<a href="/schema/pdfbox/title.shtml?blob=$blob">, &#9998;</a>
 END
 	#  build the row
 	print <<END;
