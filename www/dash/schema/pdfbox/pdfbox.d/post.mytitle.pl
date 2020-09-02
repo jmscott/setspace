@@ -2,20 +2,21 @@
 #  Synopsis:
 #	Redirect a full text search to pdfbox/index page seeded with query.
 #  Note:
-#	Why are utf chars allowed into JSON objects.  See blob
+#	-  Why are utf chars allowed into JSON objects.  See blob
 #
 #		bc160:ab52408675d0e0b3d6854871b0dc90bbdbbbdaf6		
 #		bc160:5aafe3ae324412941eb19de3f95d6fe429072c06
 #
-#	[:space:] are not properly compressed.  See json blob
+#	-  Mozilla appears to be putting in non-printable chars into
+#	   the json "title" field.  For an example, see this json blob:
 #
-#		bc160:be706ffde3a9bf8c5e1af4ed2e1405848b825cd2
+#		bc160:294496c00c3a112753c08dda71f7a8cc2f0f2499
 #
-#	for an example failure.  Oddly, the substitute
+#	   Some kind of unicode space is at the end of
 #
-#		$title =~ s/[[:space:]]+/ /g
+#		"title": "Computational Social Choice "
 #
-#	seems to only fail in mozilla, which makes no sense.
+#	   Perhaps the perl REG could recognize the unicode space!
 #
 require 'utf82blob.pl';
 require 'common-json.pl';
