@@ -11,40 +11,33 @@
 #
 #	Sort is ignoring the second key on linux.  The pain never ends.
 #
+die()
+{
+	echo "ERROR: $@" >&2
+	exit 1
+}
+
+NOW=$(date +'%s')
 (
-	echo "Schema	Status	Duration"
+	echo "Schema	Status	Up Duration"
 	echo '-------------	------	-----------'
 	run-stat							|
 		sort --key=2 --key=1 --field-separator=$'\t'		|
-		awk -F'\t' -v NOW=$(date +'%s') '{
-			ELAPSED=NOW - $3;
-			DURATION="unknown";
-			units = "";
-			if ($3 ~ "^[0-9][0-9]*$") {
-
-				#  > 3 days
-				if (ELAPSED > 259200) {
-					DURATION = ELAPSED / 86400;
-					units="day";
-
-				#  > 3 hours
-
-				} else if (ELAPSED > 10800) {
-					DURATION = ELAPSED / 3600;
-					units="hr";
-
-				#  > 3 minutes
-
-				} else if (ELAPSED > 180) {
-					DURATION = ELAPSED / 60;
-					units = "min"
-				} else {
-					DURATION = ELAPSED
-					units = "sec";
-				}
-				DURATION = sprintf("%.0f", DURATION);
-			}
-
-			print $1, FS, $2, FS, DURATION, units;
-		}'
+		while read SCHEMA STATUS START_EPOCH;  do
+			case "$START_EPOCH" in
+			UNKNOWN)
+				DURATION=unknown
+				;;
+			[0-9]*)
+				DURATION=$(
+					duration-english		\
+						$(expr $NOW - $START_EPOCH)
+				)
+				;;
+			*)
+				die "unknown start epoch: $START_EPOCH"
+				;;
+			esac
+			echo "$SCHEMA	$STATUS	$DURATION"
+		done
 ) | column -s '	' -t | sed 's/ *	//'
