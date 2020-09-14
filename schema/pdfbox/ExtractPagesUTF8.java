@@ -9,6 +9,8 @@
  *	2	permission denied to extract the text
  *	3	wrong number of arguments
  * Note:
+ *      add setsort yposition to text stripper
+ *
  *	Maximum number of pages in a pdf file is assumed to be 2,603,538.
  *	See this discussion for details on maximum number of pages in a pdf.
  *
