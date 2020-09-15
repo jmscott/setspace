@@ -41,7 +41,7 @@ Define SETSPACE_PGDATABASE setspace
 #  Perl needs DBD/Pg.pm in path.  Add /opt/local/bin for perl managed
 #  by mac ports or /usr/local/bin for homebrew.
 
-Define SETSPACE_PATH ${SETSPACE_ROOT}/bin:${SETSPACE_ROOT}/www/bin:${SETSPACE_PGHOME}/bin:${SETSPACE_BLOBIO_ROOT}/bin:/usr/bin:/bin
+Define SETSPACE_PATH ${SETSPACE_ROOT}/bin:${SETSPACE_ROOT}/www/bin:${SETSPACE_PGHOME}/bin:${SETSPACE_BLOBIO_ROOT}/bin:${SETSPACE_JMSCOTT_ROOT}/bin:/usr/bin:/bin
 
 #  probably no need to change remaining variables
 
