@@ -1,26 +1,38 @@
 \timing
 
-\x
-select
-	count(p.pdf_blob)
-  from
+SELECT
+	p.pdf_blob AS "PDF",
+	pd.number_of_pages AS "Pages",
+	substring(p.txt FROM candidate.re) AS "Arxiv ID"
+  FROM
   	pdfbox.page_text_utf8 p
-	  left outer join mycore.title t on (t.blob = p.pdf_blob),
-	(values (
-		--  arXiv: with spaces
-	  	'\ma\s*r\s*x\s*i\s*v\s*:\s*' ||
+	  LEFT OUTER JOIN mycore.title t ON (t.blob = p.pdf_blob),
+	pdfbox.pddocument pd,
+	(VALUES (
+		--  syntax for 2007 arxiv id derived from page
+		--  https://arxiv.org/help/arxiv_identifier
 
-		--  YYMM with spaces
-		'' -- '([0-9]\s*){4,5}'	||
+		--  word arXiv: with spaces between chars
+	  	'\ma\s*r\s*x\s*i\s*v\s*:\s*'				||
 
-		--  sequence with spaces between digits
-		'[0-9]\s*[0-9]\s*[0-9]\s*[0-9]'
+		--  YYMM.
+		'[0-9]\s*[0-9]\s*[0-3]\s*[0-9]\s*[.]\s*'		||
+
+		--  sequence of 4 or 5 digits
+		'([0-9]\s*){4,5}'					||
+
+		-- version number
+		'v\s*[1-9]'
 
 	)) AS candidate(re)
-  where
+  WHERE
   	p.txt ~* candidate.re
-	and
+	AND
 	p.page_number = 1
-	and
-	t.blob is null
+	AND
+	t.blob IS null
+	AND
+	pd.blob = p.pdf_blob
+  ORDER BY
+  	random()
 ;
