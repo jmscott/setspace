@@ -13,7 +13,7 @@ SELECT
 		--  https://arxiv.org/help/arxiv_identifier
 
 		--  word arXiv: with spaces between chars
-	  	'\ma\s*r\s*x\s*i\s*v\s*:\s*'				||
+	  	'\m(a\s*r\s*x\s*i\s*v\s*:\s*'				||
 
 		--  YYMM.
 		'[0-9]\s*[0-9]\s*[0-3]\s*[0-9]\s*[.]\s*'		||
@@ -22,7 +22,7 @@ SELECT
 		'([0-9]\s*){4,5}'					||
 
 		-- version number
-		'v\s*[1-9]'
+		'v\s*[1-9]{1,3})'
 
 	)) AS candidate(re)
   WHERE
