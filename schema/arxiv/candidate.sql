@@ -1,8 +1,17 @@
+/*
+ *  Synopsis:
+ *	Find arvix pdf candidates with no extracted id (arvix:YYMM.<index>v[1-9]
+ */
 \timing
 
 SELECT
 	p.pdf_blob AS "PDF",
-	(regexp_match(p.txt, candidate.re, 'is'))[1] AS "Arxiv Id"
+	regexp_replace(
+		(regexp_match(p.txt, candidate.re, 'is'))[1],
+		'[\s\n]',
+		'',
+		'gs'
+	) AS "Arxiv Id"
   FROM
   	pdfbox.page_text_utf8 p
 	  LEFT OUTER JOIN mycore.title t ON (t.blob = p.pdf_blob)
@@ -21,7 +30,7 @@ SELECT
 		'(\s*[0-9]){4,5}'				||
 
 		--  variation on article version v9
-		'\s*v\s*[0-9](\s*[0-9])?'
+		'\s*v\s*[0-9](\s*[1-9])?'
 	 ')\M'
 	)) AS candidate(re)
   WHERE
@@ -30,4 +39,6 @@ SELECT
 	p.page_number = 1
 	AND
 	t.blob IS NULL
+  ORDER BY
+  	random()
 ;
