@@ -30,8 +30,4 @@ SELECT
 	p.page_number = 1
 	AND
 	t.blob IS NULL
-  ORDER BY
-	"PDF" DESC
-  LIMIT
-  	10
 ;
