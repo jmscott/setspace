@@ -1,6 +1,10 @@
 /*
  *  Synopsis:
  *	Find arvix pdf candidates with no extracted id (arvix:YYMM.<index>v[1-9]
+ *  See:
+ *	https://arxiv.org/help/arxiv_identifier
+ *  Note:
+ *	http://export.arxiv.org/api/query?id_list=1809.01762v1
  */
 \timing
 
