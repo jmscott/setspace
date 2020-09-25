@@ -1,0 +1,20 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	curl the arxiv.org rest api for details on particular list of ids..
+#  Usage:
+#	curl-arxiv-id_list arXiv:1612.03343v1
+#
+URL=http://export.arxiv.org/api/query?id_list=
+
+die()
+{
+	echo "ERROR: $@" >&2
+	exit 1
+}
+
+test $# = 1 || die 'wrong number of arguments'
+
+ID_LIST="$1"
+
+curl "${URL}$ID_LIST" || die "curl arxiv.org failed: exit status=$?"
