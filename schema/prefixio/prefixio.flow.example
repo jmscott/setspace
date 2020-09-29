@@ -10,8 +10,6 @@
 #		setcore.{byte_bitmap, byte_count, is_utf8}
 #  Usage:
 #  	flowd server prefixio.conf
-#  See:
-#  	prefixio/lib/schema.sql
 #  Note:
 #	Appears that PDF files begin with new-line before the
 #	prefix %PDF are parsable. For example, see blob
