@@ -230,3 +230,25 @@ SELECT EXISTS (
 		answer bool
 	);
 }
+query may_be_xml(brr.udig);
+
+command append_expat2_brr
+{
+	path = "append-brr";
+	argv = (
+		"../expat2/spool/prefixio.brr"
+	);
+}
+
+#  route to expat2 code
+call append_expat2_brr(
+	brr.start_time,
+	brr.transport,
+	brr.verb,
+	brr.udig,
+	brr.chat_history,
+	brr.blob_size,
+	brr.wall_duration
+) when
+	may_be_xml.answer == true
+;
