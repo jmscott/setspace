@@ -3,7 +3,7 @@
 #  Synopsis:
 #	curl the arxiv.org rest api for details on particular list of ids..
 #  Usage:
-#	curl-arxiv-id_list arXiv:1612.03343v1
+#	curl-arxiv-id_list 1612.03343v1
 #
 URL=http://export.arxiv.org/api/query?id_list=
 ID_RE1='[0-9][0-9][0-9][0-9].[0-9][0-9][0-9][0-9].v[0-9]'
@@ -20,7 +20,7 @@ test $# = 1 || die 'wrong number of arguments'
 ID_LIST="$1"
 
 case "$ID_LIST" in
-arvix|arXiv*)
+arvix:|arXiv:)
 	die "arxiv prefix not required: $ID_LIST"
 	;;
 *,*)
