@@ -3,7 +3,7 @@
  *	Create a test/set lock as a in run/<lock-name>-<udig>.lock.
  *  Usage:
  *	BLOB=sha:563b8f2dd5e6e2cfff2d40787186124772c562a5
- *	taz-run-lock merge-pddocument $BLOB
+ *	tas-run-lock merge-pddocument $BLOB
  *  Exit Status:
  *	0  -  no lock exists, so create lock in run/<lock-name>-<udig>.lock
  *	1  -  lock already exists
@@ -55,7 +55,7 @@ main(int argc, char **argv)
 	if (strlen(lock_name) > 127)
 		die2(EXIT_ERR, "lock name > 127 bytes", lock_name);
 	progname_lock[0] = 0;
-	_strcat(progname_lock, sizeof progname_lock, "taz-run-lock: ");
+	_strcat(progname_lock, sizeof progname_lock, "tas-run-lock: ");
 	_strcat(progname_lock, sizeof progname_lock, lock_name);
 	progname = progname_lock; 
 
