@@ -76,8 +76,8 @@ main(int argc, char **argv)
 	{
 		*--p = digit[count % 10];
 		count = count / 10;
-	}
-	while (count > 0);
+	} while (count > 0);
+
 	_write(1, buf, nbytes);
 	_exit(0);
 }
