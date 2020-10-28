@@ -1,7 +1,7 @@
 /*
  *  Synopsis:
  *	Write to stdout ascii int64 count of bytes read from stdin
- *  Exit Code:
+ *  Exit Status:
  *  	0	ok
  *	1	additive overflow
  *  	2	read on standard input failed
