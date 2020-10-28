@@ -48,7 +48,7 @@ main(int argc, char **argv)
 	while ((nbytes = _read(0, buf, sizeof buf)) > 0) {
 		count += nbytes;
 		if (count > 9223372036854775807)
-			_exit(1);
+			_exit(EXIT_ADD_OVERFLOW);
 	}
 
 	/*
