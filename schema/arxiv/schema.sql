@@ -20,6 +20,6 @@ CREATE DOMAIN article_id AS text
   CHECK (
 	value ~ '[0-9][0-9][0-3][0-9]\.([0-9]){4,5}v[0-9][1-9]?'
   )
-; 
+;
 
 COMMIT;
