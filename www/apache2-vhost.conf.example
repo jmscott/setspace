@@ -108,7 +108,6 @@ Define SETSPACE_BLOBIO_ALGORITHM bc160
 
 	DocumentRoot "${SETSPACE_VHOST_ROOT}/htdocs"
 
-
 	<Directory />
             AllowOverride all
             Require all granted
