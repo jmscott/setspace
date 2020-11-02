@@ -12,7 +12,6 @@ COMMENT ON SCHEMA curl7 IS
 	'Schema for curlable urls'
 ;
 
-\set search_path to curl7,public;
-
+SET search_path TO curl7,public;
 
 COMMIT;
