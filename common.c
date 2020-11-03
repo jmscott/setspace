@@ -14,6 +14,8 @@
  *  See:
  *	flip-tail and c programs in schema directories.
  *  Note:
+ *	Move {common,common-cli}.c to $JMSCOTT_ROOT/lib
+ *
  *	Rename common.c to unistd.c or common-cli.c?
  *
  *	Should defined PIPE_MAX be changed to
