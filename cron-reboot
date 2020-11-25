@@ -12,6 +12,9 @@
 #	0	all flowd process rebooted
 #	1	unknown error, processes may not have rebooted
 #  Note:
+#	zap-proc inexact killing of flowd process caused problems with other
+#	unrelated flowd process, like blobio.  not sure how to fix.
+#
 #	Ought to attempt to boot all flowd processes instead of aborting
 #	upon the first failure.
 #
