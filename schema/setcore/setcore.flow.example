@@ -31,20 +31,6 @@ tail brr
 	path = "spool/bio4d.brr";
 }
 
-##########  DEBUG
-command is_put
-{
-	path = "true";
-}
-
-call is_put()
-  when
-	brr.verb == "put"
-	and
-	brr.chat_history == "ok,ok"
-;
-#############
-
 sql database setspace
 {
 	driver_name = "postgres";
