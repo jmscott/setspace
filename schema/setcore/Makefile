@@ -49,6 +49,7 @@ ifdef SETCORE_PREFIX
 		get-bool-command					\
 		get-is-utf8wf						\
 		merge-byte_bitmap					\
+		merge-bit_pop_count					\
 		merge-byte_count					\
 		merge-byte_prefix_32					\
 		merge-byte_suffix_32					\
