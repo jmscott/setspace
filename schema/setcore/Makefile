@@ -11,7 +11,7 @@ include ../schema.mk
 SETCORE_PREFIX=$(SETSPACE_PREFIX)/schema/setcore
 
 COMPILED=								\
-	bit-count							\
+	bit-pop-count							\
 	byte-bitmap							\
 	byte-count							\
 	byte-prefix-32							\
@@ -41,7 +41,7 @@ ifdef SETCORE_PREFIX
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
 				-d $(SETCORE_ROOT)/src
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
-		bit-count						\
+		bit-pop-count						\
 		byte-bitmap						\
 		byte-count						\
 		byte-prefix-32						\
@@ -65,7 +65,7 @@ ifdef SETCORE_PREFIX
 		$(SETCORE_ROOT)/lib
 
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)			\
-		bit-count.c						\
+		bit-pop-count.c						\
 		byte-bitmap.c						\
 		byte-count.c						\
 		byte-prefix-32.c					\
@@ -90,8 +90,8 @@ byte-bitmap: byte-bitmap.c ../../common.c
 byte-count: byte-count.c ../../common.c
 	cc -o byte-count $(CFLAGS) byte-count.c
 
-bit-count: bit-count.c ../../common.c
-	cc -o bit-count $(CFLAGS) bit-count.c
+bit-pop-count: bit-pop-count.c ../../common.c
+	cc -o bit-pop-count $(CFLAGS) bit-pop-count.c
 
 byte-prefix-32: byte-prefix-32.c ../../common.c
 	cc -o byte-prefix-32 $(CFLAGS) byte-prefix-32.c
