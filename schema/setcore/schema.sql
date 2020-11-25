@@ -190,8 +190,8 @@ COMMENT ON DOMAIN uni_xstatus IS
   	'Exit status of Unix process, 0 <= 255'
 ;
 
-DROP TABLE IF EXISTS setcore.bit_count cascade;
-CREATE TABLE bit_count
+DROP TABLE IF EXISTS setcore.bit_pop_count cascade;
+CREATE TABLE bit_pop_count
 (
 	blob		udig
 				REFERENCES service
@@ -203,9 +203,9 @@ CREATE TABLE bit_count
 				)
 				NOT NULL
 );
-COMMENT ON TABLE bit_count IS
+COMMENT ON TABLE bit_pop_count IS
 	'How Many One Bits are In the Blob'
 ;
-CREATE INDEX bit_count_blob ON bit_count USING hash(blob);
+CREATE INDEX bit_pop_count_blob ON bit_pop_count USING hash(blob);
 
 COMMIT;
