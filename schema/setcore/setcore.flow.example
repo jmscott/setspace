@@ -670,3 +670,44 @@ call append_prefixio_brr(
 ) when
   	core_exists.exit_status == 0
 ;
+
+#
+#  Is the blob in the bit_pop_count table?
+#
+sql query in_bit_pop_count_table row
+{
+
+	result row is (
+		answer bool
+	);
+
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+		blob
+	    FROM
+		setcore.bit_pop_count
+	    WHERE
+		blob = $1::udig
+	);
+
+	`;
+}
+
+command merge_bit_pop_count
+{
+	path = "sbin/merge-bit_pop_count";
+	exit_status is OK when in {0, 1};
+}
+
+query in_bit_pop_count_table(brr.udig);
+
+#  merge an in service blob not in the byte count table
+
+call merge_bit_pop_count(brr.udig)
+  when
+  	in_bit_pop_count_table.answer == false
+	and
+	service_exists.exit_status == 0
+;
