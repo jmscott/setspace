@@ -19,7 +19,7 @@ The full set of fact tables stored in PostgreSQL are as follows:
 * *new_line_count*: count of newlines bytes (not chars) in the blob
 * *is_utf8wf*: is the blob a well formed UTF-8 sequence of bytes
 
-#See
+# See
 Please discover the [SetSpace PostgreSQL Schema] (http://github.com/jmscott/setspace/blob/master/schema/setcore/schema.sql).
 
 # Blame
