@@ -78,3 +78,5 @@ Possible Schemas:
 	lepton - Dropbox image compress: https://github.com/dropbox/lepton
 	datamash - Slicer and dicer for common statistics on csv, GNU foundation
 	kaitai.io - structured binary data language
+	qpdf - transformation on pdf files: https://github.com/qpdf/qpdf
+	       in particular, the json serialzation of a pdf
