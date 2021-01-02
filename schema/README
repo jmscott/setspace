@@ -77,3 +77,4 @@ Possible Schemas:
 	similarty search library - http://www.sisap.org/
 	lepton - Dropbox image compress: https://github.com/dropbox/lepton
 	datamash - Slicer and dicer for common statistics on csv, GNU foundation
+	kaitai.io - structured binary data language
