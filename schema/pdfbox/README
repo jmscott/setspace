@@ -1,6 +1,10 @@
 Synopsis
 	Schema for the well known apache pdfbox, version 2, java library.
 Note:
+	Does text extraction exclude append, previous edits of a pdf?
+
+		https://news.ycombinator.com/item?id=25609321
+
 	Investigate detection of javascript in PDF, following this blob post.
 
 		https://mariomalwareanalysis.blogspot.com/2012/02/how-to-embed-javascript-into-pdf.html
