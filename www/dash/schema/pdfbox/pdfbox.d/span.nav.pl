@@ -85,6 +85,7 @@ SELECT
 END
 	;
 } else {
+	$argv = [];
 	$sql = q(
 SELECT
 	count(pd.*) AS pdf_count,
