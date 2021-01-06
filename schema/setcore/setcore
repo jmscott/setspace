@@ -9,7 +9,13 @@
 #  Note:
 #	
 #
-PSQL='psql --no-psqlrc --quiet'
+PSQL='psql
+	--expanded
+	--no-psqlrc
+	--tuples-only
+	--pset null=Unknown
+	--quiet
+'
 
 die()
 {
@@ -42,21 +48,11 @@ END
 ls_recent()
 {
 	$PSQL <<END
-\\x on
-\\pset tuples_only
-\\pset null Unknown
-\\set ON_ERROR_STOP 1
-
 SELECT
 	s.blob AS "Blob",
 	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
                 AS "Age",
-	CASE
-	  WHEN bc.byte_count IS NULL THEN
-	  	'Unknown'
-	  ELSE
-		pg_size_pretty(bc.byte_count)
-	END AS "Size"
+	pg_size_pretty(bc.byte_count) AS "Size"
   FROM
   	setcore.service s
 	  LEFT OUTER JOIN setcore.byte_count bc ON (bc.blob = s.blob)
