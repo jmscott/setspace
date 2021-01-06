@@ -11,7 +11,6 @@ include ../schema.mk
 SETCORE_PREFIX=$(SETSPACE_PREFIX)/schema/setcore
 
 COMPILED=								\
-	bit-count							\
 	byte-bitmap							\
 	byte-count							\
 	byte-prefix-32							\
@@ -41,7 +40,6 @@ ifdef SETCORE_PREFIX
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
 				-d $(SETCORE_ROOT)/src
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
-		bit-count						\
 		byte-bitmap						\
 		byte-count						\
 		byte-prefix-32						\
@@ -49,6 +47,7 @@ ifdef SETCORE_PREFIX
 		get-bool-command					\
 		get-is-utf8wf						\
 		merge-byte_bitmap					\
+		merge-bit_pop_count					\
 		merge-byte_count					\
 		merge-byte_prefix_32					\
 		merge-byte_suffix_32					\
@@ -65,7 +64,6 @@ ifdef SETCORE_PREFIX
 		$(SETCORE_ROOT)/lib
 
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)			\
-		bit-count.c						\
 		byte-bitmap.c						\
 		byte-count.c						\
 		byte-prefix-32.c					\
@@ -89,9 +87,6 @@ byte-bitmap: byte-bitmap.c ../../common.c
 
 byte-count: byte-count.c ../../common.c
 	cc -o byte-count $(CFLAGS) byte-count.c
-
-bit-count: bit-count.c ../../common.c
-	cc -o bit-count $(CFLAGS) bit-count.c
 
 byte-prefix-32: byte-prefix-32.c ../../common.c
 	cc -o byte-prefix-32 $(CFLAGS) byte-prefix-32.c

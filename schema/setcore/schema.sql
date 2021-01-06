@@ -190,22 +190,4 @@ COMMENT ON DOMAIN uni_xstatus IS
   	'Exit status of Unix process, 0 <= 255'
 ;
 
-DROP TABLE IF EXISTS setcore.bit_count cascade;
-CREATE TABLE bit_count
-(
-	blob		udig
-				REFERENCES service
-				ON DELETE CASCADE
-				PRIMARY KEY,
-	one_count	bigint
-				CHECK (
-					one_count >= 0
-				)
-				NOT NULL
-);
-COMMENT ON TABLE bit_count IS
-	'How Many One Bits are In the Blob'
-;
-CREATE INDEX bit_count_blob ON bit_count USING hash(blob);
-
 COMMIT;
