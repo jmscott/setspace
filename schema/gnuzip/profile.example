@@ -1,0 +1,18 @@
+#
+#  Synopsis:
+#	Profile for typical gnuzip server
+#  Usage:
+#	. $SETSPACE_ROOT/gzip/etc/profile
+#
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/gnuzip
+export TMPDIR=$SCHEMA_ROOT/tmp
+
+export GNUZIP_ROOT=${GNUZIP_ROOT:=$SCHEMA_ROOT}
+
+#  create the spool file so tail doesn't abort.
+#  Note: got to be a better way. perhaps flowd.tail ought to create the file.
+BRR=$SCHEMA_ROOT/spool/prefixio.brr
+touch $BRR
+chmod u=rw,g=w,o= $BRR
+
+PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH

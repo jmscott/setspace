@@ -1,0 +1,95 @@
+#
+#  Synopsis:
+#	Populate PostgreSQL schema for Fine Free File command facts
+#  See:
+#	schema.sql
+#
+
+boot
+{
+	brr_capacity = 4;
+	flow_worker_count = 2;
+	os_exec_worker_count = 1;
+	os_exec_capacity = 1;
+
+	xdr_roll_duration = "24h";
+	fdr_roll_duration = "24h";
+	qdr_roll_duration = "24h";
+
+	heartbeat_duration = "10s";
+}
+
+sql database setspace
+{
+	driver_name = "postgres";
+	data_source_name =
+		"fallback_application_name=gnuzip.flow sslmode=disable";
+	max_idle_conns = 0;
+	max_open_conns = 1;
+}
+
+tail brr
+{
+	path = "spool/gnuzip.brr";
+}
+
+sql query in_service_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	setcore.service
+	    WHERE
+	    	blob = $1::udig
+	);
+		
+	`;
+
+	result row is (
+		answer bool
+	);
+}
+
+query in_service_table(brr.udig);
+
+sql query in_gunzip_test_quiet row
+{
+	statement = `
+	
+	SELECT 
+	 EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	gnuzip.gunzip_test_quiet
+	    WHERE
+	    	blob = $1::udig
+	)
+	`;
+
+	result row is (
+		in_file bool
+	);
+}
+
+query in_gunzip_test_quiet(brr.udig)
+  when
+  	in_service_table.answer == true
+;
+
+command merge_gunzip_test_quiet
+{
+	path = "sbin/merge-gunzip_test_quiet";
+	exit_status is OK when in {
+		0,
+		1
+	};
+}
+
+call merge_gunzip_test_quiet(brr.udig)
+  when
+  	in_gunzip_test_quiet.in_file == false
+;

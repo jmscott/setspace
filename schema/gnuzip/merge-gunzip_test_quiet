@@ -1,0 +1,78 @@
+#!/bin/bash
+#
+#  Synopsis:
+#       Merge exit status of "gunzip -tq"  into sql table gunzip_test_quiet.
+#  Usage:
+#       BLOB=bc160:e995779dce785ed8f8920e2de01f3619d2cc5797
+#       merge-gunzip_test_quiet $BLOB
+#  Exit Status:
+#       0       result merged
+#       1       blob does not exist
+#       2       unknown error
+#
+
+die()
+{
+	STATUS=$1
+	shift
+	echo "ERROR: $@" >&2
+	exit $STATUS
+}
+
+test $# = 1 || die 2 "wrong argument count: got $#, expected 1"
+BLOB=$1
+
+test -n "$BLOBIO_SERVICE" || die 2 'env not defined: BLOBIO_SERVICE'
+
+blobio eat                                                              \
+        --udig $BLOB                                                    \
+        --service $BLOBIO_SERVICE
+STATUS=$?
+case $STATUS in
+0)
+        ;;
+1)
+        die 1 "eat: blob does not exist: $BLOB"
+        ;;
+*)
+        die 2 "blobio eat failed: exit status=$STATUS"
+        ;;
+esac
+
+blobio get                                                              \
+        --udig $BLOB                                                    \
+        --service $BLOBIO_SERVICE                                       |
+        gunzip --test --quiet
+STATUS=${PIPESTATUS[*]}
+
+case "$STATUS" in
+'0 0')
+        EXIT_STATUS=0
+        ;;
+'0 1')
+        EXIT_STATUS=1
+        ;;
+'1 *')
+        die 1 "get: blob does not exist: $BLOB"
+        ;;
+'0 *')
+        EXIT_STATUS=$(echo $STATUS | cut -f 3-5)
+        ;;
+*)
+        die 2 "blob get | gunzip failed: exit status=$STATUS"
+        ;;
+esac
+
+psql  <<END || die 2 "psql insert failed: exit status=$?"
+
+\\set ON_ERROR_STOP 1
+
+INSERT INTO gnuzip.gunzip_test_quiet(
+        blob,
+        exit_status
+) VALUES (
+        '$BLOB',
+        $EXIT_STATUS
+) ON CONFLICT
+        DO NOTHING
+END
