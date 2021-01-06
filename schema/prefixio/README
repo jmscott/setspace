@@ -10,3 +10,7 @@ Description:
 
 	Since most routing rules are immutable, the queries are highly
 	cacheable.  cool.
+Note:
+	Consider adding mapping of prefixes to file guesses.
+
+		https://en.wikipedia.org/wiki/List_of_file_signatures
