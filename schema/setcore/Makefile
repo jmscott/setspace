@@ -24,21 +24,25 @@ clean:
 install: all
 ifdef SETCORE_PREFIX
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)	 		\
-				-d $(SETCORE_ROOT)
+				-m=u=rwx,g=rx,o= -d $(SETCORE_ROOT)
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
-				-d $(SETCORE_PREFIX)/spool
+				-m=u=rwx,go= -d $(SETCORE_PREFIX)/spool
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
-				-d $(SETCORE_ROOT)/run
+				-m=u=rwx,go= -d $(SETCORE_ROOT)/run
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
-				-d $(SETCORE_ROOT)/sbin
+				-m=u=rwx,go= -d $(SETCORE_ROOT)/sbin
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
-				-d $(SETCORE_ROOT)/lib
+				-m=u=rwx,g=rx,o= -d $(SETCORE_ROOT)/lib
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
-				-d $(SETCORE_ROOT)/log
+				-m=u=rwx,g=rx,o= -d $(SETCORE_ROOT)/bin
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
-				-d $(SETCORE_ROOT)/etc
+				-m=u=rwx,go= -d $(SETCORE_ROOT)/log
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
-				-d $(SETCORE_ROOT)/src
+				-m=u=rwx,g=rx,o= -d $(SETCORE_ROOT)/etc
+	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
+				-m=u=rwx,g=rx,o= -d $(SETCORE_ROOT)/src
+	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
+				-m=u=rwx,go= -d $(SETCORE_ROOT)/tmp
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
 		byte-bitmap						\
 		byte-count						\
@@ -53,6 +57,10 @@ ifdef SETCORE_PREFIX
 		merge-byte_suffix_32					\
 		service-xor						\
 		$(SETCORE_ROOT)/sbin
+
+	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
+		setcore							\
+		$(SETCORE_ROOT)/bin
 
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
 		profile.example						\

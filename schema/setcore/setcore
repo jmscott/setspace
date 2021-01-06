@@ -1,0 +1,110 @@
+#
+#  Synopsis:
+#	Command line queries into sql schema "setcore".
+#  Usage:
+#	BLOB=bc160:e995779dce785ed8f8920e2de01f3619d2cc5797
+#
+#	setcore help
+#	setcore ls $BLOB
+#  Note:
+#	
+#
+PSQL='psql --no-psqlrc --quiet'
+
+die()
+{
+	echo "ERROR: $@" >&2
+	exit 1
+}
+
+help()
+{
+	cat <<END
+Usage: setcore [action] <options> ...
+
+Action:
+	help
+
+	ls [udig]	#  list details about blob[s]
+
+Environment:
+	SETSPACE_ROOT	$SETSPACE_ROOT
+	PGHOST		$PGHOST
+	PGPORT		$PGPORT
+	PGUSER		$PGUSER
+	PGDATABASE	$PGDATABASE
+Example:
+	ls		#  show recent blobs
+	ls <udig>	#  show details on specific blob
+END
+}
+
+ls_recent()
+{
+	$PSQL <<END
+\\x on
+\\pset tuples_only
+\\pset null Unknown
+\\set ON_ERROR_STOP 1
+
+SELECT
+	s.blob AS "Blob",
+	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
+                AS "Age",
+	CASE
+	  WHEN bc.byte_count IS NULL THEN
+	  	'Unknown'
+	  ELSE
+		pg_size_pretty(bc.byte_count)
+	END AS "Size"
+  FROM
+  	setcore.service s
+	  LEFT OUTER JOIN setcore.byte_count bc ON (bc.blob = s.blob)
+  ORDER BY
+  	s.discover_time DESC,
+	bc.byte_count DESC,
+	s.blob ASC
+  LIMIT
+  	10
+END
+	exit 0
+}
+
+test -n "$SETSPACE_ROOT" || die 'env not defined: SETSPACE_ROOT'
+export SETCORE_ROOT=$SETSPACE_ROOT/schema/setcore
+test -d $SETCORE_ROOT || die "no setcore directory: $SETCORE_ROOT"
+
+if [ $# = 0 ];  then
+	help
+	exit 0
+fi
+
+test -r $SETSPACE_ROOT/etc/profile && . $SETSPACE_ROOT/etc/profile
+test -r $SETCORE_ROOT/etc/profile && . $SETCORE_ROOT/etc/profile
+
+ACTION=$1
+shift
+
+case $ACTION in
+help)
+	help
+	exit 0
+	;;
+ls)
+	case $# in
+	0)
+		ls_recent
+		;;
+	1)
+		BLOB=$1
+		ls_blob $1
+		;;
+	*)
+		die "ls: wrong number of arguments: got $#, expected 0 or 1"
+		;;
+	esac
+	;;
+*)
+	die "unknown action: $ACTION"
+	;;
+esac
