@@ -4,14 +4,18 @@
 #	Command line front end to sql queries for all schema.
 #  Usage:
 #	setspace [schema] [action] <...options>
-#  Example:
 #	setspace			#  help
 #	setspace ls			#  list schemas available
 #	setspace setcore		#  help for "setcore"
 #	setspace setcore ls		#  list recent blobs in schema "setcore"
 #	setspace setcore ls <blob>	#  details on blob in schema "setcore"
+#
+#	alias setcore='setspace setcore'
 #  Note:
-#	Added count stats to command 'setspace ls'
+#	Think about moving this script above directory /schema/, so flowd
+#	and other details can be managed.
+#
+#	Thinks about count stats to command 'setspace ls'
 #
 
 die()
