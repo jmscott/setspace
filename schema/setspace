@@ -1,0 +1,84 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Command line front end to sql queries for all schema.
+#  Usage:
+#	setspace [schema] [action] <...options>
+#  Example:
+#	setspace			#  help
+#	setspace ls			#  list schemas available
+#	setspace setcore		#  help for "setcore"
+#	setspace setcore ls		#  list recent blobs in schema "setcore"
+#	setspace setcore ls <blob>	#  details on blob in schema "setcore"
+#  Note:
+#	Added count stats to command 'setspace ls'
+#
+
+die()
+{
+	cat >&2 <<END
+ERROR: $@
+usage: setspace [ls | help | <schema>] [...options]
+END
+	exit 1
+}
+
+help()
+{
+	cat <<END
+Usage:
+	setspace help
+	setspace ls				#  list queryable schemas
+	setspace <schema> [action] [...options]
+Environment:
+	SETSPACE_ROOT		$SETSPACE_ROOT
+END
+}
+
+if [ $# = 0 -o \( $# = 1 -a \( "$1" = help -o "$1" = --help \) \) ];  then
+	help
+	exit 0
+fi
+test -n "$SETSPACE_ROOT" || die "env not defined: SETSPACE_ROOT"
+cd $SETSPACE_ROOT || die "cd failed: $SETSPACE_ROOT"
+test -r etc/profile && . etc/profile
+
+SCHEMAS=$(
+	find-schema | while read SCH;  do
+		test -e schema/$SCH/bin/$SCH && echo $SCH
+	done
+)
+test -z "$SCHEMA" || die "hmm, no schema in $SETSPACE_ROOT"
+
+
+ls_schema()
+{
+	(
+		cat <<END
+Schema
+-------
+END
+		echo $SCHEMAS | while read SCH;  do
+			echo $SCH
+		done
+	) | column -s ' ' -t | sed 's/ *        //'
+}
+
+ACTION=$1
+shift
+
+if [ "$ACTION" = ls ];  then
+	test $# = 0 || die "ls: wrong argument count: expected 0, got $#"
+
+	ls_schema
+	exit 0
+fi
+
+SCHEMA=$ACTION
+
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/$SCHEMA
+test -d $SCHEMA_ROOT || die "no directory for schema: $SCHEMA"
+SCHEMA_EXEC=$SCHEMA_ROOT/bin/$SCHEMA
+test -x $SCHEMA_ROOT/bin/$SCHEMA || die "no executable: $SCHEMA_EXEC"
+
+exec $SCHEMA_EXEC "$@"

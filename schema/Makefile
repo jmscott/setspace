@@ -10,6 +10,8 @@ include ../local.mk
 include ../setspace.mk
 include schema.mk
 
+BINs=									\
+	setspace
 LIBs=									\
 	fault-process.sh						\
 	psqlrc.example							\
@@ -44,6 +46,20 @@ clean:
 	cd fffile && $(MAKE) $(MFLAGS) clean
 
 install:
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
+		-m u=rwx,g=rx,o=					\
+		-d $(SETSPACE_PREFIX)/bin
+
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
+		-m u=rwx,g=rx,o=					\
+		-d $(SETSPACE_PREFIX)/lib
+
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
+		-m u=rwx,go=						\
+		-d $(SETSPACE_PREFIX)/sbin
+
+	#  install sql schemas
+
 	cd setcore && $(MAKE) $(MFLAGS) install
 	cd jsonorg && $(MAKE) $(MFLAGS) install
 	cd expat2 && $(MAKE) $(MFLAGS) install
@@ -54,15 +70,32 @@ install:
 	cd jsonio && $(MAKE) $(MFLAGS) install
 	cd pdfbox && $(MAKE) $(MFLAGS) install
 	cd fffile && $(MAKE) $(MFLAGS) install
+	cd gnuzip && $(MAKE) $(MFLAGS) install
+
+	#  Install lib/
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
-		-d $(SETSPACE_PREFIX)/lib
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r	\
-		$(LIBs) $(SETSPACE_PREFIX)/lib
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m u=rwx,go=	\
-		-d $(SETSPACE_PREFIX)/sbin
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m u=rwx,go=	\
-		$(SBINs) $(SETSPACE_PREFIX)/sbin
+		-m u=rw,g=r,o=						\
+		$(LIBs)							\
+		$(SETSPACE_PREFIX)/lib
+
+	#  Install sbin/
+
+	install								\
+		-g $(SETSPACE_GROUP)					\
+		-o $(SETSPACE_USER)					\
+		-m u=rwx,go=						\
+		$(SBINs)						\
+		$(SETSPACE_PREFIX)/sbin
+
+	#  Install bin/
+
+	install								\
+		-g $(SETSPACE_GROUP)					\
+		-o $(SETSPACE_USER)					\
+		-m u=rwx,g=rx,o=					\
+		$(BINs)							\
+		$(SETSPACE_PREFIX)/bin
 
 distclean:
 	cd setcore && $(MAKE) $(MFLAGS) distclean
@@ -75,8 +108,12 @@ distclean:
 	cd jsonio && $(MAKE) $(MFLAGS) distclean
 	cd pdfbox && $(MAKE) $(MFLAGS) distclean
 	cd fffile && $(MAKE) $(MFLAGS) distclean
+	cd gnuzip && $(MAKE) $(MFLAGS) distclean
+
+	#  do NOT remove dirs $SETSPACE_ROOT/{lib,bin,sbin}/
 	(cd $(SETSPACE_PREFIX)/lib;  rm -f $(LIBs))
 	(cd $(SETSPACE_PREFIX)/sbin;  rm -f $(SBINs))
+	(cd $(SETSPACE_PREFIX)/bin;  rm -f $(BINs))
 world:
 	$(MAKE) $(MFLAGS) clean
 	$(MAKE) $(MFLAGS) all
