@@ -80,14 +80,14 @@ END
 	exit 0
 }
 
-test -n "$SETSPACE_ROOT" || die 'env not defined: SETSPACE_ROOT'
-export SETCORE_ROOT=$SETSPACE_ROOT/schema/setcore
-test -d $SETCORE_ROOT || die "no setcore directory: $SETCORE_ROOT"
-
 if [ $# = 0 ];  then
 	help
 	exit 0
 fi
+
+test -n "$SETSPACE_ROOT" || die 'env not defined: SETSPACE_ROOT'
+export SETCORE_ROOT=$SETSPACE_ROOT/schema/setcore
+test -d $SETCORE_ROOT || die "no setcore directory: $SETCORE_ROOT"
 
 test -r $SETSPACE_ROOT/etc/profile && . $SETSPACE_ROOT/etc/profile
 test -r $SETCORE_ROOT/etc/profile && . $SETCORE_ROOT/etc/profile
