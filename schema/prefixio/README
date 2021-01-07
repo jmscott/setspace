@@ -11,6 +11,12 @@ Description:
 	Since most routing rules are immutable, the queries are highly
 	cacheable.  cool.
 Note:
-	Consider adding mapping of prefixes to file guesses.
+	Consider adding mapping of prefixes/file type to file guesses.
 
 		https://en.wikipedia.org/wiki/List_of_file_signatures
+		https://mark0.net/soft-trid-deflist.html
+		https://filext.com/
+		https://fileinfo.com/
+		https://www.file-extensions.org/
+		http://www.cryer.co.uk/file-types/index.htm
+		https://www.garykessler.net/library/file_sigs.html
