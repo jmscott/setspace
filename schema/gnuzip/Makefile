@@ -7,8 +7,17 @@ include ../../setspace.mk
 include ../schema.mk
 
 SBINs=									\
-	merge-gunzip_test_quiet						\
+	merge-gunzip_list_verbose					\
+	merge-gunzip_test_quiet
 
+LIBs=									\
+	profile.example							\
+	psqlrc.example							\
+	rummy.sql							\
+	schema.sql							\
+	select-gnuzip-candidate.sql					\
+	setspace.schema.gunzip.flowd.plist.example			\
+	
 install:
 	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) 			\
 				-d $(GNUZIP_PREFIX)
@@ -26,11 +35,7 @@ install:
 		$(SBINs) 						\
 		$(GNUZIP_PREFIX)/sbin
 	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) -m a=r		\
-		profile.example						\
-		psqlrc.example						\
-		rummy.sql						\
-		schema.sql						\
-		setspace.schema.gunzip.flowd.plist.example		\
+		$(LIBs)							\
 		$(GNUZIP_PREFIX)/lib
 
 distclean:
