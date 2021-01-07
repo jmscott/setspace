@@ -13,6 +13,7 @@ Description:
 Note:
 	Consider adding mapping of prefixes/file type to file guesses.
 
+		http://www.filesig.co.uk/ofsdb.html
 		https://filesignatures.net/
 		https://en.wikipedia.org/wiki/List_of_file_signatures
 		https://mark0.net/soft-trid-deflist.html
@@ -21,3 +22,5 @@ Note:
 		https://www.file-extensions.org/
 		http://www.cryer.co.uk/file-types/index.htm
 		https://www.garykessler.net/library/file_sigs.html
+
+	Gary Kessler seems to be an expert on forensic file analysis.
