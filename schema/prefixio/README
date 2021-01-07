@@ -13,6 +13,7 @@ Description:
 Note:
 	Consider adding mapping of prefixes/file type to file guesses.
 
+		https://filesignatures.net/
 		https://en.wikipedia.org/wiki/List_of_file_signatures
 		https://mark0.net/soft-trid-deflist.html
 		https://filext.com/
