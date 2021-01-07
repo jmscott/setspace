@@ -11,6 +11,8 @@
 #  Usage:
 #  	flowd server prefixio.conf
 #  Note:
+#	Consider a table that maps a prefix to schema brr.
+#
 #	Appears that PDF files begin with new-line before the
 #	prefix %PDF are parsable. For example, see blob
 #
@@ -251,4 +253,42 @@ call append_expat2_brr(
 	brr.wall_duration
 ) when
 	may_be_xml.answer == true
+;
+
+sql query may_be_gnuzip row
+{
+	statement = `
+SELECT
+	p32.prefix::text ~ '^\\x1f8b'
+  FROM
+  	setcore.byte_prefix_32 p32
+  WHERE
+	p32.blob = $1::udig
+;
+	`;
+	result row is (
+		answer bool
+	);
+}
+query may_be_gnuzip(brr.udig);
+
+command append_gnuzip_brr
+{
+	path = "append-brr";
+	argv = (
+		"../gnuzip/spool/prefixio.brr"
+	);
+}
+
+#  route to gnuzip code
+call append_gnuzip_brr(
+	brr.start_time,
+	brr.transport,
+	brr.verb,
+	brr.udig,
+	brr.chat_history,
+	brr.blob_size,
+	brr.wall_duration
+) when
+	may_be_gnuzip.answer == true
 ;
