@@ -19,8 +19,10 @@ die()
 
 NOW=$(date +'%s')
 (
-	echo "Schema	Status	Up"
-	echo '-------------	------	------'
+	cat <<END
+Schema	Status	Up
+-------------	------	------
+END
 	run-stat							|
 		sort --key=2 --key=1 --field-separator=$'\t'		|
 		while read SCHEMA STATUS START_EPOCH;  do
