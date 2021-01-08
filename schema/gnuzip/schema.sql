@@ -25,6 +25,9 @@ COMMENT ON TABLE gunzip_test_quiet IS
   'Exit status of gnu command "gunzip --test --quiet"'
 ;
 
+/*
+ *  Output of gunzip (v1.10) --list --vebose --name command
+ */
 CREATE TABLE gunzip_list_verbose
 (
 	blob		udig

@@ -1,11 +1,14 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Merge results on gzip --list --verbose in table gunzip_list_verbose.
+#	On a valid gzip blob, put gzip --list --verbose into table.
 #  Usage:
 #	BLOB=bc160:d28d2591211cc730896549a75167acd00b6159d8
 #	merge-gunzip_list_verbose $BLOB
 #
+
+TMP_BLOB=${TMPDIR:=/tmp}/$(basename $0).$$
+trap "rm -f $TMP_BLOB" EXIT TERM
 
 die()
 {
@@ -20,9 +23,9 @@ BLOB=$1
 
 test -n "$BLOBIO_SERVICE" || die 2 'env not defined: BLOBIO_SERVICE'
 
-blobio eat                                                              \
-        --udig $BLOB                                                    \
-        --service $BLOBIO_SERVICE
+#  Does the blob exist?
+
+blobio get --udig $BLOB --service $BLOBIO_SERVICE --output-path $TMP_BLOB
 STATUS=$?
 case $STATUS in
 0)
@@ -35,45 +38,16 @@ case $STATUS in
         ;;
 esac
 
-blobio get                                                              \
-        --udig $BLOB                                                    \
-        --service $BLOBIO_SERVICE                                       |
-        gunzip --list --verbose						|
-	awk 'NR == 2'							|
-	read LISTING
-STATUS=${PIPESTATUS[*]}
-echo "STATUS=$STATUS"
-echo "LISTING=$LISTING"
-exit 0
-
-case "$STATUS" in
-'0 0')
-        EXIT_STATUS=0
-        ;;
-'0 1')
-        EXIT_STATUS=1
-        ;;
-'1 *')
-        die 1 "get: blob does not exist: $BLOB"
-        ;;
-'0 *')
-        EXIT_STATUS=$(echo $STATUS | cut -f 3-5)
-        ;;
-*)
-        die 2 "blob get | gunzip failed: exit status=$STATUS"
-        ;;
-esac
-
-psql  <<END || die 2 "psql insert failed: exit status=$?"
-
-\\set ON_ERROR_STOP 1
-
-INSERT INTO gnuzip.gunzip_test_quiet(
-        blob,
-        exit_status
-) VALUES (
-        '$BLOB',
-        $EXIT_STATUS
-) ON CONFLICT
-        DO NOTHING
-END
+#  we assume the blob
+gunzip --list --verbose --name $TMP_BLOB | (
+	read LINE
+	case "$LINE" in
+	method*)
+		;;
+	*)
+		die 2 "gunzip list/verbose failed: $LINE"
+		;;
+	esac
+	IFS=' ' read -r METHOD CRC
+	echo $METHOD $CRC
+)

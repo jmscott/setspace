@@ -7,6 +7,7 @@ include ../../setspace.mk
 include ../schema.mk
 
 SBINs=									\
+	gunzip_list_verbose2sql						\
 	merge-gunzip_list_verbose					\
 	merge-gunzip_test_quiet
 
