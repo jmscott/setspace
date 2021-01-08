@@ -6,19 +6,10 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
-SBINs=									\
-	gunzip_list_verbose2sql						\
-	merge-gunzip_list_verbose					\
-	merge-gunzip_test_quiet
+DIST=setspace-schema-gnuzip.dist
+SBINs := $(shell (. ./$(DIST) && echo $$SBINs))
+LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
 
-LIBs=									\
-	profile.example							\
-	psqlrc.example							\
-	rummy.sql							\
-	schema.sql							\
-	select-gnuzip-candidate.sql					\
-	setspace.schema.gunzip.flowd.plist.example			\
-	
 install:
 	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) 			\
 				-d $(GNUZIP_PREFIX)
