@@ -36,3 +36,5 @@ distclean:
 world:
 	$(MAKE) $(MFLAGS) distclean
 	$(MAKE) $(MFLAGS) install
+dist:
+	make-dist $(DIST)
