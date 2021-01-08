@@ -1,6 +1,11 @@
 /*
  *  Synopsis:
  *	SQL schema for gnu gzip command.	
+ *  Note:
+ *	Need to add test that exist code == 0 for foreign key reference
+ *	in various subtables.  Can PG subtables have qualfiers?
+ *
+ *	Since gzip v1 is 32bit, the uncompressed file size is not reliable.
  */
 
 \set ON_ERROR_STOP
@@ -12,7 +17,7 @@ CREATE SCHEMA gnuzip;
 
 SET search_path to gnuzip,public;
 
-CREATE TABLE gunzip_test_quiet
+CREATE TABLE gunzip_test
 (
 	blob		udig
 				REFERENCES setcore.service
@@ -21,53 +26,38 @@ CREATE TABLE gunzip_test_quiet
 	exit_status	setcore.uni_xstatus
 				NOT NULL
 );
-COMMENT ON TABLE gunzip_test_quiet IS
+COMMENT ON TABLE gunzip_test IS
   'Exit status of gnu command "gunzip --test --quiet"'
 ;
 
 /*
- *  Output of gunzip (v1.10) --list --vebose --name command
+ *  Output of gunzip (v1.10) --list --name
+ *	
  */
-CREATE TABLE gunzip_list_verbose
+CREATE TABLE gunzip_uncompressed_name
 (
 	blob		udig
-				REFERENCES setcore.service
+				REFERENCES gunzip_test
 				PRIMARY KEY,
-	method		text CHECK (
-				length(method) > 0
-				AND
-				length(method) < 32
-			) NOT NULL,
-	crc		text CHECK (
-				--  Note: not sure about field length
-				crc ~ '^[0-9a-f]{1,8}$'
-			) NOT NULL,
-	date		text CHECK (
-				length(date) > 0
-				AND
-				length(date) < 32
-			) NOT NULL,
-	time		text CHECK (
-				length(date) > 0
-				AND
-				length(date) < 32
-			) NOT NULL,
-
-	--  Note: sometime uncompressed > compressed, for random data
-	compressed	bigint CHECK (
-				compressed >= 0
-			) NOT NULL,
-	uncompressed	bigint CHECK (
-				uncompressed >= 0
-			),
-
-	ratio		real NOT NULL,
-	uncompressed_name text CHECK (
-				length(uncompressed_name) < 256
-			) NOT NULL
+	name		text NOT NULL
 );
-COMMENT ON TABLE gunzip_list_verbose IS
-  'Attributes of command gnu comand "gunzip --list --verbose"'
+COMMENT ON TABLE gunzip_uncompressed_name IS
+  'Uncompressed file name extracted from gunzip --list --name'
 ;
+
+/*
+ *  Reliable size of uncompressed file.
+ *
+ *  Note:
+ *	32bit file sizes make gunzip unreliable.
+ */
+DROP TABLE IF EXISTS gnuzip_uncompress_byte_count;
+CREATE TABLE gnuzip_uncompress_byte_count
+(
+	blob		udig
+				REFERENCES gunzip_test
+				PRIMARY KEY,
+	byte_count	bigint
+);
 
 COMMIT;
