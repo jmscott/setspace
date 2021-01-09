@@ -80,3 +80,5 @@ Possible Schemas:
 	kaitai.io - structured binary data language
 	qpdf - transformation on pdf files: https://github.com/qpdf/qpdf
 	       in particular, the json serialzation of a pdf
+	unpaywall - full index of research articles available
+	       https://unpaywall.org/products/snapshot
