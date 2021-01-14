@@ -22,7 +22,7 @@ die()
 {
 	cat >&2 <<END
 ERROR: $@
-usage: setspace [ls | help | <schema>] [...options]
+usage: setspace [ls | help | [<schema>] [...options]]
 END
 	exit 1
 }
@@ -39,10 +39,12 @@ Environment:
 END
 }
 
+#  help message
 if [ $# = 0 -o \( $# = 1 -a \( "$1" = help -o "$1" = --help \) \) ];  then
 	help
 	exit 0
 fi
+
 test -n "$SETSPACE_ROOT" || die "env not defined: SETSPACE_ROOT"
 cd $SETSPACE_ROOT || die "cd failed: $SETSPACE_ROOT"
 test -r etc/profile && . etc/profile
@@ -53,7 +55,6 @@ SCHEMAS=$(
 	done
 )
 test -z "$SCHEMA" || die "hmm, no schema in $SETSPACE_ROOT"
-
 
 ls_schema()
 {
