@@ -12,6 +12,12 @@
 #
 #	alias setcore='setspace setcore'
 #  Note:
+#	Think about command
+#
+#		setspace <udig>
+#
+#	to list all schemas containing a blob.
+#
 #	Think about moving this script above directory /schema/, so flowd
 #	and other details can be managed.
 #
