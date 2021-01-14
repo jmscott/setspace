@@ -80,6 +80,37 @@ END
 	exit 0
 }
 
+ls_blob()
+{
+	$PSQL <<END
+SELECT
+	s.blob AS "Blob",
+	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
+                AS "Age",
+	pg_size_pretty(bc.byte_count) AS "Size",
+	CASE
+	  WHEN u8.is_utf8 THEN
+	  	'Yes'
+	  ELSE
+	  	'No'
+	END AS "UTF-8",
+	CASE
+	  WHEN u8.is_utf8 THEN
+	  	convert_from(p32.prefix, 'UTF-8')
+	  ELSE
+		p32.prefix::text
+	END AS "32 Byte Prefix"
+  FROM
+  	setcore.service s
+	  LEFT OUTER JOIN setcore.byte_count bc ON (bc.blob = s.blob)
+	  LEFT OUTER JOIN setcore.is_utf8wf u8 ON (u8.blob = s.blob)
+	  LEFT OUTER JOIN setcore.byte_prefix_32 p32 ON (p32.blob = s.blob)
+  WHERE
+  	s.blob = '$1'
+END
+	exit 0
+}
+
 if [ $# = 0 ];  then
 	help
 	exit 0
