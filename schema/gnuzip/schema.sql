@@ -1,14 +1,11 @@
 /*
  *  Synopsis:
- *	SQL schema for gnu gzip command.	
+ *	SQL schema for gnu gzip command, with table for broken 64bit sizes.
  *  Note:
- *	Need to add test that exist code == 0 for foreign key reference
- *	in various subtables.  Can PG subtables have qualfiers?
- *
  *	Since gzip v1 is 32bit, the uncompressed file size is not reliable.
  */
 
-\set ON_ERROR_STOP
+\set ON_ERROR_STOP 1
 
 BEGIN;
 
@@ -55,8 +52,7 @@ COMMENT ON FUNCTION gunzip_test_exit_status(udig) IS
 ;
 
 /*
- *  Output of gunzip (v1.10) --list --name
- *	
+ *  File name extracted with gunzip (v1.10) --list --name
  */
 DROP TABLE IF EXISTS gunzip_uncompressed_name;
 CREATE TABLE gunzip_uncompressed_name
@@ -72,7 +68,7 @@ CREATE TABLE gunzip_uncompressed_name
 	)
 );
 COMMENT ON TABLE gunzip_uncompressed_name IS
-  'Uncompressed file name extracted from gunzip --list --name'
+  'File name extracted with gunzip (v1.10) --list --name'
 ;
 
 /*
