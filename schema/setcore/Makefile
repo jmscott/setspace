@@ -10,18 +10,20 @@ include ../schema.mk
 #  setspace schema code always in setspace install directory
 SETCORE_PREFIX=$(SETSPACE_PREFIX)/schema/setcore
 
-COMPILED=								\
-	byte-bitmap							\
-	byte-count							\
-	byte-prefix-32							\
-	byte-suffix-32
+DIST=setspace-schema-setcore.dist
+COMPILEs := $(shell (. $(DIST) && echo $$COMPILEs))
+SBINs := $(shell (. $(DIST) && echo $$SBINs))
+BINs := $(shell (. $(DIST) && echo $$BINs))
+LIBs := $(shell (. $(DIST) && echo $$LIBs))
+SRCs := $(shell (. $(DIST) && echo $$SRCs))
 
-all: $(COMPILED)
+all: $(COMPILEs)
 
 clean:
-	rm -f $(COMPILED)
+	rm -f $(COMPILEs)
 
 install: all
+
 ifdef SETCORE_PREFIX
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)	 		\
 				-m=u=rwx,g=rx,o= -d $(SETCORE_ROOT)
@@ -44,39 +46,19 @@ ifdef SETCORE_PREFIX
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
 				-m=u=rwx,go= -d $(SETCORE_ROOT)/tmp
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
-		byte-bitmap						\
-		byte-count						\
-		byte-prefix-32						\
-		byte-suffix-32						\
-		get-bool-command					\
-		get-is-utf8wf						\
-		merge-byte_bitmap					\
-		merge-bit_pop_count					\
-		merge-byte_count					\
-		merge-byte_prefix_32					\
-		merge-byte_suffix_32					\
-		service-xor						\
+		$(SBINs)						\
 		$(SETCORE_ROOT)/sbin
 
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
-		setcore							\
+		$(BINs)							\
 		$(SETCORE_ROOT)/bin
 
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
-		profile.example						\
-		psqlrc.example						\
-		rummy.sql						\
-		schema.sql						\
-		setcore.flow.example					\
-		setspace.schema.setcore.flowd.plist.example		\
+		$(LIBs)							\
 		$(SETCORE_ROOT)/lib
 
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)			\
-		byte-bitmap.c						\
-		byte-count.c						\
-		byte-prefix-32.c					\
-		byte-suffix-32.c					\
-		Makefile						\
+		$(SRCs)							\
 		$(SETCORE_ROOT)/src
 endif
 
@@ -87,8 +69,6 @@ distclean:
 	rm -rf $(SETCORE_ROOT)/sbin
 #endif
 
-frisk ff:
-	flowd frisk setcore.flow.example
 
 byte-bitmap: byte-bitmap.c ../../common.c
 	cc -o byte-bitmap $(CFLAGS) byte-bitmap.c
@@ -107,3 +87,5 @@ world:
 	$(MAKE) $(MFLAGS) all
 	$(MAKE) $(MFLAGS) distclean
 	$(MAKE) $(MFLAGS) install
+dist:
+	make-dist $(DIST)
