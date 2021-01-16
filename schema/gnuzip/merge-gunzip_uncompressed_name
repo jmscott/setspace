@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	merge name of gunzip in table gnunip_uncompressed_name
+#  Usage:
+#	merge-gunzip_uncompressed_byte_count <udig>
+#  Exit Status:
+#	0	merged
+#	1	blob does not exist
+#	2	failed
+#  Note:
+#	Not sure how cut -f behaves when name is not well behaved text like
+#	utf8.
+#
+
+TMP_NAME=${TMDIR:=/tmp}/$(basename $0).$$
+PSQL='psql
+	--quiet
+	--no-psqlrc
+	--set ON_ERROR_STOP=1
+'
+
+
+die()
+{
+	echo "$(basename $0): ERROR: $@" >&2
+	exit 1
+}
+
+test $# = 1 || die 'wrong number of arguments'
+BLOB=$1
+
+trap "rm -f $TMP_NAME" EXIT
+
+blobio get --service $BLOBIO_SERVICE --udig "$BLOB"			|
+	gunzip --list --name						|
+	tail -1								|
+	cut -b 48-							\
+	>$TMP_NAME
+STATUS=${PIPESTATUS[*]}
+case "$STATUS" in
+
+#  141 implies broken write() on pipe for blob gets
+
+'141 0 0 0' | '0 0 0 0')
+	;;
+'1 *')
+	exit 1;
+	;;
+*)
+	die "blob get | gunzip name failed: exit status=$STATUS"
+	;;
+esac
+NAME=$(cat $TMP_NAME)		#  broken
+
+$PSQL <<END || die "psql insert failed: exit status=$?"
+INSERT INTO gnuzip.gunzip_uncompressed_name(
+	blob,
+	name
+  ) VALUES (
+  	'$BLOB',
+	'$NAME'
+  ) ON CONFLICT
+  	DO NOTHING
+;
+END
+exit 0
