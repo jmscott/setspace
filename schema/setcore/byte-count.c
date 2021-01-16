@@ -7,9 +7,6 @@
  *  	2	read on standard input failed
  *	3	write to standard output failed
  *	4	wrong number of arguments
- *  Blame:
- *  	jmscott@setspace.com
- *  	setspace@gmail.com
  */
 
 #include <string.h>

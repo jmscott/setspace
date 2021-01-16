@@ -13,9 +13,6 @@
  *	STATUS=$?
  *	test $STATUS = 0 || exit $STATUS
  *	echo "0x$HEX"
- *  Blame:
- *  	jmscott@setspace.com
- *  	setspace@gmail.com
  */
 #include <string.h>
 #include <errno.h>

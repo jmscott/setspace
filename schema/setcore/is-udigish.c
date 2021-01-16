@@ -8,9 +8,6 @@
  *	1	does not match udig in input stream.
  *	2	bad argument count on command line
  *	3	bad read(0)
- *  Blame:
- *  	jmscott@setspace.com
- *  	setspace@gmail.com
  *  Note:
  *	Current algorithm may be wrong.
  *

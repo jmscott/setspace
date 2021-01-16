@@ -6,9 +6,6 @@
  *	1	wrong number of arguments
  *  	2	read on standard input failed
  *	3	write to standard output failed
- *  Blame:
- *  	jmscott@setspace.com
- *  	setspace@gmail.com
  *  Note:
  *	The newline count is byte oriented.  No assumption is made about
  *	the structure of the stream of bytes.

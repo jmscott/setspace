@@ -1,8 +1,6 @@
 /*
  *  Synopsis:
  *	Write the 32 byte suffix of the blob as ascii hexidecimal
- *  Blame:
- *  	jmscott@setspace.com
  *  Exit Status:
  *  	0	ok, wrote suffix
  *	1	bad argument count on command line
