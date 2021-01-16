@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	merge name of gunzip in table gnunip_uncompressed_name
+#	merge count into table gunzip_uncompressed_byte_count
 #  Usage:
 #	merge-gunzip_uncompressed_byte_count <udig>
 #  Exit Status:
