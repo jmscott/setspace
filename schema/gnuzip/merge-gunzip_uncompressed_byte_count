@@ -1,0 +1,68 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	merge name of gunzip in table gnunip_uncompressed_name
+#  Usage:
+#	merge-gunzip_uncompressed_byte_count <udig>
+#  Exit Status:
+#	0	merged
+#	1	blob does not exist
+#	2	failed
+#
+
+TMP_COUNT=${TMDIR:=/tmp}/$(basename $0).$$
+PSQL='psql
+	--quiet
+	--no-psqlrc
+	--set ON_ERROR_STOP=1
+'
+
+
+die()
+{
+	echo "$(basename $0): ERROR: $@" >&2
+	exit 1
+}
+
+test $# = 1 || die 'wrong number of arguments'
+BLOB=$1
+
+trap "rm -f $TMP_COUNT" EXIT
+
+blobio get --service $BLOBIO_SERVICE --udig "$BLOB"			|
+	gunzip -c							|
+	byte-count >$TMP_COUNT
+
+STATUS=${PIPESTATUS[*]}
+case "$STATUS" in
+'0 0 0')
+	BYTE_COUNT=$(cat $TMP_COUNT)
+	;;
+'1 *')				#  blob does not exist
+	exit 1
+	;;
+*)
+	die "blobio | gunzip | byte-count failed: exit status=$STATUS"
+	;;
+esac
+
+case "$BYTE_COUNT" in
+[0-9]*)
+	;;
+*)
+	die "unexpected count: $BYTE_COUNT"
+	;;
+esac
+
+$PSQL <<END || die "psql insert failed: exit status=$?"
+INSERT INTO gnuzip.gunzip_uncompressed_byte_count(
+	blob,
+	byte_count
+  ) VALUES (
+  	'$BLOB',
+	$BYTE_COUNT
+  ) ON CONFLICT
+  	DO NOTHING
+;
+END
+exit 0

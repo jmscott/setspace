@@ -29,7 +29,7 @@ COMMENT ON TABLE gunzip_test IS
 ;
 
 /*
- *  Integrity tests need to insure exit_status == 0
+ *  Integrity tests to insure exit_status == 0
  *  for child tables.  Perhaps a inherited table is better
  *  approach.
  */
@@ -61,14 +61,16 @@ CREATE TABLE gunzip_uncompressed_name
 				REFERENCES gunzip_test
 				ON DELETE CASCADE
 				PRIMARY KEY,
-	name		text NOT NULL,
+	name		bytea CHECK (
+				length(name) < 256
+			) NOT NULL,
 
 	CONSTRAINT exit_status_0 CHECK (
 		gnuzip.gunzip_test_exit_status(blob) = 0
 	)
 );
 COMMENT ON TABLE gunzip_uncompressed_name IS
-  'File name extracted with gunzip (v1.10) --list --name'
+  'File name extracted with gunzip --list --name'
 ;
 
 /*
@@ -77,8 +79,8 @@ COMMENT ON TABLE gunzip_uncompressed_name IS
  *  Note:
  *	32bit file sizes make gunzip unreliable.
  */
-DROP TABLE IF EXISTS gnuzip_uncompressed_byte_count;
-CREATE TABLE gnuzip_uncompressed_byte_count
+DROP TABLE IF EXISTS gunzip_uncompressed_byte_count;
+CREATE TABLE gunzip_uncompressed_byte_count
 (
 	blob		udig
 				REFERENCES gunzip_test
@@ -90,7 +92,7 @@ CREATE TABLE gnuzip_uncompressed_byte_count
 		gnuzip.gunzip_test_exit_status(blob) = 0
 	)
 );
-COMMENT ON TABLE gnuzip_uncompressed_byte_count IS
+COMMENT ON TABLE gunzip_uncompressed_byte_count IS
   'Correct, uncompressed file size calculated "gunzip --stdout | setcore/byte-count'
 ;
 
