@@ -84,3 +84,5 @@ Possible Schemas:
 	       https://unpaywall.org/products/snapshot
 	goencry - programming language detector
 		https://github.com/go-enry/go-enry
+	gitling - lang detector used at giuthub
+		https://github.com/github/linguist
