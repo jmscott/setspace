@@ -28,11 +28,13 @@
 PRODUCT=setspace-schema-gnuzip
 
 LIBs="
+	gnuzip.flow.example
 	profile.example
 	psqlrc.example
 	rummy.sql
 	schema.sql
 	select-gnuzip-candidate.sql
+	setspace-schema-gnuzip.dist
 	setspace.schema.gunzip.flowd.plist.example
 "
 
