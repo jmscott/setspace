@@ -9,6 +9,9 @@ include ../schema.mk
 DIST=setspace-schema-gnuzip.dist
 SBINs := $(shell (. ./$(DIST) && echo $$SBINs))
 LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
+COMPILEs := $(shell (. ./$(DIST) && echo $$COMPILEs))
+
+all: $(COMPILEs)
 
 install:
 	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) 			\
@@ -38,7 +41,23 @@ distclean:
 	rm -rf $(GNUZIP_PREFIX)/sbin
 	rm -rf $(GNUZIP_PREFIX)/lib
 world:
+	$(MAKE) $(MFLAGS) clean
+	$(MAKE) $(MFLAGS) all
 	$(MAKE) $(MFLAGS) distclean
 	$(MAKE) $(MFLAGS) install
-dist:
+dist: all
 	make-dist $(DIST)
+
+merge-stdin-gunzip_uncompressed_name: 					\
+		merge-stdin-gunzip_uncompressed_name.pgc		\
+		../../common.c						\
+		../../common-ecpg.c
+	ecpg merge-stdin-gunzip_uncompressed_name.pgc
+	$(CC) $(CFLAGS) -I$(PGINC)					\
+		merge-stdin-gunzip_uncompressed_name.c			\
+		-o merge-stdin-gunzip_uncompressed_name			\
+		-L$(PGLIB)						\
+		-lecpg
+	rm merge-stdin-gunzip_uncompressed_name.c
+clean:
+	rm -f $(COMPILEs)
