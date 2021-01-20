@@ -17,10 +17,14 @@ install:
 				-d $(GNUZIP_PREFIX)/etc
 	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) -m u=wrx,go=	\
 				-d $(GNUZIP_PREFIX)/sbin
+	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) -m u=wrx,go=	\
+				-d $(GNUZIP_PREFIX)/run
 	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) 			\
 				-d $(GNUZIP_PREFIX)/log
-	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) 			\
+	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) -m u=wrx,go=	\
 				-d $(GNUZIP_PREFIX)/tmp
+	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) -m u=wrx,go=	\
+				-d $(GNUZIP_PREFIX)/spool
 	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) 			\
 				-d $(GNUZIP_PREFIX)/lib
 	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) -m u=rx,go=	\

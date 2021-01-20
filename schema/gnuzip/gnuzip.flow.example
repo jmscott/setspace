@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Populate PostgreSQL schema for Fine Free File command facts
+#	Populate PostgreSQL schema for gnuzip schema.
 #  See:
 #	schema.sql
 #
