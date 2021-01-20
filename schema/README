@@ -82,3 +82,9 @@ Possible Schemas:
 	       in particular, the json serialzation of a pdf
 	unpaywall - full index of research articles available
 	       https://unpaywall.org/products/snapshot
+	goencry - programming language detector
+		https://github.com/go-enry/go-enry
+	gitling - lang detector used at giuthub
+		https://github.com/github/linguist
+	scc - stats on programming languages files
+		https://github.com/boyter/scc
