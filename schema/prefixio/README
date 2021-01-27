@@ -11,6 +11,21 @@ Description:
 	Since most routing rules are immutable, the queries are highly
 	cacheable.  cool.
 Note:
+	Consider routing rules in postgresql.  Possible tables could be:
+
+		prefixio.transport
+			name,
+			protocol
+			endpoint
+		prefixio.rule
+			prefix,
+			transport
+
+	Perhaps cache the routing tables, updated, say, once per minute.
+
+		cache/transport.db
+		cache/rule.db
+
 	Consider adding mapping of prefixes/file type to file guesses.
 
 		http://www.filesig.co.uk/ofsdb.html
