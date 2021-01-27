@@ -1,0 +1,56 @@
+/*
+ *  Synopsis:
+ *  	Merge stdout of command xmlwf into table expat2.xmlwf.
+ *  Usage:
+ *	merge-stdin-gunzip_uncompressed_name <udig>
+ *  Arguments:
+ *  	1	udig of blob
+ *  Exit Status:
+ *  	0	ok, tuple was merged
+ *  	1	SQL error
+ *  	2	general failure
+ */
+
+static char progname[] = "merge-gunzip_uncompressed_name";
+
+#define EXIT_OK		0
+#define EXIT_BAD_READ	2
+
+#define COMMON_NEED_READ_READ
+#define COMMON_NEED_DIE2
+#include "../../common.c"
+
+int
+main(int argc, char **argv)
+{
+EXEC SQL BEGIN DECLARE SECTION;
+	char *blob;
+EXEC SQL END DECLARE SECTION;
+
+	if (argc != 2)
+		die(2, "wrong number of arguments");
+
+	close(1);
+
+	//  parse the udig as argv[1]
+	blob = argv[1];
+	size_t len = strlen(blob);
+	if (len < 28 || len > 128 || strchr(blob, ':') == NULL)
+		die2(2, "syntax error in xml udig", blob);
+
+	/*
+	 *  Merge blob into expat2.xmlwf_utf8 table.
+	 */
+	EXEC SQL INSERT INTO expat2.xmlwf_utf8(
+		blob,
+		stdout
+	  ) VALUES (
+		:blob::udig,
+		'wtf'
+	  )
+  	  ON CONFLICT
+  		DO NOTHING
+	;
+
+	_exit(0);
+}
