@@ -16,5 +16,6 @@ touch $BRR
 chmod u=rw,g=w,o= $BRR
 
 #  need byte-count in setcore/sbin
+#  on mac, add ports /opt/local/libexec/gnubin to PATH or brew equivalent.
 
-PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$SETSPACE_ROOT/schema/setcore/sbin:$PATH
+PATH=/opt/local/libexec/gnubin:$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$SETSPACE_ROOT/schema/setcore/sbin:$PATH
