@@ -2,7 +2,8 @@
  *  Synopsis:
  *	SQL schema for gnu gzip command, with table for broken 64bit sizes.
  *  Note:
- *	Since gzip v1 is 32bit, the uncompressed file size is not reliable.
+ *	Since gzip v1 is 32bit, the uncompressed file size is not reliable,
+ *	hence we calculate size with setcore/sbin/byte_count.
  */
 
 \set ON_ERROR_STOP 1
@@ -48,7 +49,7 @@ CREATE FUNCTION gunzip_test_exit_status(blob udig)
   $$ LANGUAGE SQL
 ; 
 COMMENT ON FUNCTION gunzip_test_exit_status(udig) IS
-  'Fetch the exit status in table gunzip_test'
+  'Fetch the exit status in table gunzip_test used by constraint'
 ;
 
 /*
@@ -93,7 +94,7 @@ CREATE TABLE gunzip_uncompressed_byte_count
 	)
 );
 COMMENT ON TABLE gunzip_uncompressed_byte_count IS
-  'Correct, uncompressed file size calculated "gunzip --stdout | setcore/byte-count'
+  'Correct, uncompressed file size calculated "gunzip --stdout | setcore/byte-count"'
 ;
 
 COMMIT;
