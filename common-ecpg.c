@@ -1,7 +1,9 @@
 /*
  *  Synopsis:
- *	Common routines used by PostgreSQL ecpg code
+ *	Common routines used by PostgreSQL ecpg code, depends in common.c
  *  Note:
+ *	Need to add explcit dependency on common.c
+ *
  *	The process exit status of both warnings and errors are remapped through
  *	the array _ecpg_state2exit[] array.  Do we need two arrays,
  *	one for	warnings and one for errors?
@@ -20,7 +22,8 @@ struct _ecpg_sql_state_fault
 };
 
 /*
- *  Note: Need to add the process name to the error message
+ *  Synopsis:
+ *	Low level handler for all sql faults that end with die().
  */
 static void
 _ecpg_sql_fault(int status, char *what, struct _ecpg_sql_state_fault *fault)
