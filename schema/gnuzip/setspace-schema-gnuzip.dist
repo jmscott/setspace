@@ -48,6 +48,7 @@ SBINs="
 	gunzip_list_verbose2sql
 	merge-gunzip_test
 	merge-gunzip_uncompressed_byte_count
+	merge-gunzip_uncompressed_name
 	$COMPILEs
 "
 

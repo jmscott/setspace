@@ -51,17 +51,6 @@ case "$STATUS" in
 	die "blob get | gunzip name failed: exit status=$STATUS"
 	;;
 esac
-NAME=$(cat $TMP_NAME)		#  broken
 
-$PSQL <<END || die "psql insert failed: exit status=$?"
-INSERT INTO gnuzip.gunzip_uncompressed_name(
-	blob,
-	name
-  ) VALUES (
-  	'$BLOB',
-	'$NAME'
-  ) ON CONFLICT
-  	DO NOTHING
-;
-END
-exit 0
+merge-stdin-gunzip_uncompressed_name $BLOB <$TMP_NAME 			||
+	die "merge-stdin-gunzip_uncompressed_name failed: exit status=$?"
