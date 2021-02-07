@@ -30,6 +30,9 @@ END
 			UNKNOWN)
 				DURATION=unknown
 				;;
+			N/A)
+				DURATION=N/A
+				;;
 			[0-9]*)
 				DURATION=$(
 					duration-english		\
