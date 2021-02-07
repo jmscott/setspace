@@ -48,7 +48,7 @@ _stat_pid()
 			;;
 		esac
 	else
-		SINCE=N/A
+		SINCE=n/a
 		STATE=OFF
 	fi
 	echo "$SCHEMA	$STATE	$SINCE"

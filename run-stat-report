@@ -24,14 +24,31 @@ Schema	Status	Up
 -------------	------	------
 END
 	run-stat							|
-		sort --key=2 --key=1 --field-separator=$'\t'		|
-		while read SCHEMA STATUS START_EPOCH;  do
+		while read SCHEMA STATE START_EPOCH;  do
+			case "$STATE" in
+			UP)
+				ORDER=1
+				;;
+			ZOMBIE)
+				ORDER=2
+				;;
+			DOWN)
+				ORDER=3
+				;;
+			OFF)
+				ORDER=4
+				;;
+			esac
+			echo "$SCHEMA	$STATE	$START_EPOCH	$ORDER"
+		done							|
+		sort --key=4 --key=1 --field-separator=$'\t'		|
+		while read SCHEMA STATE START_EPOCH ORDER;  do
 			case "$START_EPOCH" in
 			UNKNOWN)
 				DURATION=unknown
 				;;
-			N/A)
-				DURATION=N/A
+			n/a)
+				DURATION=n/a
 				;;
 			[0-9]*)
 				DURATION=$(
@@ -43,6 +60,6 @@ END
 				die "unknown start epoch: $START_EPOCH"
 				;;
 			esac
-			echo "$SCHEMA	$STATUS	$DURATION"
+			echo "$SCHEMA	$STATE	$DURATION"
 		done
 ) | column -s '	' -t | sed 's/ *	//'
