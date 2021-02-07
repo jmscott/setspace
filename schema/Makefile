@@ -29,6 +29,7 @@ all:
 	cd jsonio && $(MAKE) $(MFLAGS) all
 	cd pdfbox && $(MAKE) $(MFLAGS) all
 	cd fffile && $(MAKE) $(MFLAGS) all
+	cd gnuzip && $(MAKE) $(MFLAGS) all
 
 createpg:
 	createdb setspace --encoding=UTF8 --template template0
@@ -44,6 +45,7 @@ clean:
 	cd jsonio && $(MAKE) $(MFLAGS) clean
 	cd pdfbox && $(MAKE) $(MFLAGS) clean
 	cd fffile && $(MAKE) $(MFLAGS) clean
+	cd gnuzip && $(MAKE) $(MFLAGS) clean
 
 install:
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
