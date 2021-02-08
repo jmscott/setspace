@@ -27,6 +27,13 @@ export PGDATABASE=${PGDATABASE:=setspace}
 #  golang libpq gripes about PGSYSCONFDIR
 unset PGSYSCONFDIR
 
+#
+#  Note:
+#	on mac os add ports distro from various tools, like gnu distros
+#
+#		/opt/local/libexec/gnubin
+#		/opt/local/bin
+#
 PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:$BLOBIO_ROOT/bin:$PGHOME/bin:/usr/bin:/bin:$PATH
 
 export TMPDIR=$SETSPACE_ROOT/tmp
