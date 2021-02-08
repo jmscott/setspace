@@ -13,6 +13,9 @@
 #	<key>WorkingDirectory</key>
 #	<string>/usr/local/setspace/schema/fffile</string>
 #  Note:
+#	Think about profile in $SETSPACE_ROOT/schema/etc, since most flowds
+#	will search $SETSPACE_ROOT/schema/<schema>/{bin,sbin}.
+#
 #	On MaxOS need to move to /usr/local/setspace/bin, to get around
 #	new SIP security model.  dir sbin/ is only accessable by setspace user.
 #	where are the docs for this SIP palaver?
