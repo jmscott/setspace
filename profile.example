@@ -34,7 +34,9 @@ unset PGSYSCONFDIR
 #		/opt/local/libexec/gnubin
 #		/opt/local/bin
 #
-PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:$BLOBIO_ROOT/bin:$PGHOME/bin:/usr/bin:/bin:$PATH
+#	notice $PATH not added at end!
+#
+PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:$BLOBIO_ROOT/bin:$PGHOME/bin:/usr/bin:/bin
 
 export TMPDIR=$SETSPACE_ROOT/tmp
 if [ ! -e $TMPDIR ];  then
