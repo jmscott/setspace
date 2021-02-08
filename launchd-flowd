@@ -3,6 +3,8 @@
 #  Synopsis:
 #	Synchonously start flowd server for a schema from Mac OS/X launchd.
 #  Usage:
+#	launchd-flowd path/to/<schema>.flow
+#
 #	<key>ProgramArguments</key>
 #	  <array>
 #	    <string>/usr/local/setspace/sbin/launchd-flowd</string>
@@ -52,11 +54,15 @@ PROFILE=$SETSPACE_ROOT/etc/profile
 test -r $PROFILE || die "can not read setspace profile: $PROFILE"
 . $PROFILE || die "sourcing setspace profile failed: $PROFILE"
 
-#  source in schema profile
+#  source in schema specific profile
 
 PROFILE=etc/profile
 test -r etc/profile || die "can not read schema profile: $PROFILE"
 . $PROFILE || die "sourcing schema profile failed: $PROFILE"
 
-rm -f run/flowd.pid || die "rm run/flowd.pid failed: exit status=$?"
-flowd server $FLOW
+log 'dumping process environment ...'
+env | while read E;  do
+	log "$E"
+done
+
+exec flowd server $FLOW
