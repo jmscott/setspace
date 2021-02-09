@@ -28,7 +28,7 @@ ifdef SETCORE_PREFIX
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)	 		\
 				-m=u=rwx,g=rx,o= -d $(SETCORE_ROOT)
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
-				-m=u=rwx,go= -d $(SETCORE_PREFIX)/spool
+				-m=u=rwx,go=x -d $(SETCORE_PREFIX)/spool
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
 				-m=u=rwx,go= -d $(SETCORE_ROOT)/run
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
