@@ -69,13 +69,13 @@ SRCs="
 #ETC=""
 
 #  Uncomment to create spool/ directory
-#SPOOL=""
+SPOOL=""
 
 #  Uncomment to create data/ directory
 #DATA=""
 
 #  Uncomment to create run/ directory
-#RUN=""
+RUN=""
 
 #  Uncomment to create log/ directory
 #LOG=""
