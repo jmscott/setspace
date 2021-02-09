@@ -14,43 +14,86 @@
 static char progname[] = "merge-gunzip_uncompressed_name";
 
 #define EXIT_OK		0
-#define EXIT_BAD_READ	2
+#define EXIT_SQLERROR	1
+#define EXIT_BAD	2
 
-#define COMMON_NEED_READ_READ
+#define EXIT_BAD_READ	EXIT_BAD
+
 #define COMMON_NEED_DIE2
+#define COMMON_NEED_IS_UDIG
+#define COMMON_NEED_READ
 #include "../../common.c"
+
+#define COMMON_ECPG_NEED_SQL_WARNING
+#define COMMON_ECPG_NEED_SQL_ERROR
+#define EXIT_SQLWARN	EXIT_SQLERROR
+#include "../../common-ecpg.c"
+
+static struct _ecpg_sql_state_fault no_warn[] =
+{
+        {"02000", 0},                //  no data for conflict on upsert/insert
+        {(char *)0, 0}
+};
 
 int
 main(int argc, char **argv)
 {
 EXEC SQL BEGIN DECLARE SECTION;
+
 	char *blob;
+	bytea name[255];		//  length declared in schema.sql
+
 EXEC SQL END DECLARE SECTION;
 
 	if (argc != 2)
 		die(2, "wrong number of arguments");
 
 	close(1);
+	blob = argv[1];
 
 	//  parse the udig as argv[1]
-	blob = argv[1];
-	size_t len = strlen(blob);
-	if (len < 28 || len > 128 || strchr(blob, ':') == NULL)
-		die2(2, "syntax error in xml udig", blob);
+	if (!_is_udig(blob))
+		die2(EXIT_BAD, "syntax error in udig of gzipped blob", blob);
 
 	/*
-	 *  Merge blob into expat2.xmlwf_utf8 table.
+	 *  Slurp up the uncompressed name from standard input.
 	 */
-	EXEC SQL INSERT INTO expat2.xmlwf_utf8(
+	char *n = &name.arr[0];
+	char *n_limit = n + sizeof name.arr;
+	while (n < n_limit) {
+		ssize_t nr = _read(0, n, sizeof name.arr - (n - name.arr));
+		if (nr == 0)
+			break;
+		n += nr;
+	}
+	//  verify we are at end of standard input.
+	if (n == n_limit && _read(0, n_limit, 1) != 0)
+		die(EXIT_BAD, "end of file not reached on standard input");
+
+	name.len = n - name.arr;
+
+	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error(
+		(struct _ecpg_sql_state_fault *)0
+	);
+	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_warning(no_warn);
+	EXEC SQL CONNECT TO default;
+
+	EXEC SQL BEGIN TRANSACTION;
+	/*
+	 *  Merge blob into table gunzip_uncompressed_name
+	 */
+	EXEC SQL INSERT INTO gnuzip.gunzip_uncompressed_name(
 		blob,
-		stdout
+		name
 	  ) VALUES (
 		:blob::udig,
-		'wtf'
+		:name
 	  )
   	  ON CONFLICT
   		DO NOTHING
 	;
+	EXEC SQL END TRANSACTION;
+	EXEC SQL DISCONNECT ALL;
 
 	_exit(0);
 }

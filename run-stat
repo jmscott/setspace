@@ -18,27 +18,39 @@ die()
 _stat_pid()
 {
 	SCHEMA=$1
-	PID_PATH=$SCHEMA/run/flowd.pid
-	SINCE=UNKNOWN
 
-	stale-mtime $STALE_AFTER $PID_PATH
-	STATUS=$?
-	case $STATUS in
-	0)
-		SINCE=$(perl -e "print((stat('$PID_PATH'))[9]);")
-		STATE=ZOMBIE
-		;;
-	1)
-		STATE=UP
-		SINCE=$(head -2 $PID_PATH | tail -1)
-		;;
-	2)
-		STATE=DOWN
-		;;
-	*)
-		die "stale-mtime failed: exit status=$?"
-		;;
-	esac
+	#
+	#  if the file <schema>.flow exists, then the process flowd should be
+	#  running; #  otherwise, the flowd process is intentionally off.
+	#
+	FLOW=$SCHEMA/etc/$SCHEMA.flow
+
+	if [ -e $FLOW ];  then
+		PID_PATH=$SCHEMA/run/flowd.pid
+		SINCE=UNKNOWN
+
+		stale-mtime $STALE_AFTER $PID_PATH
+		STATUS=$?
+		case $STATUS in
+		0)
+			SINCE=$(perl -e "print((stat('$PID_PATH'))[9]);")
+			STATE=ZOMBIE
+			;;
+		1)
+			STATE=UP
+			SINCE=$(head -2 $PID_PATH | tail -1)
+			;;
+		2)
+			STATE=DOWN
+			;;
+		*)
+			die "stale-mtime failed: exit status=$?"
+			;;
+		esac
+	else
+		SINCE=n/a
+		STATE=OFF
+	fi
 	echo "$SCHEMA	$STATE	$SINCE"
 }
 

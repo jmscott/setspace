@@ -3,6 +3,8 @@
 #  Synopsis:
 #	Synchonously start flowd server for a schema from Mac OS/X launchd.
 #  Usage:
+#	launchd-flowd path/to/<schema>.flow
+#
 #	<key>ProgramArguments</key>
 #	  <array>
 #	    <string>/usr/local/setspace/sbin/launchd-flowd</string>
@@ -11,6 +13,13 @@
 #	<key>WorkingDirectory</key>
 #	<string>/usr/local/setspace/schema/fffile</string>
 #  Note:
+#	Think about profile in $SETSPACE_ROOT/schema/etc, since most flowds
+#	will search $SETSPACE_ROOT/schema/<schema>/{bin,sbin}.
+#
+#	On MaxOS need to move to /usr/local/setspace/bin, to get around
+#	new SIP security model.  dir sbin/ is only accessable by setspace user.
+#	where are the docs for this SIP palaver?
+#
 #	Do we need to call zap-proc run/flowd.pid?
 #
 
@@ -48,11 +57,15 @@ PROFILE=$SETSPACE_ROOT/etc/profile
 test -r $PROFILE || die "can not read setspace profile: $PROFILE"
 . $PROFILE || die "sourcing setspace profile failed: $PROFILE"
 
-#  source in schema profile
+#  source in schema specific profile
 
 PROFILE=etc/profile
 test -r etc/profile || die "can not read schema profile: $PROFILE"
 . $PROFILE || die "sourcing schema profile failed: $PROFILE"
 
-rm -f run/flowd.pid || die "rm run/flowd.pid failed: exit status=$?"
-flowd server $FLOW
+log 'dumping process environment ...'
+env | while read E;  do
+	log "$E"
+done
+
+exec flowd server $FLOW

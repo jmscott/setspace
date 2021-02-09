@@ -78,6 +78,10 @@
 #define COMMON_NEED_DIE2
 #endif
 
+#if defined(COMMON_NEED_DIE2)
+#define COMMON_NEED_DIE
+#endif
+
 /*
  * Synopsis:
  *  	Fast, safe and simple string concatenator
@@ -528,7 +532,7 @@ static int
 _is_udig(char *udig)
 {
 	int len = strlen(udig);
-	if (len < 34 || len > 137)
+	if (len < 30 || len > 137)
 		return 0;
 
 	//  first char is lower case ascii alpha.

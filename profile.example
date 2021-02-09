@@ -12,7 +12,7 @@ export SETSPACE_ROOT=${SETSPACE_ROOT:=/usr/local/setspace}
 export BLOBIO_ROOT=${BLOBIO_ROOT:=/usr/local/blobio}
 export BLOBIO_SERVICE=${BLOBIO_SERVICE:=bio4:localhost:1797}
 export BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=fs:$BLOBIO_ROOT}
-export BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=sha}
+export BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=bc160}
 
 #  set postgresql variables
 
@@ -27,9 +27,16 @@ export PGDATABASE=${PGDATABASE:=setspace}
 #  golang libpq gripes about PGSYSCONFDIR
 unset PGSYSCONFDIR
 
-PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:$BLOBIO_ROOT/bin:$PGHOME/bin:/usr/local/bin:/usr/bin:/bin:$PATH
-
-#  blobio service rofs needs tmp/ owned by caller, to remove hard links
+#
+#  Note:
+#	on mac os add ports distro from various tools, like gnu distros
+#
+#		/opt/local/libexec/gnubin
+#		/opt/local/bin
+#
+#	notice $PATH not added at end!
+#
+PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:$BLOBIO_ROOT/bin:$PGHOME/bin:/usr/bin:/bin
 
 export TMPDIR=$SETSPACE_ROOT/tmp
 if [ ! -e $TMPDIR ];  then

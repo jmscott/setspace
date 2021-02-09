@@ -33,13 +33,13 @@ COMPILEs="
 
 LIBs="
 	gnuzip.flow.example
+	gunzip.flowd.plist.example
 	profile.example
 	psqlrc.example
 	rummy.sql
 	schema.sql
 	select-gnuzip-candidate.sql
 	setspace-schema-gnuzip.dist
-	setspace.schema.gunzip.flowd.plist.example
 "
 
 #BINs=""
@@ -48,6 +48,7 @@ SBINs="
 	gunzip_list_verbose2sql
 	merge-gunzip_test
 	merge-gunzip_uncompressed_byte_count
+	merge-gunzip_uncompressed_name
 	$COMPILEs
 "
 

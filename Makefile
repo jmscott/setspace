@@ -16,7 +16,6 @@ ifeq "$(shell uname)" "Linux"
 endif
 
 PROG=					\
-	RFC3339Nano			\
 	append-brr			\
 	dec2pgbit			\
 	escape-json-utf8		\
@@ -91,7 +90,6 @@ install: all
 		escape-json-utf8					\
 		file-stat-size						\
 		is-utf8wf						\
-		RFC3339Nano						\
 		spin-wait-blob						\
 		$(SETSPACE_PREFIX)/bin
 
@@ -103,7 +101,6 @@ install: all
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
 		Makefile						\
-		RFC3339Nano.c						\
 		append-brr.c						\
 		common-ecpg.c						\
 		common.c						\
@@ -126,9 +123,6 @@ endif
 
 append-brr: append-brr.c common.c
 	cc $(CFLAGS) -o append-brr append-brr.c
-
-RFC3339Nano: RFC3339Nano.c common.c macosx.c macosx.h
-	cc $(CFLAGS) -o RFC3339Nano RFC3339Nano.c macosx.c $(RT_LINK)
 
 flip-tail: flip-tail.c common.c
 	cc -o flip-tail $(CFLAGS) flip-tail.c
