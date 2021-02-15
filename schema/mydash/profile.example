@@ -1,12 +1,12 @@
 #
 #  Synopsis:
-#	Profile for typical pdfbox server
+#	Profile for typical mydash server
 #  Usage:
-#	. $SETSPACE_ROOT/schema/pdfbox/etc/profile
+#	. $SETSPACE_ROOT/schema/mydash/etc/profile
 #  Note:
 #	Contemplate replacing env variable SCHEMA_ROOT with SETSPACE_SCHEMA
 #
-SCHEMA_ROOT=$SETSPACE_ROOT/schema/pdfbox
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/mydash
 export TMPDIR=$SCHEMA_ROOT/tmp
 mkdir -p $TMPDIR
 
