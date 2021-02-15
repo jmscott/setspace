@@ -26,7 +26,21 @@ PROG=					\
 	tas-run-lock			\
 	tas-run-unlock			\
 
-all: $(PROG) $(CGI) 
+check-local:
+	@test -n "$(PDFBOX_APP2_JAR)"				||	\
+		(echo "make var not defined: PDFBOX_APP2_JAR";  false)
+	@test -n "$(PGHOME)"				||		\
+		(echo "make var not defined: PGHOME";  false)
+	@test -n "$(GODIST)"				||		\
+		(echo "make var not defined: GODIST";  false)
+
+	@test -r $(PDFBOX_APP2_JAR)				||	\
+		(echo "can not read pdfbox app jar: $(PDFBOX_APP2_JAR)"; false)
+	@test -d $(PGHOME)					||	\
+		(echo "can not find PGHOME dir: $(PGHOME)"; false)
+	@test -d $(GODIST)					||	\
+		(echo "can not find GODIST dir: $(GODIST)"; false)
+all: check-local $(PROG) $(CGI)
 	cd schema && $(MAKE) all
 ifdef DASH_DNS_VHOST_SUFFIX
 	cd www && make all
