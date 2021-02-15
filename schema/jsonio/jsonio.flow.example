@@ -23,8 +23,8 @@ boot
 	#  Note:
 	#	Since no workers can we set to 0?
 	#
-	os_exec_worker_count = 1;
-	os_exec_capacity = 1;
+	os_exec_worker_count = 16;
+	os_exec_capacity = 8;
 
 	xdr_roll_duration = "24h";
 	fdr_roll_duration = "24h";
