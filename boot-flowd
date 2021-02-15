@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 #  Synopsis:
 #	Startup a flowd server against a particular schema
