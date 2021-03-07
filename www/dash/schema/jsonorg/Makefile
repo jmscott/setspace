@@ -33,6 +33,7 @@ install: all
 		jsonorg.d/mime.json.pl					\
 		jsonorg.d/pre.pl					\
 		jsonorg.d/span.nav.pl					\
+		jsonorg.d/span.navfail.pl				\
 		jsonorg.d/table.pl					\
 		$(WWW_PREFIX)/lib/jsonorg.d
 	install								\
