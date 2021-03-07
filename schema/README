@@ -88,3 +88,5 @@ Possible Schemas:
 		https://github.com/github/linguist
 	scc - stats on programming languages files
 		https://github.com/boyter/scc
+	binwalk - libmagic (fffile) tuned for binary files and forensics
+		https://github.com/ReFirmLabs/binwalk
