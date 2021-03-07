@@ -6,7 +6,7 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
-DIST=setspace-schema-gnuzip.dist
+DIST=./setspace-schema-gnuzip.dist
 SBINs := $(shell (. ./$(DIST) && echo $$SBINs))
 LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
 COMPILEs := $(shell (. ./$(DIST) && echo $$COMPILEs))

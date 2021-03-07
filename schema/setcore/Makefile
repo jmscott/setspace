@@ -10,7 +10,7 @@ include ../schema.mk
 #  setspace schema code always in setspace install directory
 SETCORE_PREFIX=$(SETSPACE_PREFIX)/schema/setcore
 
-DIST=setspace-schema-setcore.dist
+DIST=./setspace-schema-setcore.dist
 COMPILEs := $(shell (. $(DIST) && echo $$COMPILEs))
 SBINs := $(shell (. $(DIST) && echo $$SBINs))
 BINs := $(shell (. $(DIST) && echo $$BINs))
