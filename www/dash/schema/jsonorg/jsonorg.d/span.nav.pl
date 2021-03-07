@@ -63,6 +63,7 @@ SELECT
 	$r = dbi_pg_select(
 		db =>	dbi_pg_connect(),
 		tag =>	'jsonorg-select-query-span-stat',
+		argv =>	[],
 		sql => q(
 SELECT
 	count(*) AS blob_count
