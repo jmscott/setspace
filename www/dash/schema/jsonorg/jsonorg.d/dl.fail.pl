@@ -17,9 +17,8 @@ my $qh = dbi_pg_select(
 		db =>	dbi_pg_connect(),
 		tag =>	'jsonorg-select-fail-blob',
 		argv =>	[
-			$offset
 		],
-		sql =>	<<END
+		sql =>	q(
 SELECT
 	c.blob,
 	extract(epoch FROM s.discover_time) AS discover_epoch,
@@ -36,13 +35,8 @@ SELECT
   	NOT c.is_json
   ORDER BY
   	s.discover_time DESC
-  OFFSET
-  	$1
-  LIMIT
-  	10
 ;
-END
-);
+));
 
 print <<END;
 <dl$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
