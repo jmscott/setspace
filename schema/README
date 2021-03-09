@@ -90,3 +90,6 @@ Possible Schemas:
 		https://github.com/boyter/scc
 	binwalk - libmagic (fffile) tuned for binary files and forensics
 		https://github.com/ReFirmLabs/binwalk
+	WebPlotDigitizer
+		https://github.com/ankitrohatgi/WebPlotDigitizer
+		https://automeris.io/WebPlotDigitizer/
