@@ -93,3 +93,15 @@ Possible Schemas:
 	WebPlotDigitizer
 		https://github.com/ankitrohatgi/WebPlotDigitizer
 		https://automeris.io/WebPlotDigitizer/
+	Camelot: PDF Table Extraction for Humans
+		https://camelot-py.readthedocs.io/en/master/
+	Tesseract OCR (google)
+		https://github.com/tesseract-ocr/tesseract
+	Azure Form Recognizser
+		https://azure.microsoft.com/en-us/services/cognitive-services/form-recognizer/
+	Tabula - Extract Tables from PDF
+		https://github.com/tabulapdf/tabula-java
+		https://tabula.technology/
+		https://github.com/tabulapdf/tabula
+	wikidata
+		https://www.wikidata.org/wiki/Wikidata:Main_Page
