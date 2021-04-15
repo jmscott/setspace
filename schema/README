@@ -105,3 +105,5 @@ Possible Schemas:
 		https://github.com/tabulapdf/tabula
 	wikidata
 		https://www.wikidata.org/wiki/Wikidata:Main_Page
+	squashfs
+		read only filesystem for tar/zip archives
