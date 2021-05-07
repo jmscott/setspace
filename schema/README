@@ -112,3 +112,5 @@ Possible Schemas:
 	dbacl
 		bayseian classifier for small text
 		http://dbacl.sourceforge.net/
+	geoip
+		https://yurichev.com/news/20210414_geoip/
