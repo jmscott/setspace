@@ -109,3 +109,6 @@ Possible Schemas:
 		read only filesystem for tar/zip archives
 	libgen
 		library genesis document database:
+	dbacl
+		bayseian classifier for small text
+		http://dbacl.sourceforge.net/
