@@ -60,7 +60,9 @@
    <!--#include virtual="/header.shtml" -->
    <!--#include virtual="/nav.shtml" -->
    <div id="content">
-    <h2>How to add the "Tag" button to Your Browser</h2>
+    <h2>
+      How to add the "Tag" or "Remember" or "Learn" button to Your Browser.
+    </h2>
     <button onclick="copy_button_js()">Copy Javascript</button>
     <!--#include virtual="/cgi-bin/tag-http?out=textarea&id=tag-button-js" -->
    </div>
