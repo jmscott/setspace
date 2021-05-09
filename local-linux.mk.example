@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Example of a GNU Makefile template for typical Linux 2.6 distro.
+#	Makefile template for typical Mac OSX >= 10.6 development environment
 #  Usage:
 #	cp local-linux.mk.example local.mk
 #	#  edit local.mk
@@ -14,10 +14,9 @@
 #	The DASH_DNS_VHOST_SUFFIX and DASH_DNS_VHOST_PREFIX is cumbersome.
 #	The variables need to be collapsed into single variable DASH_DNS_VHOST.
 #
-#	Add comment about why GODIST is set.
-#
 #	Need to rename example local-*.example with os and arch..
 #
+#	Add comment about why GODIST is set.
 #
 
 ########################  BEGIN SECTION OF VARIABLES TO CHANGE
@@ -31,10 +30,10 @@ INSTALL_PREFIX?=/usr/local
 #
 #  Undefine to disable compiling entire pdfbox schema
 #
-PDFBOX_APP2_JAR?=$(INSTALL_PREFIX)/lib/pdfbox-app-2.jar
+PDFBOX_APP2_JAR?=/usr/local/lib/pdfbox-app-2.jar
 
-#  PostgreSQL distribution: not tested with various unix distros.
-PGHOME?=$(INSTALL_PREFIX)/pgsql
+#  Where postgres distro lives
+PGHOME?=/usr/local/pgsql
 
 #
 #  Uncomment DASH_DNS_VHOST_SUFFIX if building web site dash.setspace.com.
@@ -43,8 +42,7 @@ PGHOME?=$(INSTALL_PREFIX)/pgsql
 #DASH_DNS_VHOST_PREFIX=dash
 #DASH_DNS_VHOST_SUFFIX=setspace.com
 
-#  Location of go language distribution
-#  Some of us don't put /usr/local/go/bin in our PATH, for historical reasons.
+#  Location of go language distribution.
 
 GODIST?=/usr/local/go
 
