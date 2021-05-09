@@ -6,7 +6,7 @@
 #	#  edit local.mk
 #	make world
 #  Variables:
-#	INSTALL_PREFIX		#  parent directory where setspace/ is installed
+#	DIST_ROOT		#  where setspace/ is installed
 #	PDFBOX_APP2_JAR		#  jar file for pdfbox app
 #	PGHOME			#  root of postgresql distro
 #	GODIST			#  golang distobution
@@ -22,9 +22,8 @@
 ########################  BEGIN SECTION OF VARIABLES TO CHANGE
 #
 
-#  builds $(INSTALL_PREFIX)/setspace
-INSTALL_PREFIX?=/usr/local
-#INSTALL_PREFIX?=$(HOME)/opt
+#DIST_ROOT?=/usr/local/setspace
+DIST_ROOT?=$(HOME)/opt/setspace
 
 #  location of pdfbox jar file, version 2
 #

@@ -23,8 +23,8 @@
 #
 
 #  builds $(INSTALL_PREFIX)/setspace
-INSTALL_PREFIX?=/usr/local
-#INSTALL_PREFIX?=$(HOME)/opt
+DIST_ROOT?=/usr/local/setspace
+#DIST_ROOT?=$(HOME)/opt/setspace
 
 #  location of pdfbox jar file, version 2
 #

@@ -64,10 +64,3 @@ world:
 	$(MAKE) $(MFLAGS) all
 	$(MAKE) $(MFLAGS) distclean
 	$(MAKE) $(MFLAGS) install
-
-i:
-	$(MAKE) $(MFLAGS) install
-c:
-	$(MAKE) $(MFLAGS) clean
-w:
-	$(MAKE) $(MFLAGS) world

@@ -52,7 +52,7 @@ distclean:
 	rm -rf $(MYCORE_PREFIX)/lib
 
 world:
-	$(MAKE) $(MAKEFLAGS) clean
-	$(MAKE) $(MAKEFLAGS) all
-	$(MAKE) $(MAKEFLAGS) distclean
-	$(MAKE) $(MAKEFLAGS) install
+	$(MAKE) $(MFLAGS) clean
+	$(MAKE) $(MFLAGS) all
+	$(MAKE) $(MFLAGS) distclean
+	$(MAKE) $(MFLAGS) install

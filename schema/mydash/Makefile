@@ -56,8 +56,8 @@ distclean:
 clean:
 
 world:
-	$(MAKE) $(MAKEFLAGS) distclean
-	$(MAKE) $(MAKEFLAGS) install
+	$(MAKE) $(MFLAGS) distclean
+	$(MAKE) $(MFLAGS) install
 clean:
 
 frisk:

@@ -27,10 +27,10 @@ clean:
 	rm -f $(JCOMPILED) $(ECPG_COMPILED)
 
 world:
-	$(MAKE) $(MAKEFLAGS) clean
-	$(MAKE) $(MAKEFLAGS) all
-	$(MAKE) $(MAKEFLAGS) distclean
-	$(MAKE) $(MAKEFLAGS) install
+	$(MAKE) $(MFLAGS) clean
+	$(MAKE) $(MFLAGS) all
+	$(MAKE) $(MFLAGS) distclean
+	$(MAKE) $(MFLAGS) install
 
 distclean:
 	rm -rf $(PDFBOX_PREFIX)/lib

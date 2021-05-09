@@ -6,7 +6,7 @@
 #
 
 #  where to install entire setspace tree
-SETSPACE_PREFIX=$(INSTALL_PREFIX)/setspace
+SETSPACE_PREFIX=$(DIST_ROOT)
 
 SETSPACE_USER=$(USER)
 ifeq "$(shell uname)" "Darwin"

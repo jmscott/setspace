@@ -112,10 +112,13 @@ distclean:
 	cd fffile && $(MAKE) $(MFLAGS) distclean
 	cd gnuzip && $(MAKE) $(MFLAGS) distclean
 
-	#  do NOT remove dirs $SETSPACE_ROOT/{lib,bin,sbin}/
-	(cd $(SETSPACE_PREFIX)/lib;  rm -f $(LIBs))
-	(cd $(SETSPACE_PREFIX)/sbin;  rm -f $(SBINs))
-	(cd $(SETSPACE_PREFIX)/bin;  rm -f $(BINs))
+	#  do NOT remove dirs $SETSPACE_PREFIX/{lib,bin,sbin}/
+	test ! -d $(SETSPACE_PREFIX)/lib ||				\
+		(cd $(SETSPACE_PREFIX)/lib;  rm -f $(LIBs))
+	test ! -d $(SETSPACE_PREFIX)/sbin ||				\
+		(cd $(SETSPACE_PREFIX)/sbin;  rm -f $(SBINs))
+	test ! -d $(SETSPACE_PREFIX)/bin ||				\
+		(cd $(SETSPACE_PREFIX)/bin;  rm -f $(BINs))
 world:
 	$(MAKE) $(MFLAGS) clean
 	$(MAKE) $(MFLAGS) all

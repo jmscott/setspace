@@ -11,7 +11,7 @@ WWW_ROOT=$(SETSPACE_PREFIX)/www
 
 all:
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd dash && make all
+	cd dash && $(MAKE) $(MFLAGS) all
 endif
 
 install:
@@ -56,19 +56,19 @@ install:
 		utf82blob.pl						\
 		$(WWW_ROOT)/lib
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd dash && make install
+	cd dash && $(MAKE) $(MFLAGS) install
 endif
 
 distclean:
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd dash && make distclean
+	cd dash && $(MAKE) $(MFLAGS) distclean
 endif
 	rm -rf $(WWW_ROOT)/htdocs
 	rm -rf $(WWW_ROOT)/lib
 
 clean:
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd dash && make clean
+	cd dash && $(MAKE) $(MFLAGS) clean
 endif
 
 world:

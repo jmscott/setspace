@@ -43,14 +43,14 @@ check-local:
 all: check-local $(PROG) $(CGI)
 	cd schema && $(MAKE) all
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd www && make all
+	cd www && $(MAKE) $(MFLAGS) all
 endif
 
 clean:
 	rm -f $(PROG) $(CGI) spin-wait-blob.c
-	cd schema && $(MAKE) clean
+	cd schema && $(MAKE) $(MFLAGS) clean
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd www && make clean
+	cd www && $(MAKE) $(MFLAGS) clean
 endif
 
 install: all
@@ -128,7 +128,7 @@ install: all
 		$(SETSPACE_PREFIX)/src
 	cd schema && $(MAKE) install
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd www && make install
+	cd www && $(MAKE) $(MFLAGS) install
 endif
 
 append-brr: append-brr.c common.c
@@ -165,9 +165,9 @@ spin-wait-blob:								\
 	rm spin-wait-blob.c
 
 distclean:
-	cd schema && $(MAKE) distclean
+	cd schema && $(MAKE) $(MFLAGS) distclean
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd www && make distclean
+	cd www && $(MAKE) $(MFLAGS) distclean
 endif
 	rm -rf $(SETSPACE_PREFIX)/bin
 	rm -rf $(SETSPACE_PREFIX)/sbin
@@ -176,7 +176,7 @@ endif
 	rm -rf $(SETSPACE_PREFIX)/sbin
 
 world:
-	$(MAKE) clean
-	$(MAKE) all
-	$(MAKE) distclean
-	$(MAKE) install
+	$(MAKE) $(MFLAGS) clean
+	$(MAKE) $(MFLAGS) all
+	$(MAKE) $(MFLAGS) distclean
+	$(MAKE) $(MFLAGS) install
