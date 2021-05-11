@@ -99,7 +99,7 @@ print <<'END';
   </dl>
 </div>
      </dd>
-     <dt>pre.hexdump</dt>
+     <dt>pre.hex</dt>
      <dd>
 <div class="query-args">
  <h4>Query Args</h4>

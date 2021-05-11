@@ -56,7 +56,7 @@
     </query-args>
    </putter>
 
-   <putter name="pre.hexdump">
+   <putter name="pre.hex">
     <query-args>
      <arg
        name="blob"

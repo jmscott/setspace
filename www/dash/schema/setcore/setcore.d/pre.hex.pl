@@ -2,7 +2,7 @@
 #  Synospsis:
 #	Generate a <pre> than is a "hexdump -C" of first 64k bytes of a blob.
 #  Usage:
-#	/cgi/bin/setcore?out=pre.hexdump&blob=bc160:f033e7065af0463...
+#	/cgi/bin/setcore?out=pre.hex&blob=bc160:f033e7065af0463...
 #
 
 require 'httpd2.d/common.pl';
@@ -15,7 +15,7 @@ print <<END;
 <pre$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END
 
-my $tmp_path = "$ENV{TMPDIR}/pre.hexdump.blob.$$";
+my $tmp_path = "$ENV{TMPDIR}/pre.hex.blob.$$";
 END
 {
 	unlink $tmp_path;

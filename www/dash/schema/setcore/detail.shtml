@@ -37,7 +37,7 @@
     </h3>
     <h3>Hexdump of First 64K bytes</h3>
     <!--#include virtual=
-      "/cgi-bin/setcore?out=pre.hexdump&class=hexdump&$QUERY_STRING"
+      "/cgi-bin/setcore?out=pre.hex&class=hexdump&$QUERY_STRING"
     -->
    </div>
    <!--#include virtual="/footer.shtml" -->

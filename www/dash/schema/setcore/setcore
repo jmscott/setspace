@@ -42,7 +42,7 @@ $CGI{GET}->{out}->{'query-args'}->{arg}->{class} = {
 #  'out' query argument must match one of the out putter names.
 #
 $CGI{GET}->{out}->{'query-args'}->{arg}->{out} = {
-	perl5_re	=> 	'input|dl|table|(?:pre[.]hexdump)|(?:span[.]nav)|help',
+	perl5_re	=> 	'input|dl|table|(?:pre[.]hex)|(?:span[.]nav)|help',
 	default		=>	'help',
 };
 #
@@ -114,23 +114,23 @@ $CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{offset} = {
 #
 
 #
-#  BEGIN: /cgi/GET/out/putter[@name='pre.hexdump']
+#  BEGIN: /cgi/GET/out/putter[@name='pre.hex']
 #
-$CGI{GET}->{out}->{putter}->{'pre.hexdump'}->{name} = 'pre.hexdump';
+$CGI{GET}->{out}->{putter}->{'pre.hex'}->{name} = 'pre.hex';
 
 #
-#  BEGIN: /cgi/GET/out/putter[@name=pre.hexdump]/query-args
+#  BEGIN: /cgi/GET/out/putter[@name=pre.hex]/query-args
 #
-$CGI{GET}->{out}->{putter}->{'pre.hexdump'}->{'query-args'}->{arg}->{blob} = {
+$CGI{GET}->{out}->{putter}->{'pre.hex'}->{'query-args'}->{arg}->{blob} = {
 	perl5_re	=>	'[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}',
 	required	=>	'yes',
 };
 #
-#  END: /cgi/GET/out/putter[@name=pre.hexdump]/query-args
+#  END: /cgi/GET/out/putter[@name=pre.hex]/query-args
 #
 
 #
-#  END: /cgi/GET/out/putter[@name='pre.hexdump']
+#  END: /cgi/GET/out/putter[@name='pre.hex']
 #
 
 #
