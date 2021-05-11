@@ -29,7 +29,7 @@ install: all
 		setcore.d/dl.pl						\
 		setcore.d/help.pl					\
 		setcore.d/input.pl					\
-		setcore.d/pre.hexdump.pl				\
+		setcore.d/pre.hex.pl					\
 		setcore.d/span.nav.pl					\
 		setcore.d/table.pl					\
 		$(WWW_PREFIX)/lib/setcore.d

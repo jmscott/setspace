@@ -3,11 +3,9 @@
 #	Generate a <pre> than is a "hexdump -C" of first 64k bytes of a blob.
 #  Usage:
 #	/cgi/bin/setcore?out=pre.hexdump&blob=bc160:f033e7065af0463...
-#  Note:
-#	<span> the parts of the hexdump -C output fpr stying.
-#	In particular, the hex portion of the output should be
-#	green.
 #
+
+require 'httpd2.d/common.pl';
 
 our %QUERY_ARG;
 
@@ -37,12 +35,18 @@ END
 }
 die "system($cmd) failed: exit status=$status" unless $status == 0;
 
+#
+#  Note:
+#	Need to replace perl html escape with faster c program in
+#	$JMSCOTT_ROOT/bin.
+#
 my $HEXDUMP;
 open($HEXDUMP, "hexdump -n 65536 -C $tmp_path |") or
 	die "open($tmp_path) | failed: $!"
 ;
 
-print <$HEXDUMP>;
+print encode_html_entities($_) while <$HEXDUMP>;
+close($HEXDUMP) or die "close(hexdump) failed: $!";
 print <<END;
 </pre>
 END
