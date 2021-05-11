@@ -22,8 +22,8 @@
 ########################  BEGIN SECTION OF VARIABLES TO CHANGE
 #
 
-#DIST_ROOT?=/usr/local/setspace
-DIST_ROOT?=$(HOME)/opt/setspace
+DIST_ROOT?=/usr/local/setspace
+#DIST_ROOT?=$(HOME)/opt/setspace
 
 #  location of pdfbox jar file, version 2
 #
