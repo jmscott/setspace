@@ -114,3 +114,10 @@ Possible Schemas:
 		http://dbacl.sourceforge.net/
 	geoip
 		https://yurichev.com/news/20210414_geoip/
+	semvec
+		Ruminate on semantic vector spaces
+			https://rom1504.medium.com/semantic-search-with-embeddings-index-anything-8fb18556443c
+			https://www.semi.technology/developers/weaviate/current/
+	pincone
+		similatiry search as a service
+			https://www.pinecone.io/
