@@ -8,6 +8,8 @@
  *	0  -  no lock exists, so create lock in run/<lock-name>-<udig>.lock
  *	1  -  lock already exists
  *	2  -  unexpected error
+ *  Note:
+ *	Consider renaming program to tas-udig-lock.
  */
 
 #define EXIT_CREATED		0
