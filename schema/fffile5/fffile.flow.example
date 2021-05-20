@@ -1,0 +1,311 @@
+#
+#  Synopsis:
+#	Populate PostgreSQL schema for Fine Free File command facts
+#  See:
+#	schema.sql
+#
+
+boot
+{
+	brr_capacity = 32;
+	flow_worker_count = 8;
+	os_exec_worker_count = 8;
+	os_exec_capacity = 8;
+
+	xdr_roll_duration = "24h";
+	fdr_roll_duration = "24h";
+	qdr_roll_duration = "24h";
+
+	heartbeat_duration = "10s";
+}
+
+sql database setspace
+{
+	driver_name = "postgres";
+	data_source_name =
+		"fallback_application_name=fffile.flow sslmode=disable";
+	max_idle_conns = 0;
+	max_open_conns = 8;
+}
+
+tail brr
+{
+	path = "spool/setcore.brr";
+}
+
+sql query in_service_table row
+{
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	setcore.service
+	    WHERE
+	    	blob = $1::udig
+	);
+		
+	`;
+
+	result row is (
+		answer bool
+	);
+}
+
+query in_service_table(brr.udig);
+
+sql query in_file_or_fault_table row
+{
+	statement = `
+	
+	SELECT 
+	 EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	fffile.file
+	    WHERE
+	    	blob = $1::udig
+	),
+	 EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	fffile.fault
+	    WHERE
+	    	blob = $1::udig
+		and
+		command_name = 'file'
+	 );
+	`;
+
+	result row is (
+		in_file bool,
+		in_fault bool
+	);
+}
+
+query in_file_or_fault_table(brr.udig)
+  when
+  	in_service_table.answer == true
+;
+
+command merge_file
+{
+	path = "sbin/merge-file";
+	exit_status is OK when in {
+		0,
+		1,
+		2		#  file type is not utf8
+	};
+}
+
+call merge_file(brr.udig)
+  when
+  	in_file_or_fault_table.in_file == false
+	and
+	in_file_or_fault_table.in_fault == false
+;
+
+#
+#  Populate table file_mime_type
+#
+sql query in_file_mime_type_table row
+{
+	statement = `
+	
+	SELECT EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	fffile.file_mime_type
+	    WHERE
+	    	blob = $1::udig
+	)
+	`;
+
+	result row is (
+		answer bool
+	);
+}
+
+sql query in_file_mime_type_or_fault_table row
+{
+	statement = `
+	
+	SELECT 
+	 EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	fffile.file_mime_type
+	    WHERE
+	    	blob = $1::udig
+	),
+	 EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	fffile.fault
+	    WHERE
+	    	blob = $1::udig
+		and
+		command_name = 'file_mime_type'
+	 );
+	`;
+
+	result row is (
+		in_file bool,
+		in_fault bool
+	);
+}
+
+query in_file_mime_type_or_fault_table(brr.udig)
+  when
+  	in_service_table.answer == true
+;
+
+command merge_file_mime_type
+{
+	path = "sbin/merge-file_mime_type";
+	exit_status is OK when in {
+		0,
+		1,
+		2		#  file mime type is not utf8
+	};
+}
+
+call merge_file_mime_type(brr.udig)
+  when
+  	in_file_mime_type_or_fault_table.in_file == false
+	and
+  	in_file_mime_type_or_fault_table.in_fault == false
+;
+
+#
+#  Populate table fffile.file_mime_encoding
+#
+sql query in_file_mime_encoding_or_fault_table row
+{
+	statement = `
+	
+	SELECT
+	 EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	fffile.file_mime_encoding
+	    WHERE
+	    	blob = $1::udig
+	),
+	 EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	fffile.fault
+	    WHERE
+	    	blob = $1::udig
+		and
+		command_name = 'file_mime_encoding'
+	 )
+	`;
+
+	result row is (
+		in_file bool,
+		in_fault bool
+	);
+}
+
+query in_file_mime_encoding_or_fault_table(brr.udig)
+  when
+  	in_service_table.answer == true
+;
+
+command merge_file_mime_encoding
+{
+	path = "sbin/merge-file_mime_encoding";
+	exit_status is OK when in {
+		0,
+		1,
+		2		#  file mime encoding is not utf8
+	};
+}
+
+call merge_file_mime_encoding(brr.udig)
+  when
+  	in_file_mime_encoding_or_fault_table.in_file == false
+	and
+  	in_file_mime_encoding_or_fault_table.in_fault == false
+;
+
+sql exec insert_file_fault
+{
+	statement = `
+	  INSERT INTO fffile.fault(
+	  	blob,
+		command_name,
+		exit_status
+	  )  VALUES(
+	  	$1::udig,
+		'file',
+		$2::smallint
+	  )  ON CONFLICT
+	  	DO NOTHING
+	  ;
+	`;
+}
+
+query insert_file_fault(brr.udig, merge_file.exit_status)
+  when
+  	merge_file.exit_status == 5	#  file command failed
+;
+
+sql exec insert_file_mime_type_fault
+{
+	statement = `
+	  INSERT INTO fffile.fault(
+	  	blob,
+		command_name,
+		exit_status
+	  )  VALUES(
+	  	$1::udig,
+		'file_mime_type',
+		$2::smallint
+	  )  ON CONFLICT
+	  	DO NOTHING
+	  ;
+	`;
+}
+
+query insert_file_mime_type_fault(brr.udig, merge_file_mime_type.exit_status)
+  when
+	#  file_mime_encoding command failed
+  	merge_file_mime_type.exit_status == 5
+;
+
+sql exec insert_file_mime_encoding_fault
+{
+	statement = `
+	  INSERT INTO fffile.fault(
+	  	blob,
+		command_name,
+		exit_status
+	  )  VALUES(
+	  	$1::udig,
+		'file_mime_encoding',
+		$2::smallint
+	  )  ON CONFLICT
+	  	DO NOTHING
+	  ;
+	`;
+}
+
+query insert_file_mime_encoding_fault(
+	brr.udig,
+	merge_file_mime_encoding.exit_status
+)
+  when
+	#  file_mime_encoding command failed
+  	merge_file_mime_encoding.exit_status == 5
+;

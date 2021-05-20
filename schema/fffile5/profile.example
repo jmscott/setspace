@@ -1,0 +1,18 @@
+#
+#  Synopsis:
+#	Profile for typical fffile5 flowd
+#  Usage:
+#	. $SETSPACE_ROOT/fffile5/etc/profile
+#
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/fffile5
+export TMPDIR=$SCHEMA_ROOT/tmp
+
+export FFFILE5_ROOT=${FFFILE5_ROOT:=$SCHEMA_ROOT}
+
+#  create the spool file so tail doesn't abort.
+#  Note: got to be a better way. perhaps flowd.tail ought to create the file.
+BRR=$SCHEMA_ROOT/spool/setcore.brr
+touch $BRR
+chmod u=rw,g=w,o= $BRR
+
+PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
