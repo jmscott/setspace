@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *  	Merge the output of the file command into the pg table fffile.file.
+ *  	Merge the output of the file command into the pg table fffile5.file.
  *  Usage:
  *	merge-stdin-file 
  *  Arguments:
@@ -99,9 +99,9 @@ EXEC SQL END DECLARE SECTION;
 
 	EXEC SQL BEGIN TRANSACTION;
 	/*
-	 *  Merge blob into fffile.mime_type table.
+	 *  Merge blob into fffile5.mime_type table.
 	 */
-	EXEC SQL INSERT INTO fffile.file_mime_type(
+	EXEC SQL INSERT INTO fffile5.file_mime_type(
 		blob,
 		mime_type
 	  ) VALUES (

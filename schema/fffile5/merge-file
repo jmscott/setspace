@@ -79,12 +79,12 @@ if [ $IS_NULL = no ];  then
 	FILE_TYPE_SIZE=$(file-stat-size $TMP_FILE)
 	test $? = 0 || die "file-stat-size failed: exit status=$?" 5
 
-	#  merge the output of file command into table fffile.file
+	#  merge the output of file command into table fffile5.file
 	merge-stdin-file <$TMP_FILE $FILE_BLOB $FILE_TYPE_SIZE ||
 				die "merge-stdin-file failed: exit status=$?" 6
 else
 	psql --quiet --no-psqlrc <<END
-INSERT INTO fffile.file(
+INSERT INTO fffile5.file(
 	blob,
 	file_type
   ) VALUES(

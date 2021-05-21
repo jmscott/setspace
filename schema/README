@@ -19,6 +19,7 @@ Schemas:
 	exiftool	exif tool, version 11
 
 	fffile		well known Unix "Fine Free File" command
+	fffile5		well known Unix "Fine Free File V5" at github.com
 
 	drblob		detail billing records for setspace and blobio.
 

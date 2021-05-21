@@ -3,6 +3,15 @@
 #	Populate PostgreSQL schema for Fine Free File command facts
 #  See:
 #	schema.sql
+#  Note:
+#	How do we know the output of file will always be UTF8?
+#
+#	Must point to version 5 of file built from github.
+#
+#		https://github.com/file/file
+#
+#	The version must also use only the magic files in github distro.
+#
 #
 
 boot
@@ -23,7 +32,7 @@ sql database setspace
 {
 	driver_name = "postgres";
 	data_source_name =
-		"fallback_application_name=fffile.flow sslmode=disable";
+		"fallback_application_name=fffile5.flow sslmode=disable";
 	max_idle_conns = 0;
 	max_open_conns = 8;
 }
@@ -64,7 +73,7 @@ sql query in_file_or_fault_table row
 	  SELECT
 	  	blob
 	    FROM
-	    	fffile.file
+	    	fffile5.file
 	    WHERE
 	    	blob = $1::udig
 	),
@@ -72,7 +81,7 @@ sql query in_file_or_fault_table row
 	  SELECT
 	  	blob
 	    FROM
-	    	fffile.fault
+	    	fffile5.fault
 	    WHERE
 	    	blob = $1::udig
 		and
@@ -119,7 +128,7 @@ sql query in_file_mime_type_table row
 	  SELECT
 	  	blob
 	    FROM
-	    	fffile.file_mime_type
+	    	fffile5.file_mime_type
 	    WHERE
 	    	blob = $1::udig
 	)
@@ -139,7 +148,7 @@ sql query in_file_mime_type_or_fault_table row
 	  SELECT
 	  	blob
 	    FROM
-	    	fffile.file_mime_type
+	    	fffile5.file_mime_type
 	    WHERE
 	    	blob = $1::udig
 	),
@@ -147,7 +156,7 @@ sql query in_file_mime_type_or_fault_table row
 	  SELECT
 	  	blob
 	    FROM
-	    	fffile.fault
+	    	fffile5.fault
 	    WHERE
 	    	blob = $1::udig
 		and
@@ -184,7 +193,7 @@ call merge_file_mime_type(brr.udig)
 ;
 
 #
-#  Populate table fffile.file_mime_encoding
+#  Populate table fffile5.file_mime_encoding
 #
 sql query in_file_mime_encoding_or_fault_table row
 {
@@ -195,7 +204,7 @@ sql query in_file_mime_encoding_or_fault_table row
 	  SELECT
 	  	blob
 	    FROM
-	    	fffile.file_mime_encoding
+	    	fffile5.file_mime_encoding
 	    WHERE
 	    	blob = $1::udig
 	),
@@ -203,7 +212,7 @@ sql query in_file_mime_encoding_or_fault_table row
 	  SELECT
 	  	blob
 	    FROM
-	    	fffile.fault
+	    	fffile5.fault
 	    WHERE
 	    	blob = $1::udig
 		and
@@ -242,7 +251,7 @@ call merge_file_mime_encoding(brr.udig)
 sql exec insert_file_fault
 {
 	statement = `
-	  INSERT INTO fffile.fault(
+	  INSERT INTO fffile5.fault(
 	  	blob,
 		command_name,
 		exit_status
@@ -264,7 +273,7 @@ query insert_file_fault(brr.udig, merge_file.exit_status)
 sql exec insert_file_mime_type_fault
 {
 	statement = `
-	  INSERT INTO fffile.fault(
+	  INSERT INTO fffile5.fault(
 	  	blob,
 		command_name,
 		exit_status
@@ -287,7 +296,7 @@ query insert_file_mime_type_fault(brr.udig, merge_file_mime_type.exit_status)
 sql exec insert_file_mime_encoding_fault
 {
 	statement = `
-	  INSERT INTO fffile.fault(
+	  INSERT INTO fffile5.fault(
 	  	blob,
 		command_name,
 		exit_status

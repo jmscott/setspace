@@ -45,20 +45,22 @@ FLOW=$1
 log 'hello, world'
 trap leave EXIT
 
-test -n "$SETSPACE_ROOT" ||
-			die "environment variable not defined: SETSPACE_ROOT"
+test -n "$SETSPACE_ROOT" || die "environment var not defined: SETSPACE_ROOT"
 
 log "SETSPACE_ROOT=$SETSPACE_ROOT"
 log "flow file: $FLOW"
 
+#
 #  source in $SETSPACE_ROOT/etc/profile
+#
 
 PROFILE=$SETSPACE_ROOT/etc/profile
 test -r $PROFILE || die "can not read setspace profile: $PROFILE"
 . $PROFILE || die "sourcing setspace profile failed: $PROFILE"
 
+#
 #  source in schema specific profile
-
+#
 PROFILE=etc/profile
 test -r etc/profile || die "can not read schema profile: $PROFILE"
 . $PROFILE || die "sourcing schema profile failed: $PROFILE"
@@ -68,4 +70,11 @@ env | while read E;  do
 	log "$E"
 done
 
+if [ -x sbin/launchd-flow-init ];  then
+	log 'sbin/launchd-flow-init exists, so initializing ...'
+	sbin/launchd-flow-init						||
+		die "launchd-flow-init failed: exit status=$?"
+fi
+
+log "execing flowd server $FLOW ..."
 exec flowd server $FLOW

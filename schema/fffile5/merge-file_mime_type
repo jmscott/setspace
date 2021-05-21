@@ -78,13 +78,13 @@ if [ $IS_NULL = no ];  then
 	MIME_TYPE_SIZE=$(file-stat-size $TMP_MIME_TYPE)
 	test $? = 0 || die "file-stat-size failed: exit status=$?" 5
 
-	#  merge utf8 output of file command into table fffile.file_mime_type
+	#  merge utf8 output of file command into table fffile5.file_mime_type
 
 	merge-stdin-file_mime_type <$TMP_MIME_TYPE $FILE_BLOB $MIME_TYPE_SIZE ||
 		die "merge-stdin-file_mime_type failed: exit status=$?" 6
 else
 	psql --quiet --no-psqlrc <<END
-INSERT INTO fffile.file_mime_type(
+INSERT INTO fffile5.file_mime_type(
 	blob,
 	file_type
   ) VALUES(

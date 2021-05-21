@@ -1,12 +1,17 @@
+#!/bin/bash
 #
 #  Synopsis:
-#	Development Makefile for code to populate fffile schema.
+#	Development Makefile for code to populate fffile5 schema.
+#  Note:
+#	Need to convert to sourced in make-dist file.
+#	See $JMSCOTT_ROOT/bin/make-dist --template
 #
 include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
 SBINs=									\
+	launchd-flowd-init						\
 	merge-file							\
 	merge-file_mime_encoding					\
 	merge-file_mime_type						\
@@ -23,48 +28,48 @@ clean:
 		merge-stdin-file_mime_encoding
 
 install: all
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
-				-d $(FFFILE_PREFIX)
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
-				-d $(FFFILE_PREFIX)/etc
+	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) 			\
+				-d $(FFFILE5_PREFIX)
+	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) 			\
+				-d $(FFFILE5_PREFIX)/etc
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-				-d $(FFFILE_PREFIX)/run
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) -m u=wrx,go=	\
-				-d $(FFFILE_PREFIX)/sbin
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
-				-d $(FFFILE_PREFIX)/lib
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
-				-d $(FFFILE_PREFIX)/src
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
-				-d $(FFFILE_PREFIX)/log
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
-				-d $(FFFILE_PREFIX)/spool
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) 			\
-				-d $(FFFILE_PREFIX)/tmp
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) -m u=rx,go=	\
+				-d $(FFFILE5_PREFIX)/run
+	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) -m u=wrx,go=	\
+				-d $(FFFILE5_PREFIX)/sbin
+	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) 			\
+				-d $(FFFILE5_PREFIX)/lib
+	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) 			\
+				-d $(FFFILE5_PREFIX)/src
+	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) 			\
+				-d $(FFFILE5_PREFIX)/log
+	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) 			\
+				-d $(FFFILE5_PREFIX)/spool
+	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) 			\
+				-d $(FFFILE5_PREFIX)/tmp
+	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) -m u=rx,go=	\
 		$(SBINs) 						\
-		$(FFFILE_PREFIX)/sbin
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) -m a=r		\
-		fffile.flow.example					\
+		$(FFFILE5_PREFIX)/sbin
+	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) -m a=r		\
+		fffile5.flow.example					\
 		profile.example						\
 		psqlrc.example						\
 		rummy.sql						\
 		schema.sql						\
-		setspace.schema.fffile.flowd.plist.example		\
-		$(FFFILE_PREFIX)/lib
-	install -g $(FFFILE_GROUP) -o $(FFFILE_USER) -m a=r		\
+		setspace.schema.fffile5.flowd.plist.example		\
+		$(FFFILE5_PREFIX)/lib
+	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) -m a=r		\
 		merge-stdin-file.pgc					\
 		merge-stdin-file_mime_encoding.pgc			\
 		merge-stdin-file_mime_type.pgc				\
-		$(FFFILE_PREFIX)/src
+		$(FFFILE5_PREFIX)/src
 
 frisk ff:
-	flowd frisk fffile.flow.example
+	flowd frisk fffile5.flow.example
 
 distclean:
-	rm -rf $(FFFILE_PREFIX)/lib
-	rm -rf $(FFFILE_PREFIX)/sbin
-	rm -rf $(FFFILE_PREFIX)/src
+	rm -rf $(FFFILE5_PREFIX)/lib
+	rm -rf $(FFFILE5_PREFIX)/sbin
+	rm -rf $(FFFILE5_PREFIX)/src
 
 merge-stdin-file:							\
 		merge-stdin-file.pgc					\
@@ -92,3 +97,9 @@ merge-stdin-file_mime_encoding:						\
 	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-file_mime_encoding.c 	\
 		-o merge-stdin-file_mime_encoding -L$(PGLIB) -lecpg
 	rm merge-stdin-file_mime_encoding.c
+
+world:
+	$(MAKE) $(MFLAGS) clean
+	$(MAKE) $(MFLAGS) all
+	$(MAKE) $(MFLAGS) distclean
+	$(MAKE) $(MFLAGS) install

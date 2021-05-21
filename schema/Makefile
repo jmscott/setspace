@@ -29,6 +29,7 @@ all:
 	cd jsonio && $(MAKE) $(MFLAGS) all
 	cd pdfbox && $(MAKE) $(MFLAGS) all
 	cd fffile && $(MAKE) $(MFLAGS) all
+	cd fffile5 && $(MAKE) $(MFLAGS) all
 	cd gnuzip && $(MAKE) $(MFLAGS) all
 
 createpg:
@@ -45,6 +46,7 @@ clean:
 	cd jsonio && $(MAKE) $(MFLAGS) clean
 	cd pdfbox && $(MAKE) $(MFLAGS) clean
 	cd fffile && $(MAKE) $(MFLAGS) clean
+	cd fffile5 && $(MAKE) $(MFLAGS) clean
 	cd gnuzip && $(MAKE) $(MFLAGS) clean
 
 install:
@@ -72,6 +74,7 @@ install:
 	cd jsonio && $(MAKE) $(MFLAGS) install
 	cd pdfbox && $(MAKE) $(MFLAGS) install
 	cd fffile && $(MAKE) $(MFLAGS) install
+	cd fffile5 && $(MAKE) $(MFLAGS) install
 	cd gnuzip && $(MAKE) $(MFLAGS) install
 
 	#  Install lib/
@@ -110,6 +113,7 @@ distclean:
 	cd jsonio && $(MAKE) $(MFLAGS) distclean
 	cd pdfbox && $(MAKE) $(MFLAGS) distclean
 	cd fffile && $(MAKE) $(MFLAGS) distclean
+	cd fffile5 && $(MAKE) $(MFLAGS) distclean
 	cd gnuzip && $(MAKE) $(MFLAGS) distclean
 
 	#  do NOT remove dirs $SETSPACE_PREFIX/{lib,bin,sbin}/

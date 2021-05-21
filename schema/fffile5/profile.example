@@ -3,58 +3,31 @@
 #  Synopsis:
 #	Profile for typical fffile5 flowd, using version 5 file.
 #  Usage:
-#	. $SETSPACE_ROOT/fffile5/etc/profile
+#	Sourced from $SETSPACE_ROOT/sbin/{launchd,systemd,boot-flowd}
+#  Environment:
+#	#  where the "Famous Fine File" command lives
+#	#  must be the canonical version from the author.
+#	FFFILE5_DIST=/opt/fffile5
+#	#FFFILE5_DIST=/usr/local/setspace/schema/fffile5/opt/file
+#
+#	#  be sure NOT to invoke the OS version!
+#	PATH="$FFFILE5_DIST/bin:$PATH"
+#  See:
+#	https://github.com/file/file
+#	$SETSPACE_ROOT/schema/fffile5/sbin/launchd-flowd-init
+#	$SETSPACE_ROOT/sbin/launchd-flowd
+#	$SETSPACE_ROOT/sbin/systemd-flowd
+#	$SETSPACE_ROOT/sbin/boot-flowd
 #
 
-#
-#  Note:
-#	Must point to version 5 of file built from github.
-#
-#		https://github.com/file/file
-#
-FFFILE5_PATH=/usr/local/fffile
+#FFFILE5_DIST=/usr/local/setspace/schema/fffile5/opt
+export FFFILE5_DIST=$HOME/opt/fffile5
 
-PATH=$FFFILE5_DIST/bin:$PATH
+unset MAGIC		#  just in case.  see man page for "file"
 
 SCHEMA_ROOT=$SETSPACE_ROOT/schema/fffile5
-export TMPDIR=$SCHEMA_ROOT/tmp
 
-export FFFILE5_ROOT=${FFFILE5_ROOT:=$SCHEMA_ROOT}
+export TMPDIR=$(pwd)/tmp
+PATH=$FFFILE5_DIST/bin:$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
 
-#  create the spool file so tail doesn't abort.
-#  Note: got to be a better way. perhaps flowd.tail ought to create the file.
-BRR=$SCHEMA_ROOT/spool/setcore.brr
-touch $BRR
-chmod u=rw,g=w,o= $BRR
-
-PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
-
-#
-#  Verify 'file' command is version 5.
-#
-PATH=$FFFILE_PATH:$PATH
-FFFILE5_VERSION=$(file --version | head)
-case "$FFFILE5_VERSION" in
-file-5.*)
-	;;
-*)
-	echo "ERROR: unknown 'file' version: $FFFILE5_VERSION" >&2
-	exit 1
-	;;
-esac
-
-#
-#  insure file can identify a json document.
-#  Many versions of 'file' fail (fedora 33), but
-#  github source version
-#
-TEST_JSON=$(file test.json)
-
-case "$TEST_JSON" in
-'lib/test.json: JSON data')
-	;;
-*)
-	echo "ERROR: test.json failed: is file correct version: $TEST_JSON">&2
-	exit 1
-	;;
-esac
+return 0;

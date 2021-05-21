@@ -4,6 +4,8 @@
  *  See:
  *	http://www.darwinsys.com/file/
  *  Note:
+ *	Investigate "file" option "--uncompress".
+ #
  *	Replace table fffile5.fault with fffile5.fault_process similar to
  *	pdfbox.fault_process.
  */

@@ -77,14 +77,14 @@ if [ $IS_NULL = no ];  then
 	MIME_ENCODING_SIZE=$(file-stat-size $TMP_MIME_ENCODING)
 	test $? = 0 || die "file-stat-size failed: exit status=$?" 5
 
-	#  merge file output into table fffile.file_mime_encoding
+	#  merge file output into table fffile5.file_mime_encoding
 
 	merge-stdin-file_mime_encoding <$TMP_MIME_ENCODING		\
 		$FILE_BLOB $MIME_ENCODING_SIZE	||
 		   die "merge-stdin-file_mime_encoding failed: exit status=$?" 7
 else
 	psql --quiet --no-psqlrc <<END
-INSERT INTO fffile.file_mime_encoding(
+INSERT INTO fffile5.file_mime_encoding(
 	blob,
 	mime_encoding
   ) VALUES(

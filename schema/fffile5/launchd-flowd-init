@@ -1,0 +1,71 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	How copacetic is the executable "Fine Famous File".
+#  Description:
+#	MUST be very strict about "file" output, since typically the schema
+#	"fffile5" is a starting point for a global view of blobs in database,
+#	especially when debugging.  Sadly, for some reason, unix distros
+#	override and badly misclassify common blob types. For example, fedora
+#	33 linux calls a json blob "text-ascii" instead of json.
+#
+#	The environment is defined in $SETSPACE_ROOT/etc/profile and
+#	$SETSPACE_ROOT/schema/fffile5/etc/profile.
+#  Environment:
+#	FFFILE5_DIST
+#	PATH="$FFFILE5_DIST:$PATH"
+#  Usage:
+#	Called from $SETSPACE_ROOT/sbin/{launchd,systemd,boot-flowd}
+#  See:
+#	https://github.com/file/file
+#	$SETSPACE_ROOT/sbin/launchd-flowd
+#	$SETSPACE_ROOT/sbin/systemd-flowd
+#	$SETSPACE_ROOT/sbin/boot-flowd
+#  Exit Status:
+#	0	copacetic
+#	1	broken	(abort boot)
+#
+
+PROG=$(basename $0)
+
+die()
+{
+	MSG="$(date +'%Y/%m/%d %H:%M:%S'): ERROR: $@"
+	test -w run/ && echo "$MSG" >>run/$PROG.fault
+	echo $MSG >&2
+	exit 1
+}
+
+test -n "$FFFILE5_DIST" || die 'env var not defined: FFFILE5_DIST'
+FFFILE5_MAGIC=$FFFILE5_DIST/share/misc/magic.mgc
+test -r $FFFILE5_MAGIC || die "can not read magic file: $FFFILE5_MAGIC"
+
+#
+#  Verify 'file' command is version 5.
+#
+FFFILE5_VERSION=$(file --version | head -1)
+case "$FFFILE5_VERSION" in
+file-5.*)
+	;;
+*)
+	die "unknown 'file' version: $FFFILE5_VERSION"
+	;;
+esac
+
+#
+#  Verify that the magic file is $FFFILE5_DIST/share/misc/magic
+#
+FFFILE5_VERSION_MAGIC=$(
+	file --version							|
+	tail -1								|
+	sed 's/^magic file from //'					|
+	sed 's/$/.mgc/'
+)
+test "$FFFILE5_VERSION_MAGIC" = "$FFFILE5_MAGIC"			||
+	die "unexpected magic from --version: $FFFILE5_VERSION_MAGIC"
+
+#  create the spool file so tail doesn't abort.
+#  Note: got to be a better way. perhaps flowd.tail ought to create the file.
+BRR=$SCHEMA_ROOT/spool/setcore.brr
+touch $BRR
+chmod u=rw,g=w,o= $BRR
