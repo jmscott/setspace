@@ -1,9 +1,21 @@
+#!/bin/bash
 #
 #  Synopsis:
-#	Profile for typical fffile5 flowd
+#	Profile for typical fffile5 flowd, using version 5 file.
 #  Usage:
 #	. $SETSPACE_ROOT/fffile5/etc/profile
 #
+
+#
+#  Note:
+#	Must point to version 5 of file built from github.
+#
+#		https://github.com/file/file
+#
+FFFILE5_PATH=/usr/local/fffile/bin
+
+PATH=/usr/local/fffile/bin:$PATH
+
 SCHEMA_ROOT=$SETSPACE_ROOT/schema/fffile5
 export TMPDIR=$SCHEMA_ROOT/tmp
 
@@ -16,3 +28,14 @@ touch $BRR
 chmod u=rw,g=w,o= $BRR
 
 PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
+
+#
+#  Verify we are running version 5 of the famous fast file command.
+#
+PATH=$FFFILE_PATH:$PATH
+FFFILE5_VERSION=$(file --version | head)
+case "$FFFILE5_VERSION" in
+file-5.*)
+	;;
+*)
+	echo "ERROR:
