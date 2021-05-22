@@ -9,12 +9,10 @@
  *	2	wrong number of arguments
  *	3	read error on standard input
  *	4	write error on standard output
- *  Blame:
- *  	jmscott@setspace.com
- *  See:
- *  	Code derived from
+ *  Note:
+ *	merge this code with
  *
- *  		https://github.com/jmscott/setspace/schema/setspace/is-utfwf.c
+ *	      https://github.com/jmscott/work/blob/master/escape-json-string.c
  */
 
 static char progname[] = "escape-json-utf8";
