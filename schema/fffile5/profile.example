@@ -22,7 +22,7 @@
 
 #FFFILE5_DIST=/usr/local/setspace/schema/fffile5/opt
 export FFFILE5_DIST=$HOME/opt/fffile5
-export LD_LIBRARY_PATH=$FFFILE5_DIST/lib:$PGHOME/bin:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$FFFILE5_DIST/lib:$PGHOME/lib:$LD_LIBRARY_PATH
 
 unset MAGIC		#  just in case.  see man page for "file"
 
