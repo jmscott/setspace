@@ -29,6 +29,6 @@ unset MAGIC		#  just in case.  see man page for "file"
 SCHEMA_ROOT=$SETSPACE_ROOT/schema/fffile5
 
 export TMPDIR=$(pwd)/tmp
-PATH=$FFFILE5_DIST/bin:$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
+PATH=$FFFILE5_DIST/bin:$SCHEMA_ROOT/sbin:$PATH
 
 return 0;
