@@ -3,7 +3,7 @@
 #  Synopsis:
 #	How copacetic is the executable "Fine Famous File".
 #  Description:
-#	MUST be very strict about "file" output, since typically the schema
+#	We MUST be very strict about "file" output, since typically the schema
 #	"fffile5" is a starting point for a global view of blobs in database,
 #	especially when debugging.  Sadly, for some reason, unix distros
 #	override and badly misclassify common blob types. For example, fedora
@@ -12,7 +12,7 @@
 #	The environment is defined in $SETSPACE_ROOT/etc/profile and
 #	$SETSPACE_ROOT/schema/fffile5/etc/profile.
 #  Environment:
-#	FFFILE5_DIST
+#	FFFILE5_DIST			#  where version 5 of file lives
 #	PATH="$FFFILE5_DIST:$PATH"
 #  Usage:
 #	Called from $SETSPACE_ROOT/sbin/{launchd,systemd,boot-flowd}
@@ -35,6 +35,8 @@ die()
 	echo $MSG >&2
 	exit 1
 }
+
+test $# = 0 || die "wrong number of arguments: got $#, expected 1";
 
 test -n "$FFFILE5_DIST" || die 'env var not defined: FFFILE5_DIST'
 FFFILE5_MAGIC=$FFFILE5_DIST/share/misc/magic.mgc
@@ -66,6 +68,6 @@ test "$FFFILE5_VERSION_MAGIC" = "$FFFILE5_MAGIC"			||
 
 #  create the spool file so tail doesn't abort.
 #  Note: got to be a better way. perhaps flowd.tail ought to create the file.
-BRR=$SCHEMA_ROOT/spool/setcore.brr
+BRR=spool/setcore.brr
 touch $BRR
 chmod u=rw,g=w,o= $BRR
