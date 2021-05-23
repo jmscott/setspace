@@ -36,6 +36,7 @@ leave()
 	rm -f $TMP_BLOB $TMP_MIME_ENCODING
 }
 trap leave EXIT
+trap '' PIPE
 
 test $# = 1 || die 'wrong number of arguments' 3
 FILE_BLOB=$1
