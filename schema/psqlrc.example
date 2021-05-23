@@ -8,6 +8,7 @@
 set search_path to 
 	setcore,
 	mycore,
+	fffile5,
 	fffile,
 	expat2,
 	jsonorg,
