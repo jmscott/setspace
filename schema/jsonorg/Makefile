@@ -48,6 +48,7 @@ install: all
 		psqlrc.example						\
 		rummy.sql						\
 		schema.sql						\
+		select-count-object-key.sql				\
 		setspace.schema.jsonorg.flowd.plist.example		\
 		$(JSONORG_PREFIX)/lib
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r		\
