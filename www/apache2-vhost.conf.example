@@ -16,6 +16,7 @@ Define SETSPACE_ROOT /usr/local/setspace
 #  See https://github.com/jmscott/blobio
 Define SETSPACE_BLOBIO_ROOT /usr/local/blobio
 Define SETSPACE_BLOBIO_SERVICE bio4:127.0.0.1:1797
+Define SETSPACE_BLOBIO_GET_SERVICE fs:${SETSPACE_BLOBIO_ROOT}
 
 #  See https://github.com/jmscott/work
 Define SETSPACE_JMSCOTT_ROOT /usr/local/jmscott
@@ -53,7 +54,6 @@ Define SETSPACE_PERL5LIB ${SETSPACE_VHOST_ROOT}/lib:${SETSPACE_WWW_ROOT}/lib:${S
 #  always encrypted
 Define SETSPACE_APACHE2_SERVER_PORT 443
 
-Define SETSPACE_BLOBIO_GET_SERVICE fs:${SETSPACE_BLOBIO_ROOT}
 Define SETSPACE_BLOBIO_ALGORITHM bc160
 
 #  Define on Mac OS/X under ports distro, which does not define
