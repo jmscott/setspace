@@ -80,6 +80,9 @@ print <<'END';
      <dt>dl.fail</dt>
      <dd>
      </dd>
+     <dt>span.fail</dt>
+     <dd>
+     </dd>
      <dt>table</dt>
      <dd>
 <div class="query-args">

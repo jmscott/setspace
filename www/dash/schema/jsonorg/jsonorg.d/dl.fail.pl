@@ -61,8 +61,6 @@ while (my $r = $qh->fetchrow_hashref()) {
  <dd>
    discovered $discover_elapsed ago,
    $byte_count bytes of $file_type
-
-
  </dd>
 END
 }

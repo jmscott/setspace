@@ -26,14 +26,14 @@ install: all
 
 	install								\
 		jsonorg.d/common.pl					\
-		jsonorg.d/dl.pl						\
 		jsonorg.d/dl.fail.pl					\
+		jsonorg.d/dl.pl						\
 		jsonorg.d/help.pl					\
 		jsonorg.d/input.pl					\
 		jsonorg.d/mime.json.pl					\
 		jsonorg.d/pre.pl					\
 		jsonorg.d/span.nav.pl					\
-		jsonorg.d/span.navfail.pl				\
+		jsonorg.d/span.fail.pl					\
 		jsonorg.d/table.pl					\
 		$(WWW_PREFIX)/lib/jsonorg.d
 	install								\

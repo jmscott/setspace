@@ -44,6 +44,9 @@
    <putter name="dl.fail">
    </putter>
 
+   <putter name="span.fail">
+   </putter>
+
    <putter name="table">
     <query-args>
      <arg

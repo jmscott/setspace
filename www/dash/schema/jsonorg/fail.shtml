@@ -48,6 +48,9 @@
    <!--#include virtual="nav.shtml" -->
    <div id="content">
     <h2>Failed Candidate JSON Blobs</h2>
+    <h3>
+     <!--#include virtual="/cgi-bin/jsonorg?out=span.fail&${QUERY_STRING}" -->
+    </h3>
     <!--#include virtual="/cgi-bin/jsonorg?out=dl.fail&${QUERY_STRING}" -->
    </div>
    <!--#include virtual="/footer.shtml" -->
