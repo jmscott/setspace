@@ -7,25 +7,26 @@
 #  	jmscott@setspace.com
 #  	setspace@gmail.com
 #
-PATH=/bin:/usr/bin
+export JMSCOTT_ROOT=/usr/local/jmscott
+PATH=$JMSCOTT_ROOT/bin:/bin:/usr/bin
 
-export SETSPACE_ROOT=${SETSPACE_ROOT:=/usr/local/setspace}
+export SETSPACE_ROOT=/usr/local/setspace
 
-export BLOBIO_ROOT=${BLOBIO_ROOT:=/usr/local/blobio}
-export BLOBIO_SERVICE=${BLOBIO_SERVICE:=bio4:localhost:1797}
-export BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=fs:$BLOBIO_ROOT}
-export BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=bc160}
+export BLOBIO_ROOT=/usr/local/blobio
+export BLOBIO_SERVICE=bio4:localhost:1797
+export BLOBIO_GET_SERVICE=fs:$BLOBIO_ROOT
+export BLOBIO_ALGORITHM=bc160
 PATH=$PATH:BLOBIO_ROOT/bin
 
 #  set postgresql variables
 
-export PGHOME=${PGHOME:=/usr/local/pgsql}
-export PGDATA=${PGDATA:=$PGHOME/data}
-export PGHOST=${PGHOST:=/tmp}
-export PGPORT=${PGPORT:=5432}
-export PGUSER=${PGUSER:=postgres}
-export PGPASSWORD=${PGPASSWORD:=}
-export PGDATABASE=${PGDATABASE:=setspace}
+export PGHOME=/usr/local/pgsql
+export PGDATA=$PGHOME/data
+export PGHOST=/tmp
+export PGPORT=5432
+export PGUSER=postgres
+export PGPASSWORD=
+export PGDATABASE=setspace
 PATH=$PATH:$PGHOME/bin
 
 #  golang libpq gripes about PGSYSCONFDIR
