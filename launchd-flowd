@@ -50,15 +50,6 @@ test -n "$SETSPACE_ROOT" || die "environment var not defined: SETSPACE_ROOT"
 log "SETSPACE_ROOT=$SETSPACE_ROOT"
 log "flow file: $FLOW"
 log "current directory: $(pwd)"
-
-PID_PATH=run/flowd.pid
-if [ -e $PID_PATH ];  then
-	log "pid file exists: $PID_PATH"
-	zap-proc $PID_PATH  || die "zap-proc failed: exit status=$?"
-else
-	log "no stale flowd: $PID_PATH"
-fi
-
 #
 #  source in $SETSPACE_ROOT/etc/profile
 #
@@ -80,6 +71,15 @@ log 'dumping process environment ...'
 env | while read E;  do
 	log "$E"
 done
+
+PID_PATH=run/flowd.pid
+if [ -e $PID_PATH ];  then
+	log "pid file exists: $PID_PATH"
+	zap-proc $PID_PATH  || die "zap-proc failed: exit status=$?"
+else
+	log "no stale flowd: $PID_PATH"
+fi
+
 
 INITX=sbin/launchd-flowd-init
 if [ -x $INITX ];  then

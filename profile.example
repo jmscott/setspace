@@ -7,12 +7,15 @@
 #  	jmscott@setspace.com
 #  	setspace@gmail.com
 #
+PATH=/bin:/usr/bin
+
 export SETSPACE_ROOT=${SETSPACE_ROOT:=/usr/local/setspace}
 
 export BLOBIO_ROOT=${BLOBIO_ROOT:=/usr/local/blobio}
 export BLOBIO_SERVICE=${BLOBIO_SERVICE:=bio4:localhost:1797}
 export BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=fs:$BLOBIO_ROOT}
 export BLOBIO_ALGORITHM=${BLOBIO_ALGORITHM:=bc160}
+PATH=$PATH:BLOBIO_ROOT/bin
 
 #  set postgresql variables
 
@@ -23,22 +26,17 @@ export PGPORT=${PGPORT:=5432}
 export PGUSER=${PGUSER:=postgres}
 export PGPASSWORD=${PGPASSWORD:=}
 export PGDATABASE=${PGDATABASE:=setspace}
+PATH=$PATH:$PGHOME/bin
 
 #  golang libpq gripes about PGSYSCONFDIR
 unset PGSYSCONFDIR
 
-#
-#  Note:
-#	on mac os add ports distro from various tools, like gnu distros
-#
-#		/opt/local/libexec/gnubin
-#		/opt/local/bin
-#
-#	notice $PATH not added at end!
-#
-PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:$BLOBIO_ROOT/bin:$PGHOME/bin:/usr/bin:/bin
-
-export TMPDIR=$SETSPACE_ROOT/tmp
-if [ ! -e $TMPDIR ];  then
-	mkdir -p $TMPDIR/tmp || exit 1
+#  on macos, always add gnu tools from mac ports
+if "$(uname -s)" = Darwin;  then
+	#  always add gnu tools in mac ports
+	test -d /opt/local/bin && PATH=/opt/local/bin:$PATH
+	test -d /opt/local/libexec/gnubin				&&
+		PATH=/opt/local/libexec/gnubin:$PATH
 fi
+
+PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:$PATH
