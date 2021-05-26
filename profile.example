@@ -30,12 +30,4 @@ PATH=$PATH:$PGHOME/bin
 #  golang libpq gripes about PGSYSCONFDIR
 unset PGSYSCONFDIR
 
-#  on macos, always add gnu tools from mac ports
-if "$(uname -s)" = Darwin;  then
-	#  always add gnu tools in mac ports
-	test -d /opt/local/bin && PATH=/opt/local/bin:$PATH
-	test -d /opt/local/libexec/gnubin				&&
-		PATH=/opt/local/libexec/gnubin:$PATH
-fi
-
 PATH=$SETSPACE_ROOT/bin:$SETSPACE_ROOT/sbin:$PATH
