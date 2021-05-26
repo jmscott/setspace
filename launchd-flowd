@@ -1,26 +1,21 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Synchonously start flowd server for a schema from Mac OS/X launchd.
+#	Schema flowd server for called from Mac OS/X launchd.
 #  Usage:
 #	launchd-flowd path/to/<schema>.flow
 #
 #	<key>ProgramArguments</key>
 #	  <array>
 #	    <string>/usr/local/setspace/sbin/launchd-flowd</string>
-#	    <string>etc/fffile.flow</string>
+#	    <string>etc/fffile5.flow</string>
 #	  </array>
 #	<key>WorkingDirectory</key>
-#	<string>/usr/local/setspace/schema/fffile</string>
+#	<string>/usr/local/setspace/schema/fffile5</string>
 #  Note:
-#	Think about profile in $SETSPACE_ROOT/schema/etc, since most flowds
-#	will search $SETSPACE_ROOT/schema/<schema>/{bin,sbin}.
-#
-#	On MaxOS need to move to /usr/local/setspace/bin, to get around
-#	new SIP security model.  dir sbin/ is only accessable by setspace user.
-#	where are the docs for this SIP palaver?
-#
-#	Do we need to call zap-proc run/flowd.pid?
+#	The SIP security palavar may imply a rethink of locating this script
+#	in /usr/local/setspace/sbin.  sbin/ is only readable by user setspace,
+#	which seems to cause issues with SIP.  still learning.
 #
 
 log()
@@ -50,10 +45,10 @@ test -n "$SETSPACE_ROOT" || die "environment var not defined: SETSPACE_ROOT"
 log "SETSPACE_ROOT=$SETSPACE_ROOT"
 log "flow file: $FLOW"
 log "current directory: $(pwd)"
-#
-#  source in $SETSPACE_ROOT/etc/profile
-#
 
+#
+#  source in global $SETSPACE_ROOT/etc/profile
+#
 PROFILE=$SETSPACE_ROOT/etc/profile
 log "source: $PROFILE"
 test -r $PROFILE || die "can not read setspace profile: $PROFILE"
@@ -67,10 +62,19 @@ log "source: $PROFILE"
 test -r etc/profile || die "can not read schema profile: $PROFILE"
 . $PROFILE || die "sourcing schema profile failed: $PROFILE"
 
-log 'dumping process environment ...'
-env | while read E;  do
-	log "$E"
-done
+WHICH_OS=$(uname -s)
+log "operating system: $WHICH_OS"
+#  on macos, always add gnu tools from mac ports
+if "$WHICH_OS" = Darwin;  then
+	log 'checking for gnu tools from mac ports ...'
+	#  always add gnu tools in mac ports
+	test -d /opt/local/bin && PATH=/opt/local/bin:$PATH
+	test -d /opt/local/libexec/gnubin				&&
+		PATH=/opt/local/libexec/gnubin:$PATH
+fi
+
+log "PATH=$PATH"
+log "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 
 PID_PATH=run/flowd.pid
 if [ -e $PID_PATH ];  then
@@ -80,7 +84,6 @@ else
 	log "no stale flowd: $PID_PATH"
 fi
 
-
 INITX=sbin/launchd-flowd-init
 if [ -x $INITX ];  then
 	log "$INITX exists, so initializing ..."
@@ -88,6 +91,11 @@ if [ -x $INITX ];  then
 else
 	log 'WARN (ok): $INITX does not exist'
 fi
+
+log 'dumping process environment ...'
+env | sort | while read E;  do
+	log "$E"
+done
 
 log "execing flowd server $FLOW ..."
 exec flowd server $FLOW

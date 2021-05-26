@@ -1,11 +1,9 @@
 #
 #  Synopsis:
-#	Profile for typical setspace server
-#  Usage:
-#	. $SETSPACE_ROOT/etc/profile
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
+#	Global profile for typical setspace server: $SETSPACE_ROOT/etc/profile
+#  See:
+#	SETSPACE_ROOT/bin/launchd-
+#	tools in JMSCOTT_ROOT @	https://github.com/jmscott/work
 #
 export JMSCOTT_ROOT=/usr/local/jmscott
 PATH=$JMSCOTT_ROOT/bin:/bin:/usr/bin
