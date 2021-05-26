@@ -122,3 +122,6 @@ Possible Schemas:
 	pincone
 		similatiry search as a service
 			https://www.pinecone.io/
+	cuelang
+		Data validation lang: if golang and json had a baby
+			https://cuelang.org/
