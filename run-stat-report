@@ -20,11 +20,14 @@ die()
 NOW=$(date +'%s')
 (
 	cat <<END
-Schema	Status	Up
--------------	------	------
+Schema	Status	Up Time	Boot Request,Ok,Fail	Recent 10s Sample
+-------------	------	------	--------------------	-----------------
 END
 	run-stat							|
-		while read SCHEMA STATE START_EPOCH;  do
+		while read 						\
+			SCHEMA STATE START_EPOCH			\
+			FDR OK FLT WALL					\
+			sFDR sOK sFLT sWALL; do
 			case "$STATE" in
 			UP)
 				ORDER=1
@@ -38,13 +41,19 @@ END
 			OFF)
 				ORDER=4
 				;;
+			*)
+				die "unknown STATE: $STATE"
+				;;
 			esac
-			echo "$SCHEMA	$STATE	$START_EPOCH	$ORDER"
+			cat <<END
+$ORDER	$SCHEMA	$STATE	$START_EPOCH	$FDR	$OK	$FLT	$sFDR	$sOK	$sFLT
+END
 		done							|
-		sort --key=4 --key=1 --field-separator=$'\t'		|
-		while read SCHEMA STATE START_EPOCH ORDER;  do
+		sort --key=1 --key=2 --field-separator=$'\t'		|
+		while read ORDER SCHEMA STATE START_EPOCH		\
+			   FDR OK FLT sFDR sOK sFLT;  do
 			case "$START_EPOCH" in
-			UNKNOWN)
+			unknown)
 				DURATION=unknown
 				;;
 			n/a)
@@ -60,6 +69,8 @@ END
 				die "unknown start epoch: $START_EPOCH"
 				;;
 			esac
-			echo "$SCHEMA	$STATE	$DURATION"
-		done
+			echo "$SCHEMA	$STATE	$DURATION	$FDR,$OK,$FLT	$sFDR,$sOK,$sFLT"
+		done							|
+		sed 's/,,/n\/a/g'					|
+		sed 's/\(,n\/a\)*//g'
 ) | column -s '	' -t | sed 's/ *	//'

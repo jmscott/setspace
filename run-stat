@@ -15,7 +15,7 @@ die()
 	exit 1
 }
 
-_stat_pid()
+_cat_run()
 {
 	SCHEMA=$1
 
@@ -25,33 +25,45 @@ _stat_pid()
 	#
 	FLOW=$SCHEMA/etc/$SCHEMA.flow
 
-	if [ -e $FLOW ];  then
-		PID_PATH=$SCHEMA/run/flowd.pid
-		SINCE=UNKNOWN
-
-		stale-mtime $STALE_AFTER $PID_PATH
-		STATUS=$?
-		case $STATUS in
-		0)
-			SINCE=$(perl -e "print((stat('$PID_PATH'))[9]);")
-			STATE=ZOMBIE
-			;;
-		1)
-			STATE=UP
-			SINCE=$(head -2 $PID_PATH | tail -1)
-			;;
-		2)
-			STATE=DOWN
-			;;
-		*)
-			die "stale-mtime failed: exit status=$?"
-			;;
-		esac
-	else
-		SINCE=n/a
-		STATE=OFF
+	STATE=n/a
+	if [ ! -e $FLOW ];  then
+		echo "$SCHEMA	OFF	$STATE	n/a	n/a	n/a"
+		return
 	fi
-	echo "$SCHEMA	$STATE	$SINCE"
+	BOOT=unknown
+	SAMPLE=unknowN
+
+	PID_PATH=$SCHEMA/run/flowd.pid
+	STAT_PATH=$SCHEMA/run/flowd.stat
+	SINCE=unknown
+
+	stale-mtime $STALE_AFTER $PID_PATH
+	STATUS=$?
+	case $STATUS in
+	0)
+		SINCE=$(perl -e "print((stat('$PID_PATH'))[9]);")
+		STATE=ZOMBIE
+		;;
+	1)
+		STATE=UP
+		SINCE=$(head -2 $PID_PATH | tail -1)
+		;;
+	2)
+		SINCE=n/a
+		STATE=DOWN
+		;;
+	*)
+		die "stale-mtime failed: exit status=$?"
+		;;
+	esac
+	if [ -e $STAT_PATH ];  then
+		BOOT=$(grep '^boot	' $STAT_PATH | sed 's/.....//')
+		SAMPLE=$(grep '^sample	' $STAT_PATH | sed 's/.......//')
+	else
+		BOOT="n/a	n/a	n/a	n/a"
+		SAMPLE="n/a	n/a	n/a	n/a"
+	fi
+	echo "$SCHEMA	$STATE	$SINCE	$BOOT	$SAMPLE"
 }
 
 test $# = 0 || die "wrong number cli arguments: got $#, expected 0"
@@ -61,5 +73,5 @@ SCHEMA=$SETSPACE_ROOT/schema
 cd $SCHEMA || die "cd $SCHEMA exit status=$?"
 
 find . -mindepth 1 -maxdepth 1 -type d | while read SCHEMA;  do
-	_stat_pid $(basename $SCHEMA)
+	_cat_run $(basename $SCHEMA)
 done
