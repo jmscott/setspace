@@ -73,7 +73,6 @@ install: all
 		brr-flip						\
 		brr-flip-all						\
 		brr-stat						\
-		cron-pg_dump-mutable					\
 		cron-reboot						\
 		cron-rummy						\
 		dec2pgbit						\
