@@ -64,8 +64,9 @@ test -r etc/profile || die "can not read schema profile: $PROFILE"
 
 WHICH_OS=$(uname -s)
 log "operating system: $WHICH_OS"
+
 #  on macos, always add gnu tools from mac ports
-if "$WHICH_OS" = Darwin;  then
+if [ "$WHICH_OS" = Darwin ];  then
 	log 'checking for gnu tools from mac ports ...'
 	#  always add gnu tools in mac ports
 	test -d /opt/local/bin && PATH=/opt/local/bin:$PATH
