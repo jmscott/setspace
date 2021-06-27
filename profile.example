@@ -26,6 +26,7 @@ export PGUSER=postgres
 export PGPASSWORD=
 export PGDATABASE=setspace
 PATH=$PATH:$PGHOME/bin
+export LD_LIBRARY_PATH=$PGHOME/lib:$LD_LIBRARY_PATH
 
 #  golang libpq gripes about PGSYSCONFDIR
 unset PGSYSCONFDIR
