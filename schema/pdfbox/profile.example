@@ -22,3 +22,6 @@ export PDFBOX_APP_JAR=${PDFBOX_APP_JAR:=/usr/local/lib/pdfbox-app-2.jar}
 export CLASSPATH=$PDFBOX_ROOT/lib:$PDFBOX_APP_JAR:$CLASSPATH
 
 export LD_LIBRARY_PATH=$PGHOME/lib:$LD_LIBRARY_PATH
+
+# for openjdk16, be sure to define
+#export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk16/Contents/Home

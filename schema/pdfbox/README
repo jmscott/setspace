@@ -1,6 +1,9 @@
 Synopsis
 	Schema for the well known apache pdfbox, version 2, java library.
 Note:
+	for openjdk, define JAVA_HOME=
+		
+		JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk16/Contents/Home
 	Does text extraction exclude append, previous edits of a pdf?
 
 		https://news.ycombinator.com/item?id=25609321
