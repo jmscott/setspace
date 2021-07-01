@@ -128,3 +128,9 @@ Possible Schemas:
 			https://cuelang.org/
 	trid
 		https://mark0.net/soft-trid-e.html
+
+	buildvu - pdf to html/svg converter
+		https://www.idrsolutions.com/buildvu/
+
+	itextpdf - simpler, faster pdf parser than pdfbox
+		https://itextpdf.com/en
