@@ -1,7 +1,18 @@
 Synopsis
 	Schema for the well known apache pdfbox, version 2, java library.
 Note:
-	for openjdk, define JAVA_HOME=
+	investigate oracle java 16.  not advertised on oracle.com
+
+		https://www.oracle.com/java/technologies/javase-jdk16-downloads.html
+
+	Investigate slowness due to change in kodak color manager
+
+		https://stackoverflow.com/questions/49100210/why-is-pdfbox-pdfrenderer-slow
+		https://blog.idrsolutions.com/2014/04/color-performance-change-newer-java-releases/
+		https://pdfbox.apache.org/2.0/getting-started.html
+		https://stackoverflow.com/questions/22340674/performance-itext-vs-pdfbox
+
+	For openjdk, define JAVA_HOME=
 		
 		JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk16/Contents/Home
 	Does text extraction exclude append, previous edits of a pdf?
