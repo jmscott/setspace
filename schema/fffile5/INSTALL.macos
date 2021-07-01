@@ -1,0 +1,27 @@
+#
+#  Synopsis:
+#	Install find fast file command on macos using ports.
+#  Description:
+#	Neither the installed version of "file" on darwin not the "ports"
+#	version are as predictable as the "official" version on
+#	github, maintained by the author.  Therefore, we build that
+#	version (5) in /usr/local/fffile5 (or wherever) for use by setspace.
+#
+#	The following is a build script which requires the "ports" system.
+#	Most of the complexity comes from autoconf.
+#
+
+# ----------------------------
+#!/bin/bash
+set -e
+
+mkdir -p /usr/local/src/github.com/file
+cd /usr/local/src/github.com/file
+test -e file || git clone https://github.com/file/file
+cd file
+port install autoconf automake libtool
+autoreconf -f -i
+./configure --disable-silent-rules --prefix=/usr/local/fffile5
+make clean all
+make -C tests check
+make install
