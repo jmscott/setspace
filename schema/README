@@ -60,6 +60,7 @@ Possible Schemas:
 	arxiv - Published, free scientific documents on arxiv.org
 	yummly - Recipe API from Yummley.com
 	jpedal - pdf image extraction library
+			https://www.idrsolutions.com/jpedal/
 	jdeli - pdf manipulation library
 	utf8proc - UTF8 transformation library 
 	ghidra - nsa reverse engineering toolkit
