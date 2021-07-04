@@ -60,5 +60,5 @@ esac
 xmlwf $TMP_BLOB >$TMP_XMLWF
 test $? = 0 || die "xmlwf failed >$TMP_XMLWF: exit status = $?" 5
 
-merge-stdin-xmlwf $UDIG $(file-stat-size $TMP_XMLWF) < $TMP_XMLWF ||
+merge-stdin-xmlwf_utf8 $UDIG $(file-stat-size $TMP_XMLWF) < $TMP_XMLWF ||
 			die "merge-stdin-xmlwf failed: exit status=$?" 6
