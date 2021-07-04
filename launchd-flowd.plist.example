@@ -27,11 +27,13 @@
 
   <key>EnvironmentVariables</key>
   <dict>
+  	<key>SETSPACE_ROOT</key>
+	<string>/usr/local/setspace</string>
   </dict>
 
   <key>ProgramArguments</key>
   <array>
-	<string>/usr/local/setspace/sbin/launchd-flowd</string>
+	<string>/usr/local/setspace/sbin/boot-flowd</string>
 	<string>etc/REPLACE_WITH_SCHEMA.flow</string>
   </array>
 

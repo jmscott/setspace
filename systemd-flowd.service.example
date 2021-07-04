@@ -1,11 +1,13 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Boot a schema flowd server from either launchd, systemd or command-line
+#	Schema flowd server invoked as systemd server
 #  Usage:
-#	SETSPACE_ROOT=/usr/local/setspace/opt/uspto
-#	cd $SETSPACE_ROOT/schema/pdfbox
-#	boot-flowd etc/pdfbox.flow
+#	SETSPACE_ROOT=/usr/local/setspace/opt/jmsdesk
+#	S=$SETSPACE_ROOT
+#	SRV=$S/lib/systemd/systemd-flowd.service.example
+#	cp $SRV /etc/systemd/system/jmsdesk.setspace.flowd.service
+#	#  edit WorkingDirectory=$SETSPACE_ROOT
 #
 
 log()
@@ -30,11 +32,11 @@ FLOW=$1
 log 'hello, world'
 trap leave EXIT
 
-log "flow file: $FLOW"
-test -e $FLOW || die "flow file does not exist: $FLOW"
-
 test -n "$SETSPACE_ROOT" || die "environment var not defined: SETSPACE_ROOT"
+
 log "SETSPACE_ROOT=$SETSPACE_ROOT"
+log "flow file: $FLOW"
+log "current directory: $(pwd)"
 
 #
 #  source in global $SETSPACE_ROOT/etc/profile
@@ -52,42 +54,35 @@ log "source: $PROFILE"
 test -r etc/profile || die "can not read schema profile: $PROFILE"
 . $PROFILE || die "sourcing schema profile failed: $PROFILE"
 
-#  set up gnu tools on the mac
 WHICH_OS=$(uname -s)
 log "operating system: $WHICH_OS"
 
-#  on mac we require gnutools from ports distro to be install
+#  on macos, always add gnu tools from mac ports
 if [ "$WHICH_OS" = Darwin ];  then
 	log 'checking for gnu tools from mac ports ...'
-	test -d /opt/local/libexec/gnubin || die 'port gnubin not installed'
-
-	case "$PATH" in
-	*/gnubin*)
-		;;
-	*)
-		PATH=/opt/local/libexec/gnubin:/opt/local/bin:$PATH
-		;;
-	esac
+	#  always add gnu tools in mac ports
+	test -d /opt/local/bin && PATH=/opt/local/bin:$PATH
+	test -d /opt/local/libexec/gnubin				&&
+		PATH=/opt/local/libexec/gnubin:$PATH
 fi
 
 log "PATH=$PATH"
 log "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 
-if [ -e run/flow.pid ];  then
-	log "run/flowd.pid exists: process #$(head -1 run/flow.pid)"
-	kill $(head -1 run/flow.pid)
+PID_PATH=run/flowd.pid
+if [ -e $PID_PATH ];  then
+	log "pid file exists: $PID_PATH"
+	zap-proc $PID_PATH  || die "zap-proc failed: exit status=$?"
+else
+	log "no stale flowd: $PID_PATH"
 fi
-
-log 'clearing run/ directory of stale files ...'
-find run -follow -type f -name 'flowd*' | while run ZAP_RUN;  do
-	log "zap run/ file: $ZAP_RUN"
-	rm $ZAP_RUN
-done
 
 INITX=sbin/launchd-flowd-init
 if [ -x $INITX ];  then
-	log "$INITX exists, so invoking ..."
+	log "$INITX exists, so initializing ..."
 	$INITX || die "launchd-flow-init failed: exit status=$?"
+else
+	log 'WARN (ok): $INITX does not exist'
 fi
 
 log 'dumping process environment ...'
