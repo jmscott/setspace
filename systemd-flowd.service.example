@@ -1,94 +1,28 @@
-#!/bin/bash
 #
 #  Synopsis:
-#	Schema flowd server invoked as systemd server
-#  Usage:
-#	SETSPACE_ROOT=/usr/local/setspace/opt/jmsdesk
-#	S=$SETSPACE_ROOT
-#	SRV=$S/lib/systemd/systemd-flowd.service.example
-#	cp $SRV /etc/systemd/system/jmsdesk.setspace.flowd.service
-#	#  edit WorkingDirectory=$SETSPACE_ROOT
+#	System unit definition for JMScott Desktop blobio flowd daemon
 #
+[Unit]
+Description=Flowd SetSpace Schema Process
+BindsTo=org.postgresql.service
+After=network.target org.postgresql.service
 
-log()
-{
-	echo "$(date +'%Y/%m/%d %H:%M:%S'): $@"
-}
+[Service]
+Type=simple
+User=setspace
 
-die()
-{
-	echo "ERROR: $@" >&2
-	exit 2
-}
+WorkingDirectory=/usr/local/setspace/schema/REPLACE_WITH_SCHEMA
 
-leave()
-{
-	log 'good bye, cruel world'
-}
+Environment=SETSPACE_ROOT=/usr/local/setspace
+StandardOutput=file:/home/setspace/log/systemd-flowd.REPLACE_WITH_SCHEMA.log
+StandardError=file:/home/setspace/log/systemd-flowd.REPLACE_WITH_SCHEMA.log
 
-test $# = 1 || die 'wrong number of arguments'
-FLOW=$1
+ExecStart=/usr/local/setspace/sbin/boot-flowd etc/REPLACE_WITH_SCHEMA.flow
+KillMode=control-group
+KillSignal=SIGTERM
+TimeoutSec=20
+RestartSec=20
+Restart=always
 
-log 'hello, world'
-trap leave EXIT
-
-test -n "$SETSPACE_ROOT" || die "environment var not defined: SETSPACE_ROOT"
-
-log "SETSPACE_ROOT=$SETSPACE_ROOT"
-log "flow file: $FLOW"
-log "current directory: $(pwd)"
-
-#
-#  source in global $SETSPACE_ROOT/etc/profile
-#
-PROFILE=$SETSPACE_ROOT/etc/profile
-log "source: $PROFILE"
-test -r $PROFILE || die "can not read setspace profile: $PROFILE"
-. $PROFILE || die "sourcing setspace profile failed: $PROFILE"
-
-#
-#  source in schema specific profile
-#
-PROFILE=etc/profile
-log "source: $PROFILE"
-test -r etc/profile || die "can not read schema profile: $PROFILE"
-. $PROFILE || die "sourcing schema profile failed: $PROFILE"
-
-WHICH_OS=$(uname -s)
-log "operating system: $WHICH_OS"
-
-#  on macos, always add gnu tools from mac ports
-if [ "$WHICH_OS" = Darwin ];  then
-	log 'checking for gnu tools from mac ports ...'
-	#  always add gnu tools in mac ports
-	test -d /opt/local/bin && PATH=/opt/local/bin:$PATH
-	test -d /opt/local/libexec/gnubin				&&
-		PATH=/opt/local/libexec/gnubin:$PATH
-fi
-
-log "PATH=$PATH"
-log "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
-
-PID_PATH=run/flowd.pid
-if [ -e $PID_PATH ];  then
-	log "pid file exists: $PID_PATH"
-	zap-proc $PID_PATH  || die "zap-proc failed: exit status=$?"
-else
-	log "no stale flowd: $PID_PATH"
-fi
-
-INITX=sbin/launchd-flowd-init
-if [ -x $INITX ];  then
-	log "$INITX exists, so initializing ..."
-	$INITX || die "launchd-flow-init failed: exit status=$?"
-else
-	log 'WARN (ok): $INITX does not exist'
-fi
-
-log 'dumping process environment ...'
-env | sort | while read E;  do
-	log "$E"
-done
-
-log "execing flowd server $FLOW ..."
-exec flowd server $FLOW
+[Install]
+WantedBy=multi-user.target
