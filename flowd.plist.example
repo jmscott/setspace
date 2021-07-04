@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-/Apple/DTD PLIST 1.0/EN" "http:/www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--  Note: really need to more env defines into launchd script -->
+<!--
+	sed 's/REPLACE_WITH_SCHEMA/pdfbox/g'
+	edit
+		<key>UserName</key>
+		<key>GroupName</key>
+		<key>WorkingDirectory</key>
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>setspace.schema.REPLACE_WITH_SCHEMA.flowd</string>
+
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>ProcessType</key>
+  <string>Background</string>
+
+  <key>AbandonProcessGroup</key>
+  <false/>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+  </dict>
+
+  <key>ProgramArguments</key>
+  <array>
+	<string>/usr/local/setspace/sbin/launchd-flowd</string>
+	<string>etc/REPLACE_WITH_SCHEMA.flow</string>
+  </array>
+
+  <key>Disabled</key>
+  <false/>
+
+  <key>UserName</key>
+  <string>setspace</string>
+
+  <key>GroupName</key>
+  <string>staff</string>
+
+  <key>WorkingDirectory</key>
+  <string>/usr/local/setspace/schema/REPLACE_WITH_SCHEMA</string>
+
+  <key>StandardErrorPath</key>
+  <string>/usr/local/setspace/schema/REPLACE_WITH_SCHEMA/log/launchd-flowd.log</string>
+
+  <key>StandardOutPath</key>
+  <string>/usr/local/setspace/schema/REPLACE_WITH_SCHEMA/log/launchd-flowd.log</string>
+
+</dict>
+</plist>

@@ -33,7 +33,6 @@ LIBs="
 	schema.sql
 	setcore.flow.example
 	setspace-schema-setcore.dist
-	setspace.schema.setcore.flowd.plist.example
 "
 
 BINs="

@@ -103,10 +103,11 @@ install: all
 		$(SETSPACE_PREFIX)/bin
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-		bash_login.example					\
 		bash_login-dev.example					\
-		profile.example						\
+		bash_login.example					\
 		crontab.conf.example					\
+		flowd.plist.example					\
+		profile.example						\
 		$(SETSPACE_PREFIX)/lib
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
