@@ -79,7 +79,7 @@ if [ -e run/flow.pid ];  then
 fi
 
 log 'clearing run/ directory of stale files ...'
-find run -follow -type f -name 'flowd*' | while run ZAP_RUN;  do
+find run -follow -type f -name 'flowd*' | while read ZAP_RUN;  do
 	log "zap run/ file: $ZAP_RUN"
 	rm $ZAP_RUN
 done
