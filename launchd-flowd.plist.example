@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-/Apple/DTD PLIST 1.0/EN" "http:/www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!--  Note: really need to more env defines into launchd script -->
 <!--
+  Usage:
 	sed 's/REPLACE_WITH_SCHEMA/pdfbox/g'
 	edit
 		<key>UserName</key>
@@ -25,6 +25,12 @@
   <key>AbandonProcessGroup</key>
   <false/>
 
+  <!--
+  	Only define env SETSPACE_ROOT.  All other env vars defined in
+	
+		$SETSPACE_ROOT./etc/profile
+		$SETSPACE_ROOT/schema/etc/REPLACE_WITH_SCHEMA/etc/profile
+  -->
   <key>EnvironmentVariables</key>
   <dict>
   	<key>SETSPACE_ROOT</key>
