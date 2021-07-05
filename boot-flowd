@@ -8,14 +8,16 @@
 #	boot-flowd etc/pdfbox.flow
 #
 
+PROG=$(basename $0)
+
 log()
 {
-	echo "$(date +'%Y/%m/%d %H:%M:%S'): $@"
+	echo "$(date +'%Y/%m/%d %H:%M:%S'): $PROG: $@"
 }
 
 die()
 {
-	echo "ERROR: $@" >&2
+	log "ERROR: $@" >&2
 	exit 2
 }
 
