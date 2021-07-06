@@ -45,7 +45,6 @@ install: all
 		psqlrc.example						\
 		schema.sql						\
 		select-my_title.sql					\
-		setspace.schema.mycore.flowd.plist.example		\
 		$(MYCORE_PREFIX)/lib
 
 distclean:

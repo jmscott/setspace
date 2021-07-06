@@ -6,6 +6,9 @@
 #  See:
 #  	mydash/lib/schema.sql
 #  Note:
+#	query merge_tag_http needs to only accept http urls.
+#	currently "about:*" urls (typically accidents) trigger errors.
+#
 #	An error on query merge_tag_url leaves a lock file in directory run/.
 #
 

@@ -55,7 +55,6 @@ install: all
 		psqlrc.example						\
 		rummy.sql						\
 		schema.sql						\
-		setspace.schema.fffile5.flowd.plist.example		\
 		$(FFFILE5_PREFIX)/lib
 	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) -m a=r		\
 		merge-stdin-file.pgc					\

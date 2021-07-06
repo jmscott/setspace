@@ -1,36 +1,18 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Startup a flowd server against a particular schema
+#	Boot a schema flowd server from either launchd, systemd or command-line
 #  Usage:
-#	boot-flowd <schema>
-#	boot-flowd setspace
-#  See:
-#	cron-reboot
-#  Exit Status:
-#	0	flowd appears to have booted
-#	1	no profile or flow file in directory <schema>/etc/<schema>.flow
-#	2	unknown error, flowd may not have started
-#  Note:
-#	Call jmscott/bin/zap-proc to force process exit before proceeding.
+#	SETSPACE_ROOT=/usr/local/setspace/opt/uspto
+#	cd $SETSPACE_ROOT/schema/pdfbox
+#	boot-flowd etc/pdfbox.flow
 #
 
 PROG=$(basename $0)
 
-FLOWD_PAUSE=3
-FLOWD_PAUSE_LIMIT=6
-SCHEMA=
-
 log()
 {
-	MSG=$@
-	test -n "$SCHEMA" && MSG="$SCHEMA: $MSG"
-	echo "$(date +'%Y/%m/%d %H:%M:%S'): $MSG"
-}
-
-WARN()
-{
-	log "WARN: $@" >&2
+	echo "$(date +'%Y/%m/%d %H:%M:%S'): $PROG: $@"
 }
 
 die()
@@ -45,57 +27,75 @@ leave()
 }
 
 test $# = 1 || die 'wrong number of arguments'
+FLOW=$1
 
 log 'hello, world'
 trap leave EXIT
-log "schema: $1"
-SCHEMA=$1
 
-log "flowd pause: $FLOWD_PAUSE"
+log "flow file: $FLOW"
+test -e $FLOW || die "flow file does not exist: $FLOW"
 
-test -n "$SETSPACE_ROOT" || die "env variable not defined: SETSPACE_ROOT"
+test -n "$SETSPACE_ROOT" || die "environment var not defined: SETSPACE_ROOT"
 log "SETSPACE_ROOT=$SETSPACE_ROOT"
 
-cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
+#
+#  source in global $SETSPACE_ROOT/etc/profile
+#
+PROFILE=$SETSPACE_ROOT/etc/profile
+log "source: $PROFILE"
+test -r $PROFILE || die "can not read setspace profile: $PROFILE"
+. $PROFILE || die "sourcing setspace profile failed: $PROFILE"
 
-. etc/profile
+#
+#  source in schema specific profile
+#
+PROFILE=etc/profile
+log "source: $PROFILE"
+test -r etc/profile || die "can not read schema profile: $PROFILE"
+. $PROFILE || die "sourcing schema profile failed: $PROFILE"
 
-SCHEMA_ROOT=$SETSPACE_ROOT/schema/$SCHEMA
-log "schema root: $SCHEMA_ROOT"
-test -d $SCHEMA_ROOT || die "schema dir does not exist: $SCHEMA_ROOT"
+#  set up gnu tools on the mac
+WHICH_OS=$(uname -s)
+log "operating system: $WHICH_OS"
 
-cd $SCHEMA_ROOT || die "cd $SCHEMA_ROOT failed: exit status=$?"
+#  on mac we require gnutools from ports distro to be install
+if [ "$WHICH_OS" = Darwin ];  then
+	log 'checking for gnu tools from mac ports ...'
+	test -d /opt/local/libexec/gnubin || die 'port gnubin not installed'
 
-test -e etc/profile || die "no schema profile: $(pwd)/etc/profile"
+	case "$PATH" in
+	*/gnubin*)
+		;;
+	*)
+		PATH=/opt/local/libexec/gnubin:/opt/local/bin:$PATH
+		;;
+	esac
+fi
 
-log "sourcing $(pwd)/etc/profile"
-. etc/profile
+log "PATH=$PATH"
+log "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 
-FLOW=etc/$SCHEMA.flow
-log "flowd file: $FLOW"
-test -e $FLOW || die "no flow file: $FLOW"
+if [ -e run/flow.pid ];  then
+	log "run/flowd.pid exists: process #$(head -1 run/flow.pid)"
+	kill $(head -1 run/flow.pid)
+fi
 
-RUN_PID=run/flowd.pid
-test -e $RUN_PID &&
-	die "run/flowd.pid exists: is another flowd running #$(cat $RUN_PID)"
-find run -name '*.lock' | while read LOCK;  do
-	log "WARN: removing lock file: $LOCK"
-	rm -f $LOCK || die "rm -f $LOCK failed: exit status=$?"
+log 'clearing run/ directory of stale files ...'
+find run -follow -type f -name 'flowd*' | while read ZAP_RUN;  do
+	log "zap run/ file: $ZAP_RUN"
+	rm $ZAP_RUN
 done
 
-log "starting flowd server: $FLOW"
-flowd server $FLOW &
-PID=$!
-log "flowd started in background: pid=$PID"
+INITX=sbin/launchd-flowd-init
+if [ -x $INITX ];  then
+	log "$INITX exists, so invoking ..."
+	$INITX || die "launchd-flow-init failed: exit status=$?"
+fi
 
-#  wait for flowd to generate a pid file
+log 'dumping process environment ...'
+env | sort | while read E;  do
+	log "$E"
+done
 
-PAUSE=$FLOWD_PAUSE
-log "pausing $PAUSE seconds while server starts ..."
-sleep $PAUSE
-
-test -e $RUN_PID || die "flowd boot failed: no pid file: $FLOW"
-
-log "log file: $(pwd)/log/flowd-$(date '+%a').log"
-
-exit 0
+log "execing flowd server $FLOW ..."
+exec flowd server $FLOW

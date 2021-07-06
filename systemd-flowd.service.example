@@ -1,0 +1,28 @@
+#
+#  Synopsis:
+#	System unit definition for JMScott Desktop blobio flowd daemon
+#
+[Unit]
+Description=Flowd SetSpace Schema Process
+BindsTo=org.postgresql.service
+After=network.target org.postgresql.service
+
+[Service]
+Type=simple
+User=setspace
+
+WorkingDirectory=/usr/local/setspace/schema/REPLACE_WITH_SCHEMA
+
+Environment=SETSPACE_ROOT=/usr/local/setspace
+StandardOutput=file:/home/setspace/log/systemd-flowd.REPLACE_WITH_SCHEMA.log
+StandardError=file:/home/setspace/log/systemd-flowd.REPLACE_WITH_SCHEMA.log
+
+ExecStart=/usr/local/setspace/sbin/boot-flowd etc/REPLACE_WITH_SCHEMA.flow
+KillMode=control-group
+KillSignal=SIGTERM
+TimeoutSec=20
+RestartSec=20
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

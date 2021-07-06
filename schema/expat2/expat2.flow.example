@@ -3,6 +3,9 @@
 #	Populate th expat2 postgresql database schema
 #  See:
 #	schema/expat2/schema.sql
+#  Note:
+#	in query is_in_xmlwf_utf8_table, why testing for legnth(stdout) = 0.
+#	why not use exist code of xmlwf?
 #
 
 boot
@@ -45,14 +48,13 @@ sql query is_in_xmlwf_utf8_table row
 	    WHERE
 	    	blob = $1::udig
 	),
+	--  exit status of xmlwf 
 	(SELECT
-		stdout
+		length(stdout) = 0
 	  FROM
 	    	expat2.xmlwf_utf8
 	  WHERE
 	    	blob = $1::udig
-		AND
-		length(stdout) > 0
 	)
 	`;
 

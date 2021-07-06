@@ -8,7 +8,7 @@
 export JMSCOTT_ROOT=/usr/local/jmscott
 PATH=$JMSCOTT_ROOT/bin:/bin:/usr/bin
 
-export SETSPACE_ROOT=/usr/local/setspace
+export SETSPACE_ROOT=${SETSPACE_ROOT=/usr/local/setspace}
 
 export BLOBIO_ROOT=/usr/local/blobio
 export BLOBIO_SERVICE=bio4:localhost:1797

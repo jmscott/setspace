@@ -33,7 +33,6 @@ COMPILEs="
 
 LIBs="
 	gnuzip.flow.example
-	gunzip.flowd.plist.example
 	profile.example
 	psqlrc.example
 	rummy.sql
