@@ -16,6 +16,9 @@
 #	BLOBIO_SERVICE
 #	BLOBIO_GET_SERVICE
 #	TMPDIR
+#  Note:
+#	Add option flag -E to force exit on first error.  For some reason posix
+#	specifically says not abort upon error.  wierd.
 #
 
 PROG=merge-file

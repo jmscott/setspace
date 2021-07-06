@@ -19,6 +19,9 @@
 #  Note:
 #	Should the LANG/LC_* variables be explicitly set to UTF8?
 #
+#	Add option flag -E to force exit on first error.  For some reason posix
+#	specifically says not abort upon error.  wierd.
+#
 
 PROG=merge-file_mime_type
 BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
