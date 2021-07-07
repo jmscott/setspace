@@ -58,7 +58,9 @@ SBINs="
 #HTDOCs=""
 
 #  Uncomment to create src/ directory
-#SRCs=""
+SRCs="
+	merge-stdin-gunzip_uncompressed_name.pgc
+"
 
 #  Uncomment to create etc/ directory
 ETC=""
