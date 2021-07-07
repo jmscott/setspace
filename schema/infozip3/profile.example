@@ -1,2 +1,5 @@
 unset ZIP
 unset ZIPOPT
+
+#  Note: make unconditional after testing.
+export TMPDIR=${TMPDIR:=$SETSPACE_ROOT/schema/infozip3/tmp}

@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Merge the output of "unzip -t <blob>" into table infozip3.unzip_test
+#  Usage:
+#	merge-unzip_test <blob>
+#	merge-unzip_test bc160:7aaedaf4fd3a01613791d57b344b826f96c9aee9
+#  Exit Status:
+#	0	tuple merged successfully, exit status "unzip -t" == 0
+#	1	blob does not exist
+#	2	tuple merged successfully, exit status "unzip -t" != 0
+#	3	error, no tuple merged into table infozip3.unzip_test
+#
+
+PROG=$(basename $0)
+TMPDIR=${TMPDIR:=/tmp}
+WORK_DIR="$TMPDIR/$PROG-$$.d"
+SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&2
+	exit 3
+}
+
+leave()
+{
+	cd $TMPDIR
+	rm -rf $WORK_DIR
+}
+trap leave EXIT
+
+test $# = 1 || die "wrong number of args: got $#, expected 1"
+BLOB=$1
+
+mkdir -p $WORK_DIR || die "mkdir work failed: exit status=$?"
+cd $WORK_DIR || die "cd work: exit status=$?"
+
+blobio get --udig $BLOB --output-path BLOB --service $SERVICE
+STATUS=$?
+case $STATUS in
+0)
+	;;
+1)
+	exit 1
+	;;
+*)
+	die "blobio get failed: exit status=$?"
+	;;
+esac
+
+unzip -qt BLOB >OUT 2>&1
+STATUS=$?
+
+merge-unzip_test-tuple $BLOB OUT

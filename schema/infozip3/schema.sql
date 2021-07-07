@@ -1,6 +1,8 @@
 /*
  *  Synopsis:
  *	SQL schema for famous infozip3 program, aka zip on most unixes
+ *  See:
+ *	http://infozip.sourceforge.net
  */
 
 \set ON_ERROR_STOP 1
@@ -22,7 +24,16 @@ CREATE TABLE unzip_test
 				REFERENCES setcore.service
 				PRIMARY KEY,
 	exit_status	setcore.uni_xstatus
-				NOT NULL
+				NOT NULL,
+	stdio_255	bytea CHECK (
+				length(stdio_255) <= 255
+			) NOT NULL
 );
+COMMENT ON TABLE unzip_test IS
+  'The exit status of invocation of unzip -qt on the blob'
+;
+COMMENT ON COLUMN unzip_test.stdio_255 IS
+  'Up to the first 256 chars of stderr/out on unzip -qt <blob>'
+;
 
-END
+END;

@@ -1,0 +1,110 @@
+/*
+ *  Synopsis:
+ *  	Merge tuple into table infozip3.unzip_test.
+ *  Usage:
+ *	merge-unzip_test-tuple <blob> <exit-status> <OUT
+ *  Arguments:
+ *  	1	udig of blob
+ *  	1	exit status of untest -qt
+ *  Exit Status:
+ *  	0	ok, tuple was merged
+ *  	1	SQL error
+ *  	2	general failure
+ */
+
+static char progname[] = "merge-unzip_test-tuple";
+
+#define EXIT_OK		0
+#define EXIT_SQLERROR	1
+#define EXIT_BAD	2
+
+#define EXIT_BAD_READ	EXIT_BAD
+
+#define COMMON_NEED_DIE2
+#define COMMON_NEED_IS_UDIG
+#define COMMON_NEED_READ
+#define COMMON_NEED_A2UI32
+#include "../../common.c"
+
+#define COMMON_ECPG_NEED_SQL_WARNING
+#define COMMON_ECPG_NEED_SQL_ERROR
+#define EXIT_SQLWARN	EXIT_SQLERROR
+#include "../../common-ecpg.c"
+
+static struct _ecpg_sql_state_fault no_warn[] =
+{
+        {"02000", 0},                //  no data for conflict on upsert/insert
+        {(char *)0, 0}
+};
+
+int
+main(int argc, char **argv)
+{
+EXEC SQL BEGIN DECLARE SECTION;
+
+	char *blob;
+	int exit_status;
+	bytea stdio_255[255];		//  length declared in schema.sql
+
+EXEC SQL END DECLARE SECTION;
+
+	if (argc != 4)
+		die(EXIT_BAD, "wrong number of arguments");
+
+	close(1);
+	blob = argv[1];
+
+	//  parse the blob udig
+	if (!_is_udig(blob))
+		die2(EXIT_BAD, "syntax error in udig of zipped blob", blob);
+	
+	exit_status = a2ui32(argv[2], "exit_status", EXIT_BAD);
+
+	/*
+	 *  Slurp up the uncompressed name from standard input.
+	 */
+	char *in = &stdio_255.arr[0];
+	char *in_limit = in + sizeof stdio_255.arr;
+	while (in < in_limit) {
+		ssize_t nr = _read(
+				0,
+				in,
+				sizeof stdio_255.arr - (in - stdio_255.arr)
+		);
+		if (nr == 0)
+			break;
+		in += nr;
+	}
+	//  verify we are at end of standard input.
+	if (in == in_limit && _read(0, in_limit, 1) != 0)
+		die(EXIT_BAD, "end of file not reached on standard input");
+
+	stdio_255.len = in - stdio_255.arr;
+
+	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error(
+		(struct _ecpg_sql_state_fault *)0
+	);
+	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_warning(no_warn);
+	EXEC SQL CONNECT TO default;
+
+	EXEC SQL BEGIN TRANSACTION;
+	/*
+	 *  Merge blob into table gunzip_uncompressed_name
+	 */
+	EXEC SQL INSERT INTO infozip3.unzip_test(
+		blob,
+		exit_status,
+		stdio_255
+	  ) VALUES (
+		:blob::udig,
+		:exit_status,
+		:stdio_255
+	  )
+  	  ON CONFLICT
+  		DO NOTHING
+	;
+	EXEC SQL END TRANSACTION;
+	EXEC SQL DISCONNECT ALL;
+
+	_exit(0);
+}
