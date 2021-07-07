@@ -11,36 +11,21 @@
 #	lib/profile.example
 #
 export SETSPACE_ROOT=${SETSPACE_ROOT:=/usr/local/setspace}
-export BLOBIO_ROOT=/usr/local/blobio
 
 test -e 
 
 cd $SETSPACE_ROOT || exit 1
-PS1='sets@opt> '
-
-#  colored cursor for terms with limited, garish color selection
-#PS1='\e[45;1;37mset@opt>\e[0m '
+PS1="ss@$(hostname | sed 's/\..*//')> "
 
 #  clear out runtime variables and reset from $SETSPACE_ROOT/etc/profile
 
 unset $(
 	env								|
-	egrep '^(PG|SETSPACE_)'						|
+	egrep '^(PG|SETSPACE_|BLOBIO_)'					|
 	grep -v '^SETSPACE_ROOT='					|
 	cut -d= -f1
 )
 . etc/profile
-
-#  force using untrusted service during development
-
-unset BLOBIO_GET_SERVICE
-
-#  prefered bash history defaults of jmscott.  change at will.
-
-export HISTFILE=$SETSPACE_ROOT/.bash_history
-export HISTSIZE=10000
-export HISTFILESIZE=100000
-HISTCONTROL=ignoreboth
 
 export PSQLRC=$SETSPACE_ROOT/etc/psqlrc
 
