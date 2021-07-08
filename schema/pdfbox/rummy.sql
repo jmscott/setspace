@@ -2,7 +2,7 @@
  *  Synopsis:
  *	Find unresolved pddocument and extract_pages_ut8 blobs
  *  Usage:
- *	psql -f rummy.sql --set since="'-1 week'"
+ *	psql -f rummy.sql
  */
 
 SELECT
@@ -34,8 +34,6 @@ SELECT
 
 	--  blob begins with 'PDF-'
   	substring(pre.prefix, 1, 4) = '\x25504446'
-	AND
-	s.discover_time >= now() + :since::interval
 	AND
 	(
 		--  not in either [fault_]pddocument

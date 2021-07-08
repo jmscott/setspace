@@ -20,8 +20,6 @@ WITH tsv_candidate AS (
 	  	pen.blob = tsv.blob
 	  )
     WHERE
-	s.discover_time between (now() + :since) and (now() + '-1 minute')
-	AND
 	pen.blob IS NULL
 ),
   text_candidate AS (
@@ -37,8 +35,6 @@ WITH tsv_candidate AS (
 	  	pen.blob = txt.blob
 	  )
     WHERE
-	s.discover_time between (now() + :since) and (now() + '-1 minute')
-	AND
 	pen.blob IS NULL
 )
 (SELECT

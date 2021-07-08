@@ -23,8 +23,6 @@ select
 		or
 		tim.blob is null
 	)
-	and
-	s.discover_time between (now() + :since) and (now() + '-1 minute')
 UNION
 select
 	fl.blob
@@ -44,8 +42,6 @@ select
 		or
 		seq.blob is null
 	)
-	and
-	s.discover_time between (now() + :since) and (now() + '-1 minute')
 UNION
 select
 	ql.blob
@@ -79,8 +75,6 @@ select
 		    	q.blob = ql.blob
 		)
 	)
-	and
-	s.discover_time between (now() + :since) and (now() + '-1 minute')
 UNION
 select
 	xl.blob
@@ -114,6 +108,4 @@ select
 		    	x.blob = xl.blob
 		)
 	)
-	and
-	s.discover_time between (now() + :since) and (now() + '-1 minute')
 ;

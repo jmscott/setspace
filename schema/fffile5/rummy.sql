@@ -2,7 +2,7 @@
  *  Synopsis:
  *	Find recent blobs in service but not in a table in fffile5.*
  *  Usage:
- *	psql -f lib/rummy.sql --set since='1 year'
+ *	psql -f lib/rummy.sql
  */
 SELECT
 	DISTINCT s.blob
@@ -19,8 +19,6 @@ SELECT
 		OR
 		fe.blob IS NULL
 	)
-	AND
-	s.discover_time between (now() + :'since') AND (now() + '-1 minute')
 	AND
 	NOT EXISTS (
 	  SELECT

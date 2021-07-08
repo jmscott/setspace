@@ -1,8 +1,8 @@
 /*
  *  Synopsis:
- *	Summarize tables with incomplete information since a point in time.
+ *	Summarize tables in setcore schema with incomplete information.
  *  Usage:
- *	psql -f rummy.sql --var since='-1 day'
+ *	psql -f rummy.sql | egrep '(sha|bc160):' | xargs bio-file
  *  Blame:
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
@@ -19,17 +19,13 @@ SELECT
 	  LEFT OUTER JOIN byte_suffix_32 bs32 ON (bs32.blob = s.blob)
 	  LEFT OUTER JOIN is_utf8wf u8 ON (u8.blob = s.blob)
   where
-  	s.discover_time >= now() + :'since'
-	AND
-	(
-		bc.blob IS NULL
-		OR
-		bm.blob IS NULL
-		OR
-		u8.blob IS NULL
-		OR
-		bp32.blob IS NULL
-		OR
-		bs32.blob IS NULL
-	)
+	bc.blob IS NULL
+	OR
+	bm.blob IS NULL
+	OR
+	u8.blob IS NULL
+	OR
+	bp32.blob IS NULL
+	OR
+	bs32.blob IS NULL
 ;

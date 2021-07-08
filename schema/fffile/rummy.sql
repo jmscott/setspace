@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Find recent blobs in service but not in a table in fffile.*
+ *	Find blobs in service but not in a various fffile.* tables.
  */
 SELECT
 	DISTINCT s.blob
@@ -17,8 +17,6 @@ SELECT
 		OR
 		fe.blob IS NULL
 	)
-	AND
-	s.discover_time between (now() + :since) AND (now() + '-1 minute')
 	AND
 	NOT EXISTS (
 	  SELECT

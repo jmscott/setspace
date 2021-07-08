@@ -1,17 +1,14 @@
 /*
  *  Synopsis:
- *	Find  libxml2 blobs with known unknowns in schema "linxml2".
+ *	Find libxml2 blobs with known unknowns in schema "libxml2".
  */
 WITH xml_candidate AS (
   SELECT
   	wf.blob
     FROM
-	expat2.is_xmlwf wf
-	  INNER JOIN setcore.service s ON (s.blob = wf.blob)
+	expat2.xmlwf_utf8 wf
     WHERE
-  	wf.is_xml is true
-	AND
-	s.discover_time between (now() + :since) and (now() + '-1 minute')
+  	length(stdout) = 0
 )
 
 --  expat2 xml candidates not in table xmllint or known xml not in xml_doc
