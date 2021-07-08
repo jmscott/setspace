@@ -16,24 +16,29 @@ DROP SCHEMA IF EXISTS libxml2 CASCADE;
 
 CREATE SCHEMA libxml2;
 
-SET search_path TO libxml2,setcore,public;
+SET search_path TO libxml2,public;
 
 /*
  *  Results of parsing xmllint --nonet --noout on the blob.
  */
 DROP TABLE IF EXISTS libxml2.xmllint;
-CREATE TABLE libxml2.xmllint
+CREATE TABLE xmllint
 (
 	blob	udig
-			references setcore.service
-			on delete cascade
-			primary key,
+			REFERENCES setcore.service
+			ON DELETE CASCADE
+			PRIMARY KEY,
 
-	exit_status	smallint
-			not null
+	exit_status	setcore.uni_xstatus NOT NULL
 );
+COMMENT ON TABLE xmllint IS
+  'Results of parsing xmllint --nonet --noout on the blob'
+;
 
-CREATE OR REPLACE FUNCTION libxml2.check_lintablity() RETURNS TRIGGER
+/*
+ *  Trigger to insure only xml docs that pass xmllint are in table.
+ */
+CREATE OR REPLACE FUNCTION check_lintablity() RETURNS TRIGGER
   AS $$
 	DECLARE
 		my_blob public.udig;
@@ -45,7 +50,7 @@ CREATE OR REPLACE FUNCTION libxml2.check_lintablity() RETURNS TRIGGER
 	  	libxml2.xmllint
 	  WHERE
 	  	blob = new.blob
-		and
+		AND
 		exit_status = 0
 	;
 
@@ -60,26 +65,32 @@ CREATE OR REPLACE FUNCTION libxml2.check_lintablity() RETURNS TRIGGER
 	;
   END $$ LANGUAGE plpgsql
 ;
+COMMENT ON FUNCTION check_lintablity() IS
+  'Results of parsing xmllint --nonet --noout on the blob'
+;
 
 /*
  *  The wellformed xml document
  */
 DROP TABLE IF EXISTS libxml2.xml_doc;
-CREATE TABLE libxml2.xml_doc
+CREATE TABLE xml_doc
 (
 	blob		udig
-				references libxml2.xmllint
-				on delete cascade
-				primary key,
+				REFERENCES xmllint
+				ON DELETE CASCADE
+				PRIMARY KEY,
 	doc		xml
-				not null
+				NOT NULL
 );
+COMMENT ON TABLE xml_doc IS
+  'Well formed xml document, suitable for xml queries in SQL'
+;
 
 CREATE TRIGGER check_lintablity AFTER INSERT
   ON
-  	libxml2.xml_doc
+  	xml_doc
   FOR EACH ROW EXECUTE PROCEDURE
-  	libxml2.check_lintablity()
+  	check_lintablity()
 ;
 
 /*
@@ -87,14 +98,14 @@ CREATE TRIGGER check_lintablity AFTER INSERT
  *  xmlwf and xmllint.  Not sure why.  We track those blobs here.
  */
 DROP TABLE IF EXISTS libxml2.is_pg_well_formed;
-CREATE TABLE libxml2.is_pg_well_formed
+CREATE TABLE is_pg_well_formed
 (
 	blob	udig
-			references setcore.service
-			on delete cascade
-			primary key,
+			REFERENCES setcore.service
+			ON DELETE CASCADE
+			PRIMARY KEY,
 	is_xml	bool
-			not null
+			NOT NULL
 );
 
 COMMIT;

@@ -15,8 +15,8 @@ CREATE SCHEMA gnuzip;
 
 SET search_path to gnuzip,public;
 
-DROP TABLE IF EXISTS gunzip_test;
-CREATE TABLE gunzip_test
+DROP TABLE IF EXISTS gunzip_test_quiet;
+CREATE TABLE gunzip_test_quiet
 (
 	blob		udig
 				REFERENCES setcore.service
@@ -25,7 +25,7 @@ CREATE TABLE gunzip_test
 	exit_status	setcore.uni_xstatus
 				NOT NULL
 );
-COMMENT ON TABLE gunzip_test IS
+COMMENT ON TABLE gunzip_test_quiet IS
   'Exit status of gnu command "gunzip --test"'
 ;
 
@@ -43,13 +43,13 @@ CREATE FUNCTION gunzip_test_exit_status(blob udig)
   	SELECT
 		exit_status
 	  FROM
-	  	gnuzip.gunzip_test
+	  	gnuzip.gunzip_test_quiet
 	  WHERE
 	  	blob = $1
   $$ LANGUAGE SQL
 ; 
 COMMENT ON FUNCTION gunzip_test_exit_status(udig) IS
-  'Fetch the exit status in table gunzip_test used by constraint'
+  'Fetch the exit status in table gunzip_test_quiet used by constraint'
 ;
 
 /*
@@ -59,7 +59,7 @@ DROP TABLE IF EXISTS gunzip_uncompressed_name;
 CREATE TABLE gunzip_uncompressed_name
 (
 	blob		udig
-				REFERENCES gunzip_test
+				REFERENCES gunzip_test_quiet
 				ON DELETE CASCADE
 				PRIMARY KEY,
 	name		bytea CHECK (
@@ -84,7 +84,7 @@ DROP TABLE IF EXISTS gunzip_uncompressed_byte_count;
 CREATE TABLE gunzip_uncompressed_byte_count
 (
 	blob		udig
-				REFERENCES gunzip_test
+				REFERENCES gunzip_test_quiet
 				ON DELETE CASCADE
 				PRIMARY KEY,
 	byte_count	bigint,

@@ -54,7 +54,7 @@ drop table if exists drblob.is_brr_log;
 create table drblob.is_brr_log
 (
 	blob	udig
-			references setspace.service
+			references setcore.service
 			on delete cascade
 			primary key,
 	is_brr	bool
@@ -72,7 +72,7 @@ drop table if exists drblob.is_fdr_log;
 create table drblob.is_fdr_log
 (
 	blob	udig
-			references setspace.service
+			references setcore.service
 			on delete cascade
 			primary key,
 	is_fdr	bool
@@ -90,7 +90,7 @@ drop table if exists drblob.is_qdr_log;
 create table drblob.is_qdr_log
 (
 	blob	udig
-			references setspace.service
+			references setcore.service
 			on delete cascade
 			primary key,
 	is_qdr	bool
@@ -109,7 +109,7 @@ drop table if exists drblob.is_xdr_log;
 create table drblob.is_xdr_log
 (
 	blob	udig
-			references setspace.service
+			references setcore.service
 			on delete cascade
 			primary key,
 	is_xdr	bool
@@ -129,7 +129,7 @@ drop table if exists drblob.brr_log_total;
 create table drblob.brr_log_total
 (
 	blob		udig
-				references setspace.service
+				references setcore.service
 				on delete cascade
 				primary key,
 	record_count	counter,
@@ -205,7 +205,7 @@ drop table if exists drblob.brr_log_time;
 create table drblob.brr_log_time
 (
 	blob			udig
-					references setspace.service
+					references setcore.service
 					on delete cascade
 					primary key,
 	min_start_time		timestamptz
@@ -231,7 +231,7 @@ drop table if exists drblob.fdr_log_total;
 create table drblob.fdr_log_total
 (
 	blob	udig
-			references setspace.service
+			references setcore.service
 			on delete cascade
 			primary key,
 
@@ -263,7 +263,7 @@ drop table if exists drblob.fdr_log_time;
 create table drblob.fdr_log_time
 (
 	blob			udig
-					references setspace.service
+					references setcore.service
 					on delete cascade
 					primary key,
 	min_start_time		timestamptz
@@ -292,7 +292,7 @@ drop table if exists drblob.fdr_log_sequence;
 create table drblob.fdr_log_sequence
 (
 	blob	udig
-			references setspace.service
+			references setcore.service
 			on delete cascade
 			primary key,
 
@@ -313,7 +313,7 @@ drop table if exists drblob.qdr_log_total;
 create table drblob.qdr_log_total
 (
 	blob			udig
-					references setspace.service
+					references setcore.service
 					on delete cascade
 					primary key,
 
@@ -365,7 +365,7 @@ drop table if exists drblob.qdr_log_time;
 create table drblob.qdr_log_time
 (
 	blob			udig
-					references setspace.service
+					references setcore.service
 					on delete cascade
 					primary key,
 	min_start_time		timestamptz
@@ -399,7 +399,7 @@ drop table if exists drblob.qdr_log_flow_sequence;
 create table drblob.qdr_log_flow_sequence
 (
 	blob			udig
-					references setspace.service
+					references setcore.service
 					on delete cascade
 					primary key,
 
@@ -418,7 +418,7 @@ drop table if exists drblob.xdr_log_total;
 create table drblob.xdr_log_total
 (
 	blob			udig
-					references setspace.service
+					references setcore.service
 					on delete cascade
 					primary key,
 
@@ -469,7 +469,7 @@ drop table if exists drblob.xdr_log_time;
 create table drblob.xdr_log_time
 (
 	blob			udig
-					references setspace.service
+					references setcore.service
 					on delete cascade
 					primary key,
 	min_start_time		timestamptz
@@ -510,7 +510,7 @@ drop table if exists drblob.xdr_log_flow_sequence;
 create table drblob.xdr_log_flow_sequence
 (
 	blob			udig
-					references setspace.service
+					references setcore.service
 					on delete cascade
 					primary key,
 
@@ -529,7 +529,7 @@ drop table if exists drblob.qdr_log_query;
 create table drblob.qdr_log_query
 (
 	blob			udig
-					references setspace.service
+					references setcore.service
 					on delete cascade,
 
 	query_name		name,
@@ -591,7 +591,7 @@ drop table if exists xdr_log_query;
 create table xdr_log_query
 (
 	blob			udig
-					references setspace.service
+					references setcore.service
 					on delete cascade,
 	command_name		name,
 
