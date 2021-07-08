@@ -166,8 +166,8 @@ sql query prefix_is_percentPDF row
 		answer bool
 	);
 }
-
 query prefix_is_percentPDF(brr.udig);
+
 
 call append_pdfbox_brr(
 	brr.start_time,
@@ -291,4 +291,49 @@ call append_gnuzip_brr(
 	brr.wall_duration
 ) when
 	may_be_gnuzip.answer == true
+;
+
+#
+#  The prefix of blob matches PK zip signature:
+#
+#	50 4B 03 04	plain'ol zip
+#	50 4B 05 06	empty zip
+#	50 4B 07 08	spanning zip
+#
+sql query prefix_is_PK_zip row
+{
+	statement = `
+
+	SELECT
+		prefix::text ~ '^\\x504b(0304|0506|0708)'
+	  FROM
+	  	setcore.byte_prefix_32
+	  WHERE
+	  	blob = $1::udig
+	`;
+
+	result row is (
+		answer bool
+	);
+}
+
+query prefix_is_PK_zip(brr.udig);
+command append_infozip3_brr
+{
+	path = "append-brr";
+	argv = (
+		"../infozip3/spool/prefixio.brr"
+	);
+}
+
+call append_infozip3_brr(
+	brr.start_time,
+	brr.transport,
+	brr.verb,
+	brr.udig,
+	brr.chat_history,
+	brr.blob_size,
+	brr.wall_duration
+) when
+	prefix_is_PK_zip.answer == true
 ;
