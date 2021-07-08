@@ -4,11 +4,8 @@
 #  See:
 #	https://github.com/jmscott/work/blob/master/make-dist
 #  Note:
-#	For a GNU Makefile to extract the shell variables defined in this
-#	dist file, include the following line in Makefile:
-#
-#	Makefile variables can be extracted from the the root.dist file
-#	with these recipes.  Example make code follows:
+#	Makefile variables can be extracted and defined from the the
+#	root.dist file with these recipes.  Example make code follows:
 #
 #		DIST=product.dist
 #
@@ -23,66 +20,74 @@
 #
 
 #  Define PRODUCT to change name of tar file from $(basename $(pwd))
-#  to, say, foobar-YYYYMMDD_hhmmss.tar.bz2
+#  to, say, foobar-YYYYMMDD_hhmm.tar.bz2
 
-PRODUCT=setspace-schema-gnuzip
-
-COMPILEs="
-	merge-stdin-gunzip_uncompressed_name
-"
+PRODUCT=setspace-schema-infozip3
 
 LIBs="
-	gnuzip.flow.example
-	profile.example
-	psqlrc.example
-	rummy.sql
 	schema.sql
-	select-gnuzip-candidate.sql
-	setspace-schema-gnuzip.dist
+	setspace-schema-infozip3.dist
 "
 
-#BINs=""
+#BINs="
+#"
 
+#  Uncomment to create sbins/ directory
 SBINs="
-	gunzip_list_verbose2sql
-	merge-gunzip_test
-	merge-gunzip_uncompressed_byte_count
-	merge-gunzip_uncompressed_name
-	$COMPILEs
+	merge-unzip_test
+	merge-unzip_test-tuple
 "
 
 #  Uncomment to create cgibin/ directory
-#CGIBINs=""
+#CGIBINs="
+#"
 
 #  Uncomment to create htdocs/ directory
-#HTDOCs=""
+#HTDOCs="
+#"
 
 #  Uncomment to create src/ directory
 SRCs="
-	merge-stdin-gunzip_uncompressed_name.pgc
+	merge-unzip_test-tuple.pgc
 "
 
+#  Uncomment to create attic/ directory
+#ATTIC="
+#"
+
+#  Uncomment to create archive/ directory
+#ARCHIVE="
+#"
+
 #  Uncomment to create etc/ directory
-ETC=""
+ETC="
+"
 
 #  Uncomment to create spool/ directory
-SPOOL=""
+SPOOL="
+"
 
 #  Uncomment to create data/ directory
-#DATA=""
+#DATA="
+#"
 
 #  Uncomment to create run/ directory
-RUN=""
+RUN="
+"
 
 #  Uncomment to create log/ directory
-LOG=""
+LOG="
+"
 
 #  Uncomment to create cache/ directory
-#CACHE=""
+#CACHE="
+#"
 
 #  Uncomment to create tmp/ directory
-TMP=""
+TMP="
+"
 
 #  Uncomment to create directory libexec/
-#LIBEXECs=""
+#LIBEXECs="
+#"
 

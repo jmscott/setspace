@@ -9,6 +9,7 @@ include ../schema.mk
 DIST=./setspace-schema-gnuzip.dist
 SBINs := $(shell (. ./$(DIST) && echo $$SBINs))
 LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
+SRCs := $(shell (. ./$(DIST) && echo $$LIBs))
 COMPILEs := $(shell (. ./$(DIST) && echo $$COMPILEs))
 
 all: $(COMPILEs)
@@ -30,16 +31,22 @@ install:
 				-d $(GNUZIP_PREFIX)/spool
 	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) 			\
 				-d $(GNUZIP_PREFIX)/lib
+	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) 			\
+				-d $(GNUZIP_PREFIX)/src
 	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) -m u=rx,go=	\
 		$(SBINs) 						\
 		$(GNUZIP_PREFIX)/sbin
 	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) -m a=r		\
 		$(LIBs)							\
 		$(GNUZIP_PREFIX)/lib
+	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) -m a=r		\
+		$(SRCs)							\
+		$(GNUZIP_PREFIX)/src
 
 distclean:
 	rm -rf $(GNUZIP_PREFIX)/sbin
 	rm -rf $(GNUZIP_PREFIX)/lib
+	rm -rf $(GNUZIP_PREFIX)/src
 world:
 	$(MAKE) $(MFLAGS) clean
 	$(MAKE) $(MFLAGS) all
