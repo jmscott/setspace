@@ -68,16 +68,8 @@ test -d run || die "missing run directory: $(pwd)/run/"
 #  check for pid file of flowd process
 
 FLOWD_PID=run/flowd.pid
-zap-proc $FLOWD_PID
-STATUS=$?
-case $STATUS in
-0)
-	log 'flowd killed'
-	;;
-1)
-	log 'pid file does not exist'
-	;;
-*)
-	die "zap-proc failed: exit status=$STATUS"
-	;;
-esac
+if [ -e $FLOW_PID ];  then
+	PID=$(head -1 $FLOW_PID)
+	log "kill flowd: #$PID"
+	kill $PID
+fi

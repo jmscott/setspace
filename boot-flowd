@@ -97,5 +97,14 @@ env | sort | while read E;  do
 	log "$E"
 done
 
-log "execing flowd server $FLOW ..."
-exec flowd server $FLOW
+if [ $PPID = 0 ];  then
+	log 'parent pid id 0, called from init manager'
+	log "execing flowd server $FLOW ..."
+	flowd server $FLOW
+	exec rm -f run/flowd*
+fi
+
+log "invoked from script, so forking flowd into background"
+flowd server $FLOW &
+BG_PID=$!
+log "bg process id: $BG_PID"

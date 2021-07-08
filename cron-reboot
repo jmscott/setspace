@@ -71,9 +71,12 @@ kill-all-flowd || die "kill-all-flowd failed: exit status=$?"
 #  schema/$SCHEMA/etc/$SCHEMA.flow
 
 log 'finding schemas for bootable flowd ...'
-ls-boot-flowd | while read SCHEMA;  do
+ls-flow | while read SCHEMA;  do
 	log "schema: $SCHEMA"
-	boot-flowd $SCHEMA || die "boot-flowd $SCHEMA failed: exit status=$?"
+	cd $SETSPACE_ROOT/schema/$SCHEMA ||
+		die "cd dir schema failed: $SCHEMA: exit status=$?"
+	boot-flowd etc/$SCHEMA.flow ||
+		die "boot-flowd $SCHEMA failed: exit status=$?"
 done
 
 log 'all flowds started'
