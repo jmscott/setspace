@@ -1,26 +1,20 @@
+#!/bin/bash
 #
 #  Synopsis:
 #	Find all blobs with known unknowns, across all schemas.
 #  Usage:
-#	rummy | xargs bio-file
-#	rummy '1 week' | xargs bio-file
+#	rummy | cut -f2 | xargs bio-file
 #  Note:
-#	should rummy output both the schema and the blob in a single tuple?
-#
 #		$ rummy
 #		libxml2\tsha:01871af3ae0a6af9096c3155c5741453b8eb83b8
 #		jsonorg\tsha:fef573f2fd3c76002e71f048c120abc0e0a3965f
 #
 #		$ rummy | cut -f2 | sort -u
-#	letting the caller filter out the
 #
-#	Need to verify that the variable since > 1 minute.
-#
-#	Think about adding second command line argument which is the recent
-#	time interval.  Currently the default value is one minute.
+#	letting the caller filter by schema.
 #
 
-PROG=rummy
+PROG=$(basename $0)
 
 die()
 {
@@ -28,17 +22,7 @@ die()
 	exit 1
 }
 
-case $# in
-0)
-	SINCE='1000 years'
-	;;
-1)
-	SINCE="$1"
-	;;
-*)
-	die 'wrong number of arguments'
-	;;
-esac
+test $# = 0 || die 'wrong number of arguments'
 
 test -n "$SETSPACE_ROOT" || die "env variable not defined: SETSPACE_ROOT"
 cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
@@ -50,8 +34,7 @@ find-schema | while read SCH;  do
 		--tuples-only						\
 		--file $SQL						\
 		--no-psqlrc						\
-		--quiet							\
-		--set since="'-$SINCE'"					|
+		--quiet							|
 	  sed '/^ *$/d'							|
 	  sed 's/ //g'							|
 	  sed "s/.*/$SCH	&/"
