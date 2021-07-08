@@ -45,13 +45,10 @@ trap leave EXIT
 
 log 'hello, world'
 
-test $# = 1 || die 'wrong number of arguments'
-SINCE="$1"
+test $# = 0 || die 'wrong number of arguments'
 
 test -n "$SETSPACE_ROOT" || die 'env var not defined: SETSPACE_ROOT'
 log "SETSPACE_ROOT=$SETSPACE_ROOT"
-
-log "since: $SINCE"
 
 cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
 . etc/profile
@@ -86,8 +83,7 @@ log "now: $NOW"
 
 #  find the blobs with known unknowns ..
 
-log "finding blobs discovered since $SINCE ago ..."
-rummy "$SINCE" >$TMP_RUMMY || die "rummy failed: exit status=$?"
+rummy >$TMP_RUMMY || die "rummy failed: exit status=$?"
 RC=$(wc -l $TMP_RUMMY | awk '{print $1}')
 log "total blob count: $RC"
 
