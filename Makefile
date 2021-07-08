@@ -103,7 +103,6 @@ install: all
 		$(SETSPACE_PREFIX)/bin
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-		bash_login-dev.example					\
 		bash_login.example					\
 		crontab.conf.example					\
 		launchd-flowd.plist.example				\
