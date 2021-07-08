@@ -4,8 +4,6 @@
 #  See:
 #	schema.sql
 #  Note:
-#	Note verifying the json blob is in table setcore.service!!!
-#
 #	Investigate if the first two characters of a json document are
 #	always ascii:
 #
@@ -40,6 +38,31 @@ sql database setspace
 tail brr
 {
 	path = "spool/prefixio.brr";
+}
+
+#
+#  Synopsis:
+#	Is the blob in the service table
+#
+sql query in_service_table row
+{
+
+	result row is (
+		answer bool
+	);
+
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+		blob
+	    FROM
+		setcore.service
+	    WHERE
+		blob = $1::udig
+	);
+
+	`;
 }
 
 sql query is_in_checker_255_table row
@@ -95,7 +118,13 @@ call brr_has_size()
   )
 ;
 
-query is_in_checker_255_table(brr.udig);
+query in_service_table(brr.udig);
+
+query is_in_checker_255_table(brr.udig)
+  when
+  	in_service_table.answer == true
+esac
+;
 
 command get_JSON_checker
 {
