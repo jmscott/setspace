@@ -24,6 +24,9 @@
 
 PRODUCT=setspace-schema-infozip3
 
+COMPILEs="
+	merge-unzip_test-tuple
+"
 LIBs="
 	schema.sql
 	setspace-schema-infozip3.dist
