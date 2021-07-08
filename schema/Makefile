@@ -31,6 +31,7 @@ all:
 	cd fffile && $(MAKE) $(MFLAGS) all
 	cd fffile5 && $(MAKE) $(MFLAGS) all
 	cd gnuzip && $(MAKE) $(MFLAGS) all
+	cd infozip3 && $(MAKE) $(MFLAGS) all
 
 createpg:
 	createdb setspace --encoding=UTF8 --template template0
@@ -48,6 +49,7 @@ clean:
 	cd fffile && $(MAKE) $(MFLAGS) clean
 	cd fffile5 && $(MAKE) $(MFLAGS) clean
 	cd gnuzip && $(MAKE) $(MFLAGS) clean
+	cd infozip3 && $(MAKE) $(MFLAGS) clean
 
 install:
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
@@ -76,6 +78,7 @@ install:
 	cd fffile && $(MAKE) $(MFLAGS) install
 	cd fffile5 && $(MAKE) $(MFLAGS) install
 	cd gnuzip && $(MAKE) $(MFLAGS) install
+	cd infozip3 && $(MAKE) $(MFLAGS) install
 
 	#  Install lib/
 
@@ -115,6 +118,7 @@ distclean:
 	cd fffile && $(MAKE) $(MFLAGS) distclean
 	cd fffile5 && $(MAKE) $(MFLAGS) distclean
 	cd gnuzip && $(MAKE) $(MFLAGS) distclean
+	cd infozip3 && $(MAKE) $(MFLAGS) distclean
 
 	#  do NOT remove dirs $SETSPACE_PREFIX/{lib,bin,sbin}/
 	test ! -d $(SETSPACE_PREFIX)/lib ||				\
