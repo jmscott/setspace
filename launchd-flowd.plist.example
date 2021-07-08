@@ -35,10 +35,13 @@
   <dict>
   	<key>SETSPACE_ROOT</key>
 	<string>/usr/local/setspace</string>
+  	<key>LAUNCHD_STARTED</key>
+	<string>yes</string>
   </dict>
 
   <key>ProgramArguments</key>
   <array>
+  	<string>/usr/local/jmscott/sbin/launchd-log</string>
 	<string>/usr/local/setspace/sbin/boot-flowd</string>
 	<string>etc/REPLACE_WITH_SCHEMA.flow</string>
   </array>
