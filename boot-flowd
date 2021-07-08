@@ -97,7 +97,7 @@ env | sort | while read E;  do
 	log "$E"
 done
 
-if [ -n "$LAUNCHED_STARTED" -o "$INVOCATION_ID"];  then
+if [ -n "$LAUNCHED_STARTED" -o -n "$INVOCATION_ID"];  then
 	log 'started by launchd or systemd'
 	log 'execing flowd ...'
 	exec flowd server $FLOW
