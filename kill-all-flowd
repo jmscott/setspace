@@ -18,7 +18,7 @@ log()
 {
 	MSG=$@
 	test -n "$SCHEMA" && MSG="$SCHEMA: $MSG"
-	echo "$(date +'%Y/%m/%d %H:%M:%S'): $MSG"
+	echo "$(date +'%Y/%m/%d %H:%M:%S'): $PROG: $MSG"
 }
 
 die()
@@ -45,8 +45,13 @@ cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
 
 . etc/profile
 
-run-stat | cut -f1,2 | grep -w UP | sort | while read SCHEMA STATE;  do
-	log "killing flowd process for schema: $SCHEMA ($STATE)"
+run-stat 								|
+  cut -f1,2								|
+  fgrep -wv 'DOWN'							|
+  fgrep -wv 'OFF'							|
+  sort									|
+  while read SCHEMA STATE;  do
+	log "kill flowd of schema: $SCHEMA ($STATE)"
 	kill-flowd $SCHEMA
 	STATUS=$?
 	case $STATUS in

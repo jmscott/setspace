@@ -15,16 +15,72 @@ ifeq "$(shell uname)" "Linux"
         RT_LINK=-lrt
 endif
 
-PROG=					\
-	append-brr			\
-	dec2pgbit			\
-	escape-json-utf8		\
-	file-stat-size			\
-	flip-tail			\
-	is-utf8wf			\
-	spin-wait-blob			\
-	tas-run-lock			\
-	tas-run-unlock			\
+BINs=									\
+	append-brr							\
+	escape-json-utf8						\
+	file-stat-size							\
+	is-utf8wf							\
+	spin-wait-blob
+
+SRCs=									\
+	Makefile							\
+	append-brr.c							\
+	common-ecpg.c							\
+	common.c							\
+	dec2pgbit.c							\
+	escape-json-utf8.c						\
+	file-stat-size.c						\
+	flip-tail.c							\
+	is-utf8wf.c							\
+	local-linux.mk.example						\
+	local-darwin.mk.example						\
+	macosx.c							\
+	spin-wait-blob.pgc						\
+	tas-run-lock.c							\
+	tas-run-unlock.c
+
+LIBs=									\
+	bash_login.example						\
+	crontab.conf.example						\
+	launchd-flowd.plist.example					\
+	profile.example							\
+	systemd-flowd.service.example
+
+COMPILEs=								\
+	append-brr							\
+	dec2pgbit							\
+	escape-json-utf8						\
+	file-stat-size							\
+	flip-tail							\
+	is-utf8wf							\
+	spin-wait-blob							\
+	tas-run-lock							\
+	tas-run-unlock
+
+SBINs=									\
+	boot-flowd							\
+	brr-flip							\
+	brr-flip-all							\
+	brr-stat							\
+	cron-rummy							\
+	dec2pgbit							\
+	find-brr							\
+	find-rolled-brr							\
+	find-schema							\
+	flip-tail							\
+	flowd-stat							\
+	kill-all-flowd							\
+	kill-flowd							\
+	launchd-flowd							\
+	ls-boot-flowd							\
+	ls-flow								\
+	rummy								\
+	run-stat							\
+	run-stat-report							\
+	ssctl								\
+	tail-flowd							\
+	tas-run-lock							\
+	tas-run-unlock
 
 check-local:
 	@test -n "$(PDFBOX_APP2_JAR)"				||	\
@@ -40,14 +96,14 @@ check-local:
 		(echo "can not find PGHOME dir: $(PGHOME)"; false)
 	@test -d $(GODIST)					||	\
 		(echo "can not find GODIST dir: $(GODIST)"; false)
-all: check-local $(PROG) $(CGI)
+all: check-local $(COMPILEs) $(CGI)
 	cd schema && $(MAKE) all
 ifdef DASH_DNS_VHOST_SUFFIX
 	cd www && $(MAKE) $(MFLAGS) all
 endif
 
 clean:
-	rm -f $(PROG) $(CGI) spin-wait-blob.c
+	rm -f $(COMPILEs) $(CGI) spin-wait-blob.c
 	cd schema && $(MAKE) $(MFLAGS) clean
 ifdef DASH_DNS_VHOST_SUFFIX
 	cd www && $(MAKE) $(MFLAGS) clean
@@ -69,63 +125,19 @@ install: all
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/tmp
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-		boot-flowd						\
-		brr-flip						\
-		brr-flip-all						\
-		brr-stat						\
-		cron-reboot						\
-		cron-rummy						\
-		dec2pgbit						\
-		find-brr						\
-		find-rolled-brr						\
-		find-schema						\
-		flip-tail						\
-		flowd-stat						\
-		kill-all-flowd						\
-		kill-flowd						\
-		launchd-flowd						\
-		ls-boot-flowd						\
-		ls-flow							\
-		rummy							\
-		run-stat						\
-		run-stat-report						\
-		tail-flowd						\
-		tas-run-lock						\
-		tas-run-unlock						\
+		$(SBINs)						\
 		$(SETSPACE_PREFIX)/sbin
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-		append-brr						\
-		escape-json-utf8					\
-		file-stat-size						\
-		is-utf8wf						\
-		spin-wait-blob						\
+		$(BINs)							\
 		$(SETSPACE_PREFIX)/bin
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-		bash_login.example					\
-		crontab.conf.example					\
-		launchd-flowd.plist.example				\
-		profile.example						\
-		systemd-flowd.service.example				\
+		$(LIBs)							\
 		$(SETSPACE_PREFIX)/lib
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
-		Makefile						\
-		append-brr.c						\
-		common-ecpg.c						\
-		common.c						\
-		dec2pgbit.c						\
-		escape-json-utf8.c					\
-		file-stat-size.c					\
-		flip-tail.c						\
-		is-utf8wf.c						\
-		local-linux.mk.example					\
-		local-darwin.mk.example					\
-		macosx.c						\
-		spin-wait-blob.pgc					\
-		tas-run-lock.c						\
-		tas-run-unlock.c					\
+		$(SRCs)							\
 		$(SETSPACE_PREFIX)/src
 	cd schema && $(MAKE) install
 ifdef DASH_DNS_VHOST_SUFFIX

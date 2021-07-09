@@ -1,21 +1,18 @@
+#!/bin/bash
 #
 #  Synopsis:
 #	Kill a flowd process for a schema, possibly going nuclear
 #  Usage:
 #	kill-flowd <schema>
 #  Exit Status:
-#	0	running flowd process was killed or process not running
-#	32	unexpected error
-#  Blame:
-#  	jmscott@setspace.com
-#  	setspace@gmail.com
+#	0	running flowd probably killed and files run/flowd.* removed.
+#	1	unexpected error
 #  Note:
-#	Think about overriding name of SETSPACE_ROOT by consulting a variable
-#	named SETSPACE_ROOT_NAME.  Will be helpfull for non setspace
-#	schemas that wish to manage flowd process.
+#	In leave() "rm -f called a bit to early"
 #
 
 PROG=$(basename $0)
+SCHEMA_ROOT=
 
 #  pause after either stopping or starting flowd
 
@@ -26,19 +23,15 @@ log()
 	echo "$(date +'%Y-%m-%d %H:%M:%S'): $PROG: $MSG"
 }
 
-WARN()
-{
-	log "WARN: $@" >&2
-}
-
 die()
 {
 	log "ERROR: $@" >&2
-	exit 2
+	exit 1
 }
 
 leave()
 {
+	test $(pwd) = "$SETSPACE_ROOT/$SCHEMA_ROOT" && rm -f run/flowd.*
 	log 'good bye, cruel world'
 }
 
@@ -68,8 +61,19 @@ test -d run || die "missing run directory: $(pwd)/run/"
 #  check for pid file of flowd process
 
 FLOWD_PID=run/flowd.pid
-if [ -e $FLOW_PID ];  then
-	PID=$(head -1 $FLOW_PID)
+if [ ! -e $FLOWD_PID ]; then
+	log "WARN: no pid file (ok): $FLOWD_PID"
+	exit 0
+fi
+
+test -s $FLOWD_PID || die "empty file: $FLOWD_PID"
+PID=$(head -1 $FLOWD_PID)
+case "$PID" in
+[0-9]*)
 	log "kill flowd: #$PID"
 	kill $PID
-fi
+	;;
+*)
+	die "no pid in flowd.pid: $PID"
+	;;
+esac

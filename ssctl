@@ -1,0 +1,75 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Manually start/stop processes for SetSpace
+#  Usage:
+#	ssctl start	#  start the world, aborting on the first error
+#	ssctl stop	#  stop all processes
+#
+
+PROG=$(basename $0)
+PKILL_PAUSE=10
+
+log()
+{
+	MSG=$@
+	test -n "$SCHEMA" && MSG="$SCHEMA: $MSG"
+	echo "$(date +'%Y/%m/%d %H:%M:%S'): $MSG"
+}
+
+die()
+{
+	log "ERROR: $@" >&2
+	exit 1
+}
+
+leave()
+{
+	log 'good bye, cruel world'
+}
+
+test $# = 1 || die "wrong arg count: expect 1, got $#"
+ACTION=$1
+
+log 'hello, world'
+trap leave EXIT
+log "action: $ACTION"
+
+test -n "$SETSPACE_ROOT" ||
+			die "environment variable not defined: SETSPACE_ROOT"
+log "SETSPACE_ROOT=$SETSPACE_ROOT"
+
+cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
+
+. etc/profile
+log "path to flowd: $(which flowd)"
+
+#  shutdown any flowd processes
+
+case "$ACTION" in
+start)
+	#  boot up a flowd process for each flow file in
+	#  schema/$SCHEMA/etc/$SCHEMA.flow
+
+	log 'finding bootable schemas ...'
+	ls-flow | while read SCHEMA;  do
+		log "schema: $SCHEMA"
+		cd $SETSPACE_ROOT/schema/$SCHEMA ||
+			die "cd dir schema failed: $SCHEMA: exit status=$?"
+		boot-flowd etc/$SCHEMA.flow ||
+			die "boot-flowd $SCHEMA failed: exit status=$?"
+	done
+	log 'all flowds started'
+	;;
+stop)
+	log 'killing UP/ZOMBIE flowds ...'
+	kill-all-flowd || die "kill-all-flowd failed: exit status=$?"
+	;;
+*)
+	die "unknown action: $ACTION"
+	;;
+esac
+
+echo
+run-stat-report
+echo
