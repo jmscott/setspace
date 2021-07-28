@@ -20,7 +20,7 @@
 #	$SETSPACE_ROOT/sbin/boot-flowd
 #
 
-FFFILE5_DIST=/usr/local/fffile5
+export FFFILE5_DIST=/usr/local/fffile5
 #export FFFILE5_DIST=$HOME/opt/fffile5
 export LD_LIBRARY_PATH=$FFFILE5_DIST/lib:$PGHOME/lib:$LD_LIBRARY_PATH
 
