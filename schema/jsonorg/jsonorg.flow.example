@@ -123,7 +123,6 @@ query in_service_table(brr.udig);
 query is_in_checker_255_table(brr.udig)
   when
   	in_service_table.answer == true
-esac
 ;
 
 command get_JSON_checker
