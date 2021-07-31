@@ -137,3 +137,13 @@ Possible Schemas:
 
 	kiwix - offline wikiepedia
 		https://www.kiwix.org/en/
+
+	apache data sketches
+		https://datasketches.apache.org
+
+	snabb - network toolkit
+		https://github.com/snabbco/snabb
+	easyocr
+		https://github.com/JaidedAI/EasyOCR/
+	paddleocr
+		https://github.com/PaddlePaddle/PaddleOCR
