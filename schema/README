@@ -143,7 +143,9 @@ Possible Schemas:
 
 	snabb - network toolkit
 		https://github.com/snabbco/snabb
-	easyocr
+	easyocr - oss ocr
 		https://github.com/JaidedAI/EasyOCR/
-	paddleocr
+	paddleocr - oss ocr
 		https://github.com/PaddlePaddle/PaddleOCR
+	project naptha - proprietary ocr (maybe rest api)
+		https://projectnaptha.com
