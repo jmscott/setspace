@@ -58,6 +58,7 @@ COMPILEs=								\
 	tas-run-unlock
 
 SBINs=									\
+	SETSPACE_ROOT-bash						\
 	boot-flowd							\
 	brr-flip							\
 	brr-flip-all							\
