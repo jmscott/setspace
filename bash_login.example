@@ -15,7 +15,6 @@ export SETSPACE_ROOT=${SETSPACE_ROOT:=/usr/local/setspace}
 test -e 
 
 cd $SETSPACE_ROOT || exit 1
-PS1="ss@$(hostname | sed 's/\..*//')> "
 
 #  clear out runtime variables and reset from $SETSPACE_ROOT/etc/profile
 
@@ -31,3 +30,5 @@ export PSQLRC=$SETSPACE_ROOT/etc/psqlrc
 
 echo;  run-stat-report;  echo
 alias rr=run-stat-report
+
+PS1="ss@$PGDATABASE@$(hostname | sed 's/\..*//')> "
