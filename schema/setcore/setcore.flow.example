@@ -631,17 +631,17 @@ call is_utf8_()
 	merge_is_utf8wf.is_utf8 == true
 ;
 
-command append_fffile_brr
+command append_fffile5_brr
 {
 	path = "append-brr";
 	argv = (
-		"../fffile/spool/setcore.brr"
+		"../fffile5/spool/setcore.brr"
 	);
 }
 
-call append_fffile_brr(
+call append_fffile5_brr(
 	brr.start_time,
-	"fs~schema=fffile",
+	"fs~schema=fffile5",
 	brr.verb,
 	brr.udig,
 	brr.chat_history,
