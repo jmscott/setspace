@@ -28,7 +28,6 @@ all:
 	cd prefixio && $(MAKE) $(MFLAGS) all
 	cd jsonio && $(MAKE) $(MFLAGS) all
 	cd pdfbox && $(MAKE) $(MFLAGS) all
-	cd fffile && $(MAKE) $(MFLAGS) all
 	cd fffile5 && $(MAKE) $(MFLAGS) all
 	cd gnuzip && $(MAKE) $(MFLAGS) all
 	cd infozip3 && $(MAKE) $(MFLAGS) all
@@ -46,7 +45,6 @@ clean:
 	cd prefixio && $(MAKE) $(MFLAGS) clean
 	cd jsonio && $(MAKE) $(MFLAGS) clean
 	cd pdfbox && $(MAKE) $(MFLAGS) clean
-	cd fffile && $(MAKE) $(MFLAGS) clean
 	cd fffile5 && $(MAKE) $(MFLAGS) clean
 	cd gnuzip && $(MAKE) $(MFLAGS) clean
 	cd infozip3 && $(MAKE) $(MFLAGS) clean
@@ -75,7 +73,6 @@ install:
 	cd prefixio && $(MAKE) $(MFLAGS) install
 	cd jsonio && $(MAKE) $(MFLAGS) install
 	cd pdfbox && $(MAKE) $(MFLAGS) install
-	cd fffile && $(MAKE) $(MFLAGS) install
 	cd fffile5 && $(MAKE) $(MFLAGS) install
 	cd gnuzip && $(MAKE) $(MFLAGS) install
 	cd infozip3 && $(MAKE) $(MFLAGS) install
@@ -115,7 +112,6 @@ distclean:
 	cd prefixio && $(MAKE) $(MFLAGS) distclean
 	cd jsonio && $(MAKE) $(MFLAGS) distclean
 	cd pdfbox && $(MAKE) $(MFLAGS) distclean
-	cd fffile && $(MAKE) $(MFLAGS) distclean
 	cd fffile5 && $(MAKE) $(MFLAGS) distclean
 	cd gnuzip && $(MAKE) $(MFLAGS) distclean
 	cd infozip3 && $(MAKE) $(MFLAGS) distclean
