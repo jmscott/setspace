@@ -10,6 +10,8 @@
 #  See:
 #	lib/profile.example
 #
+test -e /usr/local/jmscott/lib/bash_login.example			&&
+	. /usr/local/jmscott/lib/bash_login.example
 export SETSPACE_ROOT=${SETSPACE_ROOT:=/usr/local/setspace}
 
 test -e 
