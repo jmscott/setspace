@@ -35,8 +35,6 @@
   <dict>
   	<key>SETSPACE_ROOT</key>
 	<string>/usr/local/setspace</string>
-  	<key>LAUNCHD_STARTED</key>
-	<string>yes</string>
   </dict>
 
   <key>ProgramArguments</key>
