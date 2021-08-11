@@ -34,3 +34,6 @@ echo;  run-stat-report;  echo
 alias rr=run-stat-report
 
 PS1="ss@$PGDATABASE@$(hostname | sed 's/\..*//')> "
+
+export R=$SETSPACE_ROOT
+export SC=$R/schema
