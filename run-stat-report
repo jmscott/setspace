@@ -23,11 +23,13 @@ NOW=$(date +'%s')
 Schema	Status	Up Time	Boot Request,Ok,Fail	Recent 10s Sample
 -------------	------	------	--------------------	-----------------
 END
+	AGO='WTF'
 	run-stat							|
 		while read 						\
 			SCHEMA STATE START_EPOCH			\
 			FDR OK FLT WALL					\
 			sFDR sOK sFLT sWALL; do
+
 			case "$STATE" in
 			UP)
 				ORDER=1
@@ -52,6 +54,20 @@ END
 		sort --key=1 --key=2 --field-separator=$'\t'		|
 		while read ORDER SCHEMA STATE START_EPOCH		\
 			   FDR OK FLT sFDR sOK sFLT;  do
+
+			#  calculate duration since most recent stat
+
+			SP=schema/$SCHEMA/run/flowd.stat
+			if [ -e $SP ];  then
+				AGO=" ($(duration-english $(
+					duration-mtime $SP
+				)) ago)"
+			else
+				AGO=''
+			fi
+
+			#  calculate when flowd process started
+
 			case "$START_EPOCH" in
 			unknown)
 				DURATION=unknown
@@ -69,7 +85,7 @@ END
 				die "unknown start epoch: $START_EPOCH"
 				;;
 			esac
-			echo "$SCHEMA	$STATE	$DURATION	$FDR,$OK,$FLT	$sFDR,$sOK,$sFLT"
+			echo "$SCHEMA	$STATE	$DURATION	$FDR,$OK,$FLT	$sFDR,$sOK,$sFLT$AGO"
 		done							|
 		sed 's/,,/n\/a/g'					|
 		sed 's/\(,n\/a\)*//g'
