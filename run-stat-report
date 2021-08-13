@@ -37,7 +37,7 @@ Schema	Status	Up Time	Boot Request,Ok,Fail	Recent 10s Sample
 -------------	------	------	--------------------	-----------------
 END
 	AGO='WTF'
-	run-stat							|
+	run-stat-query							|
 		while read 						\
 			SCHEMA STATE START_EPOCH			\
 			FDR OK FLT WALL					\
