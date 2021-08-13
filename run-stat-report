@@ -7,6 +7,9 @@
 #  See:
 #	setspace/sbin/run-stat
 #  Note:
+#	Replace "column" command with gnuversion in util-linux macports
+#	or write replacement in https://github.com/jmscott/work.
+#
 #	Ought to consolidate this script with blobio/sbin/run-stat-report.
 #
 #	Sort is ignoring the second key on linux.  The pain never ends.
@@ -16,6 +19,16 @@ die()
 	echo "ERROR: $@" >&2
 	exit 1
 }
+
+test $# = 0 || die "wrong number of arguments: got $#, expected 0"
+test -n "$SETSPACE_ROOT" || die 'env not defined: SETSPACE_ROOT'
+cd $SETSPACE_ROOT || die "cd SETSPACE_ROOT failed: exit status=$?"
+
+cat <<END
+
+Who Am I: $(hostname):$SETSPACE_ROOT
+
+END
 
 NOW=$(date +'%s')
 (
