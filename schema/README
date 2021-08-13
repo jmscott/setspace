@@ -149,3 +149,11 @@ Possible Schemas:
 		https://github.com/PaddlePaddle/PaddleOCR
 	project naptha - proprietary ocr (maybe rest api)
 		https://projectnaptha.com
+	DiffPDF - compare two pdf file
+		see macports "port info DiffPDF"
+	libexttextcat - Library implementing N-gram-based text categorization.
+		see macports "port info libexttextcat"
+	odt2txt - odt2txt converts OpenOffice.org ODF text documents
+		see macports "port info odt2txt"
+	wdiff - word differences
+		see macports "port into wdiff"
