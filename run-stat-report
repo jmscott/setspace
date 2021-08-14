@@ -36,7 +36,7 @@ NOW=$(date +'%s')
 Schema	Status	Up Time	Boot Request,Ok,Fail	Recent 10s Sample	When
 --------	------	-------	--------------------	-----------------	-----
 END
-	run-stat-query							|
+	run-stat-tuple							|
 		while read 						\
 			SCHEMA STATE START_EPOCH			\
 			FDR OK FLT WALL					\
