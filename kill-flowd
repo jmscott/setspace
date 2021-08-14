@@ -31,7 +31,7 @@ die()
 
 leave()
 {
-	test $(pwd) = "$SETSPACE_ROOT/$SCHEMA_ROOT" && rm -f run/flowd.*
+	test $(basename $(pwd)) = $SCHEMA && rm -f run/flowd.*
 	log 'good bye, cruel world'
 }
 
