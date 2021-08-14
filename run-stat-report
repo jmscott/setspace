@@ -34,7 +34,7 @@ NOW=$(date +'%s')
 (
 	cat <<END
 Schema	Status	Up Time	Boot Request,Ok,Fail	Recent 10s Sample	When
--------------	-------	------	--------------------	-----------------	-----
+--------	------	-------	--------------------	-----------------	-----
 END
 	run-stat-query							|
 		while read 						\
