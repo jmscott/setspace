@@ -33,8 +33,8 @@ END
 NOW=$(date +'%s')
 (
 	cat <<END
-Schema	Status	Up Time	Boot Request,Ok,Fail	Recent 10s Sample	When
---------	------	-------	--------------------	-----------------	-----
+Schema	State	UpTm	Boot Request,Success,Fail	Recent 10s Sample	When
+--------	-----	----	-------------------------	-----------------	----
 END
 	run-stat-tuple							|
 		while read 						\
@@ -46,7 +46,7 @@ END
 			UP)
 				ORDER=1
 				;;
-			ZOMBIE)
+			ZOMBI)
 				ORDER=2
 				;;
 			DOWN)
