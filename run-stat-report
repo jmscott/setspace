@@ -27,14 +27,15 @@ cd $SETSPACE_ROOT || die "cd SETSPACE_ROOT failed: exit status=$?"
 cat <<END
 
 Who Am I: $(hostname):$SETSPACE_ROOT
+     Now: $(date)
 
 END
 
 NOW=$(date +'%s')
 (
 	cat <<END
-Schema	State	UpTm	Boot Request,Success,Fail	Recent 10s Sample	When
---------	-----	----	-------------------------	-----------------	----
+Schema	State	UpTim	Boot Request,Success,Fail	Recent 10s Sample	WhenRec
+--------	-----	-----	-------------------------	-----------------	-------
 END
 	run-stat-tuple							|
 		while read 						\
