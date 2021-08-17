@@ -47,7 +47,8 @@ END
 			UP)
 				ORDER=1
 				;;
-			ZOMBI)
+			ZOMBI|ZOMBIE)
+				STATE=ZOMBI	#  shorten for alignment
 				ORDER=2
 				;;
 			DOWN)
