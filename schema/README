@@ -157,3 +157,5 @@ Possible Schemas:
 		see macports "port info odt2txt"
 	wdiff - word differences
 		see macports "port into wdiff"
+	optic - Optic uses real traffic to document and test your APIs
+		https://github.com/opticdev/optic
