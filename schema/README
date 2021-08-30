@@ -159,3 +159,7 @@ Possible Schemas:
 		see macports "port into wdiff"
 	optic - Optic uses real traffic to document and test your APIs
 		https://github.com/opticdev/optic
+	csvkit - csvkit is a suite of command-line tools
+		https://csvkit.readthedocs.io/en/latest/
+	wuffs - wrangling untrusted file formats safely
+		https://github.com/google/wuffs
