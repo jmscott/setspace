@@ -163,3 +163,5 @@ Possible Schemas:
 		https://csvkit.readthedocs.io/en/latest/
 	wuffs - wrangling untrusted file formats safely
 		https://github.com/google/wuffs
+	htmlq - like jq, but for html instead of javascript
+		https://github.com/mgdm/htmlq
