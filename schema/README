@@ -165,3 +165,5 @@ Possible Schemas:
 		https://github.com/google/wuffs
 	htmlq - like jq, but for html instead of javascript
 		https://github.com/mgdm/htmlq
+	paddleOCR - 80 language OCR
+		https://huggingface.co/spaces/akhaliq/PaddleOCR
