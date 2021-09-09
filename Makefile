@@ -76,6 +76,7 @@ SBINs=									\
 	ls-boot-flowd							\
 	ls-flow								\
 	rummy								\
+	run-stat-flowd-tuple						\
 	run-stat-report							\
 	run-stat-tuple							\
 	ssctl								\

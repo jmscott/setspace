@@ -1,0 +1,110 @@
+#
+#  Synopsis:
+#	Generate a run-stat tuple for flowd processes.
+#  Description:
+#	For flowd, the stats sum the columns in the *.fdr records.
+#
+#	<green>	is the sum of all *.fdr records with both processes and
+#	queries in an OK state.  <yellow> is currently 0 and <red> is the
+#	sum of flows with at least 1 query of process not OK.
+#
+#	See the particular etc/*.flow file for what is OK or not OK.
+#  Usage:
+#	sbin/run-stat-flowd-tuple flowd 
+#	sbin/run-stat-flowd-tuple flowd>wework
+#  Exit Status:
+#	0	gyr tuple written
+#	1	unexpected error, no tuple written
+#  Note:
+#	Copied from $BLOBIO_ROOT/sbin/run-stat-flowd-tuple, so patches
+#	to blobio MUST propagate to this script.
+#
+
+STALE_AFTER=61		#  need to derive heartbeat values in etc/<schema>.flow
+
+die()
+{
+	echo "$(basename $0): ERROR: $@" >&2
+	exit 1
+}
+
+test $# = 1 || die "wrong number of arguments: got $#, expected 1"
+SCHEMA=$1	#  process name (flowd or flowd>tag)
+test -n "$SETSPACE_ROOT" || die "env not defined: SETSPACE_ROOT"
+cd $SETSPACE_ROOT || die "cd SETSPACE_ROOT failed: exit status=$?"
+
+SCHEMA_DIR=schema/$SCHEMA
+test -d $SCHEMA_DIR || die "no schema dir: $SCHEMA_DIR"
+cd $SCHEMA_DIR || die "cd schema dir ($SCHEMA_DIR) failed: exit status=$?"
+
+FLOW_PATH=etc/$SCHEMA.flow	#  path to <schema>/etc/<schema>.flow file
+
+PID_PATH=run/flowd.pid		#  path to $RUN_PATH/flowd.pid
+PID_MTIME=null			#  most recent write to $RUN_PATH/flowd.pid
+
+BOOT_EPOCH=null			#  tail -1 $RUN_PATH/flowd.pid
+				#  can be overriden by value in "run/flowd.gyr"
+BOOT_GYR='null	null	null'
+
+RECENT_EPOCH=null		#  epoch of most recent GYR sample
+RECENT_GYR='null	null	null'
+
+GYR_PATH=run/flowd.gyr
+
+#
+#  The service is enabled if etc/<schema>.flow exists. The state
+#  (UP,DOWN,ZOMBI,YETI) of the flowd process is determined by the
+#  existence, values in, or modify time of the files run/flowd.{pid,gyr}.
+#
+if [ -e $FLOW_PATH ]; then
+	if [ -e $PID_PATH ];  then
+		if [ -s $PID_PATH ];  then
+			if stale-mtime $STALE_AFTER $PID_PATH;  then
+				STATE=YETI
+			else
+				STATE=UP
+			fi
+		else
+			STATE=YETI
+		fi
+	else
+		STATE=DOWN
+		if [ -e $GYR_PATH ];  then
+			STATE=ZOMBI
+		fi
+	fi
+else
+	STATE=OFFL
+	if [ -e $PID_PATH -o -e $GYR_PATH ];  then
+		STATE=ZOMBI
+	fi
+fi
+
+if [ -e $PID_PATH ];  then
+	if [ -s $PID_PATH ];  then
+		BOOT_EPOCH=$(tail -1 $PID_PATH)
+	fi
+fi
+
+#  is -s test redundant with above -s test?
+if [ -s $PID_PATH ];  then
+	PID_MTIME=$(stat-mtime $PID_PATH)
+	BOOT_EPOCH=$(tail -1 $PID_PATH)
+fi
+
+if [ -e $GYR_PATH ];  then
+	if [ -s $GYR_PATH ];  then
+		BOOT_EPOCH=$(grep '^boot	' $GYR_PATH | cut -f2)
+		BOOT_GYR=$(grep '^boot	' $GYR_PATH | cut -f3-5)
+		RECENT_EPOCH=$(grep '^recent	' $GYR_PATH | cut -f2)
+		RECENT_GYR=$(grep '^recent	' $GYR_PATH | cut -f3-5)
+	elif [ $STATE = UP ];  then
+		STATE=YETI
+	fi
+elif [ $STATE = UP ];  then
+	STATE=YETI
+fi
+
+cat <<END
+$SCHEMA	$STATE	$BOOT_EPOCH	$BOOT_GYR	$RECENT_EPOCH	$RECENT_GYR
+END
