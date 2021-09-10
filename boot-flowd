@@ -26,7 +26,7 @@ leave()
 	log 'good bye, cruel world'
 }
 
-test $# = 1 || die 'wrong number of arguments'
+test $# = 1 || die "wrong number of arguments, got $#, expected 1"
 FLOW=$1
 
 log 'hello, world'
@@ -97,7 +97,7 @@ env | sort | while read E;  do
 	log "$E"
 done
 
-if [ -n "$LAUNCHED_STARTED" -o -n "$INVOCATION_ID" ];  then
+if [ $PPID = 1 -o -n "$LAUNCHED_STARTED" -o -n "$INVOCATION_ID" ];  then
 	log 'started by launchd or systemd'
 	log 'execing flowd ...'
 	exec flowd server $FLOW
