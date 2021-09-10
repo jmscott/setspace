@@ -1,69 +1,15 @@
 #
 #  Synopsis:
-#	Summarize process stats and duration by examining *.pid files.
+#	Tuplize stats for all schemas in directory schema/*/run/flowd.{pid,gyr}
 #  Usage:
-#	run-stat
-#  Note:
-#	Probing process existence with pgrep might be useful.
-#	Not clear if another script should do this.
+#	run-stat-tuple
 #
-STALE_AFTER=60
+STALE_AFTER=61
 
 die()
 {
 	echo "$(basename $0): ERROR: $@" >&2
 	exit 1
-}
-
-_cat_run()
-{
-	SCHEMA=$1
-
-	#
-	#  if the file <schema>.flow exists, then the process flowd should be
-	#  running; #  otherwise, the flowd process is intentionally off.
-	#
-	FLOW=$SCHEMA/etc/$SCHEMA.flow
-
-	STATE=n/a
-	if [ ! -e $FLOW ];  then
-		echo "$SCHEMA	OFF	$STATE	n/a	n/a	n/a"
-		return
-	fi
-	BOOT=unknown
-	SAMPLE=unknowN
-
-	PID_PATH=$SCHEMA/run/flowd.pid
-	STAT_PATH=$SCHEMA/run/flowd.stat
-	SINCE=unknown
-
-	stale-mtime $STALE_AFTER $PID_PATH
-	STATUS=$?
-	case $STATUS in
-	0)
-		SINCE=$(perl -e "print((stat('$PID_PATH'))[9]);")
-		STATE=ZOMBIE
-		;;
-	1)
-		STATE=UP
-		SINCE=$(head -2 $PID_PATH | tail -1)
-		;;
-	2)
-		SINCE=n/a
-		STATE=DOWN
-		;;
-	*)
-		die "stale-mtime failed: exit status=$?"
-		;;
-	esac
-	if [ -e $STAT_PATH ];  then
-		BOOT=$(grep '^boot	' $STAT_PATH | sed 's/.....//')
-		SAMPLE=$(grep '^sample	' $STAT_PATH | sed 's/.......//')
-	else
-		BOOT="n/a	n/a	n/a	n/a"
-		SAMPLE="n/a	n/a	n/a	n/a"
-	fi
-	echo "$SCHEMA	$STATE	$SINCE	$BOOT	$SAMPLE"
 }
 
 test $# = 0 || die "wrong number cli arguments: got $#, expected 0"
@@ -73,5 +19,5 @@ SCHEMA=$SETSPACE_ROOT/schema
 cd $SCHEMA || die "cd $SCHEMA exit status=$?"
 
 find . -mindepth 1 -maxdepth 1 -type d | while read SCHEMA;  do
-	_cat_run $(basename $SCHEMA)
+	run-stat-flowd-tuple $(basename $SCHEMA)
 done

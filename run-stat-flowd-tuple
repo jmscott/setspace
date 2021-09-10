@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Generate a run-stat tuple for flowd processes.
+#	Generate a tuple of stats in schema/$1/run/flowd.{pid,gyr}
 #  Description:
 #	For flowd, the stats sum the columns in the *.fdr records.
 #

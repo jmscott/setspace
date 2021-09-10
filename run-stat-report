@@ -5,7 +5,7 @@
 #  Usage:
 #	run-stat-report
 #  See:
-#	setspace/sbin/run-stat
+#	setspace/sbin/run-stat-tuple
 #  Note:
 #	Replace "column" command with gnuversion in util-linux macports
 #	or write replacement in https://github.com/jmscott/work.
@@ -31,80 +31,48 @@ Who Am I: $(hostname):$SETSPACE_ROOT
 
 END
 
-NOW=$(date +'%s')
 (
 	cat <<END
-Schema	State	UpTim	Boot Request,Success,Fail	Recent 10s Sample	WhenRec
---------	-----	-----	-------------------------	-----------------	-------
+Schema	State	Boot	Green,Yellow,Red	Recent	Green,Yellow,Red
+-------	-----	-----	----------------	------	----------------
 END
 	run-stat-tuple							|
-		while read 						\
-			SCHEMA STATE START_EPOCH			\
-			FDR OK FLT WALL					\
-			sFDR sOK sFLT sWALL; do
+		sort --key=2 --key=1 --field-separator=$'\t'		|
+		while read PROC STATE					\
+			BOOT_EPOCH BOOT_GREEN BOOT_YELLOW BOOT_RED	\
+			REC_EPOCH REC_GREEN REC_YELLOW REC_RED;  do
 
-			case "$STATE" in
-			UP)
-				ORDER=1
-				;;
-			ZOMBI|ZOMBIE)
-				STATE=ZOMBI	#  shorten for alignment
-				ORDER=2
-				;;
-			DOWN)
-				ORDER=3
-				;;
-			OFF)
-				ORDER=4
-				;;
-			*)
-				die "unknown STATE: $STATE"
-				;;
-			esac
-			cat <<END
-$ORDER	$SCHEMA	$STATE	$START_EPOCH	$FDR	$OK	$FLT	$sFDR	$sOK	$sFLT
-END
-		done							|
-		sort --key=1 --key=2 --field-separator=$'\t'		|
-		while read ORDER SCHEMA STATE START_EPOCH		\
-			   FDR OK FLT sFDR sOK sFLT;  do
-
-			#  calculate duration since most recent stat
-
-			SP=schema/$SCHEMA/run/flowd.stat
-			if [ -e $SP ];  then
-				WHEN=$(duration-english $(
-					duration-mtime $SP
-				))
+			#  collapse the green/yellow/red tuple to single 
+			#  G,Y,R value
+			if [ $BOOT_GREEN != null ];  then
+				BOOT_GYR="$BOOT_GREEN,$BOOT_YELLOW,$BOOT_RED"
 			else
-				if [ "$STATE" = UP ];  then
-					WHEN='!!!'
-				else
-					WHEN='n/a'
-				fi
+				BOOT_GYR=null
+			fi
+			if [ $REC_GREEN != null ];  then
+				REC_GYR="$REC_GREEN,$REC_YELLOW,$REC_RED"
+			else
+				REC_GYR=null
 			fi
 
-			#  calculate when flowd process started
-
-			case "$START_EPOCH" in
-			unknown)
-				DURATION=unknown
-				;;
-			n/a)
-				DURATION=n/a
-				;;
-			[0-9]*)
-				DURATION=$(
-					duration-english		\
-						$(expr $NOW - $START_EPOCH)
-				)
-				;;
-			*)
-				die "unknown start epoch: $START_EPOCH"
-				;;
-			esac
-			echo "$SCHEMA	$STATE	$DURATION	$FDR,$OK,$FLT	$sFDR,$sOK,$sFLT	$WHEN"
-		done							|
-		sed 's/,,/n\/a/g'					|
-		sed 's/\(,n\/a\)*//g'
-) | column -s '	' -t | sed 's/ *	//'
+			#  convert boot and recent sample epochs to
+			#  readable english
+			if [ $BOOT_EPOCH != null ];  then
+				BOOT_AGO=$(elapsed-english $BOOT_EPOCH)
+			else
+				BOOT_AGO=null
+			fi
+			if [ $REC_EPOCH != null ];  then
+				REC_AGO=$(elapsed-english $REC_EPOCH)
+			else
+				REC_AGO=null
+			fi
+					
+			cat <<END
+$PROC	$STATE	$BOOT_AGO	$BOOT_GYR	$REC_AGO	$REC_GYR
+END
+		done
+)									|
+	sed 's@	null@	n/a@g'						|
+	column -s '	' -t						|
+	sed 's/ *	//'
