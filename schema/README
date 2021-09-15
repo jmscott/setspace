@@ -33,6 +33,8 @@ See:
 	https://github.com/openpreserve
 
 Possible Schemas:
+	newscatcher - scrape news (based upon zyte?)
+		https://newscatcherapi.com/news-api
 	zyte - commercial web scraping
 		https://www.zyte.com/
 	rclone - Swiss Army Knife of File Copy
