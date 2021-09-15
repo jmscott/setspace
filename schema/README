@@ -49,6 +49,7 @@ Possible Schemas:
 	simdjson - Optimized json verifier from Daniel Lemire
 	hypersc - Hyper Scan Fast Regular expression library from Intel
 	scrapy - python web scraping framework
+		https://scrapy.org/
 	exiftool - File metadata extraction tool, oriented around digital media
 	gdelt - World News Project sponsored by Google
 	jhove - Open Preservation Project
@@ -167,3 +168,7 @@ Possible Schemas:
 		https://github.com/mgdm/htmlq
 	paddleOCR - 80 language OCR
 		https://huggingface.co/spaces/akhaliq/PaddleOCR
+	jsonsch - json schema
+		https://json-schema.org/
+	ajv - json schema validator
+		https://ajv.js.org/
