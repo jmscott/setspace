@@ -176,3 +176,6 @@ Possible Schemas:
 		https://json-schema.org/
 	ajv - json schema validator
 		https://ajv.js.org/
+
+	lxml - xml/html parser
+		https://lxml.de/
