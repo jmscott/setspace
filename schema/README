@@ -179,3 +179,5 @@ Possible Schemas:
 
 	lxml - xml/html parser
 		https://lxml.de/
+	h2c in curl github repo
+		https://github.com/curl/h2c
