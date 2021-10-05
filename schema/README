@@ -106,6 +106,8 @@ Possible Schemas:
 		https://github.com/tesseract-ocr/tesseract
 	Azure Form Recognizser
 		https://azure.microsoft.com/en-us/services/cognitive-services/form-recognizer/
+	RELAX NG - xml schema verifier
+		https://relaxng.org/
 	Tabula - Extract Tables from PDF
 		https://github.com/tabulapdf/tabula-java
 		https://tabula.technology/
