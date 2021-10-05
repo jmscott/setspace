@@ -94,50 +94,6 @@ CREATE TRIGGER check_jsonability AFTER INSERT
   	check_jsonability()
 ;
 
-/*
- *  Note:
- *	Need to simple into two tables for keys and values.
- */
-DROP TABLE IF EXISTS jsonb_255_tsv;
-CREATE TABLE jsonb_255_tsv_simple
-(
-	blob		udig
-				PRIMARY KEY
-				REFERENCES jsonb_255
-				ON DELETE CASCADE,
-	tsv		tsvector
-				NOT NULL
-);
-COMMENT ON TABLE jsonb_255_tsv_simple IS
-  'Text search vectors for JSON blobs using "simple" configuration'
-;
-CREATE INDEX jsonb_255_tsv_simple_rumidx ON jsonb_255_tsv_simple
-  USING
-  	rum (tsv rum_tsvector_ops)
-;
-
-CREATE FUNCTION jsonb_255_tsv_simple_trigger() RETURNS trigger AS $$
-  BEGIN
-  	INSERT INTO jsonorg.jsonb_255_tsv_simple(
-		blob,
-		tsv
-	  ) VALUES(
-	  	new.blob,
-		jsonb_to_tsvector(
-			'simple'::regconfig,
-			new.doc,
-			'["all"]'::jsonb
-	  )) ON CONFLICT
-	  	DO NOTHING
-	;
-  	return new;
- END
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER jsonb_255_tsv_simple_trigger AFTER INSERT
-    ON jsonb_255 FOR EACH ROW EXECUTE PROCEDURE jsonb_255_tsv_simple_trigger()
-;
-
 REVOKE UPDATE ON ALL TABLES IN SCHEMA jsonorg FROM PUBLIC;
 
 COMMIT;
