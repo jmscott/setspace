@@ -26,7 +26,7 @@
     <form
       name="q"
       method="POST"
-      action="/cgi-bin/pdfbox?out=post.q"
+      action="/cgi-bin/schema/pdfbox?out=post.q"
     >
      <input
        name="in"
@@ -34,7 +34,7 @@
        value="post.q"
      />
      <!--#include virtual=
-       "/cgi-bin/pdfbox?out=input&id=q&${QUERY_STRING}"
+       "/cgi-bin/schema/pdfbox?out=input&id=q&${QUERY_STRING}"
      -->
      <input
        type="submit"
@@ -49,9 +49,11 @@
       }
     </style>
     <!--#include virtual=
-      "/cgi-bin/pdfbox?out=dl&class=query&${QUERY_STRING}"
+      "/cgi-bin/schema/pdfbox?out=dl&class=query&${QUERY_STRING}"
     -->
-    <!--#include virtual="/cgi-bin/pdfbox?out=span.nav&${QUERY_STRING}" -->
+    <!--#include virtual=
+      "/cgi-bin/schema/pdfbox?out=span.nav&${QUERY_STRING}"
+    -->
    </div>
    <!--#include virtual="/footer.shtml" -->
   </div>
