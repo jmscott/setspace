@@ -51,3 +51,7 @@ world:
 	$(MAKE) $(MFLAGS) all
 	$(MAKE) $(MFLAGS) distclean
 	$(MAKE) $(MFLAGS) install
+
+schema: schema.cgi
+	cgi2perl5 --source-path schema.cgi
+	chmod a+rx schema
