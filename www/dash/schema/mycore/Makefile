@@ -19,28 +19,31 @@ clean:
 
 install: all
 
-	install -d $(WWW_PREFIX)/lib/mycore.d
+	install -d $(WWW_PREFIX)/lib
+	install -d $(WWW_PREFIX)/lib/schema
+	install -d $(WWW_PREFIX)/lib/schema/mycore.d
 	install -d $(WWW_PREFIX)/htdocs/schema/mycore
 	install -d $(WWW_PREFIX)/cgi-bin
-	install mycore $(WWW_PREFIX)/cgi-bin
+	install -d $(WWW_PREFIX)/cgi-bin/schema
+	install mycore $(WWW_PREFIX)/cgi-bin/schema
 
 	install								\
 		mycore.d/common.pl					\
 		mycore.d/dl.pl						\
 		mycore.d/help.pl					\
 		mycore.d/post.mime.pl					\
-		$(WWW_PREFIX)/lib/mycore.d
+		$(WWW_PREFIX)/lib/schema/mycore.d
 	install								\
 		index.shtml						\
 		nav.shtml						\
 		schema.shtml						\
 		$(WWW_PREFIX)/htdocs/schema/mycore
-	install mycore.cgi $(WWW_PREFIX)/lib
+	install mycore.cgi $(WWW_PREFIX)/lib/schema
 
 distclean:
-	rm -f $(WWW_PREFIX)/cgi-bin/mycore
-	rm -rf $(WWW_PREFIX)/lib/mycore.d
-	rm -f $(WWW_PREFIX)/lib/mycore.cgi
+	rm -f $(WWW_PREFIX)/cgi-bin/schema/mycore
+	rm -rf $(WWW_PREFIX)/lib/schema/mycore.d
+	rm -f $(WWW_PREFIX)/lib/schema/mycore.cgi
 	rm -rf $(WWW_PREFIX)/htdocs/schema/mycore
 
 mycore mycore.d/help.pl: mycore.cgi

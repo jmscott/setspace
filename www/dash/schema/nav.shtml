@@ -1,0 +1,7 @@
+<div id="navigation">
+ <ul>
+  <li><a href="/">Home</a></li>
+  <li><a href="/schema">SQL Schemas</a></li>
+  <li><a href="/schema/stats.shtml">Statistics</a></li>
+ </ul>
+</div>

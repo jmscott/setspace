@@ -19,10 +19,13 @@ clean:
 
 install: all
 
-	install -d $(WWW_PREFIX)/lib/pdfbox.d
+	install -d $(WWW_PREFIX)/lib/
+	install -d $(WWW_PREFIX)/lib/schema
+	install -d $(WWW_PREFIX)/lib/schema/pdfbox.d
 	install -d $(WWW_PREFIX)/htdocs/schema/pdfbox
 	install -d $(WWW_PREFIX)/cgi-bin
-	install pdfbox $(WWW_PREFIX)/cgi-bin
+	install -d $(WWW_PREFIX)/cgi-bin/schema
+	install pdfbox $(WWW_PREFIX)/cgi-bin/schema
 
 	install								\
 		pdfbox.d/a.mime.pl					\
@@ -43,7 +46,7 @@ install: all
 		pdfbox.d/table.pl					\
 		pdfbox.d/text.objdesc.pl				\
 		pdfbox.d/utf8.pg1.pl					\
-		$(WWW_PREFIX)/lib/pdfbox.d
+		$(WWW_PREFIX)/lib/schema/pdfbox.d
 	install								\
 		detail-tsv.shtml					\
 		detail.shtml						\
@@ -56,9 +59,9 @@ install: all
 	install pdfbox.cgi $(WWW_PREFIX)/lib
 
 distclean:
-	rm -f $(WWW_PREFIX)/cgi-bin/pdfbox
-	rm -rf $(WWW_PREFIX)/lib/pdfbox.d
-	rm -f $(WWW_PREFIX)/lib/pdfbox.cgi
+	rm -f $(WWW_PREFIX)/cgi-bin/schema/pdfbox
+	rm -rf $(WWW_PREFIX)/lib/schema/pdfbox.d
+	rm -f $(WWW_PREFIX)/lib/schema/pdfbox.cgi
 	rm -rf $(WWW_PREFIX)/htdocs/schema/pdfbox
 
 pdfbox: pdfbox.cgi

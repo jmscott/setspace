@@ -19,10 +19,10 @@ clean:
 
 install: all
 
-	install -d $(WWW_PREFIX)/lib/jsonorg.d
+	install -d $(WWW_PREFIX)/lib/schema/jsonorg.d
 	install -d $(WWW_PREFIX)/htdocs/schema/jsonorg
-	install -d $(WWW_PREFIX)/cgi-bin
-	install jsonorg $(WWW_PREFIX)/cgi-bin
+	install -d $(WWW_PREFIX)/cgi-bin/schema
+	install jsonorg $(WWW_PREFIX)/cgi-bin/schema
 
 	install								\
 		jsonorg.d/common.pl					\
@@ -36,7 +36,7 @@ install: all
 		jsonorg.d/span.nav.pl					\
 		jsonorg.d/table.pl					\
 		select-jsonb-keys.sql					\
-		$(WWW_PREFIX)/lib/jsonorg.d
+		$(WWW_PREFIX)/lib/schema/jsonorg.d
 	install								\
 		detail.shtml						\
 		fail.shtml						\
@@ -47,13 +47,12 @@ install: all
 		$(WWW_PREFIX)/htdocs/schema/jsonorg
 	install								\
 		jsonorg.cgi						\
-		psqlrc.example						\
-		$(WWW_PREFIX)/lib
+		$(WWW_PREFIX)/lib/schema
 
 distclean:
-	rm -f $(WWW_PREFIX)/cgi-bin/jsonorg
-	rm -rf $(WWW_PREFIX)/lib/jsonorg.d
-	rm -f $(WWW_PREFIX)/lib/jsonorg.cgi
+	rm -f $(WWW_PREFIX)/cgi-bin/schema/jsonorg
+	rm -rf $(WWW_PREFIX)/lib/schema/jsonorg.d
+	rm -f $(WWW_PREFIX)/lib/schema/jsonorg.cgi
 	rm -rf $(WWW_PREFIX)/htdocs/schema/jsonorg
 
 jsonorg jsonorg.d/help.pl: jsonorg.cgi

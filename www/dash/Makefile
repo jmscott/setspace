@@ -32,7 +32,7 @@ install: all
 			../apache2-passwd.example 			\
 			$(WWW_PREFIX)/etc/passwd
 	install -d $(WWW_PREFIX)/lib
-	install -d $(WWW_PREFIX)/cgi-bin
+	install -d -m u=rwx,g=x,o= $(WWW_PREFIX)/cgi-bin
 	install -d $(WWW_PREFIX)/htdocs
 	install -m a=rwx -d $(WWW_PREFIX)/tmp
 

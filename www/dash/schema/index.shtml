@@ -19,7 +19,7 @@
  <body>
   <div id="container">
    <!--#include virtual="/header.shtml" -->
-   <!--#include virtual="/nav.shtml" -->
+   <!--#include virtual="/schema/nav.shtml" -->
    <div id="content">
     <h2>SQL Schemas</h2>
     <ul>

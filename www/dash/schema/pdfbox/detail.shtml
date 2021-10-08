@@ -30,17 +30,17 @@
  <body>
   <div id="container">
    <!--#include virtual="/header.shtml" -->
-   <!--#include virtual="nav.shtml" -->
+   <!--#include virtual="/schema/nav.shtml" -->
    <div id="content">
 
     <h2>Title in Schema MyCore</h2>
     <form
       name="mytitle"
       method="POST"
-      action="/cgi-bin/pdfbox"
+      action="/cgi-bin/schema/pdfbox"
     >
      <!--#include virtual=
-       "/cgi-bin/pdfbox?out=input.mytitle&id=mytitle&${QUERY_STRING}"
+       "/cgi-bin/schema/pdfbox?out=input.mytitle&id=mytitle&${QUERY_STRING}"
      -->
      <input
        type="submit"
@@ -58,11 +58,11 @@
 
     <h2>PDF Detail</h2>
     <h3>
-     <!--#include virtual="/cgi-bin/pdfbox?out=a.mime&${QUERY_STRING}" -->
+     <!--#include virtual="/cgi-bin/schema/pdfbox?out=a.mime&${QUERY_STRING}" -->
     </h3>
 
     <h3><!--#include virtual=
-        "/cgi-bin/pdfbox?out=text.objdesc&name=pddocument"
+        "/cgi-bin/schema/pdfbox?out=text.objdesc&name=pddocument"
       --></h3>
     <h4>
       <a
@@ -72,11 +72,11 @@
     </h4>
 
     <!--#include virtual=
-      "/cgi-bin/pdfbox?out=dl.pddoc&class=raw&${QUERY_STRING}"
+      "/cgi-bin/schema/pdfbox?out=dl.pddoc&class=raw&${QUERY_STRING}"
     -->
 
     <h3><!--#include virtual=
-        "/cgi-bin/pdfbox?out=text.objdesc&name=pddocument_information"
+        "/cgi-bin/schema/pdfbox?out=text.objdesc&name=pddocument_information"
       --></h3>
     <h4>
       <a
@@ -86,21 +86,21 @@
     </h4>
 
     <!--#include virtual=
-      "/cgi-bin/pdfbox?out=dl.pdinfo&class=raw&${QUERY_STRING}"
+      "/cgi-bin/schema/pdfbox?out=dl.pdinfo&class=raw&${QUERY_STRING}"
     -->
 
     <h3>
       <!--#include virtual=
-        "/cgi-bin/pdfbox?out=text.objdesc&name=extract_pages_utf8"
+        "/cgi-bin/schema/pdfbox?out=text.objdesc&name=extract_pages_utf8"
       -->
     </h3>
     <h3>
       <!--#include virtual=
-        "/cgi-bin/pdfbox?out=text.objdesc&name=page_text_utf8"
+        "/cgi-bin/schema/pdfbox?out=text.objdesc&name=page_text_utf8"
       -->
     </h3>
     <!--#include virtual=
-      "/cgi-bin/pdfbox?out=dl.extpg&id=extpg&class=raw&${QUERY_STRING}"
+      "/cgi-bin/schema/pdfbox?out=dl.extpg&id=extpg&class=raw&${QUERY_STRING}"
     -->
 
    </div>

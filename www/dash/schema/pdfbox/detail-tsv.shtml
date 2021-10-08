@@ -30,17 +30,17 @@
 
     <h3>
      <!--#include virtual=
-        "/cgi-bin/pdfbox?out=text.objdesc&name=extract_pages_utf8"
+        "/cgi-bin/schema/pdfbox?out=text.objdesc&name=extract_pages_utf8"
       -->
     </h3>
     <h3>
      <!--#include virtual=
-        "/cgi-bin/pdfbox?out=text.objdesc&name=page_tsv_utf8"
+        "/cgi-bin/schema/pdfbox?out=text.objdesc&name=page_tsv_utf8"
       -->
     </h3>
 
     <!--#include virtual=
-      "/cgi-bin/pdfbox?out=table.exttsv&${QUERY_STRING}"
+      "/cgi-bin/schema/pdfbox?out=table.exttsv&${QUERY_STRING}"
     -->
 
    </div>
