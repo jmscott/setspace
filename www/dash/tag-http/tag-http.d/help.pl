@@ -17,7 +17,7 @@ print <<END;
 <div$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END
 print <<'END';
- <h1>Help Page for <code>/cgi-bin/tag-http</code></h1>
+ <h1>Help Page for <code>/cgi-bin//tag-http</code></h1>
  <div class="overview">
   <h2>Overview</h2>
   <dl>
@@ -33,7 +33,7 @@ print <<'END';
   <h2><code>GET</code> Request.</h2>
    <div class="out">
     <div class="handlers">
-    <h3>Output Scripts in <code>$SERVER_ROOT/lib/tag-http.d</code></h3>
+    <h3>Output Scripts in <code>$SERVER_ROOT/lib//tag-http.d</code></h3>
     <dl>
      <dt>a</dt>
      <dd>
@@ -182,7 +182,8 @@ print <<'END';
 <div class="examples">
  <h3>Examples</h3>
  <dl>
-   <dt><a href="/cgi-bin/tag-http?/cgi-bin/tag-http?help">/cgi-bin/tag-http?/cgi-bin/tag-http?help</a></dt>
+   <dt><a href="/cgi-bin//tag-http?/cgi-bin/tag-http?help">
+tag-http?/cgi-bin/tag-http?help</a></dt>
    <dd>Generate This Help Page for the CGI Script /cgi-bin/tag-http</dd>
  </dl>
 </div>
