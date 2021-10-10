@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <cgi name="pdfbox">
- <title>/cgi-bin/pdfbox</title>
- <synopsis>HTTP CGI Script /cgi-bin/pdfbox</synopsis>
+ <title>/cgi-bin/schema/pdfbox</title>
+ <synopsis>HTTP CGI Script /cgi-bin/schema/pdfbox</synopsis>
  <blame>jmscott</blame>
  <GET>
   <examples>
    <example
-   	query="/cgi-bin/pdfbox?help"
+   	query="/cgi-bin/schema/pdfbox?help"
    >
-    Generate This Help Page for the CGI Script /cgi-bin/pdfbox
+    Generate This Help Page for the CGI Script /cgi-bin/schema/pdfbox
    </example>
   </examples>
   <out>

@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Generate an html <dl> of extracted utf8 pages in a pdf blob
 #  Usage:
-#	/cgi-bin/pdfbox?out=dl.extpg&blob=bc160:46036a9c2545b...
+#	/cgi-bin/schema/pdfbox?out=dl.extpg&blob=bc160:46036a9c2545b...
 #
 use utf8;
 

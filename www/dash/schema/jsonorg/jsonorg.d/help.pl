@@ -17,14 +17,14 @@ print <<END;
 <div$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END
 print <<'END';
- <h1>Help Page for <code>/cgi-bin/jsonorg</code></h1>
+ <h1>Help Page for <code>/cgi-bin/schema/jsonorg</code></h1>
  <div class="overview">
   <h2>Overview</h2>
   <dl>
 <dt>Title</dt>
-<dd>/cgi-bin/jsonorg</dd>
+<dd>/cgi-bin/schema/jsonorg</dd>
 <dt>Synopsis</dt>
-<dd>HTTP CGI Script /cgi-bin/jsonorg</dd>
+<dd>HTTP CGI Script /cgi-bin/schema/jsonorg</dd>
 <dt>Blame</dt>
 <dd>jmscott</dd>
   </dl>
@@ -33,7 +33,7 @@ print <<'END';
   <h2><code>GET</code> Request.</h2>
    <div class="out">
     <div class="handlers">
-    <h3>Output Scripts in <code>$SERVER_ROOT/lib/jsonorg.d</code></h3>
+    <h3>Output Scripts in <code>$SERVER_ROOT/lib/schema/jsonorg.d</code></h3>
     <dl>
      <dt>input</dt>
      <dd>
@@ -169,8 +169,9 @@ print <<'END';
 <div class="examples">
  <h3>Examples</h3>
  <dl>
-   <dt><a href="/cgi-bin/jsonorg?/cgi-bin/jsonorg?help">/cgi-bin/jsonorg?/cgi-bin/jsonorg?help</a></dt>
-   <dd>Generate This Help Page for the CGI Script /cgi-bin/jsonorg</dd>
+   <dt><a href="/cgi-bin/schema/jsonorg?/cgi-bin/schema/jsonorg?help">
+jsonorg?/cgi-bin/schema/jsonorg?help</a></dt>
+   <dd>Generate This Help Page for the CGI Script /cgi-bin/schema/jsonorg</dd>
  </dl>
 </div>
  </div>

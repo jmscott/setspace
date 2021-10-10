@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cgi name="mycore">
- <title>/cgi-bin/mycore</title>
- <synopsis>HTTP CGI Script /cgi-bin/mycore</synopsis>
+ <title>/cgi-bin/schema/mycore</title>
+ <synopsis>HTTP CGI Script /cgi-bin/schema/mycore</synopsis>
  <subversion id="$Id$" />
  <blame>jmscott</blame>
  <GET>
   <examples>
    <example
-     query="/cgi-bin/mycore?help"
+     query="/cgi-bin/schema/mycore?help"
    >
-    Generate This Help Page for the CGI Script /cgi-bin/mycore
+    Generate This Help Page for the CGI Script /cgi-bin/schema/mycore
    </example>
   </examples>
 

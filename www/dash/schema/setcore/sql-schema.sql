@@ -17,9 +17,11 @@
    <div id="content">
     <h2>Core Schema for All Blobs</h2>
     <!--#include virtual=
-      "/cgi-bin/setcore?out=dl&class=query&${QUERY_STRING}"
+      "/cgi-bin/schema/setcore?out=dl&class=query&${QUERY_STRING}"
     -->
-    <!--#include virtual="/cgi-bin/setcore?out=span.nav&${QUERY_STRING}" -->
+    <!--#include virtual=
+      "/cgi-bin/schema/setcore?out=span.nav&${QUERY_STRING}"
+    -->
    </div>
    <!--#include virtual="/footer.shtml" -->
   </div>

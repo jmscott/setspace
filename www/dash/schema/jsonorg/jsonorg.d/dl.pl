@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Write html <dl> of all valid json blobs.
 #  Usage:
-#	/cgi-bin/jsonorg?out=dl
+#	/cgi-bin/schema/jsonorg?out=dl
 #
 use Time::HiRes qw(gettimeofday);
 

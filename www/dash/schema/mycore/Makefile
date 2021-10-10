@@ -47,7 +47,9 @@ distclean:
 	rm -rf $(WWW_PREFIX)/htdocs/schema/mycore
 
 mycore mycore.d/help.pl: mycore.cgi
-	cgi2perl5 --source-path mycore.cgi
+	cgi2perl5							\
+		--alias-path schema					\
+		--source-path mycore.cgi
 	chmod a+rx mycore
 
 world:

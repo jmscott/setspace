@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Write html <dl> of invalid blobs which were candidates for json.
 #  Usage:
-#	/cgi-bin/jsonorg?out=dl.fail
+#	/cgi-bin/schema/jsonorg?out=dl.fail
 #
 
 require 'dbi-pg.pl';

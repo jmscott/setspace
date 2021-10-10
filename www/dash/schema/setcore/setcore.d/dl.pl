@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Write html <dl> of all setcore attributes.
 #  Usage:
-#	/cgi-bin/setcore?out=dl
+#	/cgi-bin/schema/setcore?out=dl
 #
 use Time::HiRes qw(gettimeofday);
 

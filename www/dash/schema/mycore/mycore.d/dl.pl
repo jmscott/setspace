@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Write html <dl> of all mycore attributes.
 #  Usage:
-#	/cgi-bin/mycore?out=dl
+#	/cgi-bin/schema/mycore?out=dl
 #
 use Time::HiRes qw(gettimeofday);
 

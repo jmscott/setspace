@@ -56,7 +56,9 @@ distclean:
 	rm -rf $(WWW_PREFIX)/htdocs/schema/jsonorg
 
 jsonorg jsonorg.d/help.pl: jsonorg.cgi
-	cgi2perl5 --source-path jsonorg.cgi
+	cgi2perl5							\
+		--alias-path schema					\
+		--source-path jsonorg.cgi
 	chmod a+rx jsonorg
 
 world:

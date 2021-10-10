@@ -2,8 +2,8 @@
 #  Synopsis:
 #	Write html <table> of pdf documents that match full text search.
 #  Usage:
-#	/cgi-bin/pdfbox?out=table&q=neural+cryptography
-#	/cgi-bin/pdfbox?out=table&q=neural+cryptography&off=10
+#	/cgi-bin/schema/pdfbox?out=table&q=neural+cryptography
+#	/cgi-bin/schema/pdfbox?out=table&q=neural+cryptography&off=10
 #  Note:
 #	httpd2.d/common.pl ought to be references as
 #
@@ -14,9 +14,10 @@
 #
 use Time::HiRes qw(gettimeofday);
 
-require 'dbi-pg.pl';
 require 'httpd2.d/common.pl';
-require 'pdfbox.d/common.pl';
+
+require 'dbi-pg.pl';
+require 'schema/pdfbox.d/common.pl';
 
 our %QUERY_ARG;
 

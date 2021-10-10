@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Generate text of an object comment in pdfbox schema.
 #  Usage:
-#	/cgi-bin/pdfbox?out=text.objdesc&name=pddocument
+#	/cgi-bin/schema/pdfbox?out=text.objdesc&name=pddocument
 #  Note:
 #	Does the output text need to be escaped for html?
 #

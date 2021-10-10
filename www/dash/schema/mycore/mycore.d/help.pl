@@ -17,14 +17,14 @@ print <<END;
 <div$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END
 print <<'END';
- <h1>Help Page for <code>/cgi-bin/mycore</code></h1>
+ <h1>Help Page for <code>/cgi-bin/schema/mycore</code></h1>
  <div class="overview">
   <h2>Overview</h2>
   <dl>
 <dt>Title</dt>
-<dd>/cgi-bin/mycore</dd>
+<dd>/cgi-bin/schema/mycore</dd>
 <dt>Synopsis</dt>
-<dd>HTTP CGI Script /cgi-bin/mycore</dd>
+<dd>HTTP CGI Script /cgi-bin/schema/mycore</dd>
 <dt>Blame</dt>
 <dd>jmscott</dd>
   </dl>
@@ -33,7 +33,7 @@ print <<'END';
   <h2><code>GET</code> Request.</h2>
    <div class="out">
     <div class="handlers">
-    <h3>Output Scripts in <code>$SERVER_ROOT/lib/mycore.d</code></h3>
+    <h3>Output Scripts in <code>$SERVER_ROOT/lib/schema/mycore.d</code></h3>
     <dl>
      <dt>dl</dt>
      <dd>
@@ -69,8 +69,9 @@ print <<'END';
 <div class="examples">
  <h3>Examples</h3>
  <dl>
-   <dt><a href="/cgi-bin/mycore?/cgi-bin/mycore?help">/cgi-bin/mycore?/cgi-bin/mycore?help</a></dt>
-   <dd>Generate This Help Page for the CGI Script /cgi-bin/mycore</dd>
+   <dt><a href="/cgi-bin/schema/mycore?/cgi-bin/schema/mycore?help">
+mycore?/cgi-bin/schema/mycore?help</a></dt>
+   <dd>Generate This Help Page for the CGI Script /cgi-bin/schema/mycore</dd>
  </dl>
 </div>
  </div>

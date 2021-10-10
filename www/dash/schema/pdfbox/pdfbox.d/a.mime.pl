@@ -11,7 +11,7 @@ print <<END;
 <a
   $QUERY_ARG{id_att}
   $QUERY_ARG{class_att}
-  href="/cgi-bin/pdfbox?out=mime.pdf&blob=$blob"
+  href="/cgi-bin/schema/pdfbox?out=mime.pdf&blob=$blob"
   title="$blob"
   >$blob</a>
 END

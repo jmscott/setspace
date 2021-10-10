@@ -19,10 +19,12 @@ clean:
 
 install: all
 
-	install -d $(WWW_PREFIX)/lib/setcore.d
+	install -d $(WWW_PREFIX)/lib
+	install -d $(WWW_PREFIX)/lib/schema
+	install -d $(WWW_PREFIX)/lib/schema/setcore.d
 	install -d $(WWW_PREFIX)/htdocs/schema/setcore
-	install -d $(WWW_PREFIX)/cgi-bin
-	install setcore $(WWW_PREFIX)/cgi-bin
+	install -d $(WWW_PREFIX)/cgi-bin/schema
+	install setcore $(WWW_PREFIX)/cgi-bin/schema
 
 	install								\
 		setcore.d/common.pl					\
@@ -32,7 +34,7 @@ install: all
 		setcore.d/pre.hex.pl					\
 		setcore.d/span.nav.pl					\
 		setcore.d/table.pl					\
-		$(WWW_PREFIX)/lib/setcore.d
+		$(WWW_PREFIX)/lib/schema/setcore.d
 	install								\
 		detail.shtml						\
 		index.shtml						\
@@ -40,18 +42,17 @@ install: all
 		schema.shtml						\
 		screen.css						\
 		$(WWW_PREFIX)/htdocs/schema/setcore
-	install setcore.cgi $(WWW_PREFIX)/lib
+	install setcore.cgi $(WWW_PREFIX)/lib/schema
 
 distclean:
-	rm -f $(WWW_PREFIX)/cgi-bin/setcore
-	rm -rf $(WWW_PREFIX)/lib/setcore.d
-	rm -f $(WWW_PREFIX)/lib/setcore.cgi
+	rm -f $(WWW_PREFIX)/cgi-bin/schema/setcore
+	rm -rf $(WWW_PREFIX)/lib/schema/setcore.d
+	rm -f $(WWW_PREFIX)/lib/schema/setcore.cgi
 	rm -rf $(WWW_PREFIX)/htdocs/schema/setcore
 
 setcore setcore.d/help.pl: setcore.cgi
-	cgi2perl5 --source-path setcore.cgi
+	cgi2perl5 --source-path setcore.cgi --alias-path schema
 	chmod a+rx setcore
-
 world:
 	$(MAKE) $(MFLAGS) clean
 	$(MAKE) $(MFLAGS) all

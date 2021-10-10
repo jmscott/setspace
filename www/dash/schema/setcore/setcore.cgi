@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cgi name="setcore">
- <title>/cgi-bin/setcore</title>
- <synopsis>HTTP CGI Script /cgi-bin/setcore</synopsis>
+ <title>/cgi-bin/schema/setcore</title>
+ <synopsis>HTTP CGI Script /cgi-bin/schema/setcore</synopsis>
  <blame>jmscott</blame>
  <GET>
   <examples>
    <example
-   	query="/cgi-bin/setcore?help"
+   	query="help"
    >
-    Generate This Help Page for the CGI Script /cgi-bin/setcore
+    Generate This Help Page for the CGI Script /cgi-bin/schema/setcore
    </example>
   </examples>
   <out content-type="text/html">

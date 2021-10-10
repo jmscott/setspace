@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Write html <dl> of pdf documents that match keyword search.
 #  Usage:
-#	/cgi-bin/pdfbox?out=dl&q=neural+cryptography
+#	/cgi-bin/schema/pdfbox?out=dl&q=neural+cryptography
 #  Note:
 #	--  collapse the Detail/Title/✎ glyph into single unicode glyph
 #	    which indicates editing is needed, like adding a title.
@@ -118,7 +118,7 @@ END
 	#  build the row
 	print <<END;
  <dt$dt_class>
-  <a href="/cgi-bin/pdfbox?out=mime.pdf&amp;blob=$blob">$title</a>
+  <a href="/cgi-bin/schema/pdfbox?out=mime.pdf&amp;blob=$blob">$title</a>
  </dt>
  <dd>
    $span_snippet

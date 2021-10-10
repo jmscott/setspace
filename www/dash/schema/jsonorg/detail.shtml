@@ -9,7 +9,7 @@
     type="text/css"
   />
   <link
-    href="/schema/jsonorg/screen.css"
+    href="screen.css"
     rel="stylesheet"
     type="text/css"
   />
@@ -27,7 +27,7 @@
      -->
     </h3>
     <!--#include virtual=
-      "/cgi-bin/jsonorg?out=pre&class=json&${QUERY_STRING}"
+      "/cgi-bin/schema/jsonorg?out=pre&class=json&${QUERY_STRING}"
     -->
    </div>
    <!--#include virtual="/footer.shtml" -->

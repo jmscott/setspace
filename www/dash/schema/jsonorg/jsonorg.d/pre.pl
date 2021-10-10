@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Write html <pre> of all json blob.
 #  Usage:
-#	/cgi-bin/jsonorg?out=pre&blob=sha:29bded2734...
+#	/cgi-bin/schema/jsonorg?out=pre&blob=sha:29bded2734...
 #
 use Time::HiRes qw(gettimeofday);
 

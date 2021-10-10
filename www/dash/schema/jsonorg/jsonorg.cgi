@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cgi name="jsonorg">
- <title>/cgi-bin/jsonorg</title>
- <synopsis>HTTP CGI Script /cgi-bin/jsonorg</synopsis>
+ <title>/cgi-bin/schema/jsonorg</title>
+ <synopsis>HTTP CGI Script /cgi-bin/schema/jsonorg</synopsis>
  <blame>jmscott</blame>
  <GET>
   <examples>
    <example
-   	query="/cgi-bin/jsonorg?help"
+   	query="/cgi-bin/schema/jsonorg?help"
    >
-    Generate This Help Page for the CGI Script /cgi-bin/jsonorg
+    Generate This Help Page for the CGI Script /cgi-bin/schema/jsonorg
    </example>
   </examples>
   <out content-type="text/html">

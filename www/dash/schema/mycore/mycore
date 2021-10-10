@@ -1,26 +1,25 @@
 #!/usr/bin/env perl
 #
 #  Synopsis:
-#	Implements argument processing for /cgi-bin/mycore.
+#	Automade script /cgi-bin/schema/mycore, made by cgi2perl5.
 #  Source Path:
 #	mycore.cgi
 #  Source SHA1 Digest:
 #	No SHA1 Calculated
 #  Note:
-#	/cgi-bin/mycore was generated automatically by cgi2perl5.
-#
 #	Do not make changes directly to this script.
 #
 die "SERVER_ROOT environment variable not defined"
-				unless defined $ENV{SERVER_ROOT};
+				unless defined $ENV{SERVER_ROOT}
+;
 
 #
 #  Prepend the $SERVER_ROOT/lib directory
 #  to the load path.
 #
-unshift @INC, "$ENV{SERVER_ROOT}/lib";
+unshift @INC, "$ENV{SERVER_ROOT}/lib/schema", "$ENV{SERVER_ROOT}/lib";
 
-our (%CGI);
+our %CGI;
 
 require 'httpd2.d/common.pl';
 $CGI{name} = 'mycore';

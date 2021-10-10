@@ -29,15 +29,17 @@
    <div id="content">
     <h2>Add/Edit Title of PDF in Schema MyCore</h2>
     <h3>
-     <!--#include virtual="/cgi-bin/pdfbox?out=a.mime&${QUERY_STRING}" -->
+     <!--#include virtual=
+       "/cgi-bin/schema/pdfbox?out=a.mime&${QUERY_STRING}"
+     -->
     </h3>
     <form
       name="mytitle"
       method="POST"
-      action="/cgi-bin/pdfbox"
+      action="/cgi-bin/schema/pdfbox"
     >
      <!--#include virtual=
-       "/cgi-bin/pdfbox?out=input.mytitle&id=mytitle&${QUERY_STRING}"
+       "/cgi-bin/schema/pdfbox?out=input.mytitle&id=mytitle&${QUERY_STRING}"
      -->
      <input
        type="submit"
@@ -53,10 +55,10 @@
      -->
     </form>
     <!--#include virtual=
-      "/cgi-bin/pdfbox?out=utf8.pg1&len=512&${QUERY_STRING}"
+      "/cgi-bin/schema/pdfbox?out=utf8.pg1&len=512&${QUERY_STRING}"
     -->
     <!--#include virtual=
-      "/cgi-bin/pdfbox?out=iframe.pdf&id=pdf-frame&${QUERY_STRING}"
+      "/cgi-bin/schema/pdfbox?out=iframe.pdf&id=pdf-frame&${QUERY_STRING}"
     -->
    </div>
    <!--#include virtual="/footer.shtml" -->

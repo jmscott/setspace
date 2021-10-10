@@ -45,7 +45,7 @@
     <h2>Search Core Blobs</h2>
     <form method="GET">
      <!--#include virtual=
-       "/cgi-bin/setcore?out=input&id=q&${QUERY_STRING}"
+       "/cgi-bin/schema/setcore?out=input&id=q&${QUERY_STRING}"
      -->
      <input
        type="submit"
@@ -53,9 +53,11 @@
      />
     </form>
     <!--#include virtual=
-      "/cgi-bin/setcore?out=dl&id=dl-setcore&${QUERY_STRING}"
+      "/cgi-bin/schema/setcore?out=dl&id=dl-setcore&${QUERY_STRING}"
     -->
-    <!--#include virtual="/cgi-bin/setcore?out=span.nav&${QUERY_STRING}" -->
+    <!--#include virtual=
+      "/cgi-bin/schema/setcore?out=span.nav&${QUERY_STRING}"
+    -->
    </div>
    <!--#include virtual="/footer.shtml" -->
   </div>

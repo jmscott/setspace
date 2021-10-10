@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Write html <table> of all json blobs.
 #  Usage:
-#	/cgi-bin/jsonorg?out=table
+#	/cgi-bin/schema/jsonorg?out=table
 #
 use Time::HiRes qw(gettimeofday);
 

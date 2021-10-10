@@ -65,7 +65,9 @@ distclean:
 	rm -rf $(WWW_PREFIX)/htdocs/schema/pdfbox
 
 pdfbox: pdfbox.cgi
-	cgi2perl5 --source-path pdfbox.cgi
+	cgi2perl5 							\
+		--alias-path schema					\
+		--source-path pdfbox.cgi
 	chmod a+rx pdfbox
 
 world:

@@ -17,14 +17,14 @@ print <<END;
 <div$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END
 print <<'END';
- <h1>Help Page for <code>/cgi-bin/setcore</code></h1>
+ <h1>Help Page for <code>/cgi-bin/schema/setcore</code></h1>
  <div class="overview">
   <h2>Overview</h2>
   <dl>
 <dt>Title</dt>
-<dd>/cgi-bin/setcore</dd>
+<dd>/cgi-bin/schema/setcore</dd>
 <dt>Synopsis</dt>
-<dd>HTTP CGI Script /cgi-bin/setcore</dd>
+<dd>HTTP CGI Script /cgi-bin/schema/setcore</dd>
 <dt>Blame</dt>
 <dd>jmscott</dd>
   </dl>
@@ -33,7 +33,7 @@ print <<'END';
   <h2><code>GET</code> Request.</h2>
    <div class="out">
     <div class="handlers">
-    <h3>Output Scripts in <code>$SERVER_ROOT/lib/setcore.d</code></h3>
+    <h3>Output Scripts in <code>$SERVER_ROOT/lib/schema/setcore.d</code></h3>
     <dl>
      <dt>input</dt>
      <dd>
@@ -141,8 +141,9 @@ print <<'END';
 <div class="examples">
  <h3>Examples</h3>
  <dl>
-   <dt><a href="/cgi-bin/setcore?/cgi-bin/setcore?help">/cgi-bin/setcore?/cgi-bin/setcore?help</a></dt>
-   <dd>Generate This Help Page for the CGI Script /cgi-bin/setcore</dd>
+   <dt><a href="/cgi-bin/schema/setcore?help">
+setcore?help</a></dt>
+   <dd>Generate This Help Page for the CGI Script /cgi-bin/schema/setcore</dd>
  </dl>
 </div>
  </div>
