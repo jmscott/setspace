@@ -183,3 +183,5 @@ Possible Schemas:
 		https://lxml.de/
 	h2c in curl github repo
 		https://github.com/curl/h2c
+	podofo - pdf library written in c
+		http://podofo.sourceforge.net
