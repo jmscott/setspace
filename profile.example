@@ -13,7 +13,7 @@ export SETSPACE_ROOT=${SETSPACE_ROOT=/usr/local/setspace}
 export BLOBIO_ROOT=/usr/local/blobio
 export BLOBIO_SERVICE=bio4:localhost:1797
 export BLOBIO_GET_SERVICE=fs:$BLOBIO_ROOT
-export BLOBIO_ALGORITHM=bc160
+export BLOBIO_ALGORITHM=btc20
 PATH=$PATH:$BLOBIO_ROOT/bin
 
 #  set postgresql variables

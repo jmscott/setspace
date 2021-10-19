@@ -4,7 +4,7 @@
 #	Merge the output of "unzip -t <blob>" into table infozip3.unzip_test
 #  Usage:
 #	merge-unzip_test <blob>
-#	merge-unzip_test bc160:7aaedaf4fd3a01613791d57b344b826f96c9aee9
+#	merge-unzip_test btc20:7aaedaf4fd3a01613791d57b344b826f96c9aee9
 #  Exit Status:
 #	0	tuple merged successfully, exit status "unzip -t" == 0
 #	1	blob does not exist

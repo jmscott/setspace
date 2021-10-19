@@ -20,7 +20,7 @@
 #
 #	matching this pdf
 #
-#		bc160:c921ea224158699ffbf7e5353ea811fb1f82255b
+#		btc20:c921ea224158699ffbf7e5353ea811fb1f82255b
 #
 use utf8;
 use Time::HiRes qw(gettimeofday);

@@ -2,7 +2,7 @@
  *  Synopsis:
  *	Summarize tables in setcore schema with incomplete information.
  *  Usage:
- *	psql -f rummy.sql | egrep '(sha|bc160):' | xargs bio-file
+ *	psql -f rummy.sql | egrep '(sha|bc160|btc20):' | xargs bio-file
  *  Blame:
  *  	jmscott@setspace.com
  *  	setspace@gmail.com

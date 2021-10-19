@@ -54,7 +54,7 @@ Define SETSPACE_PERL5LIB ${SETSPACE_VHOST_ROOT}/lib:${SETSPACE_WWW_ROOT}/lib:${S
 #  always encrypted
 Define SETSPACE_APACHE2_SERVER_PORT 443
 
-Define SETSPACE_BLOBIO_ALGORITHM bc160
+Define SETSPACE_BLOBIO_ALGORITHM btc20
 
 #  Define on Mac OS/X under ports distro, which does not define
 <IfDefine !APACHE_LOG_DIR>

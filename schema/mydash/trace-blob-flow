@@ -3,7 +3,7 @@
 #  Synopsis:
 #	Trace a blob using the description records in schema/*/log/*.[fqx]dr
 #  Usage:
-#	trace-blow-flow bc160:b820bc72620f9e4578c6a5f50bc3205539dc65af 
+#	trace-blow-flow btc20:b820bc72620f9e4578c6a5f50bc3205539dc65af 
 #  Note:
 #	TMPDIR must be absolute path.
 #

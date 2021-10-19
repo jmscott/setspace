@@ -2,7 +2,7 @@
 #  Synospsis:
 #	Generate a <pre> than is a "hexdump -C" of first 64k bytes of a blob.
 #  Usage:
-#	/cgi/bin/setcore?out=pre.hex&blob=bc160:f033e7065af0463...
+#	/cgi/bin/setcore?out=pre.hex&blob=btc20:f033e7065af0463...
 #
 
 require 'httpd2.d/common.pl';

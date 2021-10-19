@@ -34,7 +34,7 @@ START_TIME=$(RFC3339Nano)
 PROG=merge-extract_pages_utf8
 GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 WORK_DIR=${TMPDIR:=/tmp}/$PROG.$$.d
-ALGORITHM=${BLOBIO_ALGORITHM:=bc160}
+ALGORITHM=${BLOBIO_ALGORITHM:=btc20}
 PSQL='psql --quiet --no-psqlrc'
 
 die()

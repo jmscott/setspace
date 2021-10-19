@@ -141,7 +141,7 @@ print <<'END';
   <dt>udig</dt>
   <dd>
    <ul>
-    <li><code>perl5_re:</code> [a-z][a-z0-9]{0,14}:[[:graph:]]{1,255}</li>
+    <li><code>perl5_re:</code> [a-z][a-z0-9]{0,7}:[[:graph:]]{1,255}</li>
     <li><code>required:</code> yes</li>
    </ul>
   </dd>

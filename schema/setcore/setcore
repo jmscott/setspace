@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Command line queries into sql schema "setcore".
 #  Usage:
-#	BLOB=bc160:e995779dce785ed8f8920e2de01f3619d2cc5797
+#	BLOB=btc20:b0e889a067b5d4fff15c3d6e646554939a793783
 #
 #	setcore help
 #	setcore ls $BLOB

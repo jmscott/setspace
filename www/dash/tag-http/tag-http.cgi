@@ -97,7 +97,7 @@
     <query-args>
      <arg
       name="udig"
-      perl5_re="[a-z][a-z0-9]{0,14}:[[:graph:]]{1,255}"
+      perl5_re="[a-z][a-z0-9]{0,7}:[[:graph:]]{1,255}"
       required="yes"
      />
     </query-args>
