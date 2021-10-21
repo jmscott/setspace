@@ -49,6 +49,7 @@ install: all
 	install -d $(WWW_PREFIX)/lib/schema/stats.d
 	install								\
 		stats.d/help.pl						\
+		stats.d/table.pl					\
 		$(WWW_PREFIX)/lib/schema/stats.d
 
 	cd setcore && $(MAKE) $(MFLAGS) install
@@ -68,5 +69,5 @@ world:
 	$(MAKE) $(MFLAGS) install
 
 stats stats.d/help.pl: stats.cgi
-	cgi2perl5 --source-path stats.cgi
+	cgi2perl5 --source-path stats.cgi --alias-path schema
 	chmod a+rx stats

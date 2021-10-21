@@ -17,7 +17,7 @@ print <<END;
 <div$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END
 print <<'END';
- <h1>Help Page for <code>/cgi-bin//stats</code></h1>
+ <h1>Help Page for <code>/cgi-bin/schema/stats</code></h1>
  <div class="overview">
   <h2>Overview</h2>
   <dl>
@@ -33,9 +33,9 @@ print <<'END';
   <h2><code>GET</code> Request.</h2>
    <div class="out">
     <div class="handlers">
-    <h3>Output Scripts in <code>$SERVER_ROOT/lib//stats.d</code></h3>
+    <h3>Output Scripts in <code>$SERVER_ROOT/lib/schema/stats.d</code></h3>
     <dl>
-     <dt>table.sz</dt>
+     <dt>table</dt>
      <dd>
      </dd>
   </dl>
@@ -44,7 +44,7 @@ print <<'END';
 <div class="examples">
  <h3>Examples</h3>
  <dl>
-   <dt><a href="/cgi-bin//stats?/cgi-bin/schema/stats?help">
+   <dt><a href="/cgi-bin/schema/stats?/cgi-bin/schema/stats?help">
 stats?/cgi-bin/schema/stats?help</a></dt>
    <dd>Generate This Help Page for the CGI Script /cgi-bin/schema</dd>
  </dl>

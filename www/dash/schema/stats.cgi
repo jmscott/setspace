@@ -12,9 +12,8 @@
     Generate This Help Page for the CGI Script /cgi-bin/schema
    </example>
   </examples>
-  <out>
-   <putter name="table.sz">
-   </putter>
+  <out content-type="text/html">
+   <putter name="table"></putter>
   </out>
  </GET>
 </cgi>
