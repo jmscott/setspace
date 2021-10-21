@@ -396,3 +396,8 @@ dl.query span.detail
 {
 	font-family:	monospace;
 }
+
+span.note
+{
+	font-size:	x-small;
+}
