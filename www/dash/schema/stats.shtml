@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
  <head>
-  <title>Template - EDIT ME</title>
+  <title>Schema Stats @ SetSpace</title>
   <meta charset="UTF-8" />
   <link
     href="/screen.css"
@@ -15,10 +15,10 @@
    <!--#include virtual="/header.shtml" -->
    <!--#include virtual="/nav.shtml" -->
    <div id="content">
-    <h2>Secondary Header - EDIT ME</h2>
-    <p>
-     Content goes here.
-    </p>
+    <h2>Statistics for SQL Database</h2>
+    <!--#include virtual=
+      "/cgi-bin/schema/stats?out=table&class=query&${QUERY_STRING}"
+    -->
    </div>
    <!--#include virtual="/footer.shtml" -->
   </div>
