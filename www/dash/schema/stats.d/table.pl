@@ -81,7 +81,30 @@ $q = dbi_pg_select(
 	tag =>	'select-database-size',
 	argv =>	[],
 	sql => q(
-WITH schema_stat(
+WITH statio (			-- remap null blks count to 0
+	relid,
+	heap_blks_hit,
+	idx_blks_hit,
+	toast_blks_hit,
+	tidx_blks_hit,
+	heap_blks_read,
+	idx_blks_read,
+	toast_blks_read,
+	tidx_blks_read
+) AS (
+  SELECT
+  	relid,
+  	COALESCE(heap_blks_hit, 0),
+  	COALESCE(idx_blks_hit, 0),
+  	COALESCE(toast_blks_hit, 0),
+  	COALESCE(tidx_blks_hit, 0),
+  	COALESCE(heap_blks_read, 0),
+  	COALESCE(idx_blks_read, 0),
+  	COALESCE(toast_blks_read, 0),
+  	COALESCE(tidx_blks_read, 0)
+    FROM
+    	pg_statio_user_tables
+), schema_stat (
 	schema_name,
 	total_table_size,
 	sum_blks_hit,
@@ -97,7 +120,7 @@ WITH schema_stat(
 	  JOIN pg_catalog.pg_namespace n ON (
 	  	n.oid = c.relnamespace
 	  )
-	  JOIN pg_statio_user_tables s ON (
+	  JOIN statio s ON (
 	  	s.relid = c.oid
 	  )
     WHERE
