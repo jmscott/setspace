@@ -15,7 +15,7 @@
    <!--#include virtual="/header.shtml" -->
    <!--#include virtual="/nav.shtml" -->
    <div id="content">
-    <h2>Statistics for SQL Database</h2>
+    <h2>Statistics for SQL Schemas</h2>
     <!--#include virtual=
       "/cgi-bin/schema/stats?out=table&class=query&${QUERY_STRING}"
     -->
