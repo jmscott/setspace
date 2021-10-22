@@ -63,14 +63,14 @@ print <<END;
   <caption>
    <h1>Database $PGDATABASE</h1>
    <h2>
-     $size_english
+     $size_english -
      $cache_hit_rate % cache hit rate
    </h2>
   </caption>
   <tr>
    <th>Schema Name</th>
-   <th>Size</th>
-   <th>Cache Hit Rate</th>
+   <th>Schema Size</th>
+   <th>Query Cache Hit Rate</th>
   </tr>
  </thead>
  <tbody>
@@ -125,16 +125,33 @@ while (my (
 	$schema_name,
 	$size_english,
 	$size_percentage,
-	$size_non_zero
+	$size_non_zero,
+	$sum_blks_hit,
+	$sum_blks_read
 	) = $q->fetchrow()) {
 
 	$schema_name = encode_html_entities($schema_name);
 	$size_percentage = '<1' if $size_percentage == 0 && $size_non_zero;
+	if ($sum_blks_hit > 0 || $sum_blks_read > 0) {
+		$cache_hit_rate = sprintf(
+					'%0.f',
+					100 * ($sum_blks_hit /
+						($sum_blks_hit + $sum_blks_read)
+					)
+				);
+		$cache_hit_rate = '>99' if $cache_hit_rate == 100;
+	} else {
+		if ($sum_blks_hit eq '' || $sum_blks_read) {
+			$cache_hit_rate = 'Unknown';
+		} else {
+			$cache_hit_rate = 0;
+		}
+	}
 	print <<END;
   <tr>
    <td>$schema_name</td>
-   <td>$size_english</td>
-   <td>$size_percentage %</td>
+   <td>$size_english ($size_percentage %)</td>
+   <td>$cache_hit_rate %</td>
   </tr>
 END
 }
