@@ -196,7 +196,7 @@ while (my (
 	}
 	print <<END;
   <tr>
-   <td>$schema_name</td>
+   <td><a href="stats-sch.shtml?sch=$schema_name">$schema_name</a></td>
    <td>$size_english ($size_percentage %)</td>
    <td>$cache_hit_rate %</td>
   </tr>
