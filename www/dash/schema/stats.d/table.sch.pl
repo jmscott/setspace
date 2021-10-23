@@ -96,7 +96,7 @@ print <<END;
   </caption>
   <tr>
    <th>Table Name</th>
-   <th>Table Size (%DB)</th>
+   <th>Total Table Size (%DB)</th>
    <th>Query Cache Hit Rate</th>
   </tr>
  </thead>
