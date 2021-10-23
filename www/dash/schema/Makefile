@@ -36,6 +36,7 @@ install: all
 		index.shtml						\
 		nav.shtml						\
 		stats.shtml						\
+		stats-sch.shtml						\
 		$(WWW_PREFIX)/htdocs/schema
 
 	install -d $(WWW_PREFIX)/cgi-bin
@@ -50,6 +51,7 @@ install: all
 	install								\
 		stats.d/help.pl						\
 		stats.d/table.pl					\
+		stats.d/table.sch.pl					\
 		$(WWW_PREFIX)/lib/schema/stats.d
 
 	cd setcore && $(MAKE) $(MFLAGS) install

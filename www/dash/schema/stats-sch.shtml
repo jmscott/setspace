@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Schema Stats @ SetSpace</title>
+  <meta charset="UTF-8" />
+  <link
+    href="/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/nav.shtml" -->
+   <div id="content">
+    <h2>Statistics for SQL Schemas</h2>
+    <!--#include virtual=
+      "/cgi-bin/schema/stats?out=table.sch&class=query&${QUERY_STRING}"
+    -->
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

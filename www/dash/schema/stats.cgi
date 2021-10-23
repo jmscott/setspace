@@ -14,6 +14,16 @@
   </examples>
   <out content-type="text/html">
    <putter name="table"></putter>
+   <putter name="table.sch">
+    <query-args>
+     <arg
+     	name="sch"
+	perl5_re="[a-z][a-z0-9]{0,15}"
+	required="yes"
+     />
+     
+    </query-args>
+   </putter>
   </out>
  </GET>
 </cgi>

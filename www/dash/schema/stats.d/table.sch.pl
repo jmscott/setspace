@@ -1,8 +1,8 @@
 #
 #  Synopsis:
-#	Write html <table> of schema of stats like size, cache hit rate
+#	Write html <table> of stats for all tables in a particular schema.
 #  Usage:
-#	/cgi-bin/schema/stats?out=table
+#	/cgi-bin/schema/stats?out=table.sch&sch=pdfbox
 #  Note:
 #	Need to put summary footer at bottom of table!
 #
@@ -12,12 +12,14 @@ require 'httpd2.d/common.pl';
 
 our %QUERY_ARG;
 
+my $sch = $QUERY_ARG{sch};
+
 my $db = dbi_pg_connect();
 
 my $q = dbi_pg_select(
 	db =>	$db,
-	tag =>	'select-database-size',
-	argv =>	[],
+	tag =>	'select-schema-size',
+	argv =>	[$sch],
 	sql => q(
 WITH statio (			-- remap null blks count to 0
 	relid,
@@ -42,8 +44,10 @@ WITH statio (			-- remap null blks count to 0
   	COALESCE(tidx_blks_read, 0)
     FROM
     	pg_statio_user_tables
+    WHERE
+    	schemaname = $1
 ) SELECT
-	pg_size_pretty(pg_database_size(current_database()))
+	pg_size_pretty(sum(pg_total_relation_size(relid)))
 	  AS size_english,
 	sum(heap_blks_hit + idx_blks_hit + toast_blks_hit + tidx_blks_hit)
 	  AS sum_blks_hit,
@@ -51,7 +55,6 @@ WITH statio (			-- remap null blks count to 0
 	  AS sum_blks_read
   FROM
   	statio
-;
 ;
 ));
 
@@ -85,15 +88,15 @@ print <<END;
 >
  <thead>
   <caption>
-   <h1>Database $PGDATABASE</h1>
+   <h1>Schema $sch</h1>
    <h2>
      $size_english -
      $cache_hit_rate % cache hit rate
    </h2>
   </caption>
   <tr>
-   <th>Schema Name</th>
-   <th>Schema Size</th>
+   <th>Table Name</th>
+   <th>Table Size (%DB)</th>
    <th>Query Cache Hit Rate</th>
   </tr>
  </thead>
@@ -102,8 +105,8 @@ END
 
 $q = dbi_pg_select(
 	db =>	$db,
-	tag =>	'select-schema-size',
-	argv =>	[],
+	tag =>	'select-table-size',
+	argv =>	[$sch],
 	sql => q(
 WITH statio (			-- remap null blks count to 0
 	relid,
@@ -128,14 +131,16 @@ WITH statio (			-- remap null blks count to 0
   	COALESCE(tidx_blks_read, 0)
     FROM
     	pg_statio_user_tables
+    WHERE
+    	schemaname = $1
 ), schema_stat (
-	schema_name,
+	table_name,
 	total_table_size,
 	sum_blks_hit,
 	sum_blks_read
 ) AS (
   SELECT
-    	n.nspname,
+    	c.relname,
 	sum(pg_total_relation_size(c.oid)),
 	sum(s.heap_blks_hit+s.idx_blks_hit+s.toast_blks_hit+s.tidx_blks_hit),
 	sum(s.heap_blks_read+s.idx_blks_read+s.toast_blks_read+s.tidx_blks_read)
@@ -150,9 +155,9 @@ WITH statio (			-- remap null blks count to 0
     WHERE
 	c.relkind = 'r'
     GROUP BY
-    	n.nspname
+    	c.relname
 ) SELECT
-	ss.schema_name,
+	ss.table_name,
 	pg_size_pretty(ss.total_table_size) AS size_english,
 	(ss.total_table_size/ pg_database_size(current_database()) * 100)::int
 		AS size_percentage,
@@ -164,20 +169,20 @@ WITH statio (			-- remap null blks count to 0
   ORDER BY
 	size_percentage DESC,
 	ss.total_table_size DESC,
-	ss.schema_name ASC
+	ss.table_name ASC
 ;
 ));
 
 while (my (
-	$schema_name,
+	$table_name,
 	$size_english,
 	$size_percentage,
 	$size_non_zero,
 	$sum_blks_hit,
 	$sum_blks_read
-	) = $q->fetchrow()) {
+      ) = $q->fetchrow() ) {
 
-	$schema_name = encode_html_entities($schema_name);
+	$table_name = encode_html_entities($table_name);
 	$size_percentage = '<1' if $size_percentage == 0 && $size_non_zero;
 	if ($sum_blks_hit > 0 || $sum_blks_read > 0) {
 		$cache_hit_rate = sprintf(
@@ -196,7 +201,7 @@ while (my (
 	}
 	print <<END;
   <tr>
-   <td>$schema_name</td>
+   <td>$table_name</td>
    <td>$size_english ($size_percentage %)</td>
    <td>$cache_hit_rate %</td>
   </tr>
