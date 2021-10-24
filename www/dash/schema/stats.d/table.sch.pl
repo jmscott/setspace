@@ -21,40 +21,21 @@ my $q = dbi_pg_select(
 	tag =>	'select-schema-size',
 	argv =>	[$sch],
 	sql => q(
-WITH statio (			-- remap null blks count to 0
-	relid,
-	heap_blks_hit,
-	idx_blks_hit,
-	toast_blks_hit,
-	tidx_blks_hit,
-	heap_blks_read,
-	idx_blks_read,
-	toast_blks_read,
-	tidx_blks_read
-) AS (
-  SELECT
-  	relid,
-  	COALESCE(heap_blks_hit, 0),
-  	COALESCE(idx_blks_hit, 0),
-  	COALESCE(toast_blks_hit, 0),
-  	COALESCE(tidx_blks_hit, 0),
-  	COALESCE(heap_blks_read, 0),
-  	COALESCE(idx_blks_read, 0),
-  	COALESCE(toast_blks_read, 0),
-  	COALESCE(tidx_blks_read, 0)
-    FROM
-    	pg_statio_user_tables
-    WHERE
-    	schemaname = $1
-) SELECT
+SELECT
 	pg_size_pretty(sum(pg_total_relation_size(relid)))
 	  AS size_english,
-	sum(heap_blks_hit + idx_blks_hit + toast_blks_hit + tidx_blks_hit)
-	  AS sum_blks_hit,
-	sum(heap_blks_read + idx_blks_read + toast_blks_read + tidx_blks_read)
-	  AS sum_blks_read
+	sum(
+		heap_blks_hit + idx_blks_hit +
+		COALESCE(toast_blks_hit, 0) + COALESCE(tidx_blks_hit, 0)
+	) AS sum_blks_hit,
+	sum(
+		heap_blks_read + idx_blks_read +
+		COALESCE(toast_blks_read, 0) + COALESCE(tidx_blks_read, 0)
+	)  AS sum_blks_read
   FROM
-  	statio
+  	pg_statio_user_tables
+  WHERE
+  	schemaname = $1
 ;
 ));
 
@@ -108,52 +89,39 @@ $q = dbi_pg_select(
 	tag =>	'select-table-size',
 	argv =>	[$sch],
 	sql => q(
-WITH statio (			-- remap null blks count to 0
-	relid,
-	heap_blks_hit,
-	idx_blks_hit,
-	toast_blks_hit,
-	tidx_blks_hit,
-	heap_blks_read,
-	idx_blks_read,
-	toast_blks_read,
-	tidx_blks_read
-) AS (
-  SELECT
-  	relid,
-  	COALESCE(heap_blks_hit, 0),
-  	COALESCE(idx_blks_hit, 0),
-  	COALESCE(toast_blks_hit, 0),
-  	COALESCE(tidx_blks_hit, 0),
-  	COALESCE(heap_blks_read, 0),
-  	COALESCE(idx_blks_read, 0),
-  	COALESCE(toast_blks_read, 0),
-  	COALESCE(tidx_blks_read, 0)
-    FROM
-    	pg_statio_user_tables
-    WHERE
-    	schemaname = $1
-), schema_stat (
+WITH schema_stat (
 	table_name,
 	total_table_size,
 	sum_blks_hit,
 	sum_blks_read
-) AS (
+)AS (
   SELECT
     	c.relname,
 	sum(pg_total_relation_size(c.oid)),
-	sum(s.heap_blks_hit+s.idx_blks_hit+s.toast_blks_hit+s.tidx_blks_hit),
-	sum(s.heap_blks_read+s.idx_blks_read+s.toast_blks_read+s.tidx_blks_read)
+	sum(
+		s.heap_blks_hit + s.idx_blks_hit +
+
+		--  sum tables have no toast
+		COALESCE(s.toast_blks_hit, 0) + COALESCE(+s.tidx_blks_hit, 0)
+	),
+	sum(
+		s.heap_blks_read + s.idx_blks_read + 
+
+		--  sum tables have no toast
+		COALESCE(s.toast_blks_read, 0) + COALESCE(s.tidx_blks_read, 0)
+	)
     FROM
       	pg_catalog.pg_class c
 	  JOIN pg_catalog.pg_namespace n ON (
 	  	n.oid = c.relnamespace
 	  )
-	  JOIN statio s ON (
+	  JOIN pg_statio_user_tables s ON (
 	  	s.relid = c.oid
 	  )
     WHERE
 	c.relkind = 'r'
+	AND
+	s.schemaname = $1
     GROUP BY
     	c.relname
 ) SELECT
