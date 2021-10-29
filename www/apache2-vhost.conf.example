@@ -26,8 +26,7 @@ Define SETSPACE_JMSCOTT_ROOT /usr/local/jmscott
 #
 #	${SETSPACE_DNS_VHOST_PREFIX}.setspace.${SETSPACE_DNS_VHOST_SUFFIX}
 #
-#  Current values of PREFIX can be "www", "dash", or "noc".  During development
-#  may user a schema name like "pdfbox".
+#  Current values of PREFIX can be "www", "dash", or "noc".
 #
 Define SETSPACE_DNS_VHOST_PREFIX www
 Define SETSPACE_DNS_VHOST_SUFFIX com
