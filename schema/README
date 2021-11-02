@@ -185,3 +185,5 @@ Possible Schemas:
 		https://github.com/curl/h2c
 	podofo - pdf library written in c
 		http://podofo.sourceforge.net
+	mindsdb - machines learning applied to sql databases
+		https://github.com/mindsdb/mindsdb
