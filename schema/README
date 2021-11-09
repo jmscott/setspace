@@ -187,3 +187,5 @@ Possible Schemas:
 		http://podofo.sourceforge.net
 	mindsdb - machines learning applied to sql databases
 		https://github.com/mindsdb/mindsdb
+	microdiff - tiny json differ
+		https://github.com/AsyncBanana/microdiff
