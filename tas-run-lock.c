@@ -9,6 +9,8 @@
  *	1  -  lock already exists
  *	2  -  unexpected error
  *  Note:
+ *	replace with jmscott/bin/tas-lock-fs.  see blobio/bin/lock-flow-udig
+ *
  *	Consider renaming program to tas-udig-lock.
  */
 
