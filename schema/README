@@ -189,3 +189,7 @@ Possible Schemas:
 		https://github.com/mindsdb/mindsdb
 	microdiff - tiny json differ
 		https://github.com/AsyncBanana/microdiff
+	wirefilter - wire line pattern matcher from cloudflare
+		https://github.com/cloudflare/wirefilter/tree/cloudflare
+	tarindex - index tarfiles for quick access of elements
+		https://github.com/devsnd/tarindexer
