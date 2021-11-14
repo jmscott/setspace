@@ -193,3 +193,9 @@ Possible Schemas:
 		https://github.com/cloudflare/wirefilter/tree/cloudflare
 	tarindex - index tarfiles for quick access of elements
 		https://github.com/devsnd/tarindexer
+	libarchive - index various file archives like tar, zip, bzip, etc
+		https://www.libarchive.org/
+	nocodb - gui that is an open version of airtable
+		https://nocodb.com/
+	commoncrawl - crowdsource crawl engine
+		 https://commoncrawl.org/
