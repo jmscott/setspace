@@ -3,6 +3,8 @@
 #	Trivial front end functions to DBD::Pg functions.
 #  Return:
 #	Always implies success, die otherwise
+#  Note:
+#	Why not using $JMSCOTT_ROOT/www/lib/dbi-pg.pl?
 #
 
 #
