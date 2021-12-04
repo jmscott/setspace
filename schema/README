@@ -199,3 +199,5 @@ Possible Schemas:
 		https://nocodb.com/
 	commoncrawl - crowdsource crawl engine
 		 https://commoncrawl.org/
+	gigablast - text search engine with rest api
+		https://gigablast.com/
