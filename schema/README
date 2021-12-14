@@ -201,3 +201,5 @@ Possible Schemas:
 		 https://commoncrawl.org/
 	gigablast - text search engine with rest api
 		https://gigablast.com/
+	pgvector - general vectorized search
+		https://github.com/ankane/pgvector
