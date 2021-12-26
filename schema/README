@@ -205,3 +205,6 @@ Possible Schemas:
 		https://github.com/ankane/pgvector
 	libgrapheme - tiny handling Unicode strings
 		https://libs.suckless.org/libgrapheme/
+	minisign - dead simple crypto signer
+		https://github.com/jedisct1/minisign
+		https://news.ycombinator.com/item?id=29660095
