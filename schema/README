@@ -203,3 +203,5 @@ Possible Schemas:
 		https://gigablast.com/
 	pgvector - general vectorized search
 		https://github.com/ankane/pgvector
+	libgrapheme - tiny handling Unicode strings
+		https://libs.suckless.org/libgrapheme/
