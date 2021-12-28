@@ -203,8 +203,17 @@ Possible Schemas:
 		https://gigablast.com/
 	pgvector - general vectorized search
 		https://github.com/ankane/pgvector
+<<<<<<< HEAD
+	usa library of congress
+		https://labs.loc.gov/lc-for-robots/
+	immundb - immutable database, built on a zero trust model
+		https://github.com/codenotary/immudb
+	qldb - quantum ledger database
+		https://aws.amazon.com/qldb/
+=======
 	libgrapheme - tiny handling Unicode strings
 		https://libs.suckless.org/libgrapheme/
 	minisign - dead simple crypto signer
 		https://github.com/jedisct1/minisign
 		https://news.ycombinator.com/item?id=29660095
+>>>>>>> 082bdbbc0bde2e0bb571d8c1ae45451773bdde2e
