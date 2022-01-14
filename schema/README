@@ -216,3 +216,7 @@ Possible Schemas:
 		https://news.ycombinator.com/item?id=29660095
 	govfeed - rss feeds for many government data
 		https://www.govinfo.gov/feeds
+	txtai - Build AI-powered semantic search applications
+		https://github.com/neuml/txtai/
+	lexvec - word embedding model
+		https://github.com/alexandres/lexvec#refs
