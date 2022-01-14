@@ -220,3 +220,5 @@ Possible Schemas:
 		https://github.com/neuml/txtai/
 	lexvec - word embedding model
 		https://github.com/alexandres/lexvec#refs
+	terashuf - super fast fair shuffle
+		https://github.com/alexandres/terashuf
