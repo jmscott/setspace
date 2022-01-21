@@ -222,3 +222,5 @@ Possible Schemas:
 		https://github.com/alexandres/lexvec#refs
 	terashuf - super fast fair shuffle
 		https://github.com/alexandres/terashuf
+	hacknews - hackernews api
+		https://github.com/HackerNews/API
