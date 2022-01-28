@@ -108,17 +108,19 @@ void my_packet_handler(
 
 	printf("Payload size: %d bytes\n", payload_length);
 	payload = packet + total_headers_size;
-	printf("Memory address where payload begins: %p\n\n", payload);
 
 	/* Print payload in ASCII */
 	if (payload_length > 0) {
-		const u_char *temp_pointer = payload;
-		int byte_count = 0;
-		while (byte_count++ < payload_length) {
-			printf("%c", *temp_pointer);
-			temp_pointer++;
-        	}
-		printf("\n");
+		char hex[1024 * 64];
+
+		jmscott_hexdump(
+			(unsigned char *)payload,
+			payload_length,
+			'>',
+			hex,
+			sizeof hex-1
+		);
+		printf("Hex:\n%s\n", hex);
 	}
 	return;
 }
