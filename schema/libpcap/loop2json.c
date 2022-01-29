@@ -12,18 +12,105 @@
  *
  *	Can <file-path> be replaced with <stdin>?
  */
+#include <string.h>
 #include <stdio.h>
+
 #include <pcap.h>
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
 
 #include "jmscott/hexdump.c"
 #include "jmscott/die.c"
+#include "jmscott/posio.c"
+
+/*
+ *  Note:
+ *	Jumbo packets > 1448!?
+ */
+#define MAX_TCP_PACKET	1448
 
 char *jmscott_progname = "pcap2json";
 
 static int packet_count = 0;
 
+static void
+die(char *msg)
+{
+	jmscott_die(1, msg);
+}
+
+static void
+die2(char *msg1, char *msg2)
+{
+	jmscott_die2(1, msg1, msg2);
+}
+
+static void
+_write(char *src, int len)
+{
+	if (jmscott_write(1, src, len) != 0)
+		die2("write(stdout) failed", strerror(errno));
+}
+
+static void
+_writes(char *src)
+{
+	_write(src, strlen(src));
+}
+
+//  write an json escaped ascii string
+static void
+write_json_string(char *src)
+{
+	char c, *s;
+	char *j, json[MAX_TCP_PACKET * 4];
+
+	s = src;
+	j = json;
+
+	*j++ = '"';
+	while ((c = *s++)) {
+		if (!isascii(c))
+			die("write_json_string: non ascii char");
+
+		switch (c) {
+		case '"':
+			*j++ = '\\';
+			*j++ = '"';
+			break;
+		case '\\':
+			*j++ = '\\';
+			*j++ = '\\';
+			break;
+		case '\b':
+			*j++ = '\\';
+			*j++ = 'b';
+			break;
+		case '\f':
+			*j++ = '\\';
+			*j++ = 'f';
+			break;
+		case '\n':
+			*j++ = '\\';
+			*j++ = 'n';
+			break;
+		case '\r':
+			*j++ = '\\';
+			*j++ = 'r';
+			break;
+		case '\t':
+			*j++ = '\\';
+			*j++ = 't';
+			break;
+		default:
+			*j++ = c;
+		}
+	}
+	*j++ = '"';
+
+	_write(json, j - json);
+}
+		
 /* Finds the payload of a TCP/IP packet */
 void parse_packet(
     u_char *args,
@@ -38,7 +125,7 @@ void parse_packet(
 	struct ether_header *eth_header;
 	eth_header = (struct ether_header *) packet;
 	if (ntohs(eth_header->ether_type) != ETHERTYPE_IP) {
-        	printf("Not an IP packet. Skipping...\n\n");
+        	fprintf(stderr, "Not an IP packet. Skipping...\n\n");
         	return;
 	}
 
@@ -52,8 +139,8 @@ void parse_packet(
        	 *  length set with pcap_open_live() is too small, you may
        	 *  not have the whole packet.
 	 */
-	printf("Total packet available: %d bytes\n", header->caplen);
-	printf("Expected packet size: %d bytes\n", header->len);
+	fprintf(stderr, "Total packet available: %d bytes\n", header->caplen);
+	fprintf(stderr, "Expected packet size: %d bytes\n", header->len);
 
 	/* Pointers to start point of various headers */
 	const u_char *ip_header;
@@ -79,7 +166,7 @@ void parse_packet(
 	 *  by four to get a byte count for pointer arithmetic
 	 */
 	ip_header_length = ip_header_length * 4;
-	printf("IP header length (IHL) in bytes: %d\n", ip_header_length);
+	fprintf(stderr, "IP header length (IHL) in bytes: %d\n", ip_header_length);
 
 	/*
 	 *  Now that we know where the IP header is, we can 
@@ -89,7 +176,7 @@ void parse_packet(
 	 */
 	u_char protocol = *(ip_header + 9);
 	if (protocol != IPPROTO_TCP) {
-		printf("Not a TCP packet. Skipping...\n\n");
+		fprintf(stderr, "Not a TCP packet. Skipping...\n\n");
 		return;
 	}
 
@@ -115,16 +202,16 @@ void parse_packet(
          *  byte count.
 	 */
 	tcp_header_length = tcp_header_length * 4;
-	printf("TCP header length in bytes: %d\n", tcp_header_length);
+	fprintf(stderr, "TCP header length in bytes: %d\n", tcp_header_length);
 
 	/* Add up all the header sizes to find the payload offset */
 	int total_headers_size = ethernet_header_length + ip_header_length
 	                         + tcp_header_length;
-	printf("Size of all headers combined: %d bytes\n", total_headers_size);
+	fprintf(stderr, "Size of all headers combined: %d bytes\n", total_headers_size);
 	payload_length = header->caplen -
         	(ethernet_header_length + ip_header_length + tcp_header_length);
 
-	printf("Payload size: %d bytes\n", payload_length);
+	fprintf(stderr, "Payload size: %d bytes\n", payload_length);
 	payload = packet + total_headers_size;
 
 	/* Print payload in ASCII */
@@ -138,14 +225,8 @@ void parse_packet(
 			hex,
 			sizeof hex-1
 		);
-		printf("Hex:\n%s\n", hex);
+		fprintf(stderr, "Hex:\n%s\n", hex);
 	}
-}
-
-static void
-die(char *msg)
-{
-	jmscott_die(1, msg);
 }
 
 int main(int argc, char **argv)
@@ -160,8 +241,13 @@ int main(int argc, char **argv)
 	handle = pcap_open_offline(argv[1], err);
 	if (err[0])
 		die(err);
+
+	_writes("{\n\t");
+	write_json_string("libpcap.schema.setspace.com");
+	_writes(":{}");
 	pcap_loop(handle, (int)2147483648, parse_packet, NULL);
-	printf("\nPacket Count: %d\n", packet_count);
+	_write("\n}", 2);
+	fprintf(stderr, "Packet Count: %d\n", packet_count);
 
 	return 0;
 }
