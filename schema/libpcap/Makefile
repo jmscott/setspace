@@ -1,8 +1,10 @@
 include ../../local.mk
 include ../../setspace.mk
 
-all: pcap2json
+all: loop2json
 
-pcap2json: pcap2json.c
+loop2json: loop2json.c
 	$(CC) $(CFLAGS) -I$(JMSCOTT_ROOT)/include -I$(PCAPINC) 		\
-		pcap2json.c -L$(PCAPLIB) -lpcap -o pcap2json
+		loop2json.c -L$(PCAPLIB) -lpcap -o loop2json
+clean:
+	rm -f loop2json

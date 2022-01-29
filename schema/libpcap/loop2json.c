@@ -1,3 +1,17 @@
+/*
+ *  Synopsis:
+ *	Transform output of pcal_loop() function to json.
+ *  Usage:
+ *	loop2json <file-path> >loop.json
+ *  Note:
+ *	Be sure to add link layer:
+ *
+ *		PKTAP (Apple DLT_PKTAP)
+ *
+ *	The -i any generates that link layer.
+ *
+ *	Can <file-path> be replaced with <stdin>?
+ */
 #include <stdio.h>
 #include <pcap.h>
 #include <netinet/in.h>
@@ -8,13 +22,17 @@
 
 char *jmscott_progname = "pcap2json";
 
+static int packet_count = 0;
+
 /* Finds the payload of a TCP/IP packet */
-void my_packet_handler(
+void parse_packet(
     u_char *args,
     const struct pcap_pkthdr *header,
     const u_char *packet
 ) {
 	(void)args;
+
+	packet_count++;
 
 	/* First, lets make sure we have an IP packet */
 	struct ether_header *eth_header;
@@ -122,7 +140,6 @@ void my_packet_handler(
 		);
 		printf("Hex:\n%s\n", hex);
 	}
-	return;
 }
 
 static void
@@ -143,7 +160,8 @@ int main(int argc, char **argv)
 	handle = pcap_open_offline(argv[1], err);
 	if (err[0])
 		die(err);
-	pcap_loop(handle, (int)2147483648, my_packet_handler, NULL);
+	pcap_loop(handle, (int)2147483648, parse_packet, NULL);
+	printf("\nPacket Count: %d\n", packet_count);
 
 	return 0;
 }
