@@ -23,11 +23,7 @@
 #include "jmscott/die.c"
 #include "jmscott/posio.c"
 
-/*
- *  Note:
- *	Jumbo packets > 1448!?
- */
-#define MAX_TCP_PACKET	1448
+#define MAX_TCP_PACKET	65535
 
 char *jmscott_progname = "pcap2json";
 
