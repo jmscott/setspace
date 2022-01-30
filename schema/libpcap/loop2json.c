@@ -10,7 +10,7 @@
  *
  *	The -i any generates that link layer.
  *
- *	Can <file-path> be replaced with <stdin>?
+ *	Does pcap_open_offline() accept stdin, instead of file path?
  */
 #include <string.h>
 #include <stdio.h>
@@ -19,15 +19,17 @@
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
 
-#include "jmscott/hexdump.c"
 #include "jmscott/die.c"
+#include "jmscott/hexdump.c"
 #include "jmscott/posio.c"
+#include "jmscott/time.c"
+#include "jmscott/json.c"
 
 #define MAX_TCP_PACKET	65535
 
-char *jmscott_progname = "pcap2json";
+char *jmscott_progname = "loop2json";
 
-static int packet_count = 0;
+static int pkt_count = 0;
 
 static void
 die(char *msg)
@@ -49,7 +51,7 @@ _write(char *src, int len)
 }
 
 static void
-_writes(char *src)
+write_string(char *src)
 {
 	_write(src, strlen(src));
 }
@@ -58,64 +60,49 @@ _writes(char *src)
 static void
 write_json_string(char *src)
 {
-	char c, *s;
-	char *j, json[MAX_TCP_PACKET * 4];
+	char json[MAX_TCP_PACKET * 4], *err;
 
-	s = src;
-	j = json;
+	if ((err = jmscott_ascii2json_string(src, json, sizeof json)))
+		die2("jmscott_ascii2json_string() failed", err);
+	_write(json, strlen(json));
+}
 
-	*j++ = '"';
-	while ((c = *s++)) {
-		if (!isascii(c))
-			die("write_json_string: non ascii char");
+static void
+indent(int level)
+{
+	for (int i = 0;  i < level;  i++)
+		_write("\t", 1);
+}
 
-		switch (c) {
-		case '"':
-			*j++ = '\\';
-			*j++ = '"';
-			break;
-		case '\\':
-			*j++ = '\\';
-			*j++ = '\\';
-			break;
-		case '\b':
-			*j++ = '\\';
-			*j++ = 'b';
-			break;
-		case '\f':
-			*j++ = '\\';
-			*j++ = 'f';
-			break;
-		case '\n':
-			*j++ = '\\';
-			*j++ = 'n';
-			break;
-		case '\r':
-			*j++ = '\\';
-			*j++ = 'r';
-			break;
-		case '\t':
-			*j++ = '\\';
-			*j++ = 't';
-			break;
-		default:
-			*j++ = c;
-		}
-	}
-	*j++ = '"';
 
-	_write(json, j - json);
+/*
+ *  Write
+ *
+ *	"key":"value",\n
+ */
+
+static void
+write_kv(char *key, char *value)
+{
+	indent(1);
+	write_json_string(key);
+	_write(":", 1);
+	write_json_string(value);
+	_write(",\n", 2);
 }
 		
-/* Finds the payload of a TCP/IP packet */
-void parse_packet(
+/*
+ *  Convert an arbitrary packet in pcap stream to json object.
+ */
+static
+void pkt2json(
     u_char *args,
     const struct pcap_pkthdr *header,
     const u_char *packet
 ) {
 	(void)args;
 
-	packet_count++;
+	pkt_count++;
 
 	/* First, lets make sure we have an IP packet */
 	struct ether_header *eth_header;
@@ -219,7 +206,7 @@ void parse_packet(
 			payload_length,
 			'>',
 			hex,
-			sizeof hex-1
+			sizeof hex - 1
 		);
 		fprintf(stderr, "Hex:\n%s\n", hex);
 	}
@@ -227,23 +214,36 @@ void parse_packet(
 
 int main(int argc, char **argv)
 {    
-	char err[PCAP_ERRBUF_SIZE];
+	char perr[PCAP_ERRBUF_SIZE], *err;
 	pcap_t *handle;
+	char now[36];		//  RFC3339Nano
 
 	if (argc != 2)
 		die("wrong number of arguments");
+	if ((err = jmscott_RFC3339Nano_now(now, sizeof now)))
+		die2("RFC3339Nano() failed", err);
 
-	err[0] = 0;
-	handle = pcap_open_offline(argv[1], err);
-	if (err[0])
-		die(err);
+	/*
+	 *  Open pcap blob as a file.
+	 *
+	 *  Note:
+	 *	Does pcap_open_offline() accept stdin?
+	 */
+	perr[0] = 0;
+	handle = pcap_open_offline(argv[1], perr);
+	if (perr[0])
+		die2(err, argv[1]);
 
-	_writes("{\n\t");
-	write_json_string("libpcap.schema.setspace.com");
-	_writes(":{}");
-	pcap_loop(handle, (int)2147483648, parse_packet, NULL);
-	_write("\n}", 2);
-	fprintf(stderr, "Packet Count: %d\n", packet_count);
+	_write("{\n", 2);
+		write_kv("now", now);
+	indent(1);
+		write_json_string("libpcap.schema.setspace.com");
+		write_string(":{");
+			pcap_loop(handle, (int)2147483648, pkt2json, NULL);
+		write_string("}\n");
+	write_string("}\n");
+
+	fprintf(stderr, "Packet Count: %d\n", pkt_count);
 
 	return 0;
 }
