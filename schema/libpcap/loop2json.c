@@ -310,7 +310,7 @@ int main(int argc, char **argv, char **env)
 	pcap_t *handle;
 	char now[36];		//  RFC3339Nano
 
-	if (argc != 2)
+	if (argc != 1)
 		die("wrong number of arguments");
 	if ((err = jmscott_RFC3339Nano_now(now, sizeof now)))
 		die2("RFC3339Nano() failed", err);
@@ -322,9 +322,9 @@ int main(int argc, char **argv, char **env)
 	 *	Does pcap_open_offline() accept stdin?
 	 */
 	perr[0] = 0;
-	handle = pcap_open_offline(argv[1], perr);
+	handle = pcap_open_offline("-", perr);
 	if (perr[0])
-		die2(err, argv[1]);
+		die2("pcap_open_offline(stdin) failed", perr);
 
 	_write("{\n", 2);
 	write_kv("now", now);
