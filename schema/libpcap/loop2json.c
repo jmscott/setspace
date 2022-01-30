@@ -31,9 +31,10 @@
 
 char *jmscott_progname = "loop2json";
 
-static int pkt_count = 0;
-static int ETHERTYPE_IP_count = 0;
-static int IPPROTO_TCP_count = 0;
+static long long pkt_count = 0;
+static long long ETHERTYPE_IP_count = 0;
+static long long unknown_pkt_type = 0;
+static long long IPPROTO_TCP_count = 0;
 
 static void
 die(char *msg)
@@ -140,11 +141,11 @@ void pkt2json(
 
 	pkt_count++;
 
-	/* First, lets make sure we have an IP packet */
+	//  do we have an ethernet packet?
 	struct ether_header *eth_header;
-	eth_header = (struct ether_header *) packet;
+	eth_header = (struct ether_header *)packet;
 	if (ntohs(eth_header->ether_type) != ETHERTYPE_IP) {
-        	fprintf(stderr, "Not an IP packet. Skipping...\n\n");
+		unknown_pkt_type++;
         	return;
 	}
 	ETHERTYPE_IP_count++;
@@ -289,6 +290,20 @@ write_json_array(char *key, char **array, int size, int level)
 	_write("],\n", 3);
 }
 
+static void
+stat_ll(char *key, long long value)
+{
+	indent(1);
+	write_kll(key, value);
+}
+
+static void
+stat_llx(char *key, long long value)
+{
+	indent(1);
+	write_kllx(key, value);
+}
+
 int main(int argc, char **argv, char **env)
 {    
 	char perr[PCAP_ERRBUF_SIZE], *err;
@@ -318,21 +333,15 @@ int main(int argc, char **argv, char **env)
 	write_json_string("libpcap.schema.setspace.com");
 	write_string(":{\n");
 		pcap_loop(handle, (int)2147483648, pkt2json, NULL);
-		indent(1); write_kll(
-			"ETHERTYPE_IP_count",
-			(long long)ETHERTYPE_IP_count
-		);
-		indent(1); write_kll(
-			"IPPROTO_TCP_count",
-			(long long)IPPROTO_TCP_count
-		);
-		indent(1); write_kllx("pkt_count", (long long)pkt_count);
+
+		stat_ll("pkt_count", pkt_count);
+
+		stat_ll("ETHERTYPE_IP_count", ETHERTYPE_IP_count);
+		stat_llx("IPPROTO_TCP_count", IPPROTO_TCP_count);
 	indent(1);
 	write_string("}\n");
 
 	write_string("}\n");
-
-	fprintf(stderr, "Packet Count: %d\n", pkt_count);
 
 	return 0;
 }
