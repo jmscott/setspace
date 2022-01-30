@@ -4,6 +4,8 @@
  *  Usage:
  *	loop2json <file-path> >loop.json
  *  Note:
+ *	Code is NOT ready for UTF8.
+ *
  *	Be sure to add link layer:
  *
  *		PKTAP (Apple DLT_PKTAP)
@@ -30,6 +32,8 @@
 char *jmscott_progname = "loop2json";
 
 static int pkt_count = 0;
+static int ETHERTYPE_IP_count = 0;
+static int IPPROTO_TCP_count = 0;
 
 static void
 die(char *msg)
@@ -51,9 +55,32 @@ _write(char *src, int len)
 }
 
 static void
+_writec(char c)
+{
+	if (jmscott_write(1, &c, 1) != 0)
+		die2("write(stdout) failed", strerror(errno));
+}
+
+static void
 write_string(char *src)
 {
 	_write(src, strlen(src));
+}
+
+static void
+write_ll(long long ll)
+{
+	char buf[22];
+
+	snprintf(buf, sizeof buf, "%lld", ll);
+	_write(buf, strlen(buf));
+}
+
+static void
+indent(int level)
+{
+	for (int i = 0;  i < level;  i++)
+		_writec('\t');
 }
 
 //  write an json escaped ascii string
@@ -62,32 +89,41 @@ write_json_string(char *src)
 {
 	char json[MAX_TCP_PACKET * 4], *err;
 
+	indent(1);
 	if ((err = jmscott_ascii2json_string(src, json, sizeof json)))
 		die2("jmscott_ascii2json_string() failed", err);
 	_write(json, strlen(json));
 }
-
-static void
-indent(int level)
-{
-	for (int i = 0;  i < level;  i++)
-		_write("\t", 1);
-}
-
 
 /*
  *  Write
  *
  *	"key":"value",\n
  */
-
 static void
 write_kv(char *key, char *value)
 {
-	indent(1);
 	write_json_string(key);
 	_write(":", 1);
 	write_json_string(value);
+	_write(",\n", 2);
+}
+
+static void
+write_kllx(char *key, long long value)
+{
+	write_json_string(key);
+	_write(":", 1);
+	write_ll(value);
+	_write("\n", 1);
+}
+
+static void
+write_kll(char *key, long long value)
+{
+	write_json_string(key);
+	_write(":", 1);
+	write_ll(value);
 	_write(",\n", 2);
 }
 		
@@ -111,6 +147,7 @@ void pkt2json(
         	fprintf(stderr, "Not an IP packet. Skipping...\n\n");
         	return;
 	}
+	ETHERTYPE_IP_count++;
 
 	/*
 	 *  The total packet length, including all headers
@@ -162,6 +199,7 @@ void pkt2json(
 		fprintf(stderr, "Not a TCP packet. Skipping...\n\n");
 		return;
 	}
+	IPPROTO_TCP_count++;
 
 	/*
 	 *  Add the ethernet and ip header length to the start of the packet
@@ -212,7 +250,46 @@ void pkt2json(
 	}
 }
 
-int main(int argc, char **argv)
+static void
+newline()
+{
+	_writec('\n');
+}
+
+static void
+comma()
+{
+	_writec(',');
+}
+
+static void
+write_json_array(char *key, char **array, int size, int level)
+{
+	//  no size, so null teminated array
+	if (size < 0) {
+		int sz = 0;
+
+		char **a = array;
+		while (*a++)
+			sz++;
+		size = sz;
+	}
+
+	indent(level);
+	write_json_string(key);
+	_write(":[\n", 3);
+	for (int i = 0;  i < size;  i++) {
+		indent(level + 1);
+		write_json_string(array[i]);
+		if (i + 1 < size)
+			comma();
+		newline();
+	}
+	indent(level + 1);
+	_write("],\n", 3);
+}
+
+int main(int argc, char **argv, char **env)
 {    
 	char perr[PCAP_ERRBUF_SIZE], *err;
 	pcap_t *handle;
@@ -235,12 +312,24 @@ int main(int argc, char **argv)
 		die2(err, argv[1]);
 
 	_write("{\n", 2);
-		write_kv("now", now);
+	write_kv("now", now);
+	write_json_array("argv", argv, argc, 0);
+	write_json_array("environment", env, -1, 0);
+	write_json_string("libpcap.schema.setspace.com");
+	write_string(":{\n");
+		pcap_loop(handle, (int)2147483648, pkt2json, NULL);
+		indent(1); write_kll(
+			"ETHERTYPE_IP_count",
+			(long long)ETHERTYPE_IP_count
+		);
+		indent(1); write_kll(
+			"IPPROTO_TCP_count",
+			(long long)IPPROTO_TCP_count
+		);
+		indent(1); write_kllx("pkt_count", (long long)pkt_count);
 	indent(1);
-		write_json_string("libpcap.schema.setspace.com");
-		write_string(":{");
-			pcap_loop(handle, (int)2147483648, pkt2json, NULL);
-		write_string("}\n");
+	write_string("}\n");
+
 	write_string("}\n");
 
 	fprintf(stderr, "Packet Count: %d\n", pkt_count);
