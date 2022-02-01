@@ -226,3 +226,5 @@ Possible Schemas:
 		https://github.com/HackerNews/API
 	jansson - json encode/decode clamg
 		https://github.com/akheron/jansson
+	xkccd - famous comic
+		https://xkcd.com/json.html
