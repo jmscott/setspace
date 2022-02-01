@@ -224,3 +224,5 @@ Possible Schemas:
 		https://github.com/alexandres/terashuf
 	hacknews - hackernews api
 		https://github.com/HackerNews/API
+	jansson - json encode/decode clamg
+		https://github.com/akheron/jansson
