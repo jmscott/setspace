@@ -96,6 +96,7 @@ write_json_string(char *src)
 	_write(json, strlen(json));
 }
 
+#ifdef WTF_COMPILED
 /*
  *  Write
  *
@@ -109,6 +110,7 @@ write_kv(char *key, char *value)
 	write_json_string(value);
 	_write(",\n", 2);
 }
+#endif
 
 static void
 write_kllx(char *key, long long value)
@@ -127,27 +129,15 @@ write_kll(char *key, long long value)
 	write_ll(value);
 	_write(",\n", 2);
 }
-		
-/*
- *  Convert an arbitrary packet in pcap stream to json object.
- */
-static
-void pkt2json(
+
+static void
+ETHERTYPE_IP_cb(
     u_char *args,
     const struct pcap_pkthdr *header,
     const u_char *packet
 ) {
 	(void)args;
 
-	pkt_count++;
-
-	//  do we have an ethernet packet?
-	struct ether_header *eth_header;
-	eth_header = (struct ether_header *)packet;
-	if (ntohs(eth_header->ether_type) != ETHERTYPE_IP) {
-		unknown_pkt_type++;
-        	return;
-	}
 	ETHERTYPE_IP_count++;
 
 	/*
@@ -250,6 +240,29 @@ void pkt2json(
 		fprintf(stderr, "Hex:\n%s\n", hex);
 	}
 }
+		
+/*
+ *  Convert an arbitrary packet in pcap stream to json object.
+ */
+static
+void pkt2json(
+    u_char *args,
+    const struct pcap_pkthdr *header,
+    const u_char *packet
+) {
+	pkt_count++;
+
+	//  do we have an ethernet packet?
+	struct ether_header *eth_header;
+	eth_header = (struct ether_header *)packet;
+	switch (ntohs(eth_header->ether_type)) {
+	case ETHERTYPE_IP:
+		ETHERTYPE_IP_cb(args, header, packet);
+		break;
+	default:
+		unknown_pkt_type++;
+	}
+}
 
 static void
 newline()
@@ -305,7 +318,21 @@ stat_llx(char *key, long long value)
 }
 
 int main(int argc, char **argv, char **env)
-{    
+{
+
+//  Note: when will c lang get clousures!
+#define _WRITE(src) {							\
+	if ((err = jmscott_json_write(1, "s", src))) {			\
+		die(err);						\
+	}								\
+}
+
+#define _WRITE_KV(k,v) {						\
+	_WRITE(k);							\
+	_WRITE(':');							\
+	_WRITE(v)							\
+}
+
 	char perr[PCAP_ERRBUF_SIZE], *err;
 	pcap_t *handle;
 	char now[36];		//  RFC3339Nano
@@ -326,8 +353,8 @@ int main(int argc, char **argv, char **env)
 	if (perr[0])
 		die2("pcap_open_offline(stdin) failed", perr);
 
-	_write("{\n", 2);
-	write_kv("now", now);
+	_WRITE("{\n");
+	//  WTF: _WRITEKV("now", now);
 	write_json_array("argv", argv, argc, 0);
 	write_json_array("environment", env, -1, 0);
 	write_json_string("libpcap.schema.setspace.com");
