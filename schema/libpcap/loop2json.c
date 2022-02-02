@@ -30,11 +30,17 @@
 #define MAX_TCP_PACKET	65535
 
 char *jmscott_progname = "loop2json";
+struct jmscott_json *json;
 
 static long long pkt_count = 0;
 static long long ETHERTYPE_IP_count = 0;
 static long long unknown_pkt_type = 0;
 static long long IPPROTO_TCP_count = 0;
+
+struct loop_invoke
+{
+	struct jmscott_json	*jp;
+};
 
 static void
 die(char *msg)
@@ -46,88 +52,6 @@ static void
 die2(char *msg1, char *msg2)
 {
 	jmscott_die2(1, msg1, msg2);
-}
-
-static void
-_write(char *src, int len)
-{
-	if (jmscott_write(1, src, len) != 0)
-		die2("write(stdout) failed", strerror(errno));
-}
-
-static void
-_writec(char c)
-{
-	if (jmscott_write(1, &c, 1) != 0)
-		die2("write(stdout) failed", strerror(errno));
-}
-
-static void
-write_string(char *src)
-{
-	_write(src, strlen(src));
-}
-
-static void
-write_ll(long long ll)
-{
-	char buf[22];
-
-	snprintf(buf, sizeof buf, "%lld", ll);
-	_write(buf, strlen(buf));
-}
-
-static void
-indent(int level)
-{
-	for (int i = 0;  i < level;  i++)
-		_writec('\t');
-}
-
-//  write an json escaped ascii string
-static void
-write_json_string(char *src)
-{
-	char json[MAX_TCP_PACKET * 4], *err;
-
-	indent(1);
-	if ((err = jmscott_ascii2json_string(src, json, sizeof json)))
-		die2("jmscott_ascii2json_string() failed", err);
-	_write(json, strlen(json));
-}
-
-#ifdef WTF_COMPILED
-/*
- *  Write
- *
- *	"key":"value",\n
- */
-static void
-write_kv(char *key, char *value)
-{
-	write_json_string(key);
-	_write(":", 1);
-	write_json_string(value);
-	_write(",\n", 2);
-}
-#endif
-
-static void
-write_kllx(char *key, long long value)
-{
-	write_json_string(key);
-	_write(":", 1);
-	write_ll(value);
-	_write("\n", 1);
-}
-
-static void
-write_kll(char *key, long long value)
-{
-	write_json_string(key);
-	_write(":", 1);
-	write_ll(value);
-	_write(",\n", 2);
 }
 
 static void
@@ -264,74 +188,10 @@ void pkt2json(
 	}
 }
 
-static void
-newline()
+int
+main(int argc, char **argv)
 {
-	_writec('\n');
-}
-
-static void
-comma()
-{
-	_writec(',');
-}
-
-static void
-write_json_array(char *key, char **array, int size, int level)
-{
-	//  no size, so null teminated array
-	if (size < 0) {
-		int sz = 0;
-
-		char **a = array;
-		while (*a++)
-			sz++;
-		size = sz;
-	}
-
-	indent(level);
-	write_json_string(key);
-	_write(":[\n", 3);
-	for (int i = 0;  i < size;  i++) {
-		indent(level + 1);
-		write_json_string(array[i]);
-		if (i + 1 < size)
-			comma();
-		newline();
-	}
-	indent(level + 1);
-	_write("],\n", 3);
-}
-
-static void
-stat_ll(char *key, long long value)
-{
-	indent(1);
-	write_kll(key, value);
-}
-
-static void
-stat_llx(char *key, long long value)
-{
-	indent(1);
-	write_kllx(key, value);
-}
-
-int main(int argc, char **argv, char **env)
-{
-
-//  Note: when will c lang get clousures!
-#define _WRITE(src) {							\
-	if ((err = jmscott_json_write(1, "s", src))) {			\
-		die(err);						\
-	}								\
-}
-
-#define _WRITE_KV(k,v) {						\
-	_WRITE(k);							\
-	_WRITE(':');							\
-	_WRITE(v)							\
-}
+	(void)argv;
 
 	char perr[PCAP_ERRBUF_SIZE], *err;
 	pcap_t *handle;
@@ -339,36 +199,46 @@ int main(int argc, char **argv, char **env)
 
 	if (argc != 1)
 		die("wrong number of arguments");
+
 	if ((err = jmscott_RFC3339Nano_now(now, sizeof now)))
 		die2("RFC3339Nano() failed", err);
 
 	/*
-	 *  Open pcap blob as a file.
-	 *
-	 *  Note:
-	 *	Does pcap_open_offline() accept stdin?
+	 *  Create pcap handle reading from stdin.
 	 */
 	perr[0] = 0;
 	handle = pcap_open_offline("-", perr);
 	if (perr[0])
 		die2("pcap_open_offline(stdin) failed", perr);
 
-	_WRITE("{\n");
-	//  WTF: _WRITEKV("now", now);
-	write_json_array("argv", argv, argc, 0);
-	write_json_array("environment", env, -1, 0);
-	write_json_string("libpcap.schema.setspace.com");
-	write_string(":{\n");
-		pcap_loop(handle, (int)2147483648, pkt2json, NULL);
+	struct jmscott_json *jp = jmscott_json_new();
+	if (!jp)
+		die("malloc(struct jmscott_json) failed");
+	jp->trace = 1;
 
-		stat_ll("pkt_count", pkt_count);
+	struct loop_invoke l;
+	l.jp = jp;
 
-		stat_ll("ETHERTYPE_IP_count", ETHERTYPE_IP_count);
-		stat_llx("IPPROTO_TCP_count", IPPROTO_TCP_count);
-	indent(1);
-	write_string("}\n");
+	char *outer = "\
+{									\n\
+	#  now:2022-02-02T04:25:11.623245000+00:00			\n\
+	s:s								\n\
+";
+	err = jmscott_json_write(jp, outer,
+		//  now:time
+		"now", now
+	);
+	if (err)
+		die2("jmscott_json_write(open {) failed", err);
+	pcap_loop(handle, (int)2147483648, pkt2json, (u_char *)&l);
 
-	write_string("}\n");
+	//  write closing }
+	if (jmscott_write(jp->out_fd, "\n}\n", 3))
+		die2("jmscott_json_write(close }) failed", strerror(errno));
+
+	//write_json_array("argv", argv, argc, 0);
+	//write_json_array("environment", env, -1, 0);
+	//write_json_string("libpcap.schema.setspace.com");
 
 	return 0;
 }
