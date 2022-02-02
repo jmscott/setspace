@@ -214,19 +214,23 @@ main(int argc, char **argv)
 	struct jmscott_json *jp = jmscott_json_new();
 	if (!jp)
 		die("malloc(struct jmscott_json) failed");
-	jp->trace = 1;
+	//jp->trace = 1;
 
 	struct loop_invoke l;
 	l.jp = jp;
 
 	char *outer = "\
 {									\n\
-	#  now:2022-02-02T04:25:11.623245000+00:00			\n\
-	s:s								\n\
+	#  now								\n\
+	k:s,								\n\
+									\n\
+	#  put_payload							\n\
+	k:s								\n\
 ";
 	err = jmscott_json_write(jp, outer,
 		//  now:time
-		"now", now
+		"now", now,
+		"put_payload", "yes"
 	);
 	if (err)
 		die2("jmscott_json_write(open {) failed", err);
