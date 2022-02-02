@@ -34,11 +34,12 @@ struct jmscott_json *json;
 
 static long long pkt_count = 0;
 static long long ETHERTYPE_IP_count = 0;
-static long long unknown_pkt_type = 0;
+static long long unknown_pkt_type_count = 0;
 static long long IPPROTO_TCP_count = 0;
 
 struct loop_invoke
 {
+	pcap_t			*pcp;
 	struct jmscott_json	*jp;
 };
 
@@ -184,8 +185,59 @@ void pkt2json(
 		ETHERTYPE_IP_cb(args, header, packet);
 		break;
 	default:
-		unknown_pkt_type++;
+		unknown_pkt_type_count++;
 	}
+}
+
+static void
+json_open(struct loop_invoke *lip, char *now)
+{
+	char *err;
+
+	struct jmscott_json *jp = jmscott_json_new();
+	if (!jp)
+		die("malloc(struct jmscott_json) failed");
+	lip->jp = jp;
+
+	char *template = "{						\n\
+	#  now timestamp						\n\
+	k:s,								\n\
+									\n\
+	#  put_payload: do we put the payloads				\n\
+	k:b,								\n\
+";
+	err = jmscott_json_write(lip->jp, template,
+		"now", now,
+		"put_payload", 1
+	);
+	if (err)
+		die2("jmscott_json_write(open {) failed", err);
+}
+
+static void
+json_close(struct loop_invoke *lp)
+{
+	char *err;
+	char *template = "						\n\
+									\n\
+	#  pkt_count							\n\
+	k:i,								\n\
+									\n\
+	#  known_pkt_type_count						\n\
+	k:i,								\n\
+									\n\
+	#  ETHERTYPE_IP_count						\n\
+	k:i,								\n\
+									\n\
+	#  IPPROTO_TCP_count						\n\
+	k:i								\n\
+}";
+	err = jmscott_json_write(lp->jp, template,
+		"pkt_count", pkt_count,
+		"unknown_pkt_type_count", unknown_pkt_type_count,
+		"ETHERTYPE_IP_count", ETHERTYPE_IP_count,
+		"IPPROTO_TCP_count", IPPROTO_TCP_count
+	);
 }
 
 int
@@ -211,43 +263,12 @@ main(int argc, char **argv)
 	if (perr[0])
 		die2("pcap_open_offline(stdin) failed", perr);
 
-	struct jmscott_json *jp = jmscott_json_new();
-	if (!jp)
-		die("malloc(struct jmscott_json) failed");
-	//jp->trace = 1;
-
 	struct loop_invoke l;
-	l.jp = jp;
+	json_open(&l, now);
 
-	char *top_open = "\
-{									\n\
-	#  now								\n\
-	k:s,								\n\
-									\n\
-	#  put_payload							\n\
-	k:b,								\n\
-";
-	err = jmscott_json_write(jp, top_open,
-		//  now:time
-		"now", now,
-		"put_payload", 1
-	);
-	if (err)
-		die2("jmscott_json_write(open {) failed", err);
 	pcap_loop(handle, (int)2147483648, pkt2json, (u_char *)&l);
-
-	char *top_close = "						\n\
-	#  pkt_count							\n\
-	k:i								\n\
-}";
-	err = jmscott_json_write(jp, top_close,
-		//  now:time
-		"pkt_count", pkt_count
-	);
 	
-	//write_json_array("argv", argv, argc, 0);
-	//write_json_array("environment", env, -1, 0);
-	//write_json_string("libpcap.schema.setspace.com");
+	json_close(&l);
 
 	return 0;
 }
