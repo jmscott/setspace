@@ -219,27 +219,32 @@ main(int argc, char **argv)
 	struct loop_invoke l;
 	l.jp = jp;
 
-	char *outer = "\
+	char *top_open = "\
 {									\n\
 	#  now								\n\
 	k:s,								\n\
 									\n\
 	#  put_payload							\n\
-	k:s								\n\
+	k:b,								\n\
 ";
-	err = jmscott_json_write(jp, outer,
+	err = jmscott_json_write(jp, top_open,
 		//  now:time
 		"now", now,
-		"put_payload", "yes"
+		"put_payload", 1
 	);
 	if (err)
 		die2("jmscott_json_write(open {) failed", err);
 	pcap_loop(handle, (int)2147483648, pkt2json, (u_char *)&l);
 
-	//  write closing }
-	if (jmscott_write(jp->out_fd, "\n}\n", 3))
-		die2("jmscott_json_write(close }) failed", strerror(errno));
-
+	char *top_close = "						\n\
+	#  pkt_count							\n\
+	k:i								\n\
+}";
+	err = jmscott_json_write(jp, top_close,
+		//  now:time
+		"pkt_count", pkt_count
+	);
+	
 	//write_json_array("argv", argv, argc, 0);
 	//write_json_array("environment", env, -1, 0);
 	//write_json_string("libpcap.schema.setspace.com");
