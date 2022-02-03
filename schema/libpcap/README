@@ -1,0 +1,32 @@
+What Makes OctDB Unique:
+	Transform PCAP Network Analysis into SQL Queries
+	Web Dashbaord
+	PostgreSQL Can Query Other Engines (a data shell)(foreign data wrappers).
+		Oracle
+		Elastic Search
+		Flat Files
+		and many more
+
+Index PCAP Files into PostgreSQL Schema (what we are building)
+
+	Link Layers:
+		Ethernet
+		WiFI
+		PKTAP (Apple DLT_PKTAP) (software bus for multinic)
+		LINUX_SLL2 (Linux cooked v2) (software bus for multinic)
+	TCP/IP4 packets
+		Berkeley Network Data Structures (BSD)
+			TCP
+			IP
+			UDP
+			ARP
+			... etc
+	Application Protocol Conversations (Headers)
+		HTTP
+		SMTP
+		LDAP
+
+Ingest:
+	Attachment (HTTP POST) via Web Gui Dashboard
+	Rest API via HTTP POST with Basic Authentification (curl)
+	Remote PCAP Daemon (rpcapd)
