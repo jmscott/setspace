@@ -1,6 +1,14 @@
 include ../../local.mk
 include ../../setspace.mk
 
+ifndef PCAPLIB
+.ABORT
+endif
+
+ifndef PCAPINC
+.ABORT
+endif
+
 all: loop2json
 
 loop2json: loop2json.c
