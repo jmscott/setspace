@@ -45,4 +45,8 @@ PGHOME?=/usr/local/pgsql
 
 GODIST?=/usr/local/go
 
+#  location of libpcap headers and libraries
+PCAPINC=/usr/include
+PCAPLIB=/usr/lib
+
 ########################  END SECTION OF VARIABLES TO CHANGE
