@@ -4,6 +4,8 @@
  *  Usage:
  *	loop2json <file-path> >loop.json
  *  Note:
+ *	Need to swapp bytes on int values returned by pcap_*() header routines.
+ *
  *	Code is NOT ready for UTF8.
  *
  *	Be sure to add link layer:
@@ -36,6 +38,8 @@ static long long pkt_count = 0;
 static long long ETHERTYPE_IP_count = 0;
 static long long unknown_pkt_type_count = 0;
 static long long IPPROTO_TCP_count = 0;
+static long long ETHERTYPE_ARP_count = 0;
+static long long ETHERTYPE_REVARP_count = 0;
 
 struct loop_invoke
 {
@@ -184,6 +188,12 @@ void pkt2json(
 	case ETHERTYPE_IP:
 		ETHERTYPE_IP_cb(args, header, packet);
 		break;
+	case ETHERTYPE_ARP:
+		ETHERTYPE_ARP_count++;
+		break;
+	case ETHERTYPE_REVARP:
+		ETHERTYPE_REVARP_count++;
+		break;
 	default:
 		unknown_pkt_type_count++;
 	}
@@ -205,10 +215,30 @@ json_open(struct loop_invoke *lip, char *now)
 									\n\
 	#  put_payload: do we put the payloads				\n\
 	k:b,								\n\
+									\n\
+	#  is_swapped:  is the endianess opposite of machine order?	\n\
+	k:b,								\n\
+									\n\
+	#  pcap major version						\n\
+	k:i,								\n\
+									\n\
+	#  pcap minor version						\n\
+	k:i,								\n\
+									\n\
+	#  snapshot length						\n\
+	k:i,								\n\
+									\n\
+	#  version of libpcap						\n\
+	k:s,								\n\
 ";
 	err = jmscott_json_write(lip->jp, template,
 		"now", now,
-		"put_payload", 1
+		"is_swapped", pcap_is_swapped(lip->pcp),
+		"put_payload", 1,
+		"major_version", pcap_major_version(lip->pcp),
+		"minor_version", pcap_minor_version(lip->pcp),
+		"snapshot", pcap_snapshot(lip->pcp),
+		"lib_version", pcap_lib_version()
 	);
 	if (err)
 		die2("jmscott_json_write(open {) failed", err);
@@ -230,13 +260,21 @@ json_close(struct loop_invoke *lp)
 	k:i,								\n\
 									\n\
 	#  IPPROTO_TCP_count						\n\
+	k:i,								\n\
+									\n\
+	#  ETHERTYPE_ARP_count						\n\
+	k:i,								\n\
+									\n\
+	#  ETHERTYPE_REVARP_count					\n\
 	k:i								\n\
 }";
 	err = jmscott_json_write(lp->jp, template,
 		"pkt_count", pkt_count,
 		"unknown_pkt_type_count", unknown_pkt_type_count,
 		"ETHERTYPE_IP_count", ETHERTYPE_IP_count,
-		"IPPROTO_TCP_count", IPPROTO_TCP_count
+		"IPPROTO_TCP_count", IPPROTO_TCP_count,
+		"ETHERTYPE_ARP_count", ETHERTYPE_ARP_count,
+		"ETHERTYPE_REVARP_count", ETHERTYPE_REVARP_count
 	);
 }
 
