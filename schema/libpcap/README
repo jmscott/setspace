@@ -1,32 +1,54 @@
-What Makes OctDB Unique:
-	Transform PCAP Network Analysis into SQL Queries
-	Web Dashbaord
-	PostgreSQL Can Query Other Engines (a data shell)(foreign data wrappers).
+What Makes OctoDB Unique:
+	- Can run both on premise or in cloud.
+	- Transform PCAP Network Analysis into SQL Tables
+	- PostgreSQL Can Query Other Engines (a data shell) in SQL
 		Oracle
 		Elastic Search
 		Flat Files
+		AWS
 		and many more
+	- PCAP Payload Can be populate other schema
+		EMail (SMTP/LDAP)
+		JSON
+	- Automated Translation of SQL Queries in REST API (rasql)
 
-Index PCAP Files into PostgreSQL Schema (what we are building)
-
-	Link Layers:
+What is Short Term Deliverable: PostgreSQL database with PCAP schema
+	- Link Layers Tables:
 		Ethernet
 		WiFI
-		PKTAP (Apple DLT_PKTAP) (software bus for multinic)
-		LINUX_SLL2 (Linux cooked v2) (software bus for multinic)
-	TCP/IP4 packets
+		Software Bus for Multi Interfaces
+			- PKTAP (Apple DLT_PKTAP)
+			- LINUX_SLL2 (Linux cooked v2)
+	- TCP/IP4 Packet Flow Tables:
 		Berkeley Network Data Structures (BSD)
 			TCP
 			IP
 			UDP
 			ARP
 			... etc
-	Application Protocol Conversations (Headers)
+	- Application Protocol Flow Conversations (Headers) in Payloads
 		HTTP
 		SMTP
 		LDAP
 
-Ingest:
-	Attachment (HTTP POST) via Web Gui Dashboard
-	Rest API via HTTP POST with Basic Authentification (curl)
-	Remote PCAP Daemon (rpcapd)
+	- rpcapd Tables (security issues)
+
+	- Ingest (below)
+
+Gateways/Ingest:
+	- Attachment (HTTP POST) via Web Gui Dashboard
+	- Rest API via HTTP POST with Basic Authentification (curl)
+	- Remote PCAP Daemon (rpcapd)
+
+Linksa
+	- CERT discuss indexing of pcap files
+	  https://youtu.be/LBEmH-BrO2Y?t=279
+
+	- 10gig dumpcap on linux
+	  https://osqa-ask.wireshark.org/questions/29265/10-gig-capture-dumpcap/
+
+	- PCAP Capture File Format
+	  https://tools.ietf.org/id/draft-gharris-opsawg-pcap-00.xml
+
+Note:
+	- integrate encryption certs to decode tcp payloads!

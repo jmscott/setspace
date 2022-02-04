@@ -4,7 +4,7 @@
  *  Usage:
  *	loop2json <file-path> >loop.json
  *  Note:
- *	Need to swapp bytes on int values returned by pcap_*() header routines.
+ *	Need to swap bytes on int values returned by pcap_*() header routines.
  *
  *	Code is NOT ready for UTF8.
  *
@@ -12,9 +12,7 @@
  *
  *		PKTAP (Apple DLT_PKTAP)
  *
- *	The -i any generates that link layer.
- *
- *	Does pcap_open_offline() accept stdin, instead of file path?
+ *	The "-i any" generates that link layer on mac.
  */
 #include <string.h>
 #include <stdio.h>
@@ -208,6 +206,7 @@ json_open(struct loop_invoke *lip, char *now)
 	if (!jp)
 		die("malloc(struct jmscott_json) failed");
 	lip->jp = jp;
+	pcap_t *pcp = lip->pcp;
 
 	char *template = "{						\n\
 	#  now timestamp						\n\
@@ -230,15 +229,19 @@ json_open(struct loop_invoke *lip, char *now)
 									\n\
 	#  version of libpcap						\n\
 	k:s,								\n\
+									\n\
+	#  datalink							\n\
+	k:i,								\n\
 ";
 	err = jmscott_json_write(lip->jp, template,
 		"now", now,
-		"is_swapped", pcap_is_swapped(lip->pcp),
+		"is_swapped", pcap_is_swapped(pcp),
 		"put_payload", 1,
-		"major_version", pcap_major_version(lip->pcp),
-		"minor_version", pcap_minor_version(lip->pcp),
-		"snapshot", pcap_snapshot(lip->pcp),
-		"lib_version", pcap_lib_version()
+		"major_version", pcap_major_version(pcp),
+		"minor_version", pcap_minor_version(pcp),
+		"snapshot", pcap_snapshot(pcp),
+		"lib_version", pcap_lib_version(),
+		"datalink", pcap_datalink(pcp)
 	);
 	if (err)
 		die2("jmscott_json_write(open {) failed", err);
