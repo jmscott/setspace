@@ -194,7 +194,15 @@ void pkt2json(
 	char *err;
 	char *template = "{						\n\
 	#  loop packet offset						\n\
+	k:i,								\n\
 									\n\
+	#  ts->ts_sec							\n\
+	k:i,								\n\
+									\n\
+	#  caplen: length of portion present				\n\
+	k:i,								\n\
+									\n\
+	#  len: length of this pkt (off wire)				\n\
 	k:i								\n\
 	#  struct pcap_pkthdr {						\n\
         #	struct timeval ts;      // time stamp			\n\
@@ -208,7 +216,11 @@ void pkt2json(
 	 *  link type.
 	 */
 	err = jmscott_json_write(lip->jp, template,
-		"loop_offset", pkt_count
+		"loop_offset", pkt_count,
+		"ts_tv_sec", header->ts.tv_sec,
+		"ts_tv_usec", header->ts.tv_usec,
+		"caplen", header->caplen,
+		"len", header->len
 	);
 	if (err)
 		die2("pkt2json(): jmscott_json_write() failed", err);
@@ -295,7 +307,7 @@ json_open(struct loop_invoke *lip, char *now)
 		"packets"
 	);
 	if (err)
-		die2("jmscott_json_write(open {) failed", err);
+		die2("json_open(): jmscott_json_write() ailed", err);
 }
 
 static void
