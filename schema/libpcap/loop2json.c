@@ -189,8 +189,31 @@ void pkt2json(
     const struct pcap_pkthdr *header,
     const u_char *packet
 ) {
-	pkt_count++;
+	struct loop_invoke *lip = (struct loop_invoke *)args;
 
+	char *err;
+	char *template = "{						\n\
+	#  loop packet offset						\n\
+									\n\
+	k:i								\n\
+	#  struct pcap_pkthdr {						\n\
+        #	struct timeval ts;      // time stamp			\n\
+        #	bpf_u_int32 caplen;     // length of portion present	\n\
+        #	bpf_u_int32 len;        // length of this pkt (off wire)\n\
+	#  };								\n\
+},";
+
+	/*
+	 *  Write out the generic pcap packet structure, regardless of
+	 *  link type.
+	 */
+	err = jmscott_json_write(lip->jp, template,
+		"loop_offset", pkt_count
+	);
+	if (err)
+		die2("pkt2json(): jmscott_json_write() failed", err);
+	pkt_count++;
+	
 	//  do we have an ethernet packet?
 	struct ether_header *eth_header;
 	eth_header = (struct ether_header *)packet;
@@ -212,7 +235,6 @@ void pkt2json(
 static void
 json_open(struct loop_invoke *lip, char *now)
 {
-fprintf(stderr, "WTF: json_open\n");
 	char *err;
 	struct jmscott_json *jp = jmscott_json_new();
 	if (!jp)
@@ -253,6 +275,9 @@ fprintf(stderr, "WTF: json_open\n");
 									\n\
 	#  datalink description						\n\
 	k:s,								\n\
+									\n\
+	#  start of array of packets						\n\
+	k:[								\n\
 ";
 	err = jmscott_json_write(lip->jp, template,
 		"now", now,
@@ -266,7 +291,8 @@ fprintf(stderr, "WTF: json_open\n");
 		"datalink_name",
 			pcap_datalink_val_to_name(pcap_datalink(pcp)),
 		"datalink_description",
-			pcap_datalink_val_to_description(pcap_datalink(pcp))
+			pcap_datalink_val_to_description(pcap_datalink(pcp)),
+		"packets"
 	);
 	if (err)
 		die2("jmscott_json_write(open {) failed", err);
@@ -277,6 +303,7 @@ json_close(struct loop_invoke *lp)
 {
 	char *err;
 	char *template = "						\n\
+	{}],								\n\
 									\n\
 	#  pkt_count							\n\
 	k:i,								\n\
