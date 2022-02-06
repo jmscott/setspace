@@ -6,8 +6,68 @@ my $parser = new MIME::Parser;
  
 ### Parse input:
 my $entity = $parser->parse(\*STDIN) or die "parse failed\n";
+
+sub escape_json
+{
+	my $s = $_[0];
+	$s =~ s/\n/\\n/g;
+	$s =~ s/\t/\\t/g;
+	$s =~ s/"/\\"/g;
+	$s =~ s/'/\\'/g;
+	#  Note: what is the posix pattern for "bell"!
+	#  $s =~ s/\b/\\b/g;
+	return $s;
+
+	#  Note: what is the posix pattern for "bell"!
+	return $s;
+}
+
+print <<END;
+{
+	"parsed":	true,
+END
+
 my $head     = $entity->head();
-print "WTF: ", $head->get('Subject'), "\n";
+my %tags = $head->tags();
+my $tags_count = scalar(%tags);
+
+print <<END;
+	"tags_count": $tags_count,
+END
+
+print <<END if $tags_count > 0;
+	"tags": {
+END
+
+#print Dumper(%tags);
+#exit;
+
+my $empty_header_count = 0;
+for my $key (%tags) {
+	my $s =~ s/'/\\'/g;
+
+	#  Note:  why do we see emtpy keys
+	unless ($key) {
+		$empty_header_count++;
+		next;
+	}
+	my $val = escape_json($head->get($key));
+	print <<END;
+		"$key": "$val",
+END
+}
+
+#  close the header array
+print <<END;
+		"null":null
+	},
+	"empty_header_count": $empty_header_count
+END
+
+#  close the entire json document
+print <<END;
+}
+END
 
 ### Take a look at the top-level entity (and any parts it has):
-$entity->dump_skeleton;
+#$entity->dump_skeleton;
