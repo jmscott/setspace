@@ -57,6 +57,17 @@ die2(char *msg1, char *msg2)
 	jmscott_die2(1, msg1, msg2);
 }
 
+#ifdef NO_COMPILE
+static short
+swap_short(pcap_t *pcp, int i)
+{
+	if (pcap_is_swapped(pcp))
+	     return ((u_short)(((((u_int)(i))&0xff)<<8) | \
+                ((((u_int)(i))&0xff00)>>8)));
+	return (unsigned short)i;
+}
+#endif
+
 static void
 ETHERTYPE_IP_cb(
     u_char *args,
@@ -167,6 +178,7 @@ ETHERTYPE_IP_cb(
 		fprintf(stderr, "Hex:\n%s\n", hex);
 	}
 }
+
 		
 /*
  *  Convert an arbitrary packet in pcap stream to json object.
@@ -200,8 +212,8 @@ void pkt2json(
 static void
 json_open(struct loop_invoke *lip, char *now)
 {
+fprintf(stderr, "WTF: json_open\n");
 	char *err;
-
 	struct jmscott_json *jp = jmscott_json_new();
 	if (!jp)
 		die("malloc(struct jmscott_json) failed");
@@ -212,10 +224,10 @@ json_open(struct loop_invoke *lip, char *now)
 	#  now timestamp						\n\
 	k:s,								\n\
 									\n\
-	#  put_payload: do we put the payloads				\n\
+	#  is_swapped:  is the endianess opposite of machine order?	\n\
 	k:b,								\n\
 									\n\
-	#  is_swapped:  is the endianess opposite of machine order?	\n\
+	#  put_payload: do we put the payloads				\n\
 	k:b,								\n\
 									\n\
 	#  pcap major version						\n\
@@ -232,6 +244,15 @@ json_open(struct loop_invoke *lip, char *now)
 									\n\
 	#  datalink							\n\
 	k:i,								\n\
+									\n\
+	#  datalink name						\n\
+	#								\n\
+	#  Note:							\n\
+	#	not checking for unknown datalink name			\n\
+	k:s,								\n\
+									\n\
+	#  datalink description						\n\
+	k:s,								\n\
 ";
 	err = jmscott_json_write(lip->jp, template,
 		"now", now,
@@ -241,7 +262,11 @@ json_open(struct loop_invoke *lip, char *now)
 		"minor_version", pcap_minor_version(pcp),
 		"snapshot", pcap_snapshot(pcp),
 		"lib_version", pcap_lib_version(),
-		"datalink", pcap_datalink(pcp)
+		"datalink", pcap_datalink(pcp),
+		"datalink_name",
+			pcap_datalink_val_to_name(pcap_datalink(pcp)),
+		"datalink_description",
+			pcap_datalink_val_to_description(pcap_datalink(pcp))
 	);
 	if (err)
 		die2("jmscott_json_write(open {) failed", err);
@@ -287,7 +312,6 @@ main(int argc, char **argv)
 	(void)argv;
 
 	char perr[PCAP_ERRBUF_SIZE], *err;
-	pcap_t *handle;
 	char now[36];		//  RFC3339Nano
 
 	if (argc != 1)
@@ -299,15 +323,15 @@ main(int argc, char **argv)
 	/*
 	 *  Create pcap handle reading from stdin.
 	 */
+	struct loop_invoke l;
 	perr[0] = 0;
-	handle = pcap_open_offline("-", perr);
+	l.pcp = pcap_open_offline("-", perr);
 	if (perr[0])
 		die2("pcap_open_offline(stdin) failed", perr);
 
-	struct loop_invoke l;
 	json_open(&l, now);
 
-	pcap_loop(handle, (int)2147483648, pkt2json, (u_char *)&l);
+	pcap_loop(l.pcp, (int)2147483648, pkt2json, (u_char *)&l);
 	
 	json_close(&l);
 
