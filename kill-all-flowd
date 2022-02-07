@@ -45,7 +45,7 @@ cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
 
 . etc/profile
 
-run-stat 								|
+run-stat-report								|
   cut -f1,2								|
   fgrep -wv 'DOWN'							|
   fgrep -wv 'OFF'							|
