@@ -12,7 +12,11 @@ PROG=$(basename $0)
 
 log()
 {
-	echo "$(date +'%Y/%m/%d %H:%M:%S'): $PROG: $@"
+	if [ -n "$FLOW" ];  then
+		echo "$(date +'%Y/%m/%d %H:%M:%S'): $PROG: $FLOW: $@"
+	else
+		echo "$(date +'%Y/%m/%d %H:%M:%S'): $PROG: $@"
+	fi
 }
 
 die()
