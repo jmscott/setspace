@@ -1,5 +1,4 @@
 use MIME::Parser;
-use Data::Dumper;
  
 ### Create parser, and set some parsing options:
 my $parser = new MIME::Parser;
@@ -10,15 +9,13 @@ my $entity = $parser->parse(\*STDIN) or die "parse failed\n";
 sub escape_json
 {
 	my $s = $_[0];
+
 	$s =~ s/\n/\\n/g;
 	$s =~ s/\t/\\t/g;
+	$s =~ s/\f/\\f/g;
+	$s =~ s/\x08/\\b/g;		# backspace
 	$s =~ s/"/\\"/g;
 	$s =~ s/'/\\'/g;
-	#  Note: what is the posix pattern for "bell"!
-	#  $s =~ s/\b/\\b/g;
-	return $s;
-
-	#  Note: what is the posix pattern for "bell"!
 	return $s;
 }
 
@@ -38,9 +35,6 @@ END
 print <<END if $tags_count > 0;
 	"tags": {
 END
-
-#print Dumper(%tags);
-#exit;
 
 my $empty_header_count = 0;
 for my $key (%tags) {
