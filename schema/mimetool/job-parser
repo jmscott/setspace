@@ -1,0 +1,83 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Parse a mail mime blob into a json document, recoding job in second json
+#  Usage:
+#	job-parser <mime mail blob>
+#  Exit Status:
+#	0	job ran ok, json blobs saves
+#	1	mime blob does not exist
+#	2	job-parser already run on this mime blob
+#	4	unexpected error
+#  See:
+#	mimetool/lib/parser-stdin.pl
+#
+PROG=$(basename $0)
+WORK_DIR=${TMPDIR:/tmp}/$PROG.$$.d
+
+now()
+{
+	date +'%Y/%m/%d %H:%M:%S'
+}
+
+log()
+{
+	echo "$(now): $PROG: $@"
+}
+
+ERROR()
+{
+	fault $@
+	log "ERROR: $@" >&2
+}
+
+#  Write a single line error to file run/$PROG.fault
+fault()
+{
+	NOW=$(now)
+	MSG="$@"
+	ERROR "$NOW: fault: $MSG"
+	RUN=run/$PROG
+	if [ ! -d $RUN ];  then
+		ERROR "no fault dir: $RUN" 
+		return
+	fi
+	echo "$NOW: $MSG" >>$RUN/$PROG.fault
+}
+
+leave()
+{
+	rm -rf $WORK_DIR || ERROR "rm work dir failed: exit status=$?"
+}
+trap leave EXIT
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&2
+	exit 4;
+}
+
+test $# = 1 || die "wrong number of arguments: got $#, expected 1"
+test -n "$BLOBIO_SERVICE" || die 'env var not defined: BLOBIO_SERVICE'
+
+MIME_BLOB=$1
+
+mkdir $WORK_DIR || die "mkdir work dir failed: exist status=$?"
+cd $WORK_DIR | die "cd work dir failed: exit status=$?"
+
+#  fetch the blob
+blobio get 								\
+	--udig $MIME_BLOB						\
+	--output-path MIME_BLOB						\
+	--service "$BLOBIO_SERVICE"
+EXIT_STATUS=$?
+case $EXIT_STATUS in
+0)
+	;;
+1)
+	exit 1;
+	;;
+*)
+	die "blobio get failed: exit status=$?"
+	;;
+esac
