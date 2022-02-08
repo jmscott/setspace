@@ -13,6 +13,7 @@ sub escape_json
 	$s =~ s/\n/\\n/g;
 	$s =~ s/\t/\\t/g;
 	$s =~ s/\f/\\f/g;
+	$s =~ s/\r/\\r/g;
 	$s =~ s/\x08/\\b/g;		# backspace
 	$s =~ s/"/\\"/g;
 	$s =~ s/'/\\'/g;
