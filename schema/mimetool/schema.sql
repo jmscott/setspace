@@ -17,13 +17,30 @@ BEGIN TRANSACTION;
 
 DROP TABLE IF EXISTS parser;
 CREATE TABLE parser (
-	blob	udig
-			PRIMARY KEY,
-	parsed	bool
-			NOT NULL
+	blob		udig
+				PRIMARY KEY,
+	parsed		bool
+				NOT NULL,
+	tags_count	bigint CHECK (
+				tags_count >= 0
+			),
+	CONSTRAINT check_tags CHECK (
+		(
+			parsed IS TRUE
+			AND
+			tags_count IS NOT NULL
+		) OR (
+			parsed IS FALSE
+			AND
+			tags_count IS NULL
+		)
+	)
 );
 COMMENT ON TABLE parser IS
-  'Status of output of perl MIME::Tool->parser' 
+  'Status of output of perl MIME::Tool->parser()' 
+;
+COMMENT ON COLUMN parser.blob IS
+  'Blob of single email mime message parsed by perl Mime::Parser->parser()'
 ;
 
 END TRANSACTION;
