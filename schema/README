@@ -232,7 +232,11 @@ Possible Schemas:
 		investigate possible schema for id.me 
 	pcapyaf - yet another flowmeter (pcap)
 		https://tools.netsa.cert.org/yaf/yaf.html
-
 	silk - System for Internet-Level Knowledge, network traffic analyzers
 		https://tools.netsa.cert.org/silk/index.html
 		https://youtu.be/LBEmH-BrO2Y?t=279
+
+	scihub - has links to many other scientific dbs online
+		https://sci-hub.ru/database
+	cjson - lightweight c parser of json
+		https://github.com/DaveGamble/cJSON
