@@ -4,9 +4,9 @@
 #	Convert a single message mail box file (elm) to json
 #  Usage:
 #	bio-cat btc20:d8317137cd727149c5a44b8b0b093246899d100b | eml2json
+#  Note:
+#	$p->readSeparator() returns empty.  not sure why.
 #
-use Mail::Box::Parser;
-
 sub escape_json
 {
         my $s = $_[0];
@@ -20,6 +20,15 @@ sub escape_json
         $s =~ s/'/\\'/g;
         return $s;
 }
+my $ARGC=scalar(@ARGV);
+$ARGC == 1 || die "wrong argument count: got $ARGC, expected 1";
+my $BLOB = escape_json($ARGV[0]);
+die "blob not udig: $BLOB" unless
+  $BLOB =~ /^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$/
+; 
+
+use Mail::Box::Parser;
+
 
 my $p = Mail::Box::Parser->new(
 	file => \*STDIN,
@@ -28,9 +37,15 @@ my $p = Mail::Box::Parser->new(
 my ($where, @header)  = $p->readHeader();
 my $header_count = scalar(@header);
 
+my $default_parser_type = escape_json($p->defaultParserType());
+#my ($location, $line_number) = escape_json($p->readSeparator());
+
 print <<END;
 {
+	"eml_blob": "$BLOB",
 	"where": $where,
+	"default_parser_type": "$default_parser_type",
+
 	"header_count": $header_count,
 	"header": [
 END
