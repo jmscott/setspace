@@ -7,6 +7,8 @@
 #  Note:
 #	$p->readSeparator() returns empty.  not sure why.
 #
+use Mail::Box::Parser;
+
 sub escape_json
 {
         my $s = $_[0];
@@ -26,9 +28,6 @@ my $BLOB = escape_json($ARGV[0]);
 die "blob not udig: $BLOB" unless
   $BLOB =~ /^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$/
 ; 
-
-use Mail::Box::Parser;
-
 
 my $p = Mail::Box::Parser->new(
 	file => \*STDIN,
