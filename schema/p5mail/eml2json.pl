@@ -54,7 +54,11 @@ for (my $i = 0;  $i < $header_count;  $i++) {
 	my $h = $header[$i];
 	my $f = escape_json($h->[0]);
 	my $v = escape_json($h->[1]);
-	print "\t\t\t", '["', $f, '", "', $v, '"]';
+	print qq(
+			["$f",
+			 "$v",
+			 	$i
+			]);
 	print ',' if $i + 1 < $header_count;
 	print "\n";
 }
