@@ -49,8 +49,8 @@ CREATE TABLE box_parser_readHeader
 (
 	blob		udig
 				REFERENCES box_parser(blob),
-	mime_order	bigint CHECK (
-				mime_order >= 0	
+	eml_order	bigint CHECK (
+				eml_order >= 0	
 			),
 	field		text CHECK (
 				length(field) < 256
@@ -64,7 +64,7 @@ CREATE TABLE box_parser_readHeader
 				length(value) < 4096
 			) NOT NULL,
 
-	PRIMARY KEY	(blob, mime_order)
+	PRIMARY KEY	(blob, eml_order)
 );
 CREATE INDEX box_parser_readHeader_fld_idx ON
   box_parser_readHeader(blob, field)
