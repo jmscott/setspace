@@ -1,0 +1,30 @@
+#
+#  Synopsis:
+#	Configuration file read by make-dist to build tar files.
+#  See:
+#	https://github.com/jmscott/work/blob/master/make-dist
+#  Note:
+#	For a GNU Makefile to extract the shell variables defined in this
+#	dist file, include the following line in Makefile:
+#
+#		BINs := $(shell (. ./root.dist && echo $$BINs))
+#		SBINs := $(shell (. ./root.dist && echo $$SBINs))
+#		LIBs := $(shell (. ./root.dist && echo $$LIBs))
+#		HTDOCs := $(shell (. ./root.dist && echo $$HTDOCs))
+#		CGIBINs := $(shell (. ./root.dist && echo $$CGIBINs))
+#
+
+#  Define PRODUCT to change name of tar file from $(basename $(pwd))
+#  to, say, foobar-YYYYMMDD_hhmmss.tar.bz2
+
+LIBs="
+	psqlrc.example
+	schema.sql
+"
+SBINs="
+	eml_header2json
+"
+ETC="
+"
+RUN="
+"
