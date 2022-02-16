@@ -10,6 +10,10 @@ LIBs := $(shell (. $(DIST) && echo $$LIBs))
 
 install:
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)	 		\
+			-m=u=rwx,go= -d $(P5MAIL_PREFIX)/run
+	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)	 		\
+			-m=u=rwx,go= -d $(P5MAIL_PREFIX)/etc
+	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)	 		\
 			-m=u=rwx,g=rx,o= -d $(P5MAIL_PREFIX)/lib
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)	 		\
 			-m=u=rwx,go= -d $(P5MAIL_PREFIX)/sbin

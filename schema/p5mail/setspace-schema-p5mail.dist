@@ -18,6 +18,7 @@
 #  to, say, foobar-YYYYMMDD_hhmmss.tar.bz2
 
 LIBs="
+	merge-eml_header2json.sql
 	psqlrc.example
 	schema.sql
 "

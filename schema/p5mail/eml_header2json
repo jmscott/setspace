@@ -39,8 +39,13 @@ my $header_count = scalar(@header);
 my $default_parser_type = escape_json($p->defaultParserType());
 #my ($location, $line_number) = escape_json($p->readSeparator());
 
+my $now = `RFC3339Nano`;
+die "unknown RFC3339Nano: $now" unless $now =~ /^\d\d\d\d-\d\d-\d\dT/;
+chomp $now;
+
 print <<END;
 {
+	"now": "$now",
 	"eml_blob": "$BLOB",
 	"where": $where,
 	"default_parser_type": "$default_parser_type",
