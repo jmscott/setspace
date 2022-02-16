@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #
 #  Synopsis:
-#	Automade script /cgi-bin/schema/pdfbox, made by cgi2perl5.
+#	Auto-made script /cgi-bin/schema/pdfbox, made by cgi2perl5.
 #  Source Path:
 #	pdfbox.cgi
 #  Source SHA1 Digest:
