@@ -35,6 +35,7 @@ END
 my $r = dbi_pg_select(
 		db =>	dbi_pg_connect(),
 		tag =>	'setcore-select-span-stat',
+		argv=>	[],
 		sql => <<END
 SELECT
 	count(*) AS blob_count
