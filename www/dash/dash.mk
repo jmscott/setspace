@@ -17,7 +17,7 @@ endif
 #  Note:
 #	Rarely override:  for example, pgtalk.setspace.com
 #
-DASH_DNS_VHOST_PREFIX?=dash.setspace
+DASH_DNS_VHOST_PREFIX=dash.setspace
 
 DASH_DNS_VHOST=$(DASH_DNS_VHOST_PREFIX).$(DASH_DNS_VHOST_SUFFIX)
 
