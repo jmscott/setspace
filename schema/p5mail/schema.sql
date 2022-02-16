@@ -12,6 +12,7 @@ CREATE SCHEMA p5mail;
 COMMENT ON SCHEMA p5mail IS
   'Schema for famous perl5 Mail::Box packages'
 ;
+SET search_path TO p5mail,public;
 
 DROP TABLE IF EXISTS eml_header2json CASCADE;
 CREATE TABLE eml_header2json (

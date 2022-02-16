@@ -5,21 +5,28 @@
  *	JSON=
  *	psql -f merge-eml_header2json.sql blob=
  */
+\set ON_ERROR_STOP 1
+SET search_path TO p5mail,jsonorg,public;
 
 SELECT
-	count(*)
+	count(j.blob)
   FROM
-  	jsonorg.jsonb_255
+  	jsonb_255 j
+	  LEFT OUTER JOIN eml_header2json e ON (
+	  	e.json_blob = j.blob
+	  )
   WHERE
-  	doc->>'eml_blob' ~ '^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$'
+  	e.json_blob IS NULL
 	AND
-	doc->>'now' ~ '^\d\d\d\d-\d\d-\d\dT'
+  	j.doc->>'eml_blob' ~ '^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$'
 	AND
-	doc->>'default_parser_type' ~ '^Mail::Box::Parser::'
+	j.doc->>'now' ~ '^\d\d\d\d-\d\d-\d\dT'
 	AND
-	(doc->>'header_count')::bigint > 0
+	j.doc->>'default_parser_type' ~ '^Mail::Box::Parser::'
 	AND
-	doc->'header' IS NOT NULL
+	(j.doc->>'header_count')::bigint > 0
 	AND
-	doc->'where' IS NOT NULL
+	j.doc->'header' IS NOT NULL
+	AND
+	j.doc->'where' IS NOT NULL
 ;
