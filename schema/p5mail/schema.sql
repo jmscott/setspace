@@ -16,7 +16,7 @@ SET search_path TO p5mail,public;
 
 DROP TABLE IF EXISTS eml_header2json CASCADE;
 CREATE TABLE eml_header2json (
-	elm_blob	udig
+	eml_blob	udig
 				PRIMARY KEY
 				REFERENCES setcore.service(blob),
 	json_blob	udig	REFERENCES jsonorg.jsonb_255(blob)
@@ -24,7 +24,7 @@ CREATE TABLE eml_header2json (
 
 	UNIQUE (json_blob)
 );
-CREATE INDEX eml_header2json_hash ON eml_header2json USING hash(elm_blob);
+CREATE INDEX eml_header2json_hash ON eml_header2json USING hash(eml_blob);
 COMMENT ON TABLE eml_header2json IS
   'JSON Output of schema sbin/eml_header2json.pl'
 ;
@@ -70,5 +70,6 @@ CREATE TABLE box_parser_readHeader
 CREATE INDEX box_parser_readHeader_fld_idx ON
   box_parser_readHeader(blob, field)
 ; 
+
 
 END TRANSACTION;

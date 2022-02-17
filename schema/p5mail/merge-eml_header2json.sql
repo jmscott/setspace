@@ -8,8 +8,12 @@
 \set ON_ERROR_STOP 1
 SET search_path TO p5mail,jsonorg,public;
 
-SELECT
-	count(j.blob)
+BEGIN;
+
+CREATE TEMP VIEW rummy AS
+  SELECT
+	j.blob AS json_blob,
+	j.doc
   FROM
   	jsonb_255 j
 	  LEFT OUTER JOIN eml_header2json e ON (
@@ -29,4 +33,16 @@ SELECT
 	j.doc->'header' IS NOT NULL
 	AND
 	j.doc->'where' IS NOT NULL
+;
+
+\x
+
+INSERT INTO eml_header2json(
+	eml_blob,
+	json_blob
+ ) SELECT
+ 	(doc->>'eml_blob')::udig AS eml_blob,
+	json_blob
+    FROM
+    	rummy
 ;
