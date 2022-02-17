@@ -10,7 +10,7 @@
 set search_path TO setcore,public;
 
 SELECT
-	DISTINCT s.blob
+	s.blob
   FROM
   	setcore.service s
 	  LEFT OUTER JOIN byte_count bc ON (bc.blob = s.blob)
