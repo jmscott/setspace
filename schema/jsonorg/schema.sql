@@ -54,6 +54,8 @@ COMMENT ON TABLE jsonb_255 IS
   'A queryable, jsonb internal version of the blob in table checker_255' 
 ;
 CREATE INDEX idx_jsonb_255 ON jsonb_255 USING hash(blob);
+CREATE INDEX jsonb_255_idx ON jsonb_255 USING GIN (doc);
+CREATE INDEX jsonb_255_idxp ON jsonb_255 USING GIN (doc jsonb_path_ops);
 
 DROP FUNCTION IF EXISTS check_jsonability();
 CREATE OR REPLACE FUNCTION check_jsonability() RETURNS TRIGGER
