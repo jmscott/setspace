@@ -4,14 +4,16 @@
 #  See:
 #	schema.sql
 #  Note:
-#	How do we know the output of file will always be UTF8?
+#	How to refresh materialied views from flow instead of cron?
+#	If no blobs hit flowd then no need to refresh view, so a cronjob
+#	is wasting resources.  Maybe add function unix_epoch() which
+#	does something like
 #
-#	Must point to version 5 of file built from github.
+#		call refresh_view
+#			when unix_epoch() % 60 == 0
+#		;
 #
-#		https://github.com/file/file
-#
-#	The version must also use only the magic files in github distro.
-#
+#	How do we know the output of "file" will always be UTF8?
 #
 
 boot
