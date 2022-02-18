@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Fine Free File Command Schema</title>
+  <meta charset="UTF-8" />
+  <link
+    href="/screen.css"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <style> /* <![CDATA[ */
+  /*
+   *  Note:
+   *	Need to generalize into css class .schema!
+   */
+  #content h3, #content h4
+  {
+  	text-align:		left;
+  }
+  #content h4
+  {
+  	font-size:		smaller;
+  }
+  #content dl
+  {
+  	margin-left:		2em;
+  }
+
+  #content dl dt
+  {
+  	font-family: monospace;
+  }
+  /*]]>*/ </style>
+ </head>
+
+ <body>
+  <div id="container">
+   <!--#include virtual="/header.shtml" -->
+   <!--#include virtual="/schema/fffile5/nav.shtml" -->
+   <div id="content">
+    <h2>SQL Objects in Schema <code>fffile5</code></h2>
+    <h3><a href= "http://www.darwinsys.com/file">Fine Free File</a></h3>
+
+    <h3>Tables</h3>
+    <dl>
+     <dt><code>file</code></dt>
+     <dd>
+       Output of <code>file --brief</code>.
+       <h4>Columns</h4>
+       <dl>
+        <dt>blob</dt>
+	<dd>The blob analyzed by <code>file --brief</code> command</dd>
+
+	<dt>file_type</dt>
+	<dd>The magic type of the file</dd>
+       </dl>
+     </dd>
+
+     <dt><code>file_mime_type</code></dt>
+     <dd>
+       Output of <code>file --mime-type --brief</code>.
+
+       <h4>Columns</h4>
+       <dl>
+        <dt>blob</dt>
+	<dd>
+	  The blob analyzed by <code>file --mime-type --brief</code> command
+	</dd>
+	<dt>mime_type</dt>
+       </dl>
+     </dd>
+
+     <dt><code>file_mime_encoding</code></dt>
+     <dd>
+       Output of <code>file --mime-encoding --brief</code>.
+
+       <h4>Columns</h4>
+       <dl>
+        <dt>blob</dt>
+	<dd>
+	  The blob analyzed by <code>file --mime-encoding --brief</code>
+	  command
+	</dd>
+	<dt>mime_encoding</dt>
+       </dl>
+     </dd>
+
+     <dt><code>fault</code></dt>
+     <dd>
+       Track rare failures in all file commands, to prevent looping.
+       <h4>Columns</h4>
+       <dl>
+        <dt>blob</dt>
+	<dd>Offending blob</dd>
+        <dt>command_name</dt>
+        <dt>exit_status</dt>
+        <dt>insert_time</dt>
+       </dl>
+     </dd>
+
+    </dl>
+
+   </div>
+   <!--#include virtual="/footer.shtml" -->
+  </div>
+ </body>
+</html>

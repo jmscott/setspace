@@ -20,12 +20,14 @@ endif
 all: stats stats.d/help.pl
 	cd setcore && $(MAKE) $(MFLAGS) all
 	cd mycore && $(MAKE) $(MFLAGS) all
+	cd fffile5 && $(MAKE) $(MFLAGS) all
 	cd jsonorg && $(MAKE) $(MFLAGS) all
 	cd pdfbox && $(MAKE) $(MFLAGS) all
 clean:
 	rm -f stats stats.d/help.pl
 	cd setcore && $(MAKE) $(MFLAGS) clean
 	cd mycore && $(MAKE) $(MFLAGS) clean
+	cd fffile5 && $(MAKE) $(MFLAGS) clean
 	cd jsonorg && $(MAKE) $(MFLAGS) clean
 	cd pdfbox && $(MAKE) $(MFLAGS) clean
 
@@ -56,6 +58,7 @@ install: all
 
 	cd setcore && $(MAKE) $(MFLAGS) install
 	cd mycore && $(MAKE) $(MFLAGS) install
+	cd fffile5 && $(MAKE) $(MFLAGS) install
 	cd jsonorg && $(MAKE) $(MFLAGS) install
 	cd pdfbox && $(MAKE) $(MFLAGS) install
 

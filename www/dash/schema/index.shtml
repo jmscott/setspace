@@ -7,13 +7,27 @@
 -->
 <html>
  <head>
-  <title>SQL Schema</title>
+  <title>PostgreSQL Schemas</title>
   <meta charset="UTF-8" />
   <link
     href="/screen.css"
     rel="stylesheet"
     type="text/css"
   />
+  <style>
+  /* <![CDATA[ */
+
+  #content > h1
+  {
+  	text-align:	center;
+  }
+  dt > code, dt > a > code
+  {
+  	font-size:	larger;
+  }
+
+  /* ]]> */
+  */ </style>
  </head>
 
  <body>
@@ -21,7 +35,8 @@
    <!--#include virtual="/header.shtml" -->
    <!--#include virtual="/schema/nav.shtml" -->
    <div id="content">
-    <h2>SQL Schemas</h2>
+    <h1>PostgreSQL Schemas</h1>
+    <h2>Automatically Populated</h2>
     <dl>
      <dt><a href="/schema/pdfbox"><code>pdfbox</code></a></dt>
      <dd><a href="http://pdfbox.apache.org">Apache PDFBox - Version 2</a></dd>
@@ -32,7 +47,7 @@
        <a href="https://json.org">json.org</a>
      </dd>
      
-     <dt><code>fffile5</code></dt>
+     <dt><a href="/schema/fffile5"><code>fffile5</code></a></dt>
      <dd>Famous
       <a href="http://www.darwinsys.com/file/">Fine Free File Command</a>, v5,
       in almost all Linux and BSD distributions.
@@ -48,7 +63,7 @@
      <dd><a href="http://xmlsoft.org/">XMLSoft Library</a></dd>
 
      <dt><code>exiftool</code></dt>
-     <dd><a href="https://exiftool.org/">ExifTool v11 by Phil Harvey</a></dd>
+     <dd><a href="https://exiftool.org/">ExifTool v12 by Phil Harvey</a></dd>
 
      <dt><a href="/schema/mycore"><code>mycore</code></a></dt>
      <dd>
