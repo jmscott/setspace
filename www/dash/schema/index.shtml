@@ -47,10 +47,8 @@
      <dt><code>libxml2</code></dt>
      <dd><a href="http://xmlsoft.org/">XMLSoft Library</a></dd>
 
-     <dt>exiftool</dt>
-     <dd>
-      <a href="https://exiftool.org/">ExifTool v11 by Phil Harvey</a>
-     </dd>
+     <dt><code>exiftool</code></dt>
+     <dd><a href="https://exiftool.org/">ExifTool v11 by Phil Harvey</a></dd>
 
      <dt><a href="/schema/mycore"><code>mycore</code></a></dt>
      <dd>
