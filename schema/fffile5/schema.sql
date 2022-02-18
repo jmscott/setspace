@@ -105,4 +105,88 @@ COMMENT ON TABLE fault IS
   'Track failures in file commands'
 ;
 
+DROP MATERIALIZED VIEW IF EXISTS file_stat CASCADE;
+CREATE MATERIALIZED VIEW file_stat (
+	file_type,
+	blob_count
+) AS
+  SELECT
+  	file_type,
+	count(*)
+    FROM
+    	file
+    GROUP BY
+    	file_type
+  WITH DATA
+;
+COMMENT ON MATERIALIZED VIEW file_stat IS
+  'Statistics on blob counts per file type'
+;
+CREATE UNIQUE INDEX file_stat_ft
+  ON file_stat (file_type)
+;
+ANALYZE file_stat;
+
+DROP MATERIALIZED VIEW IF EXISTS file_mime_type_stat CASCADE;
+CREATE MATERIALIZED VIEW file_mime_type_stat (
+	mime_type,
+	blob_count
+) AS
+  SELECT
+  	mime_type,
+	count(*)
+    FROM
+    	file_mime_type
+    GROUP BY
+    	mime_type
+  WITH DATA
+;
+COMMENT ON MATERIALIZED VIEW file_mime_type_stat IS
+  'Statistics on blob counts per mime type'
+;
+CREATE UNIQUE INDEX file_mime_type_stat_ft
+  ON file_mime_type_stat (mime_type)
+;
+ANALYZE file_mime_type_stat;
+
+DROP MATERIALIZED VIEW IF EXISTS file_mime_encoding_stat CASCADE;
+CREATE MATERIALIZED VIEW file_mime_encoding_stat (
+	mime_encoding,
+	blob_count
+) AS
+  SELECT
+  	mime_encoding,
+	count(*)
+    FROM
+    	file_mime_encoding
+    GROUP BY
+    	mime_encoding
+  WITH DATA
+;
+COMMENT ON MATERIALIZED VIEW file_mime_encoding_stat IS
+  'Statistics on blob counts per mime type'
+;
+CREATE UNIQUE INDEX file_mime_encoding_stat_ft
+  ON file_mime_encoding_stat (mime_encoding)
+;
+ANALYZE file_mime_encoding_stat;
+
+DROP FUNCTION IF EXISTS refresh_stat();
+CREATE OR REPLACE FUNCTION refresh_stat() RETURNS void
+  AS $$
+  BEGIN
+  	REFRESH MATERIALIZED VIEW CONCURRENTLY file_stat;
+  	REFRESH MATERIALIZED VIEW CONCURRENTLY file_mime_type_stat;
+  	REFRESH MATERIALIZED VIEW CONCURRENTLY file_mime_encoding_stat;
+
+	ANALYZE file_stat;
+	ANALYZE file_mime_type_stat;
+	ANALYZE file_mime_encoding_stat;
+  END $$
+  LANGUAGE plpgsql
+;
+COMMENT ON FUNCTION refresh_stat IS
+  'Concurrently Refresh and Analyze All Materialied *_stat Views in fffile5'
+;
+
 COMMIT;
