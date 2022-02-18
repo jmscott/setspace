@@ -22,22 +22,48 @@
    <!--#include virtual="/schema/nav.shtml" -->
    <div id="content">
     <h2>SQL Schemas</h2>
-    <ul>
-     <li><a href="pdfbox">PDF Box from Apache</a></li>
-     <li>
-      <a href="jsonorg">JSON Checker from json.org</a>
-     </li>
-     <li>Fast Free File Command</li>
-     <li>XML Expat2 Library</li>
-     <li>libXML2 from xmlsoft.org</li>
-     <li>ExifTool v11 by Phil Harvey</li>
-     <li>
-      <a href="mycore">My Core Blobs</a>
-     </li>
-     <li>
-      <a href="setcore">SetSpace Core Blobs</a>
-     </li>
-    </ul>
+    <dl>
+     <dt><a href="/schema/pdfbox"><code>pdfbox</code></a></dt>
+     <dd><a href="http://pdfbox.apache.org">Apache PDFBox - Version 2</a></dd>
+
+     <dt><a href="/schema/jsonorg"><code>jsonorg</code></a></dt>
+     <dd>
+       C Language JSON Checker from
+       <a href="https://json.org">json.org</a>
+     </dd>
+     
+     <dt><code>fffile5</code></dt>
+     <dd>Famous
+      <a href="http://www.darwinsys.com/file/">Fine Free File Command</a>, v5,
+      in almost all Linux and BSD distributions.
+     </dd>
+
+     <dt><code>expat2</code></dt>
+     <dd>
+      <a href="https://libexpat.github.io/">XML Expat Library</a>,
+        by James Clark, v2.
+     </dd>
+
+     <dt><code>libxml2</code></dt>
+     <dd><a href="http://xmlsoft.org/">XMLSoft Library</a></dd>
+
+     <dt>exiftool</dt>
+     <dd>
+      <a href="https://exiftool.org/">ExifTool v11 by Phil Harvey</a>
+     </dd>
+
+     <dt><a href="/schema/mycore"><code>mycore</code></a></dt>
+     <dd>
+       The <code>mycore</code> schema stores blobs expliclity associated
+       with a setspace account permitted setSpace dash board,
+       the REST API and setspace internet gateways.
+     </dd>
+
+     <dt><a href="/schema/setcore"><code>setcore</code></a></dt>
+     <dd>
+      All Blobs Managed by SetSpace
+     </dd>
+    </dl>
    </div>
    <!--#include virtual="/footer.shtml" -->
   </div>
