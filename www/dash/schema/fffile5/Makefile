@@ -19,7 +19,8 @@ install: all
 	install fffile5 $(WWW_PREFIX)/cgi-bin/schema
 
 	install								\
-		fffile5.d/select.pl					\
+		fffile5.d/post.mt.pl					\
+		fffile5.d/select.mt.pl					\
 		fffile5.d/help.pl					\
 		$(WWW_PREFIX)/lib/schema/fffile5.d
 	install								\

@@ -35,8 +35,20 @@ print <<'END';
     <div class="handlers">
     <h3>Output Scripts in <code>$SERVER_ROOT/lib/schema/fffile5.d</code></h3>
     <dl>
-     <dt>select</dt>
+     <dt>select.mt</dt>
      <dd>
+<div class="query-args">
+ <h4>Query Args</h4>
+ <dl>
+  <dt>mt</dt>
+  <dd>
+   <ul>
+    <li><code>perl5_re:</code> .*</li>
+    <li><code>required:</code> no</li>
+   </ul>
+  </dd>
+  </dl>
+</div>
      </dd>
   </dl>
  </div>

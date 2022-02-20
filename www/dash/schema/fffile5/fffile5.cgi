@@ -13,8 +13,30 @@
   </examples>
   <out content-type="text/html">
 
-   <putter name="select"></putter>
+   <putter name="select.mt">
+    <query-args>
+     <arg
+       name="mt"
+       perl5_re=".*"
+       required="no"
+     />
+    </query-args>
+   </putter>
   </out>
  </GET>
+ <POST>
+  <in>
+   <putter name="post.mt">
+    <title>POST a search for blobs by mime type</title>
+    <vars>
+     <var
+       name="mt"
+       perl5_re=".*"
+       required="yes"
+     />
+    </vars>
+   </putter>
+  </in>
+ </POST>
 
 </cgi>

@@ -15,8 +15,27 @@
    <!--#include virtual="/header.shtml" -->
    <!--#include virtual="/nav.shtml" -->
    <div id="content">
-    <h2>Secondary Header - EDIT ME</h2>
-    <!--#include virtual="/cgi-bin/schema/fffile5?out=select" -->
+    <h2>Search by File Mime Type</h2>
+    <form
+      action="/cgi-bin/schema/fffile5"
+      name="find-fffile5"
+      method="POST"
+    >
+     <input
+       name="in"
+       type="hidden"
+       value="post.mt"
+     />
+     <!--#include
+       virtual="/cgi-bin/schema/fffile5?out=select.mt&amp;${QUERY_STRING}"
+       -->
+     <noscript>
+      <input
+        type="submit"
+	value="Find Blobs"
+      />
+     </noscript>
+    </form>
    </div>
    <!--#include virtual="/footer.shtml" -->
   </div>

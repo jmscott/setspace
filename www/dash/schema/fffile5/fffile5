@@ -41,19 +41,44 @@ $CGI{GET}->{out}->{'query-args'}->{arg}->{class} = {
 #  'out' query argument must match one of the out putter names.
 #
 $CGI{GET}->{out}->{'query-args'}->{arg}->{out} = {
-	perl5_re	=> 	'select|help',
+	perl5_re	=> 	'(?:select[.]mt)|help',
 	default		=>	'help',
 };
 #
-#  BEGIN: /cgi/GET/out/putter[@name='select']
+#  BEGIN: /cgi/GET/out/putter[@name='select.mt']
 #
-$CGI{GET}->{out}->{putter}->{'select'}->{name} = 'select';
+$CGI{GET}->{out}->{putter}->{'select.mt'}->{name} = 'select.mt';
 
 #
-#  BEGIN: /cgi/GET/out/putter[@name=select]/query-args
+#  BEGIN: /cgi/GET/out/putter[@name=select.mt]/query-args
 #
+$CGI{GET}->{out}->{putter}->{'select.mt'}->{'query-args'}->{arg}->{mt} = {
+	perl5_re	=>	'.*',
+	required	=>	'no',
+};
 #
-#  END: /cgi/GET/out/putter[@name='select']
+#  END: /cgi/GET/out/putter[@name=select.mt]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='select.mt']
+#
+
+
+#
+#  BEGIN: /cgi/POST/in/putter[@name='post.mt']
+#
+$CGI{POST}->{in}->{putter}->{'post.mt'}->{name} = 'post.mt';
+$CGI{POST}->{in}->{putter}->{'post.mt'}->{vars}->{var}->{mt} = {
+	perl5_re	=>	'.*',
+	required	=>	'yes',
+};
+#
+#  END: /cgi/POST/in/putter[@name=post.mt]/vars
+#
+
+#
+#  END: /cgi/POST/in/putter[@name='post.mt']
 #
 
 $CGI{GET}->{out}->{putter}->{help}->{name} = 'help';
