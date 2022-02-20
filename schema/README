@@ -33,6 +33,8 @@ See:
 	https://github.com/openpreserve
 
 Possible Schemas:
+	imagick tools:
+		http://www.fmwconcepts.com/imagemagick/index.php
 	newscatcher - scrape news (based upon zyte?)
 		https://newscatcherapi.com/news-api
 	zyte - commercial web scraping
