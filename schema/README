@@ -33,8 +33,35 @@ See:
 	https://github.com/openpreserve
 
 Possible Schemas:
-	imagick tools:
+	grafika (image processing for php)
+		https://kosinix.github.io/grafika/
+		has hamming distance between images
+	PhotoStructure: 
+		https://photostructure.com/
+	imagededup - image deduplication
+		https://idealo.github.io/imagededup/
+	https://photostructure.com/
+	fred's imagick tools:
 		http://www.fmwconcepts.com/imagemagick/index.php
+		https://news.ycombinator.com/item?id=30380861
+		https://news.ycombinator.com/item?id=16668254
+		https://news.ycombinator.com/item?id=8912591
+
+	GraphicsMagick (imagick fork)
+		http://www.graphicsmagick.org/
+		https://stackoverflow.com/questions/862051/
+			what-is-the-difference-between-imagemagick-
+			and-graphicsmagick/56220630#56220630
+	rasterio (image processing)
+		https://rasterio.readthedocs.io/en/latest/
+		best installed using Conda because you need a few
+		tricky dependencies like GDAL
+		https://gis.stackexchange.com/questions/306861/
+			split-geotiff-into-multiple-cells-with-rasterio
+	OpenImageIO:
+		https://openimageio.readthedocs.io/en/latest/
+	linvips: fast, light weight image processing library
+		https://www.libvips.org/
 	newscatcher - scrape news (based upon zyte?)
 		https://newscatcherapi.com/news-api
 	zyte - commercial web scraping
