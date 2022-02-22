@@ -8,17 +8,40 @@
     rel="stylesheet"
     type="text/css"
   />
+  <script type="text/javascript">	/* <![CDATA[  */
+
+	function wtf_onLoad() {
+
+		/*
+		 *  POST when <select> mime type chosen.
+		 */
+		var sel = document.getElementById('select-mt');
+		if (!sel) {
+			alert('can not find element #select-mt');
+			return;
+		}
+		sel.addEventListener('change', (event) => {
+			f = document.getElementById('form-mt');
+			if (!f) {
+				alert('can not find element #form-mt');
+				return;
+			}
+			f.submit();
+		});
+	}
+
+  /* ]]> */  </script>
  </head>
 
- <body>
+ <body onload="wtf_onLoad();">
   <div id="container">
    <!--#include virtual="/header.shtml" -->
    <!--#include virtual="/nav.shtml" -->
    <div id="content">
     <h2>Search by File Mime Type</h2>
     <form
+      id="form-mt"
       action="/cgi-bin/schema/fffile5"
-      name="find-fffile5"
       method="POST"
     >
      <input
@@ -27,7 +50,8 @@
        value="post.mt"
      />
      <!--#include
-       virtual="/cgi-bin/schema/fffile5?out=select.mt&amp;${QUERY_STRING}"
+       virtual=
+       "/cgi-bin/schema/fffile5?out=select.mt&id=select-mt&${QUERY_STRING}"
        -->
      <noscript>
       <input

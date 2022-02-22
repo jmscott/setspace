@@ -4,7 +4,10 @@
 #
 our %POST_VAR;
 
-my $mt = encode_url_query_arg($POST_VAR{mt});
+my $mt = $POST_VAR{mt};
+print STDERR "WTF2: mt=$mt\n";
+
+$mt = encode_url_query_arg($mt);
 
 print <<END;
 Status: 302

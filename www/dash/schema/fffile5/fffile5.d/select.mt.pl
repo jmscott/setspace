@@ -39,7 +39,7 @@ SELECT
 while (my $r = $q->fetchrow_hashref()) {
 	my $mt_db = $r->{mime_type};
 	my $mime_type = encode_html_entities($mt_db);;
-	my $value_mime_type = encode_url_query_arg($mt_db);
+	my $value_mime_type = $mt_db;
 	my $blob_count = $r->{blob_count};
 
 	my $selected_att;
