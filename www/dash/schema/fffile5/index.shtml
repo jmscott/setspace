@@ -36,7 +36,7 @@
  <body onload="wtf_onLoad();">
   <div id="container">
    <!--#include virtual="/header.shtml" -->
-   <!--#include virtual="/nav.shtml" -->
+   <!--#include virtual="nav.shtml" -->
    <div id="content">
     <h2>Search by File Mime Type</h2>
     <form
@@ -52,6 +52,10 @@
      <!--#include
        virtual=
        "/cgi-bin/schema/fffile5?out=select.mt&id=select-mt&${QUERY_STRING}"
+       -->
+     <!--#include
+       virtual=
+       "/cgi-bin/schema/fffile5?out=dl.mt&${QUERY_STRING}"
        -->
      <noscript>
       <input

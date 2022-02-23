@@ -42,16 +42,18 @@
     <h3><a href= "http://www.darwinsys.com/file">Fine Free File</a></h3>
 
     <h3>Tables</h3>
+    <p>Output of invocations of famous unix <code>file</code> command.</p>
+
     <dl>
      <dt><code>file</code></dt>
      <dd>
        Output of <code>file --brief</code>.
        <h4>Columns</h4>
        <dl>
-        <dt>blob</dt>
+        <dt><code>blob</code></dt>
 	<dd>The blob analyzed by <code>file --brief</code> command</dd>
 
-	<dt>file_type</dt>
+	<dt><code>file_type</code></dt>
 	<dd>The magic type of the file</dd>
        </dl>
      </dd>
@@ -62,11 +64,11 @@
 
        <h4>Columns</h4>
        <dl>
-        <dt>blob</dt>
+        <dt><code>blob</code></dt>
 	<dd>
 	  The blob analyzed by <code>file --mime-type --brief</code> command
 	</dd>
-	<dt>mime_type</dt>
+	<dt><code>mime_type</code></dt>
        </dl>
      </dd>
 
@@ -76,12 +78,12 @@
 
        <h4>Columns</h4>
        <dl>
-        <dt>blob</dt>
+        <dt><code>blob</code></dt>
 	<dd>
 	  The blob analyzed by <code>file --mime-encoding --brief</code>
 	  command
 	</dd>
-	<dt>mime_encoding</dt>
+	<dt><code>mime_encoding</code></dt>
        </dl>
      </dd>
 
@@ -90,14 +92,55 @@
        Track rare failures in all file commands, to prevent looping.
        <h4>Columns</h4>
        <dl>
-        <dt>blob</dt>
-	<dd>Offending blob</dd>
-        <dt>command_name</dt>
-        <dt>exit_status</dt>
-        <dt>insert_time</dt>
+        <dt><code>blob</code></dt>
+	<dd><code>offending blob</code></dd>
+        <dt><code>command_name</code></dt>
+	<dd>command that failed</dd>
+        <dt><code>exit_status</code></dt>
+	<dd>process exit sttus</dd>
+        <dt><code>insert_time</code></dt>
        </dl>
      </dd>
+    </dl>
 
+    <h3>Materialized Views</h3>
+    <p>
+      Statistics on blob counts per various types, typically up to date
+      within a minute of most recent new blob.
+    </p>
+    <dl>
+     <dt><code>file_stat</code></dt>
+     <dd>
+      <dl>
+       <dt><code>file_type</code></dt>
+       <dt><code>blob_count</code></dt>
+      </dl>
+     </dd>
+     <dt><code>file_mime_type_stat</code></dt>
+     <dd>
+      <h4>Columns</h4>
+      <dl>
+       <dt><code>mime_type</code></dt>
+       <dt><code>blob_count</code></dt>
+      </dl>
+     </dd>
+
+     <dt><code>file_mime_encoding_stat</code></dt>
+     <dd>
+      <h4>Columns</h4>
+      <dl>
+       <dt><code>mime_encoding</code></dt>
+       <dt><code>blob_count</code></dt>
+      </dl>
+     </dd>
+    </dl>
+    <h3>Functions</h3>
+    <dl>
+     <dt>refresh_stat()</dt>
+     <dd>
+       Refresh statistics for <code>file*</code> tables, typically within
+       a minute of new blobs
+     </dd>
     </dl>
 
    </div>

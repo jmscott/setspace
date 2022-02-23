@@ -23,7 +23,7 @@ END
 
 my $q = dbi_pg_select(
 	db =>		dbi_pg_connect(),
-	tag =>		'fffile5-select',
+	tag =>		'fffile5-select-mt',
 	argv =>		[],
 	sql =>		q(
 SELECT

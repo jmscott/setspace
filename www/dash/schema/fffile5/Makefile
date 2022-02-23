@@ -21,6 +21,7 @@ install: all
 	install								\
 		fffile5.d/dl.mt.pl					\
 		fffile5.d/help.pl					\
+		fffile5.d/mime.mt.pl					\
 		fffile5.d/post.mt.pl					\
 		fffile5.d/select.mt.pl					\
 		$(WWW_PREFIX)/lib/schema/fffile5.d

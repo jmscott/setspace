@@ -11,13 +11,39 @@
     Generate This Help Page for the CGI Script /cgi-bin/schema/fffile5
    </example>
   </examples>
-  <out content-type="text/html">
+  <out>
 
-   <putter name="select.mt">
+   <putter
+     name="select.mt"
+     content-type="text/html"
+   >
     <query-args>
      <arg
        name="mt"
        perl5_re=".*"
+       required="no"
+     />
+    </query-args>
+   </putter>
+
+   <putter name="mime.mt">
+    <query-args>
+     <arg
+       name="blob"
+       perl5_re="[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}"
+       required="yes"
+     />
+    </query-args>
+   </putter>
+
+   <putter
+     name="dl.mt"
+     content-type="text/html"
+   >
+    <query-args>
+     <arg
+       name="mt"
+       perl5_re="[[:graph:]]{1,64}"
        required="no"
      />
     </query-args>

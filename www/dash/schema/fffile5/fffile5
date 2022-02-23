@@ -23,10 +23,6 @@ our %CGI;
 
 require 'httpd2.d/common.pl';
 $CGI{name} = 'fffile5';
-#
-#  Default content type for all elements.
-#
-$CGI{GET}->{out}->{'content-type'} = 'text/html';
 
 #
 #  BEGIN: /cgi/GET/out/query-args
@@ -41,13 +37,14 @@ $CGI{GET}->{out}->{'query-args'}->{arg}->{class} = {
 #  'out' query argument must match one of the out putter names.
 #
 $CGI{GET}->{out}->{'query-args'}->{arg}->{out} = {
-	perl5_re	=> 	'(?:select[.]mt)|help',
+	perl5_re	=> 	'(?:select[.]mt)|(?:mime[.]mt)|(?:dl[.]mt)|help',
 	default		=>	'help',
 };
 #
 #  BEGIN: /cgi/GET/out/putter[@name='select.mt']
 #
 $CGI{GET}->{out}->{putter}->{'select.mt'}->{name} = 'select.mt';
+$CGI{GET}->{out}->{putter}->{'select.mt'}->{'content-type'} = 'text/html';
 
 #
 #  BEGIN: /cgi/GET/out/putter[@name=select.mt]/query-args
@@ -62,6 +59,47 @@ $CGI{GET}->{out}->{putter}->{'select.mt'}->{'query-args'}->{arg}->{mt} = {
 
 #
 #  END: /cgi/GET/out/putter[@name='select.mt']
+#
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name='mime.mt']
+#
+$CGI{GET}->{out}->{putter}->{'mime.mt'}->{name} = 'mime.mt';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=mime.mt]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'mime.mt'}->{'query-args'}->{arg}->{blob} = {
+	perl5_re	=>	'[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}',
+	required	=>	'yes',
+};
+#
+#  END: /cgi/GET/out/putter[@name=mime.mt]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='mime.mt']
+#
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name='dl.mt']
+#
+$CGI{GET}->{out}->{putter}->{'dl.mt'}->{name} = 'dl.mt';
+$CGI{GET}->{out}->{putter}->{'dl.mt'}->{'content-type'} = 'text/html';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=dl.mt]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'dl.mt'}->{'query-args'}->{arg}->{mt} = {
+	perl5_re	=>	'[[:graph:]]{1,64}',
+	required	=>	'no',
+};
+#
+#  END: /cgi/GET/out/putter[@name=dl.mt]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='dl.mt']
 #
 
 
