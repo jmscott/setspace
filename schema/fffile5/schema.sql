@@ -39,7 +39,8 @@ CREATE TABLE file
 COMMENT ON TABLE file IS
   'Output of file --brief command on blob'
 ;
-CREATE INDEX file_blob ON file USING hash(blob);
+CREATE INDEX file_blob_idx ON file USING hash(blob);
+CREATE INDEX file_type_idx ON file(file_type);
 
 /*
  *  Output of 'file --mime-type --brief' command on blob.
@@ -57,7 +58,8 @@ CREATE TABLE file_mime_type
 COMMENT ON TABLE file_mime_type IS
   'Output of file --mime-type --brief command on blob'
 ;
-CREATE INDEX file_mime_type_blob ON file_mime_type USING hash(blob);
+CREATE INDEX file_mime_type_blob_idx ON file_mime_type USING hash(blob);
+CREATE INDEX file_mime_type_idx ON file_mime_type(mime_type);
 
 /*
  *  Output of 'file --mime-encoding --brief' command on blob.
@@ -75,7 +77,8 @@ CREATE TABLE file_mime_encoding
 COMMENT ON TABLE file_mime_encoding IS
   'Output of file --mime-encoding --brief command on blob'
 ;
-CREATE INDEX file_mime_encoding_blob ON file_mime_encoding USING hash(blob);
+CREATE INDEX file_mime_encoding_blob_idx ON file_mime_encoding USING hash(blob);
+CREATE INDEX file_mime_encoding_idx ON file_mime_encoding(mime_encoding);
 
 /*
  *  Track very rare failures in various file commands defined in flowd.
