@@ -54,6 +54,7 @@ $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{lim} = {
 };
 $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{offset} = {
 	perl5_re	=>	'[+0-9]{1,10}',
+	default	=>	'0',
 };
 $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{q} = {
 	perl5_re	=>	'.{0,255}',

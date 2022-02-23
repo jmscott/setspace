@@ -65,6 +65,7 @@ $CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{limit} = {
 };
 $CGI{GET}->{out}->{putter}->{'table'}->{'query-args'}->{arg}->{offset} = {
 	perl5_re	=>	'[+0-9]{1,10}',
+	default	=>	'0',
 };
 #
 #  END: /cgi/GET/out/putter[@name=table]/query-args
@@ -100,6 +101,7 @@ $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{limit} = {
 };
 $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{offset} = {
 	perl5_re	=>	'[+0-9]{1,10}',
+	default	=>	'0',
 };
 #
 #  END: /cgi/GET/out/putter[@name=dl]/query-args
@@ -123,6 +125,7 @@ $CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{q} = {
 };
 $CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{offset} = {
 	perl5_re	=>	'[+0-9]{1,10}',
+	default	=>	'0',
 };
 $CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{limit} = {
 	perl5_re	=>	'[1-9][0-9]{0,3}',
