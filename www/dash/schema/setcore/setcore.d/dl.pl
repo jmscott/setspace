@@ -41,21 +41,48 @@ while (my $r = $qh->fetchrow_hashref()) {
 	my $discover_elapsed = encode_html_entities(
 					elapsed_seconds2terse_english(
 						$now - $r->{discover_epoch}
-				));
-	my $byte_count = $r->{byte_count};
-	my $bitmap = $r->{bitmap};
-	$bitmap =~ s/0//g;
-	my $byte_coverage = sprintf('%.1f %%', 100 * length($bitmap) / 256);
-	my $is_utf8 = 'UTF8';
-	$is_utf8 = 'not UTF8' unless $r->{is_utf8};
-	my $prefix = encode_html_entities($r->{prefix});
-	my $suffix = encode_html_entities($r->{suffix});
+				))
+	;
+	my $byte_count = 'unknown';
+	$byte_count = $r->{byte_count} if defined $r->{byte_count};
+
+	my $byte_coverage;
+
+	if (defined($r->{bitmap})) {
+		my $bitmap = $r->{bitmap};
+		$bitmap =~ s/0//g;
+		$byte_coverage = sprintf('%.1f %%', 100 * length($bitmap) /256);
+	} else {
+		$byte_coverage = 'unknown';
+	}
+
+	my $is_utf8;
+	if (defined($r->{is_utf8})) {
+		$is_utf8 = 'not ' unless $r->{is_utf8};
+	} else {
+		$is_utf8 = 'unknown';
+	}
+
+	my $prefix;
+	if (defined($r->{prefix})) {
+		$prefix = encode_html_entities($r->{prefix});
+	} else {
+		$prefix = 'unknown prefix';
+	}
+
+	my $suffix;
+	if (defined($r->{suffix})) {
+		$suffix = encode_html_entities($r->{suffix});
+	} else {
+		$suffix = 'unknown suffix';
+	}
+
 	print <<END;
  <dt class="udig">$blob</dt>
  <dd>
   $discover_elapsed ago,
   $byte_count bytes,
-  $is_utf8,
+  ${is_utf8}UTF8,
   $byte_coverage coverage,
   <span class="bytedump">$prefix</span> ...
   <span class="bytedump">$suffix</span>
