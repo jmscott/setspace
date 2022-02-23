@@ -37,9 +37,38 @@ $CGI{GET}->{out}->{'query-args'}->{arg}->{class} = {
 #  'out' query argument must match one of the out putter names.
 #
 $CGI{GET}->{out}->{'query-args'}->{arg}->{out} = {
-	perl5_re	=> 	'(?:select[.]mt)|(?:mime[.]mt)|(?:dl[.]mt)|help',
+	perl5_re	=> 	'(?:span[.]nav[.]mt)|(?:select[.]mt)|(?:mime[.]mt)|(?:dl[.]mt)|help',
 	default		=>	'help',
 };
+#
+#  BEGIN: /cgi/GET/out/putter[@name='span.nav.mt']
+#
+$CGI{GET}->{out}->{putter}->{'span.nav.mt'}->{name} = 'span.nav.mt';
+$CGI{GET}->{out}->{putter}->{'span.nav.mt'}->{'content-type'} = 'text/html';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=span.nav.mt]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'span.nav.mt'}->{'query-args'}->{arg}->{mt} = {
+	perl5_re	=>	'.*',
+	required	=>	'no',
+};
+$CGI{GET}->{out}->{putter}->{'span.nav.mt'}->{'query-args'}->{arg}->{lim} = {
+	perl5_re	=>	'[1-9][0-9]{0,3}',
+	default	=>	'10',
+};
+$CGI{GET}->{out}->{putter}->{'span.nav.mt'}->{'query-args'}->{arg}->{off} = {
+	perl5_re	=>	'[+0-9]{1,10}',
+	default	=>	'0',
+};
+#
+#  END: /cgi/GET/out/putter[@name=span.nav.mt]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='span.nav.mt']
+#
+
 #
 #  BEGIN: /cgi/GET/out/putter[@name='select.mt']
 #
@@ -93,6 +122,14 @@ $CGI{GET}->{out}->{putter}->{'dl.mt'}->{'content-type'} = 'text/html';
 $CGI{GET}->{out}->{putter}->{'dl.mt'}->{'query-args'}->{arg}->{mt} = {
 	perl5_re	=>	'[[:graph:]]{1,64}',
 	required	=>	'no',
+};
+$CGI{GET}->{out}->{putter}->{'dl.mt'}->{'query-args'}->{arg}->{lim} = {
+	perl5_re	=>	'[1-9][0-9]{0,3}',
+	default	=>	'10',
+};
+$CGI{GET}->{out}->{putter}->{'dl.mt'}->{'query-args'}->{arg}->{off} = {
+	perl5_re	=>	'[+0-9]{1,10}',
+	default	=>	'0',
 };
 #
 #  END: /cgi/GET/out/putter[@name=dl.mt]/query-args

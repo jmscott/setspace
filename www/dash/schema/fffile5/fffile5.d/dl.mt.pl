@@ -8,7 +8,12 @@ require 'dbi-pg.pl';
 
 our %QUERY_ARG;
 
+use Data::Dumper;
+print STDERR 'WTF: ', Dumper(%QUERY_ARG), "\n";
+
 my $mt = $QUERY_ARG{mt};
+my $lim = $QUERY_ARG{lim};
+my $off = $QUERY_ARG{off};
 
 print <<END;
 <dl
@@ -29,7 +34,9 @@ my $q = dbi_pg_select(
 	db =>		dbi_pg_connect(),
 	tag =>		'fffile5-dl-mt',
 	argv =>		[
-				$mt
+				$mt,
+				$off,
+				$lim,
 			],
 	sql =>		q(
 SELECT
@@ -42,6 +49,12 @@ SELECT
 	  JOIN setcore.service srv ON (srv.blob = mt.blob)
   WHERE
   	mt.mime_type = $1
+  ORDER BY
+  	srv.discover_time DESC
+  OFFSET
+  	$2
+  LIMIT
+  	$3
 ;
 ));
 

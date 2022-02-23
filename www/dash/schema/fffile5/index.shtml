@@ -57,6 +57,10 @@
        virtual=
        "/cgi-bin/schema/fffile5?out=dl.mt&${QUERY_STRING}"
        -->
+     <!--#include
+       virtual=
+       "/cgi-bin/schema/fffile5?out=span.nav.mt&${QUERY_STRING}"
+       -->
      <noscript>
       <input
         type="submit"

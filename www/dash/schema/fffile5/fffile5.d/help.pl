@@ -35,6 +35,35 @@ print <<'END';
     <div class="handlers">
     <h3>Output Scripts in <code>$SERVER_ROOT/lib/schema/fffile5.d</code></h3>
     <dl>
+     <dt>span.nav.mt</dt>
+     <dd>
+<div class="query-args">
+ <h4>Query Args</h4>
+ <dl>
+  <dt>mt</dt>
+  <dd>
+   <ul>
+    <li><code>perl5_re:</code> .*</li>
+    <li><code>required:</code> no</li>
+   </ul>
+  </dd>
+  <dt>lim</dt>
+  <dd>
+   <ul>
+    <li><code>default:</code> 10</li>
+    <li><code>perl5_re:</code> [1-9][0-9]{0,3}</li>
+   </ul>
+  </dd>
+  <dt>off</dt>
+  <dd>
+   <ul>
+    <li><code>default:</code> 0</li>
+    <li><code>perl5_re:</code> [+0-9]{1,10}</li>
+   </ul>
+  </dd>
+  </dl>
+</div>
+     </dd>
      <dt>select.mt</dt>
      <dd>
 <div class="query-args">
@@ -75,6 +104,20 @@ print <<'END';
    <ul>
     <li><code>perl5_re:</code> [[:graph:]]{1,64}</li>
     <li><code>required:</code> no</li>
+   </ul>
+  </dd>
+  <dt>lim</dt>
+  <dd>
+   <ul>
+    <li><code>default:</code> 10</li>
+    <li><code>perl5_re:</code> [1-9][0-9]{0,3}</li>
+   </ul>
+  </dd>
+  <dt>off</dt>
+  <dd>
+   <ul>
+    <li><code>default:</code> 0</li>
+    <li><code>perl5_re:</code> [+0-9]{1,10}</li>
    </ul>
   </dd>
   </dl>
