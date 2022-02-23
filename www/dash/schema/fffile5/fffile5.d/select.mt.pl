@@ -48,7 +48,7 @@ while (my $r = $q->fetchrow_hashref()) {
  <option
    value="$value_mime_type"
    $selected_att
- >$mime_type ($blob_count blobs)</option>
+ >$mime_type (about $blob_count blobs)</option>
 END
 }
 print <<END;
