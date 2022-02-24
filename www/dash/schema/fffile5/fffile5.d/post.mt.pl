@@ -7,9 +7,10 @@ our %POST_VAR;
 my $mt = $POST_VAR{mt};
 
 $mt = encode_url_query_arg($mt);
+$mt = "?mt=$mt" if $mt;
 
 print <<END;
 Status: 302
-Location: /schema/fffile5/index.shtml?mt=$mt
+Location: /schema/fffile5/index.shtml$mt
 
 END

@@ -91,7 +91,7 @@
      <var
        name="mt"
        perl5_re=".*"
-       required="yes"
+       required="no"
      />
     </vars>
    </putter>

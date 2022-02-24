@@ -146,7 +146,7 @@ $CGI{GET}->{out}->{putter}->{'dl.mt'}->{'query-args'}->{arg}->{off} = {
 $CGI{POST}->{in}->{putter}->{'post.mt'}->{name} = 'post.mt';
 $CGI{POST}->{in}->{putter}->{'post.mt'}->{vars}->{var}->{mt} = {
 	perl5_re	=>	'.*',
-	required	=>	'yes',
+	required	=>	'no',
 };
 #
 #  END: /cgi/POST/in/putter[@name=post.mt]/vars
