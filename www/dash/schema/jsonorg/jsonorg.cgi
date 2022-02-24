@@ -103,6 +103,20 @@
      />
     </query-args>
    </putter>
+
+   <putter
+     name="select.topk"
+     content-type="text/html"
+   >
+    <query-args>
+     <arg
+     	name="topk"
+	perl5_re=".*"
+	required="no"
+     />
+    </query-args>
+   </putter>
+
   </out>
  </GET>
 

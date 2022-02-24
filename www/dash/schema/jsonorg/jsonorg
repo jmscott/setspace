@@ -41,7 +41,7 @@ $CGI{GET}->{out}->{'query-args'}->{arg}->{class} = {
 #  'out' query argument must match one of the out putter names.
 #
 $CGI{GET}->{out}->{'query-args'}->{arg}->{out} = {
-	perl5_re	=> 	'input|dl|(?:dl[.]fail)|(?:span[.]fail)|table|pre|(?:span[.]nav)|(?:mime[.]json)|help',
+	perl5_re	=> 	'input|dl|(?:dl[.]fail)|(?:span[.]fail)|table|pre|(?:span[.]nav)|(?:mime[.]json)|(?:select[.]topk)|help',
 	default		=>	'help',
 };
 #
@@ -204,6 +204,27 @@ $CGI{GET}->{out}->{putter}->{'mime.json'}->{'query-args'}->{arg}->{udig} = {
 
 #
 #  END: /cgi/GET/out/putter[@name='mime.json']
+#
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name='select.topk']
+#
+$CGI{GET}->{out}->{putter}->{'select.topk'}->{name} = 'select.topk';
+$CGI{GET}->{out}->{putter}->{'select.topk'}->{'content-type'} = 'text/html';
+
+#
+#  BEGIN: /cgi/GET/out/putter[@name=select.topk]/query-args
+#
+$CGI{GET}->{out}->{putter}->{'select.topk'}->{'query-args'}->{arg}->{topk} = {
+	perl5_re	=>	'.*',
+	required	=>	'no',
+};
+#
+#  END: /cgi/GET/out/putter[@name=select.topk]/query-args
+#
+
+#
+#  END: /cgi/GET/out/putter[@name='select.topk']
 #
 
 $CGI{GET}->{out}->{putter}->{help}->{name} = 'help';

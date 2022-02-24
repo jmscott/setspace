@@ -163,6 +163,21 @@ print <<'END';
   </dl>
 </div>
      </dd>
+     <dt>select.topk</dt>
+     <dd>
+<div class="query-args">
+ <h4>Query Args</h4>
+ <dl>
+  <dt>topk</dt>
+  <dd>
+   <ul>
+    <li><code>perl5_re:</code> .*</li>
+    <li><code>required:</code> no</li>
+   </ul>
+  </dd>
+  </dl>
+</div>
+     </dd>
   </dl>
  </div>
 </div>
