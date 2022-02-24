@@ -6,6 +6,9 @@
 #	SETSPACE_ROOT=/usr/local/setspace/opt/uspto
 #	cd $SETSPACE_ROOT/schema/pdfbox
 #	boot-flowd etc/pdfbox.flow
+#  Note:
+#	Change <path-to-schema.flow> to recognize schema name, to be consistent
+#	with kill-flowd.
 #
 
 PROG=$(basename $0)
