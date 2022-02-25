@@ -13,18 +13,14 @@ require 'jsonorg.d/common.pl';
 
 our %QUERY_ARG;
 
+my $topk = $QUERY_ARG{topk};
+
 print <<END;
 <dl$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END
 
 my $qh;
-if ($QUERY_ARG{q} =~ m/^\s*[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}\s*$/) {
-	$qh = select_json_blob();
-} elsif ($QUERY_ARG{q} =~ /[[:graph:]]/) {
-	$qh = select_json_query();
-} else {
-	$qh = select_recent();
-}
+$qh = select_recent();
 
 my $now = time();
 while (my $r = $qh->fetchrow_hashref()) {

@@ -9,10 +9,14 @@ use utf8;
 
 our %QUERY_ARG;
 
-#  assemble sql for all core blobs ordered by dsicover_time
+#  assemble sql for all core blobs ordered by discover_time
 sub sql_recent
 {
-	return q(
+	#  top level object key?
+	my $topk = $QUERY_ARG{topk};
+
+	#  no top key, so search all blobs.
+	defined ($topk) || return q(
 SELECT
 	jb.blob,
 	substr(jsonb_pretty(jb.doc), 1, 255) AS pretty_json_255,
@@ -28,8 +32,29 @@ SELECT
   	$1
   OFFSET
   	$2
-;
-);}
+;);
+
+	#  find all recent json blobs when query arg "topk" is defined.
+	return q(
+SELECT
+	jb.blob,
+	substr(jsonb_pretty(jb.doc), 1, 255) AS pretty_json_255,
+	s.discover_time,
+	EXTRACT(epoch FROM s.discover_time) AS discover_epoch,
+	length(jsonb_pretty(jb.doc)) AS pretty_char_count
+  FROM
+	jsonorg.jsonb_255 jb
+	  JOIN setcore.service s ON (s.blob = jb.blob)
+  WHERE
+  	jb.doc
+  ORDER BY
+  	s.discover_time desc
+  LIMIT
+  	$1
+  OFFSET
+  	$2
+;);
+}
 
 #
 #  Return recent json blobs, sorted by discover_time descending.
@@ -54,7 +79,7 @@ sub select_recent
 	);
 }
 
-#  assemble sql for all core blobs ordered by dsicover_time
+#  assemble sql for all core blobs ordered by discover_time
 sub sql_json_query
 {
 	my $q = $QUERY_ARG{q};
