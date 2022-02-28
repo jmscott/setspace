@@ -73,7 +73,6 @@ sub select_recent
 	my $sql = sql_recent();
 
 	return dbi_pg_select(
-		pgdump => 'yes',
 		db =>   dbi_pg_connect(),
 		tag =>  'jsonorg-select_recent',
 		argv =>	\@argv,
