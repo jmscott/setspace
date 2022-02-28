@@ -67,11 +67,17 @@ print <<'END';
     <li><code>perl5_re:</code> [1-9][0-9]{0,3}</li>
    </ul>
   </dd>
-  <dt>offset</dt>
+  <dt>off</dt>
   <dd>
    <ul>
     <li><code>default:</code> 0</li>
     <li><code>perl5_re:</code> [+0-9]{1,10}</li>
+   </ul>
+  </dd>
+  <dt>topk</dt>
+  <dd>
+   <ul>
+    <li><code>perl5_re:</code> .{1,128}</li>
    </ul>
   </dd>
   </dl>
@@ -125,10 +131,10 @@ print <<'END';
 <div class="query-args">
  <h4>Query Args</h4>
  <dl>
-  <dt>q</dt>
+  <dt>topk</dt>
   <dd>
    <ul>
-    <li><code>perl5_re:</code> .{0,255}</li>
+    <li><code>perl5_re:</code> .{0,128}</li>
    </ul>
   </dd>
   <dt>lim</dt>
@@ -138,7 +144,7 @@ print <<'END';
     <li><code>perl5_re:</code> [1-9][0-9]{0,3}</li>
    </ul>
   </dd>
-  <dt>offset</dt>
+  <dt>off</dt>
   <dd>
    <ul>
     <li><code>default:</code> 0</li>

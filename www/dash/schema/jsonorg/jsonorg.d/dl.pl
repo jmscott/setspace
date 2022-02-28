@@ -13,8 +13,6 @@ require 'jsonorg.d/common.pl';
 
 our %QUERY_ARG;
 
-my $topk = $QUERY_ARG{topk};
-
 print <<END;
 <dl$QUERY_ARG{id_att}$QUERY_ARG{class_att}>
 END

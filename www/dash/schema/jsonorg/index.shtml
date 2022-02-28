@@ -13,17 +13,49 @@
     rel="stylesheet"
     type="text/css"
   />
+  <script type="text/javascript">	/* <![CDATA[  */
+
+	function onLoad() {
+
+		/*
+		 *  POST when <select> top
+		 */
+		var sel = document.getElementById('select-topk');
+		if (!sel) {
+			alert('can not find element #select-topk');
+			return;
+		}
+		sel.addEventListener('change', (event) => {
+			f = document.getElementById('form-json');
+			if (!f) {
+				alert('can not find element #form-json');
+				return;
+			}
+			f.submit();
+		});
+	}
+
+  /* ]]> */  </script>
  </head>
 
- <body>
+ <body onload="onLoad();">
   <div id="container">
    <!--#include virtual="/header.shtml" -->
    <!--#include virtual="nav.shtml" -->
    <div id="content">
     <h2>Search JSON Blobs</h2>
-    <form method="GET">
+    <form
+      id="form-json"
+      action="/cgi-bin/schema/jsonorg"
+      method="POST"
+    >
+     <input
+       name="in"
+       type="hidden"
+       value="post.topk"
+     />
      <!--#include virtual=
-       "/cgi-bin/schema/jsonorg?out=select.topk&${QUERY_STRING}"
+       "/cgi-bin/schema/jsonorg?out=select.topk&id=select-topk&${QUERY_STRING}"
      -->
      <noscript>
       <input

@@ -78,9 +78,12 @@ $CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{lim} = {
 	perl5_re	=>	'[1-9][0-9]{0,3}',
 	default	=>	'10',
 };
-$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{offset} = {
+$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{off} = {
 	perl5_re	=>	'[+0-9]{1,10}',
 	default	=>	'0',
+};
+$CGI{GET}->{out}->{putter}->{'dl'}->{'query-args'}->{arg}->{topk} = {
+	perl5_re	=>	'.{1,128}',
 };
 #
 #  END: /cgi/GET/out/putter[@name=dl]/query-args
@@ -166,14 +169,14 @@ $CGI{GET}->{out}->{putter}->{'span.nav'}->{name} = 'span.nav';
 #
 #  BEGIN: /cgi/GET/out/putter[@name=span.nav]/query-args
 #
-$CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{q} = {
-	perl5_re	=>	'.{0,255}',
+$CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{topk} = {
+	perl5_re	=>	'.{0,128}',
 };
 $CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{lim} = {
 	perl5_re	=>	'[1-9][0-9]{0,3}',
 	default	=>	'10',
 };
-$CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{offset} = {
+$CGI{GET}->{out}->{putter}->{'span.nav'}->{'query-args'}->{arg}->{off} = {
 	perl5_re	=>	'[+0-9]{1,10}',
 	default	=>	'0',
 };
@@ -225,6 +228,23 @@ $CGI{GET}->{out}->{putter}->{'select.topk'}->{'query-args'}->{arg}->{topk} = {
 
 #
 #  END: /cgi/GET/out/putter[@name='select.topk']
+#
+
+
+#
+#  BEGIN: /cgi/POST/in/putter[@name='post.topk']
+#
+$CGI{POST}->{in}->{putter}->{'post.topk'}->{name} = 'post.topk';
+$CGI{POST}->{in}->{putter}->{'post.topk'}->{vars}->{var}->{topk} = {
+	perl5_re	=>	'.{1,128}',
+	required	=>	'no',
+};
+#
+#  END: /cgi/POST/in/putter[@name=post.topk]/vars
+#
+
+#
+#  END: /cgi/POST/in/putter[@name='post.topk']
 #
 
 $CGI{GET}->{out}->{putter}->{help}->{name} = 'help';

@@ -1,12 +1,9 @@
 #
 #  Synopsis:
-#	Write html <span> of for navigating search results
+#	Write html <span> of for navigating json search results
 #  Note:
-#	Add query argument "lim"
 #	Consider pretty printing using use POSIX qw(locale_h)
 #	instead of english style 999,999.
-#
-#	One day this query may be a materialized view.
 #
 
 use utf8;
@@ -19,21 +16,19 @@ require 'jsonorg.d/common.pl';
 
 our %QUERY_ARG;
 
-my $q = $QUERY_ARG{q};
-$q =~ s/^\s*|\s*$//g;		#  strip white space
-
-my $offset = $QUERY_ARG{offset};
-my $limit = 10;
+my $topk = $QUERY_ARG{topk};
+my $off = $QUERY_ARG{off};
+my $lim = $QUERY_ARG{lim};
 
 my $r;
 
 #  fetch json docs by top level key, particular udig or all json.
-if ($q =~ m/^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$/) {	#  find udig
+if (defined($topk)) {
 	$r = dbi_pg_select(
 		db =>	dbi_pg_connect(),
-		tag =>	'jsonorg-select-blob-span-stat',
+		tag =>	'jsonorg-select-jsonorg-span',
 		argv =>	[
-				$q
+				$topk
 			],
 		sql => q(
 SELECT
@@ -41,24 +36,8 @@ SELECT
   FROM
   	jsonorg.jsonb_255
   WHERE
-  	blob = $1
+  	doc \\? $1
 ));
-} elsif ($q =~ m/[[:graph:]]/) {
-	$r = dbi_pg_select(
-		db =>	dbi_pg_connect(),
-		tag =>	'jsonorg-select-query-span-stat',
-		argv =>	[
-				$q
-			],
-		sql => q(
-SELECT
-	count(*) AS blob_count
-  FROM
-	jsonorg.jsonb_255 jb
-  WHERE
-  	jb.doc \? $1
-));
-	$q = encode_url_query_arg($q);
 } else {
 	$r = dbi_pg_select(
 		db =>	dbi_pg_connect(),
@@ -69,8 +48,7 @@ SELECT
 	count(*) AS blob_count
   FROM
 	jsonorg.jsonb_255 jb
-));
-}
+))};
 
 my $blob_count = $r->fetchrow_hashref()->{blob_count};
 
@@ -88,7 +66,7 @@ END
 	return 1;
 }
 
-if ($blob_count <= $limit) {
+if ($blob_count <= $lim) {
 	my $plural = 's';
 	$plural = '' if $blob_count == 1;
 
@@ -99,17 +77,17 @@ END
 }
 
 my $arrow_off;
-if ($offset >= $limit) {
-	$arrow_off = $offset - $limit;
+if ($off >= $lim) {
+	$arrow_off = $off - $lim;
 	print <<END;
-<a href="/schema/jsonorg/index.shtml?offset=$arrow_off&q=$q">◀</a>
+<a href="/schema/jsonorg/index.shtml?off=$arrow_off&topk=$topk">◀</a>
 END
 }
 
-my $lower = $offset + 1;
+my $lower = $off + 1;
 1 while $lower =~ s/^(\d+)(\d{3})/$1,$2/;
 
-my $upper = $lower + $limit - 1;
+my $upper = $lower + $lim - 1;
 $upper = $blob_count if $upper > $blob_count;
 1 while $upper =~ s/^(\d+)(\d{3})/$1,$2/;
 
@@ -117,9 +95,9 @@ print <<END;
 $lower to $upper
 END
 
-$arrow_off = $offset + $limit;
+$arrow_off = $off + $lim;
 print <<END if $arrow_off < $blob_count;
-<a href="/schema/jsonorg/index.shtml?offset=$arrow_off&q=$q">▶</a>
+<a href="/schema/jsonorg/index.shtml?off=$arrow_off&topk=$topk">▶</a>
 END
 
 #  add commas to numbers to render human readable

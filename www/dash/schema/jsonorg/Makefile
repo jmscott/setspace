@@ -31,6 +31,7 @@ install: all
 		jsonorg.d/help.pl					\
 		jsonorg.d/input.pl					\
 		jsonorg.d/mime.json.pl					\
+		jsonorg.d/post.topk.pl					\
 		jsonorg.d/pre.pl					\
 		jsonorg.d/select.topk.pl				\
 		jsonorg.d/span.fail.pl					\

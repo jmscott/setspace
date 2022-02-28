@@ -34,9 +34,13 @@
 	default="10"
      />
      <arg
-     	name="offset"
+     	name="off"
 	perl5_re="[+0-9]{1,10}"
 	default="0"
+     />
+     <arg
+     	name="topk"
+	perl5_re=".{1,128}"
      />
     </query-args>
    </putter>
@@ -75,8 +79,8 @@
    <putter name="span.nav">
     <query-args>
      <arg
-       name="q"
-       perl5_re=".{0,255}"
+       name="topk"
+       perl5_re=".{0,128}"
      />
      <arg
        name="lim"
@@ -84,7 +88,7 @@
        default="10"
      />
      <arg
-       name="offset"
+       name="off"
        perl5_re="[+0-9]{1,10}"
        default="0"
      />
@@ -119,5 +123,19 @@
 
   </out>
  </GET>
+ <POST>
+  <in>
+   <putter name="post.topk">
+    <title>POST a search for json blobs by top level object key</title>
+    <vars>
+     <var
+       name="topk"
+       perl5_re=".{1,128}"
+       required="no"
+     />
+    </vars>
+   </putter>
+  </in>
+ </POST>
 
 </cgi>

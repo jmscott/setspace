@@ -12,11 +12,8 @@ our %QUERY_ARG;
 #  assemble sql for all core blobs ordered by discover_time
 sub sql_recent
 {
-	#  top level object key?
-	my $topk = $QUERY_ARG{topk};
-
 	#  no top key, so search all blobs.
-	defined ($topk) || return q(
+	length($QUERY_ARG{topk}) > 0 || return q(
 SELECT
 	jb.blob,
 	substr(jsonb_pretty(jb.doc), 1, 255) AS pretty_json_255,
@@ -46,7 +43,7 @@ SELECT
 	jsonorg.jsonb_255 jb
 	  JOIN setcore.service s ON (s.blob = jb.blob)
   WHERE
-  	jb.doc
+  	jb.doc \\? $3
   ORDER BY
   	s.discover_time desc
   LIMIT
@@ -68,14 +65,19 @@ SELECT
 #
 sub select_recent
 {
+	my @argv = ($QUERY_ARG{lim}, $QUERY_ARG{off});
+
+	my $topk = $QUERY_ARG{topk};
+	$argv[2] = $topk if length($topk) > 0;
+
+	my $sql = sql_recent();
+
 	return dbi_pg_select(
+		pgdump => 'yes',
 		db =>   dbi_pg_connect(),
 		tag =>  'jsonorg-select_recent',
-		argv =>	[
-				$QUERY_ARG{lim},
-				$QUERY_ARG{offset},
-			],
-		sql =>	sql_recent()
+		argv =>	\@argv,
+		sql =>	$sql,
 	);
 }
 
@@ -95,7 +97,7 @@ SELECT
 	jsonorg.jsonb_255 jb
 	  JOIN setcore.service s ON (s.blob = jb.blob)
   WHERE
-  	jb.doc \? $1
+  	jb.doc \\? $1
   ORDER BY
   	s.discover_time desc
   LIMIT
@@ -124,9 +126,8 @@ sub select_json_query
 		db =>   dbi_pg_connect(),
 		tag =>  'jsonorg-select_json_query',
 		argv =>	[
-				$q,
 				$QUERY_ARG{lim},
-				$QUERY_ARG{offset},
+				$QUERY_ARG{offt},
 			],
 		sql =>	sql_json_query()
 	);
