@@ -30,7 +30,7 @@ SELECT
 	  JOIN setcore.service s ON (s.blob = c.blob)
 	  JOIN setcore.byte_count bc ON (bc.blob = c.blob)
 	  JOIN setcore.is_utf8wf u8 ON (u8.blob = c.blob)
-	  JOIN fffile.file f ON (f.blob = c.blob)
+	  JOIN fffile5.file f ON (f.blob = c.blob)
   WHERE
   	NOT c.is_json
   ORDER BY
