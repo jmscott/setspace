@@ -10,7 +10,7 @@
   />
   <script type="text/javascript">	/* <![CDATA[  */
 
-	function wtf_onLoad() {
+	function onLoad() {
 
 		/*
 		 *  POST when <select> mime type chosen.
@@ -33,7 +33,7 @@
   /* ]]> */  </script>
  </head>
 
- <body onload="wtf_onLoad();">
+ <body onload="onLoad();">
   <div id="container">
    <!--#include virtual="/header.shtml" -->
    <!--#include virtual="nav.shtml" -->
