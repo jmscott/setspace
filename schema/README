@@ -269,3 +269,4 @@ Possible Schemas:
 		https://sci-hub.ru/database
 	cjson - lightweight c parser of json
 		https://github.com/DaveGamble/cJSON
+	har format - web browser trace logs in json
