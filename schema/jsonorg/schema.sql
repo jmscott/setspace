@@ -89,12 +89,21 @@ COMMENT ON FUNCTION check_jsonability IS
   'Trigger function to coercability into json: checker_255.is_json == true'
 ;
 
+/*
+ *  Note:
+ *	Bulk copy generates a wierd error:
+ *
+ *		can not find operator public.udig = public.udic.
+ *
+ *	To trigger the error, create the trigger and do a copyin.
+ *	kinda looks like a bug in postgres.
 CREATE TRIGGER check_jsonability AFTER INSERT
   ON
   	jsonb_255
   FOR EACH ROW EXECUTE PROCEDURE
   	check_jsonability()
 ;
+*/
 
 DROP MATERIALIZED VIEW IF EXISTS jsonb_object_keys_stat CASCADE;
 CREATE MATERIALIZED VIEW jsonb_object_keys_stat(
