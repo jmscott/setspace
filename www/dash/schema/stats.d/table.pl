@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Write html <table> of schema of stats like size, cache hit rate
+#	Write html <table> of stats for all schemas  in database/
 #  Usage:
 #	/cgi-bin/schema/stats?out=table
 #  Note:
@@ -16,7 +16,7 @@ my $db = dbi_pg_connect();
 
 my $q = dbi_pg_select(
 	db =>	$db,
-	tag =>	'select-database-size',
+	tag =>	'select-schema-stat-all',
 	argv =>	[],
 	sql => q(
 SELECT

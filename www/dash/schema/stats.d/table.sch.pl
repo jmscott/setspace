@@ -18,7 +18,7 @@ my $db = dbi_pg_connect();
 
 my $q = dbi_pg_select(
 	db =>	$db,
-	tag =>	'select-schema-size',
+	tag =>	"select-schema-stat-caption-$sch",
 	argv =>	[$sch],
 	sql => q(
 SELECT
@@ -86,7 +86,7 @@ END
 
 $q = dbi_pg_select(
 	db =>	$db,
-	tag =>	'select-table-size',
+	tag =>	"select-schema-stat-$sch",
 	argv =>	[$sch],
 	sql => q(
 WITH schema_stat (
