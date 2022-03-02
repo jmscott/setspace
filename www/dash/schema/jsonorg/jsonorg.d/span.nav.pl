@@ -32,11 +32,12 @@ if (defined($topk)) {
 			],
 		sql => q(
 SELECT
-	count(blob) AS blob_count
+	doc_count
   FROM
-  	jsonorg.jsonb_255
+  	jsonorg.jsonb_object_keys_stat
   WHERE
-  	doc \\? $1
+  	object_key = $1
+;
 ));
 } else {
 	$r = dbi_pg_select(
@@ -45,12 +46,13 @@ SELECT
 		argv =>	[],
 		sql => q(
 SELECT
-	count(*) AS blob_count
+	sum(doc_count) AS doc_count
   FROM
-	jsonorg.jsonb_255 jb
+  	jsonorg.jsonb_object_keys_stat
+;
 ))};
 
-my $blob_count = $r->fetchrow_hashref()->{blob_count};
+my $doc_count = $r->fetchrow_hashref()->{doc_count};
 
 print <<END;
 <span
@@ -59,19 +61,19 @@ print <<END;
 >
 END
 
-if ($blob_count == 0) {
+if ($doc_count == 0) {
 	print <<END;
-No JSON blobs.</span>
+No JSON documents.</span>
 END
 	return 1;
 }
 
-if ($blob_count <= $lim) {
+if ($doc_count <= $lim) {
 	my $plural = 's';
-	$plural = '' if $blob_count == 1;
+	$plural = '' if $doc_count == 1;
 
 	print <<END;
-$blob_count json blob$plural matched
+$doc_count json blob$plural matched
 END
 	return 1;
 }
@@ -88,7 +90,7 @@ my $lower = $off + 1;
 1 while $lower =~ s/^(\d+)(\d{3})/$1,$2/;
 
 my $upper = $lower + $lim - 1;
-$upper = $blob_count if $upper > $blob_count;
+$upper = $doc_count if $upper > $doc_count;
 1 while $upper =~ s/^(\d+)(\d{3})/$1,$2/;
 
 print <<END;
@@ -96,15 +98,15 @@ $lower to $upper
 END
 
 $arrow_off = $off + $lim;
-print <<END if $arrow_off < $blob_count;
+print <<END if $arrow_off < $doc_count;
 <a href="/schema/jsonorg/index.shtml?off=$arrow_off&topk=$topk">▶</a>
 END
 
 #  add commas to numbers to render human readable
-1 while $blob_count =~ s/^(\d+)(\d{3})/$1,$2/;
+1 while $doc_count =~ s/^(\d+)(\d{3})/$1,$2/;
 
 print <<END;
-of $blob_count json blobs matched
+of $doc_count json documents matched.
 </span>
 END
 
