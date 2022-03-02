@@ -51,14 +51,28 @@
      <dd>
        The jsonb version of a successfully parsed json object in
        table <code>checker_255</code>.
-     </dd>
+      <h4>Columns</h4>
+      <dl>
+       <dt>blob</dt>
+       <dd>The candidate json blob</dd>
 
-     <dt>jsonb_255_tsv_simple</dt>
+       <dt>doc</dt>
+       <dd>The parsed binary jsonb</dd>
+      </dl>
+     </dd>
+    </dl>
+
+    <h3>Materialized Views</h3>
+    <dl>
+     <dt>jsonb_object_keys_stat</dt>
      <dd>
-       Text vector index with "simple" configuration of
-       <code>jsonb</code> doc in table <code>jsonb_255</code>.
+       Count stats on top level object keys.
+       <h4>Columns</h4>
+       <dl>
+        <dt>object_key</dt>
+        <dt>doc_count</dt>
+       </dl>
      </dd>
-
     </dl>
 
     <h3>Functions</h3>
@@ -69,11 +83,8 @@
        reference of jsonb_255.blob satifies checker_255.is_json == true.
      </dd>
 
-     <dt>jsonb_255_tsv_simple_trigger()</dt>
-     <dd>
-       Integrity trigger function to update table
-       <code>jsonb_255_tsv_simple</code>.
-     </dd>
+     <dt>jsonb_object_keys_stat()</dt>
+     <dt>refresh_stat()</dt>
     </dl>
 
    </div>
