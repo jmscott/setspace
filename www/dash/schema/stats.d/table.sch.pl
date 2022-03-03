@@ -25,17 +25,22 @@ SELECT
 	pg_size_pretty(sum(pg_total_relation_size(relid)))
 	  AS size_english,
 	sum(
-		heap_blks_hit + idx_blks_hit +
-		COALESCE(toast_blks_hit, 0) + COALESCE(tidx_blks_hit, 0)
+		COALESCE(heap_blks_hit, 0)	+
+		COALESCE(idx_blks_hit, 0)	+
+		COALESCE(toast_blks_hit, 0)	+
+		COALESCE(tidx_blks_hit, 0)
 	) AS sum_blks_hit,
 	sum(
-		heap_blks_read + idx_blks_read +
-		COALESCE(toast_blks_read, 0) + COALESCE(tidx_blks_read, 0)
+		COALESCE(heap_blks_read, 0)	+
+		COALESCE(idx_blks_read, 0)	+
+		COALESCE(toast_blks_read, 0)	+
+		COALESCE(tidx_blks_read, 0)
 	)  AS sum_blks_read
   FROM
   	pg_statio_user_tables
   WHERE
   	schemaname = $1
+;
 ;
 ));
 
@@ -72,7 +77,7 @@ print <<END;
    <h1>Schema $sch</h1>
    <h2>
      $size_english -
-     $cache_hit_rate % cache hit rate
+     $cache_hit_rate% cache hit rate
    </h2>
   </caption>
   <tr>
@@ -99,16 +104,16 @@ WITH schema_stat (
     	c.relname,
 	sum(pg_total_relation_size(c.oid)),
 	sum(
-		s.heap_blks_hit + s.idx_blks_hit +
-
-		--  sum tables have no toast
-		COALESCE(s.toast_blks_hit, 0) + COALESCE(+s.tidx_blks_hit, 0)
+		COALESCE(s.heap_blks_hit, 0)	+
+		COALESCE(s.idx_blks_hit, 0)	+
+		COALESCE(s.toast_blks_hit, 0)	+
+		COALESCE(s.tidx_blks_hit, 0)
 	),
 	sum(
-		s.heap_blks_read + s.idx_blks_read + 
-
-		--  sum tables have no toast
-		COALESCE(s.toast_blks_read, 0) + COALESCE(s.tidx_blks_read, 0)
+		COALESCE(s.heap_blks_read, 0)	+
+		COALESCE(s.idx_blks_read, 0)	+ 
+		COALESCE(s.toast_blks_read, 0)	+
+		COALESCE(s.tidx_blks_read, 0)
 	)
     FROM
       	pg_catalog.pg_class c
@@ -170,8 +175,8 @@ while (my (
 	print <<END;
   <tr>
    <td>$table_name</td>
-   <td>$size_english ($size_percentage %)</td>
-   <td>$cache_hit_rate %</td>
+   <td>$size_english ($size_percentage%)</td>
+   <td>$cache_hit_rate%</td>
   </tr>
 END
 }

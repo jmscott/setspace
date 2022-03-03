@@ -16,18 +16,24 @@ my $db = dbi_pg_connect();
 
 my $q = dbi_pg_select(
 	db =>	$db,
-	tag =>	'select-schema-stat-all',
+	tag =>	'select-schema-stat-sum',
 	argv =>	[],
 	sql => q(
 SELECT
 	pg_size_pretty(pg_database_size(current_database()))
 	  AS size_english,
 	sum(
-		heap_blks_hit + idx_blks_hit +
-		COALESCE(toast_blks_hit, 0) + COALESCE(tidx_blks_hit, 0)
+		COALESCE(heap_blks_hit, 0) +
+		COALESCE(idx_blks_hit, 0) +
+		COALESCE(toast_blks_hit, 0) +
+		COALESCE(tidx_blks_hit, 0)
 	) AS sum_blks_hit,
-	sum(heap_blks_read + idx_blks_read + toast_blks_read + tidx_blks_read)
-	  AS sum_blks_read
+	sum(
+		COALESCE(heap_blks_read, 0) +
+		COALESCE(idx_blks_read, 0) +
+		COALESCE(toast_blks_read, 0) +
+		COALESCE(tidx_blks_read, 0)
+	) AS sum_blks_read
   FROM
   	pg_statio_user_tables
 ;
@@ -45,9 +51,9 @@ if ($sum_blks_read + $sum_blks_hit > 0) {
 				)
 			);
 	if ($cache_hit_rate == 0) {
-		$cache_hit_rate = '<1';
+		$cache_hit_rate = '1';
 	} elsif ($cache_hit_rate == 100) {
-		$cache_hit_rate = '>99';
+		$cache_hit_rate = '99';
 	}
 } else {
 	$cache_hit_rate = 0;
@@ -63,10 +69,10 @@ print <<END;
 >
  <thead>
   <caption>
-   <h1>Database $PGDATABASE</h1>
+   <h1>Database <code>$PGDATABASE</code></h1>
    <h2>
-     $size_english -
-     $cache_hit_rate % cache hit rate
+     $size_english:
+     $cache_hit_rate% cache hit rate across all queries.
    </h2>
   </caption>
   <tr>
@@ -80,7 +86,7 @@ END
 
 $q = dbi_pg_select(
 	db =>	$db,
-	tag =>	'select-schema-size',
+	tag =>	'select-schema-stat-detail',
 	argv =>	[],
 	sql => q(
 WITH schema_stat (
@@ -93,16 +99,14 @@ WITH schema_stat (
     	n.nspname,
 	sum(pg_total_relation_size(c.oid)),
 	sum(
-		s.heap_blks_hit			+
-		s.idx_blks_hit			+
-		--  not all tables are toasted
+		COALESCE(s.heap_blks_hit, 0)	+
+		COALESCE(s.idx_blks_hit, 0)	+
 		COALESCE(s.toast_blks_hit, 0)	+
 		COALESCE(s.tidx_blks_hit, 0)
 	),
 	sum(
-		s.heap_blks_read		+
-		s.idx_blks_read			+
-		--  not all tables are toasted
+		COALESCE(s.heap_blks_read, 0)	+
+		COALESCE(s.idx_blks_read, 0)	+
 		COALESCE(s.toast_blks_read, 0)	+
 		COALESCE(s.tidx_blks_read, 0)
 	)
@@ -164,8 +168,8 @@ while (my (
 	print <<END;
   <tr>
    <td><a href="stats-sch.shtml?sch=$schema_name">$schema_name</a></td>
-   <td>$size_english ($size_percentage %)</td>
-   <td>$cache_hit_rate %</td>
+   <td>$size_english ($size_percentage%)</td>
+   <td>$cache_hit_rate%</td>
   </tr>
 END
 }
