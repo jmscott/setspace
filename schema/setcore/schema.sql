@@ -68,12 +68,12 @@ CREATE TABLE service
 (
 	blob		udig
 				PRIMARY KEY,
-	discover_time	timestamptz
+	discover_time	inception
 				DEFAULT now()
 				NOT NULL
 );
 COMMENT ON TABLE service IS
-	'Blobs known to exist'
+	'Blobs known to exist at a particular point in time'
 ;
 CREATE INDEX service_discover_time ON service(discover_time);
 CREATE INDEX service_blob ON service USING hash(blob);
