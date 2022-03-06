@@ -54,11 +54,7 @@ start)
 	log 'finding bootable schemas ...'
 	ls-boot-flowd | while read SCHEMA;  do
 		log "schema: $SCHEMA"
-		cd $SETSPACE_ROOT/schema/$SCHEMA ||
-			die "cd dir schema failed: $SCHEMA: exit status=$?"
-		test -e run/flowd.pid && die "flowd.pid exists: $SCHEMA"
-		boot-flowd etc/$SCHEMA.flow ||
-			die "boot-flowd $SCHEMA failed: exit status=$?"
+		boot-flowd $SCHEMA || die "boot-flowd failed: exit status=$?"
 	done
 	log 'all flowds started'
 	;;
