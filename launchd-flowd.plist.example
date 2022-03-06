@@ -41,7 +41,7 @@
   <array>
   	<string>/usr/local/jmscott/sbin/launchd-log</string>
 	<string>/usr/local/setspace/sbin/boot-flowd</string>
-	<string>etc/REPLACE_WITH_SCHEMA.flow</string>
+	<string>REPLACE_WITH_SCHEMA</string>
   </array>
 
   <key>Disabled</key>
