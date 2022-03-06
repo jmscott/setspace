@@ -58,10 +58,13 @@ create_schema()
 create_schema setcore
 create_schema jsonorg
 create_schema mycore
-create_schema fffile
+create_schema fffile5
 create_schema expat2
 create_schema libxml2
 create_schema mydash
+create_schema gnuzip
+create_schema infozip3
+create_schema p5mail
 
 #  not schema for routers
 #create_schema jsionio
