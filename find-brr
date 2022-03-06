@@ -26,10 +26,24 @@ cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
 
 . etc/profile
 
-find-schema | while read SCH;  do
-	find schema/$SCH/spool 						\
+found_brr()
+{
+	find schema/$1/spool						\
 		-maxdepth 1						\
 		-name '*.brr'						\
 		! -name $ROLLED_BRR_PAT					\
 		-print
-done
+}
+
+case $# in
+0)
+	find-schema | while read SCH;  do
+		found_brr $SCH
+	done
+	;;
+*)
+	echo $@ | sed 's/  */\n/g' | while read SCH;  do
+		found_brr $SCH
+	done
+	;;
+esac

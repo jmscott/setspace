@@ -14,11 +14,9 @@ die()
 	exit 1
 }
 
-test $# = 0 || die 'wrong number of args'
-
 test -n "$SETSPACE_ROOT" || die 'env var not defined: SETSPACE_ROOT'
 cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed: exit status=$?"
 
 . etc/profile
 
-wc -l $(find-brr)
+wc -l $(find-brr $@)
