@@ -96,13 +96,12 @@ if [ -x $INITX ];  then
 	$INITX || die "launchd-flow-init failed: exit status=$?"
 fi
 
-log 'dumping process environment ...'
-env | sort | while read E;  do
-	log "$E"
-done
-
 log "flow file: $FLOW"
 if [ $PPID = 1 -o -n "$LAUNCHED_STARTED" -o -n "$INVOCATION_ID" ];  then
+	log 'dumping process environment ...'
+	env | sort | while read E;  do
+	       log "$E"
+	done
 	log 'started by launchd or systemd'
 	log 'execing flowd ...'
 	exec flowd server $FLOW
