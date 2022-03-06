@@ -74,7 +74,6 @@ SBINs=									\
 	kill-flowd							\
 	launchd-flowd							\
 	ls-boot-flowd							\
-	ls-flow								\
 	rummy								\
 	run-stat-flowd-tuple						\
 	run-stat-report							\
