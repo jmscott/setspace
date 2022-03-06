@@ -4,11 +4,8 @@
 #	Boot a schema flowd server from either launchd, systemd or command-line
 #  Usage:
 #	SETSPACE_ROOT=/usr/local/setspace/opt/uspto
-#	cd $SETSPACE_ROOT/schema/pdfbox
-#	boot-flowd etc/pdfbox.flow
-#  Note:
-#	Change <path-to-schema.flow> to recognize schema name, to be consistent
-#	with kill-flowd.
+#	boot-flowd pdfbox
+#	boot-flowd <schema>
 #
 
 PROG=$(basename $0)
@@ -34,13 +31,13 @@ leave()
 }
 
 test $# = 1 || die "wrong number of arguments, got $#, expected 1"
-FLOW=$1
+SCHEMA=$1
+FLOW=etc/$SCHEMA.flow
 
 log 'hello, world'
 trap leave EXIT
 
-log "flow file: $FLOW"
-test -e $FLOW || die "flow file does not exist: $FLOW"
+log "schema: $SCHEMA"
 
 test -n "$SETSPACE_ROOT" || die "environment var not defined: SETSPACE_ROOT"
 log "SETSPACE_ROOT=$SETSPACE_ROOT"
@@ -53,12 +50,17 @@ log "source: $PROFILE"
 test -r $PROFILE || die "can not read setspace profile: $PROFILE"
 . $PROFILE || die "sourcing setspace profile failed: $PROFILE"
 
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/$SCHEMA
+log "schema root: $SCHEMA_ROOT"
+test -d $SCHEMA_ROOT || die "schema root dir does not exist: $SCHEMA_ROOT"
+cd $SCHEMA_ROOT || die "cd schema root failed: exit status=$?"
+
 #
 #  source in schema specific profile
 #
 PROFILE=etc/profile
 log "source: $PROFILE"
-test -r etc/profile || die "can not read schema profile: $PROFILE"
+test -r $PROFILE || die "can not read schema profile: $(pwd)/$PROFILE"
 . $PROFILE || die "sourcing schema profile failed: $PROFILE"
 
 #  set up gnu tools on the mac
@@ -82,11 +84,6 @@ fi
 log "PATH=$PATH"
 log "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 
-if [ -e run/flow.pid ];  then
-	log "run/flowd.pid exists: process #$(head -1 run/flow.pid)"
-	kill $(head -1 run/flow.pid)
-fi
-
 log 'clearing run/ directory of stale files ...'
 find run -follow -type f -name 'flowd*' | while read ZAP_RUN;  do
 	log "zap run/ file: $ZAP_RUN"
@@ -104,6 +101,7 @@ env | sort | while read E;  do
 	log "$E"
 done
 
+log "flow file: $FLOW"
 if [ $PPID = 1 -o -n "$LAUNCHED_STARTED" -o -n "$INVOCATION_ID" ];  then
 	log 'started by launchd or systemd'
 	log 'execing flowd ...'
