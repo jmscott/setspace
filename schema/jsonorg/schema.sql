@@ -142,6 +142,50 @@ COMMENT ON FUNCTION refresh_stat IS
   'Concurrently Refresh and Analyze All Materialied *_stat Views in jsonorg'
 ;
 
+CREATE OR REPLACE FUNCTION jsonb_all_keys(_value jsonb)
+  RETURNS
+  	TABLE(key text)
+AS $$
+	WITH RECURSIVE _tree (key, value) AS (
+	  SELECT
+	  	NULL AS key,
+		_value AS value
+	  UNION ALL (
+	    WITH typed_values AS (
+	    	SELECT
+			jsonb_typeof(value) as typeof,
+			value FROM _tree
+	    )  SELECT
+		v.*
+	        FROM
+	  		typed_values,
+			LATERAL jsonb_each(value) v
+		WHERE
+		  	typeof = 'object'
+		UNION ALL
+	        SELECT
+			NULL,
+			element
+		  FROM
+		  	typed_values,
+			LATERAL jsonb_array_elements(value) element
+		  WHERE
+		  	typeof = 'array'
+	  )
+	) SELECT
+		DISTINCT key
+	    FROM
+	    	_tree
+	    WHERE
+	    	key IS NOT NULL
+  $$
+  LANGUAGE sql
+;
+
+COMMENT ON FUNCTION jsonb_all_keys IS
+  'Extract all keys in jsonb object' 
+;
+
 REVOKE UPDATE ON ALL TABLES IN SCHEMA jsonorg FROM PUBLIC;
 
 COMMIT;
