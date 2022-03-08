@@ -180,12 +180,12 @@ AS $$
 	    	key IS NOT NULL
   $$
   LANGUAGE sql
+  STRICT
 ;
 
 COMMENT ON FUNCTION jsonb_all_keys IS
   'Extract all keys in jsonb object' 
 ;
-
 REVOKE UPDATE ON ALL TABLES IN SCHEMA jsonorg FROM PUBLIC;
 
 COMMIT;
