@@ -54,10 +54,23 @@
       <h4>Columns</h4>
       <dl>
        <dt>blob</dt>
-       <dd>The candidate json blob</dd>
+       <dd>The json blob</dd>
 
        <dt>doc</dt>
        <dd>The parsed binary jsonb</dd>
+      </dl>
+     </dd>
+
+     <dt>jsonb_255_key</dt>
+     <dd>
+       All keys in a jsonb blob, indexed by trigram.
+      <h4>Columns</h4>
+      <dl>
+       <dt>blob</dt>
+       <dd>The json blob</dd>
+
+       <dt>word_set</dt>
+       <dd>Space separated text of keys, indexed for trigram searchs</dd>
       </dl>
      </dd>
     </dl>
@@ -83,8 +96,10 @@
        reference of jsonb_255.blob satifies checker_255.is_json == true.
      </dd>
 
+     <dt>jsonb_all_keys()</dt>
      <dt>jsonb_object_keys_stat()</dt>
      <dt>refresh_stat()</dt>
+     <dt>trig_insert_jsonb_255_key()</dt>
     </dl>
 
    </div>
