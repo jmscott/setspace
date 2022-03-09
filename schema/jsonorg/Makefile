@@ -44,6 +44,7 @@ install: all
 		$(JSONORG_PREFIX)/sbin
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r		\
 		jsonorg.flow.example					\
+		merge-jsonb_255_key.sql					\
 		profile.example						\
 		psqlrc.example						\
 		rummy.sql						\
