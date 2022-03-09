@@ -10,6 +10,9 @@ See Also:
 
 		https://www.youtube.com/watch?v=-6BsiVyC1kM
 
+Rememeber:
+	ERROR:  index row size 5296 exceeds btree version 4 maximum 2704 
+	for index "jsonb_255_key_set_pkey"
 Example Schemas:
 	jsonorg		json as defined by the program JSON_checker at json.org
 
