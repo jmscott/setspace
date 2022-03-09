@@ -53,5 +53,5 @@ case $STATUS in
 	die "blobio get failed: exit status=$STATUS" 3
 	;;
 esac
-merge-stdin-jsonb_255 $UDIG $SIZE <$TMP_BLOB
-test $? = 0 || die "merge-stdin-jsonb_255 failed: exit status=$?"
+merge-stdin-jsonb_255 $UDIG $SIZE <$TMP_BLOB				||
+	die "merge-stdin-jsonb_255 failed: exit status=$?" 4
