@@ -83,7 +83,9 @@ CREATE OR REPLACE FUNCTION check_jsonability() RETURNS TRIGGER
 	USING
 		ERRCODE = 'cannot_coerce'
 	;
-  END $$ LANGUAGE plpgsql
+  	END
+  $$
+  LANGUAGE plpgsql
 ;
 COMMENT ON FUNCTION check_jsonability IS
   'Trigger function to coercability into json: checker_255.is_json == true'
@@ -182,10 +184,68 @@ AS $$
   LANGUAGE sql
   STRICT
 ;
-
 COMMENT ON FUNCTION jsonb_all_keys IS
   'Extract all keys in jsonb object' 
 ;
+
+DROP TABLE IF EXISTS jsonb_255_key CASCADE;
+CREATE TABLE jsonb_255_key
+(
+	blob		udig
+				PRIMARY KEY
+				REFERENCES jsonb_255(blob)
+				ON DELETE CASCADE,
+	word_set	text CHECK (
+				word_set ~ '^[[:graph:]]'
+				AND
+				word_set ~ '[[:graph:]]$'
+				AND
+				length(word_set) < 2147483648
+			) NOT NULL
+);
+CREATE INDEX idx_jsonb_255_key_trgm
+  ON jsonb_255_key
+  USING GIN (word_set gin_trgm_ops)
+;
+CREATE INDEX idx_jsonb_255_key_hash ON jsonb_255_key USING hash(blob);
+
+DROP TRIGGER IF EXISTS insert_jsonb_255_key ON jsonb_255 CASCADE; 
+DROP FUNCTION IF EXISTS trig_insert_jsonb_255_key();
+CREATE OR REPLACE FUNCTION trig_insert_jsonb_255_key() RETURNS TRIGGER
+  AS $$
+    BEGIN
+	INSERT INTO jsonorg.jsonb_255_key(blob, word_set)
+	  SELECT
+		j.blob,
+		string_agg(k.key, ' ')
+	    FROM
+		jsonorg.jsonb_255 j,
+		  LATERAL jsonorg.jsonb_all_keys(j.doc) AS k(key)
+	    WHERE
+		j.blob = new.blob
+	    GROUP BY
+		j.blob
+	  ON CONFLICT
+		DO NOTHING
+	;
+	RETURN NULL;
+  END
+  $$ LANGUAGE plpgsql
+;
+COMMENT ON FUNCTION trig_insert_jsonb_255_key IS
+  'Trigger to Update jsonb_255_key table'
+;
+
+CREATE TRIGGER insert_jsonb_255_key AFTER INSERT
+  ON
+  	jsonb_255
+  FOR EACH ROW EXECUTE PROCEDURE
+  	trig_insert_jsonb_255_key()
+;
+COMMENT ON TRIGGER insert_jsonb_255_key ON jsonb_255 IS
+  'Add objects keys for trigram search'
+;
+
 REVOKE UPDATE ON ALL TABLES IN SCHEMA jsonorg FROM PUBLIC;
 
 COMMIT;
