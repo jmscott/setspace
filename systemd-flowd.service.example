@@ -17,7 +17,7 @@ Environment=SETSPACE_ROOT=/usr/local/setspace
 StandardOutput=file:/home/setspace/log/systemd-flowd.REPLACE_WITH_SCHEMA.log
 StandardError=file:/home/setspace/log/systemd-flowd.REPLACE_WITH_SCHEMA.log
 
-ExecStart=/usr/local/setspace/sbin/boot-flowd REPLACE_WITH_SCHEMA
+ExecStart=/usr/local/setspace/sbin/start-flowd REPLACE_WITH_SCHEMA
 KillMode=control-group
 KillSignal=SIGTERM
 TimeoutSec=20

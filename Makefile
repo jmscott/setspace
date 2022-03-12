@@ -59,7 +59,6 @@ COMPILEs=								\
 
 SBINs=									\
 	SETSPACE_ROOT-bash						\
-	boot-flowd							\
 	brr-flip							\
 	brr-flip-all							\
 	brr-stat							\
@@ -70,15 +69,17 @@ SBINs=									\
 	find-schema							\
 	flip-tail							\
 	flowd-stat							\
-	kill-all-flowd							\
-	kill-flowd							\
 	launchd-flowd							\
-	ls-boot-flowd							\
+	ls-start-flowd							\
+	restart-flowd							\
 	rummy								\
 	run-stat-flowd-tuple						\
 	run-stat-report							\
 	run-stat-tuple							\
 	ssctl								\
+	start-flowd							\
+	stop-all-flowd							\
+	stop-flowd							\
 	tail-flowd							\
 	tas-run-lock							\
 	tas-run-unlock

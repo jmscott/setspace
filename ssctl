@@ -48,19 +48,19 @@ log "path to flowd: $(which flowd)"
 
 case "$ACTION" in
 start)
-	#  boot up a flowd process for each flow file in
+	#  start up a flowd process for each flow file in
 	#  schema/$SCHEMA/etc/$SCHEMA.flow
 
-	log 'finding bootable schemas ...'
-	ls-boot-flowd | while read SCHEMA;  do
+	log 'finding startable schemas ...'
+	ls-start-flowd | while read SCHEMA;  do
 		log "schema: $SCHEMA"
-		boot-flowd $SCHEMA || die "boot-flowd failed: exit status=$?"
+		start-flowd $SCHEMA || die "start-flowd failed: exit status=$?"
 	done
 	log 'all flowds started'
 	;;
 stop)
-	log 'killing UP/ZOMBIE flowds ...'
-	kill-all-flowd || die "kill-all-flowd failed: exit status=$?"
+	log 'stopping UP/ZOMBIE flowds ...'
+	stop-all-flowd || die "stop-all-flowd failed: exit status=$?"
 	;;
 restart)
 	log 'restarting setspace process ...'

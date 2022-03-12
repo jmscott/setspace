@@ -1,0 +1,10 @@
+#/bin/bash
+#
+#  Synopsis:
+#	Restart a flowd process for a particular schema.
+#  Usage:
+#	restart-flowd pdfbox
+#	restart-flowd <schema>
+#
+
+stop-flowd $@ && start-flowd $@

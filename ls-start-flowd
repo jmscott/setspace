@@ -1,0 +1,40 @@
+#
+#  Synopsis:
+#	List schemas with startable flowd configs in <schema>/etc/<schema>.flow
+#  Usage:
+#	ls-start-flowd | while read SCHEMA;  do ...
+#  Exit Status:
+#	0	schema listed
+#	1	unknown error
+#
+
+PROG=$(basename $0)
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&2
+	exit 2
+}
+
+test $# = 0 || die 'wrong number of arguments'
+
+test -n "$SETSPACE_ROOT" ||
+			die "environment variable not defined: SETSPACE_ROOT"
+cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
+test -e schema || die "missing root schema directory: $(pwd)"
+
+cd schema || "cd $(pwd)/schema failed: exit status=$?"
+find . -mindepth 1 -maxdepth 1 -type d				|
+	sed 's/..//'						|
+	while read SCHEMA;  do
+		test -e $SCHEMA/etc/$SCHEMA.flow && echo $SCHEMA
+	done
+
+STATUS=${PIPESTATUS[*]}
+case "$STATUS" in
+'0 0 0'|'0 0 1')
+	;;
+*)
+	die "find schema failed: exit status=$STATUS"
+	;;
+esac

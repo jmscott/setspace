@@ -40,7 +40,7 @@
   <key>ProgramArguments</key>
   <array>
   	<string>/usr/local/jmscott/sbin/launchd-log</string>
-	<string>/usr/local/setspace/sbin/boot-flowd</string>
+	<string>/usr/local/setspace/sbin/start-flowd</string>
 	<string>REPLACE_WITH_SCHEMA</string>
   </array>
 
