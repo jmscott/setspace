@@ -270,11 +270,15 @@ CREATE
   UNIQUE INDEX idx_jsonb_255_key_word_word
   ON jsonb_255_key_word(word)
 ;
-
 CREATE INDEX idx_jsonb_255_key_word_trgm ON jsonb_255_key_word
   USING GIN (word gin_trgm_ops)
-; 
-
+;
+COMMENT ON
+  MATERIALIZED VIEW jsonb_255_key_word
+  IS 'Json keys across all json blobs, ' 
+     'with doc and word counts, '
+     'suitable for text search prediction'
+;
 
 REVOKE UPDATE ON ALL TABLES IN SCHEMA jsonorg FROM PUBLIC;
 
