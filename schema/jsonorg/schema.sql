@@ -246,6 +246,36 @@ COMMENT ON TRIGGER insert_jsonb_255_key ON jsonb_255 IS
   'Add objects keys for trigram search'
 ;
 
+DROP MATERIALIZED VIEW IF EXISTS jsonb_255_key_word CASCADE;
+CREATE MATERIALIZED VIEW jsonb_255_key_word(
+	word,
+	ndoc,
+	nentry
+  )
+  AS
+    SELECT
+    	word,
+	ndoc,
+	nentry
+    FROM
+        ts_stat('
+	  SELECT
+	    to_tsvector(''simple'', word_set )
+	    FROM
+	  	jsonorg.jsonb_255_key
+	')
+  WITH DATA
+;
+CREATE
+  UNIQUE INDEX idx_jsonb_255_key_word_word
+  ON jsonb_255_key_word(word)
+;
+
+CREATE INDEX idx_jsonb_255_key_word_trgm ON jsonb_255_key_word
+  USING GIN (word gin_trgm_ops)
+; 
+
+
 REVOKE UPDATE ON ALL TABLES IN SCHEMA jsonorg FROM PUBLIC;
 
 COMMIT;
