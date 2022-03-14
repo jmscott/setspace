@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 #  Synopsis:
 #	Command line queries into sql schema "setcore".
@@ -11,7 +12,6 @@
 #	
 #
 PSQL='psql
-	--expanded
 	--no-psqlrc
 	--tuples-only
 	--pset null=Unknown
@@ -48,9 +48,20 @@ Example:
 END
 }
 
-ls_recent()
+ls_service()
 {
 	$PSQL <<END
+SELECT
+	blob
+  FROM
+  	setcore.service
+;
+END
+}
+
+ls_recent()
+{
+	$PSQL --expanded <<END
 SELECT
 	s.blob AS "Blob",
 	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
@@ -94,7 +105,9 @@ ls_blob()
 	[[ $BLOB =~ ^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$ ]]		||
 		die "ls_blob: not a udig: $BLOB"
 	
-	$PSQL <<END
+	$PSQL --expanded <<END
+\\pset tuples_only off
+
 SELECT
 	s.blob AS "Blob",
 	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
@@ -135,25 +148,25 @@ test -d $SETCORE_ROOT || die "no setcore directory: $SETCORE_ROOT"
 test -r $SETSPACE_ROOT/etc/profile && . $SETSPACE_ROOT/etc/profile
 test -r $SETCORE_ROOT/etc/profile && . $SETCORE_ROOT/etc/profile
 
-ACTION=$1
-shift
+ACTION="$1";  shift
 
-case $ACTION in
+case "$ACTION" in
 help)
 	help
 	exit 0
 	;;
 ls)
-	case $# in
-	0)
-		ls_recent
+	[ $# = 0 ] && ls_recent
+	ACTION="$1";		shift
+	case "$ACTION" in
+	service)
+		ls_service
 		;;
-	1)
-		BLOB=$1
-		ls_blob $1
+	[a-z]*:*)
+		ls_blob "$ACTION"
 		;;
 	*)
-		die "ls: wrong number of arguments: got $#, expected 0 or 1"
+		die "ls: unknown action: $1"
 		;;
 	esac
 	;;
