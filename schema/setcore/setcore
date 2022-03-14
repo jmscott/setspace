@@ -6,12 +6,16 @@
 #	BLOB=btc20:b0e889a067b5d4fff15c3d6e646554939a793783
 #
 #	setcore help
+#	setcore l@-is
 #	setcore ls $BLOB
-#	setcore ls service
+#	setcore ls service | sort | xargs bio-file
 #  Note:
-#	
+#	Rename thos script to lib/setcore.bash, to be invoked
+#	by $SETSPACE_ROOT/sbin/ssq <schema> ...
 #
+
 PSQL='psql
+	--set=ON_ERROR_STOP=1
 	--no-psqlrc
 	--tuples-only
 	--pset null=Unknown
@@ -20,7 +24,7 @@ PSQL='psql
 
 die()
 {
-	echo "ERROR: $@" >&2
+	echo "setcore: ERROR: $@" >&2
 	exit 1
 }
 
@@ -50,7 +54,7 @@ END
 
 ls_service()
 {
-	$PSQL <<END
+	$PSQL --no-align <<END
 SELECT
 	blob
   FROM
@@ -61,8 +65,8 @@ END
 
 ls_recent()
 {
-	$PSQL --expanded <<END
-SELECT
+	$PSQL --expanded <<END || die "ls_recent: psql failed: exit status=$?"
+XSELECT
 	s.blob AS "Blob",
 	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
                 AS "Age",
@@ -166,7 +170,7 @@ ls)
 		ls_blob "$ACTION"
 		;;
 	*)
-		die "ls: unknown action: $1"
+		die "ls: unknown action: ls $ACTION"
 		;;
 	esac
 	;;
