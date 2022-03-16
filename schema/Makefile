@@ -10,8 +10,10 @@ include ../local.mk
 include ../setspace.mk
 include schema.mk
 
+_MAKE=$(MAKE) $(MFLAGS)
+
 BINs=									\
-	setspace
+	ssq
 LIBs=									\
 	fault-process.sh						\
 	psqlrc.example							\
@@ -19,35 +21,32 @@ LIBs=									\
 SBINs=									\
 	create-all-schema
 all:
-	cd setcore && $(MAKE) $(MFLAGS) all
-	cd jsonorg && $(MAKE) $(MFLAGS) all
-	cd expat2 && $(MAKE) $(MFLAGS) all
-	cd libxml2 && $(MAKE) $(MFLAGS) all
-	cd mycore && $(MAKE) $(MFLAGS) all
-	cd mydash && $(MAKE) $(MFLAGS) all
-	cd prefixio && $(MAKE) $(MFLAGS) all
-	cd jsonio && $(MAKE) $(MFLAGS) all
-	cd pdfbox && $(MAKE) $(MFLAGS) all
-	cd fffile5 && $(MAKE) $(MFLAGS) all
-	cd gnuzip && $(MAKE) $(MFLAGS) all
-	cd infozip3 && $(MAKE) $(MFLAGS) all
-
-createpg:
-	createdb setspace --encoding=UTF8 --template template0
+	cd setcore && $(_MAKE) all
+	cd jsonorg && $(_MAKE) all
+	cd expat2 && $(_MAKE) all
+	cd libxml2 && $(_MAKE) all
+	cd mycore && $(_MAKE) all
+	cd mydash && $(_MAKE) all
+	cd prefixio && $(_MAKE) all
+	cd jsonio && $(_MAKE) all
+	cd pdfbox && $(_MAKE) all
+	cd fffile5 && $(_MAKE) all
+	cd gnuzip && $(_MAKE) all
+	cd infozip3 && $(_MAKE) all
 
 clean:
-	cd setcore && $(MAKE) $(MFLAGS) clean
-	cd jsonorg && $(MAKE) $(MFLAGS) clean
-	cd expat2 && $(MAKE) $(MFLAGS) clean
-	cd libxml2 && $(MAKE) $(MFLAGS) clean
-	cd mycore && $(MAKE) $(MFLAGS) clean
-	cd mydash && $(MAKE) $(MFLAGS) clean
-	cd prefixio && $(MAKE) $(MFLAGS) clean
-	cd jsonio && $(MAKE) $(MFLAGS) clean
-	cd pdfbox && $(MAKE) $(MFLAGS) clean
-	cd fffile5 && $(MAKE) $(MFLAGS) clean
-	cd gnuzip && $(MAKE) $(MFLAGS) clean
-	cd infozip3 && $(MAKE) $(MFLAGS) clean
+	cd setcore && $(_MAKE) clean
+	cd jsonorg && $(_MAKE) clean
+	cd expat2 && $(_MAKE) clean
+	cd libxml2 && $(_MAKE) clean
+	cd mycore && $(_MAKE) clean
+	cd mydash && $(_MAKE) clean
+	cd prefixio && $(_MAKE) clean
+	cd jsonio && $(_MAKE) clean
+	cd pdfbox && $(_MAKE) clean
+	cd fffile5 && $(_MAKE) clean
+	cd gnuzip && $(_MAKE) clean
+	cd infozip3 && $(_MAKE) clean
 
 install:
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
@@ -64,18 +63,18 @@ install:
 
 	#  install sql schemas
 
-	cd setcore && $(MAKE) $(MFLAGS) install
-	cd jsonorg && $(MAKE) $(MFLAGS) install
-	cd expat2 && $(MAKE) $(MFLAGS) install
-	cd libxml2 && $(MAKE) $(MFLAGS) install
-	cd mycore && $(MAKE) $(MFLAGS) install
-	cd mydash && $(MAKE) $(MFLAGS) install
-	cd prefixio && $(MAKE) $(MFLAGS) install
-	cd jsonio && $(MAKE) $(MFLAGS) install
-	cd pdfbox && $(MAKE) $(MFLAGS) install
-	cd fffile5 && $(MAKE) $(MFLAGS) install
-	cd gnuzip && $(MAKE) $(MFLAGS) install
-	cd infozip3 && $(MAKE) $(MFLAGS) install
+	cd setcore && $(_MAKE) install
+	cd jsonorg && $(_MAKE) install
+	cd expat2 && $(_MAKE) install
+	cd libxml2 && $(_MAKE) install
+	cd mycore && $(_MAKE) install
+	cd mydash && $(_MAKE) install
+	cd prefixio && $(_MAKE) install
+	cd jsonio && $(_MAKE) install
+	cd pdfbox && $(_MAKE) install
+	cd fffile5 && $(_MAKE) install
+	cd gnuzip && $(_MAKE) install
+	cd infozip3 && $(_MAKE) install
 
 	#  Install lib/
 
@@ -103,18 +102,18 @@ install:
 		$(SETSPACE_PREFIX)/bin
 
 distclean:
-	cd setcore && $(MAKE) $(MFLAGS) distclean
-	cd jsonorg && $(MAKE) $(MFLAGS) distclean
-	cd expat2 && $(MAKE) $(MFLAGS) distclean
-	cd libxml2 && $(MAKE) $(MFLAGS) distclean
-	cd mycore && $(MAKE) $(MFLAGS) distclean
-	cd mydash && $(MAKE) $(MFLAGS) distclean
-	cd prefixio && $(MAKE) $(MFLAGS) distclean
-	cd jsonio && $(MAKE) $(MFLAGS) distclean
-	cd pdfbox && $(MAKE) $(MFLAGS) distclean
-	cd fffile5 && $(MAKE) $(MFLAGS) distclean
-	cd gnuzip && $(MAKE) $(MFLAGS) distclean
-	cd infozip3 && $(MAKE) $(MFLAGS) distclean
+	cd setcore && $(_MAKE) distclean
+	cd jsonorg && $(_MAKE) distclean
+	cd expat2 && $(_MAKE) distclean
+	cd libxml2 && $(_MAKE) distclean
+	cd mycore && $(_MAKE) distclean
+	cd mydash && $(_MAKE) distclean
+	cd prefixio && $(_MAKE) distclean
+	cd jsonio && $(_MAKE) distclean
+	cd pdfbox && $(_MAKE) distclean
+	cd fffile5 && $(_MAKE) distclean
+	cd gnuzip && $(_MAKE) distclean
+	cd infozip3 && $(_MAKE) distclean
 
 	#  do NOT remove dirs $SETSPACE_PREFIX/{lib,bin,sbin}/
 	test ! -d $(SETSPACE_PREFIX)/lib ||				\
@@ -124,7 +123,7 @@ distclean:
 	test ! -d $(SETSPACE_PREFIX)/bin ||				\
 		(cd $(SETSPACE_PREFIX)/bin;  rm -f $(BINs))
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
