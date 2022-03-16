@@ -188,8 +188,10 @@ COMMENT ON FUNCTION jsonb_all_keys IS
   'Extract all keys in jsonb object' 
 ;
 
-DROP TABLE IF EXISTS jsonb_255_key CASCADE;
-CREATE TABLE jsonb_255_key
+DROP TABLE IF EXISTS jsonb_255_key_word_set
+  CASCADE
+; 
+CREATE TABLE jsonb_255_key_word_set
 (
 	blob		udig
 				PRIMARY KEY
@@ -203,18 +205,25 @@ CREATE TABLE jsonb_255_key
 				length(word_set) < 2147483648
 			) NOT NULL
 );
-CREATE INDEX idx_jsonb_255_key_trgm
-  ON jsonb_255_key
+CREATE INDEX idx_jsonb_255_key_word_set_trgm
+  ON jsonb_255_key_word_set
   USING GIN (word_set gin_trgm_ops)
 ;
-CREATE INDEX idx_jsonb_255_key_hash ON jsonb_255_key USING hash(blob);
+CREATE INDEX idx_jsonb_255_key_word_set_hash
+  ON jsonb_255_key_word_set
+  USING hash (blob)
+; 
 
-DROP TRIGGER IF EXISTS insert_jsonb_255_key ON jsonb_255 CASCADE; 
-DROP FUNCTION IF EXISTS trig_insert_jsonb_255_key();
-CREATE OR REPLACE FUNCTION trig_insert_jsonb_255_key() RETURNS TRIGGER
+DROP TRIGGER IF EXISTS insert_jsonb_255_key_word_set
+  ON jsonb_255
+  CASCADE
+; 
+DROP FUNCTION IF EXISTS trig_insert_jsonb_255_key_word_set();
+CREATE OR REPLACE FUNCTION trig_insert_jsonb_255_key_word_set()
+  RETURNS TRIGGER
   AS $$
     BEGIN
-	INSERT INTO jsonorg.jsonb_255_key(blob, word_set)
+	INSERT INTO jsonorg.jsonb_255_key_word_set(blob, word_set)
 	  SELECT
 		j.blob,
 		string_agg(k.key, ' ')
@@ -232,52 +241,20 @@ CREATE OR REPLACE FUNCTION trig_insert_jsonb_255_key() RETURNS TRIGGER
   END
   $$ LANGUAGE plpgsql
 ;
-COMMENT ON FUNCTION trig_insert_jsonb_255_key IS
-  'Trigger to Update jsonb_255_key table'
+COMMENT ON FUNCTION trig_insert_jsonb_255_key_word_set
+  IS 'Trigger to Update jsonb_255_key_word_set table'
 ;
 
-CREATE TRIGGER insert_jsonb_255_key AFTER INSERT
+CREATE TRIGGER insert_jsonb_255_key_word_set
+  AFTER INSERT
   ON
   	jsonb_255
   FOR EACH ROW EXECUTE PROCEDURE
-  	trig_insert_jsonb_255_key()
+  	trig_insert_jsonb_255_key_word_set()
 ;
-COMMENT ON TRIGGER insert_jsonb_255_key ON jsonb_255 IS
-  'Add objects keys for trigram search'
-;
-
-DROP MATERIALIZED VIEW IF EXISTS jsonb_255_key_word CASCADE;
-CREATE MATERIALIZED VIEW jsonb_255_key_word(
-	word,
-	ndoc,
-	nentry
-  )
-  AS
-    SELECT
-    	word,
-	ndoc,
-	nentry
-    FROM
-        ts_stat('
-	  SELECT
-	    to_tsvector(''simple'', word_set )
-	    FROM
-	  	jsonorg.jsonb_255_key
-	')
-  WITH DATA
-;
-CREATE
-  UNIQUE INDEX idx_jsonb_255_key_word_word
-  ON jsonb_255_key_word(word)
-;
-CREATE INDEX idx_jsonb_255_key_word_trgm ON jsonb_255_key_word
-  USING GIN (word gin_trgm_ops)
-;
-COMMENT ON
-  MATERIALIZED VIEW jsonb_255_key_word
-  IS 'Json keys across all json blobs, ' 
-     'with doc and word counts, '
-     'suitable for text search prediction'
+COMMENT ON TRIGGER insert_jsonb_255_key_word_set
+  ON jsonb_255
+  IS 'Add objects keys for trigram search'
 ;
 
 REVOKE UPDATE ON ALL TABLES IN SCHEMA jsonorg FROM PUBLIC;
