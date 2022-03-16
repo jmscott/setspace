@@ -13,7 +13,7 @@ SETCORE_PREFIX=$(SETSPACE_PREFIX)/schema/setcore
 DIST=./setspace-schema-setcore.dist
 COMPILEs := $(shell (. $(DIST) && echo $$COMPILEs))
 SBINs := $(shell (. $(DIST) && echo $$SBINs))
-BINs := $(shell (. $(DIST) && echo $$BINs))
+LIBEXECs := $(shell (. $(DIST) && echo $$LIBEXECs))
 LIBs := $(shell (. $(DIST) && echo $$LIBs))
 SRCs := $(shell (. $(DIST) && echo $$SRCs))
 
@@ -36,7 +36,7 @@ ifdef SETCORE_PREFIX
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
 				-m=u=rwx,g=rx,o= -d $(SETCORE_ROOT)/lib
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
-				-m=u=rwx,g=rx,o= -d $(SETCORE_ROOT)/bin
+				-m=u=rwx,g=rx,o= -d $(SETCORE_ROOT)/libexec
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
 				-m=u=rwx,go= -d $(SETCORE_ROOT)/log
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
@@ -50,8 +50,8 @@ ifdef SETCORE_PREFIX
 		$(SETCORE_ROOT)/sbin
 
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
-		$(BINs)							\
-		$(SETCORE_ROOT)/bin
+		$(LIBEXECs)						\
+		$(SETCORE_ROOT)/libexec
 
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER) 			\
 		$(LIBs)							\
@@ -65,6 +65,7 @@ endif
 distclean:
 #ifdef SETCORE_ROOT
 	rm -rf $(SETCORE_ROOT)/lib
+	rm -rf $(SETCORE_ROOT)/libexec
 	rm -rf $(SETCORE_ROOT)/src
 	rm -rf $(SETCORE_ROOT)/sbin
 #endif

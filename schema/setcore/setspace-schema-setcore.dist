@@ -35,7 +35,7 @@ LIBs="
 	setspace-schema-setcore.dist
 "
 
-BINs="
+LIBEXECs="
 	setcore
 "
 
