@@ -1,34 +1,29 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Command line front end to sql queries for all schema.
+#	Command line front end to sql queries for all schemas.
 #  Usage:
-#	setspace [schema] [action] <...options>
-#	setspace			#  help
-#	setspace ls			#  list schemas available
-#	setspace setcore		#  help for "setcore"
-#	setspace setcore ls		#  list recent blobs in schema "setcore"
-#	setspace setcore ls <blob>	#  details on blob in schema "setcore"
-#
-#	alias setcore='setspace setcore'
+#	ssq
+#	ssq help
+#	ssq ls			#  list schemas
+#	ssq setcore		#  help for "setcore"
+#	ssq setcore help	#  help for "setcore"
 #  Note:
 #	Think about command
 #
-#		setspace <udig>
+#		ssq <udig>
 #
-#	to list all schemas containing a blob.
+#	to list all schemas containing a blob.  This implies each schema
+#	contains a table/view: <schema>.service.
 #
-#	Think about moving this script above directory /schema/, so flowd
-#	and other details can be managed.
-#
-#	Thinks about count stats to command 'setspace ls'
+#	Thinks about count stats to command 'ssq ls'
 #
 
 die()
 {
 	cat >&2 <<END
 ERROR: $@
-usage: setspace [ls | help | [<schema>] [...options]]
+usage: ssq [ls | help | [<schema>] [...options]]
 END
 	exit 1
 }
@@ -37,9 +32,11 @@ help()
 {
 	cat <<END
 Usage:
-	setspace help
-	setspace ls				#  list queryable schemas
-	setspace <schema> [action] [...options]
+	$(PROG)					#  list help
+	$(PROG) help				#  ..
+	$(PROG) ls				#  list queryable schemas
+	$(PROG) <schema>			#  help for particulare schema
+	$(PROG) <schema> [action] [...options]	#  schema specfic queries
 Environment:
 	SETSPACE_ROOT		$SETSPACE_ROOT
 END
@@ -60,7 +57,7 @@ SCHEMAS=$(
 		test -e schema/$SCH/bin/$SCH && echo $SCH
 	done
 )
-test -z "$SCHEMA" || die "hmm, no schema in $SETSPACE_ROOT"
+test -n "$SCHEMAS" || die "no schema in $SETSPACE_ROOT/schema"
 
 ls_schema()
 {
@@ -89,7 +86,8 @@ SCHEMA=$ACTION
 
 SCHEMA_ROOT=$SETSPACE_ROOT/schema/$SCHEMA
 test -d $SCHEMA_ROOT || die "no directory for schema: $SCHEMA"
-SCHEMA_EXEC=$SCHEMA_ROOT/bin/$SCHEMA
-test -x $SCHEMA_ROOT/bin/$SCHEMA || die "no executable: $SCHEMA_EXEC"
+cd $SCHEMA_ROOT || die "cd schema root failed: $SCHEMA_ROOT"
+SCHEMA_EXEC=libexec/$SCHEMA
+test -x $SCHEMA_EXEC || die "no executable: $SCHEMA_EXEC"
 
 exec $SCHEMA_EXEC "$@"
