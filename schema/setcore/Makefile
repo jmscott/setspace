@@ -7,6 +7,8 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
+_MAKE=$(MAKE) $(MFLAGS)
+
 #  setspace schema code always in setspace install directory
 SETCORE_PREFIX=$(SETSPACE_PREFIX)/schema/setcore
 
@@ -84,9 +86,9 @@ byte-suffix-32: byte-suffix-32.c ../../common.c
 	cc -o byte-suffix-32 $(CFLAGS) byte-suffix-32.c
 
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
 dist:
 	make-dist $(DIST)
