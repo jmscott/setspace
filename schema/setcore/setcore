@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Command line queries into sql schema "setcore".
+#	setcore schema querier backend libexeced by front end script "ssq".
 #  Usage:
 #	BLOB=btc20:b0e889a067b5d4fff15c3d6e646554939a793783
 #
@@ -9,9 +9,9 @@
 #	setcore l@-is
 #	setcore ls $BLOB
 #	setcore ls service | sort | xargs bio-file
-#  Note:
-#	Rename thos script to lib/setcore.bash, to be invoked
-#	by $SETSPACE_ROOT/sbin/ssq <schema> ...
+#  See:
+#	$SETSPACE_ROOT/bin/ssq
+#	$SETSPACE_ROOT/bin/ssq setcore help
 #
 
 PSQL='psql
@@ -66,7 +66,7 @@ END
 ls_recent()
 {
 	$PSQL --expanded <<END || die "ls_recent: psql failed: exit status=$?"
-XSELECT
+SELECT
 	s.blob AS "Blob",
 	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
                 AS "Age",
