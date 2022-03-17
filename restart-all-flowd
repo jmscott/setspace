@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Stop and start flowd process for all schemas.
+#  Usage:
+#	restart-all-flowd
+# 
+stop-all-flowd && start-all-flowd

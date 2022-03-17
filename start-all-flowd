@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+#  Synospsis:
+#	Start flowd processes for all schemas.
+#  Usage
+#	start-all-flowd
+#
+
+log()
+{
+	if [ -n "$FLOW" ];  then
+		echo "$(date +'%Y/%m/%d %H:%M:%S'): $PROG: $FLOW: $@"
+	else
+		echo "$(date +'%Y/%m/%d %H:%M:%S'): $PROG: $@"
+	fi
+}
+
+die()
+{
+	log "ERROR: $@" >&2
+	exit 2
+}
+
+leave()
+{
+	log 'good bye, cruel world'
+}
+
+test $# = 0 || die "wrong number of arguments, got $#, expected 1"
+ls-start-flowd | while read SCH;  do
+	start-flowd $SCH || die "start-flowd failed: $SC: exit status=$?"
+done
