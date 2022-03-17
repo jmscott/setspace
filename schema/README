@@ -270,5 +270,7 @@ Possible Schemas:
 	cjson - lightweight c parser of json
 		https://github.com/DaveGamble/cJSON
 	har format - web browser trace logs in json
-	gnu aspell
+	gnu aspell6 - spelling checker with over 70 languages
 		http://wordlist.aspell.net/
+	nuspell - spelling checker with over 90 languages
+		https://nuspell.github.io/
