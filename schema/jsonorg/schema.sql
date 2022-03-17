@@ -257,6 +257,22 @@ COMMENT ON TRIGGER insert_jsonb_255_key_word_set
   IS 'Add objects keys for trigram search'
 ;
 
+DROP VIEW IF EXISTS service;
+CREATE VIEW service AS
+  SELECT
+  	ck.blob
+    FROM
+    	checker_255 ck
+	  JOIN jsonb_255 j ON (
+	  	j.blob = ck.blob
+	  )
+    WHERE
+    	ck.is_json
+;
+COMMENT ON VIEW service
+  IS 'JSON blobs in service'
+;
+
 REVOKE UPDATE ON ALL TABLES IN SCHEMA jsonorg FROM PUBLIC;
 
 COMMIT;
