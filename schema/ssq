@@ -3,11 +3,11 @@
 #  Synopsis:
 #	Command line front end to sql queries for all schemas.
 #  Usage:
-#	ssq
-#	ssq help
+#	ssq			#  help
+#	ssq help		#  help
 #	ssq ls			#  list schemas
-#	ssq setcore		#  help for "setcore"
-#	ssq setcore help	#  help for "setcore"
+#	ssq setcore		#  help for "setcore" schema
+#	ssq setcore help	#  help for "setcore" schema
 #  Note:
 #	Think about command
 #
@@ -87,6 +87,7 @@ SCHEMA=$ACTION
 SCHEMA_ROOT=$SETSPACE_ROOT/schema/$SCHEMA
 test -d $SCHEMA_ROOT || die "no directory for schema: $SCHEMA"
 cd $SCHEMA_ROOT || die "cd schema root failed: $SCHEMA_ROOT"
+test etc/profile && . etc/profile
 SCHEMA_EXEC=libexec/$SCHEMA
 test -x $SCHEMA_EXEC || die "no executable: $SCHEMA_EXEC"
 
