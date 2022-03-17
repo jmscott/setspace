@@ -71,12 +71,14 @@ SBINs=									\
 	flowd-stat							\
 	launchd-flowd							\
 	ls-start-flowd							\
+	restart-all-flowd						\
 	restart-flowd							\
 	rummy								\
 	run-stat-flowd-tuple						\
 	run-stat-report							\
 	run-stat-tuple							\
 	ssctl								\
+	start-all-flowd							\
 	start-flowd							\
 	stop-all-flowd							\
 	stop-flowd							\
