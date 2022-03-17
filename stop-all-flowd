@@ -1,8 +1,8 @@
 #
 #  Synopsis:
-#	Gracefull kill all flowd proesses
+#	Gracefull stop all flowd proesses
 #  Usage:
-#	kill-all-flowd
+#	stop-all-flowd
 #  Blame:
 #  	jmscott@setspace.com
 #  	setspace@gmail.com
@@ -51,8 +51,8 @@ run-stat-report								|
   fgrep -wv 'OFF'							|
   sort									|
   while read SCHEMA STATE;  do
-	log "kill flowd of schema: $SCHEMA ($STATE)"
-	kill-flowd $SCHEMA
+	log "stop flowd of schema: $SCHEMA ($STATE)"
+	stop-flowd $SCHEMA
 	STATUS=$?
 	case $STATUS in
 	0)
@@ -62,7 +62,7 @@ run-stat-report								|
 		log "no flowd process was running (ok)"
 		;;
 	*)
-		die "kill-flowd $SCHEMA failed: exit status=$STATUS"
+		die "stop-flowd $SCHEMA failed: exit status=$STATUS"
 		;;
 	esac
 done
