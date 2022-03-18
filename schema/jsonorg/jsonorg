@@ -31,6 +31,8 @@ Action:
 	ls [recent]	#  list recent 10 json blobs
 	ls [udig]	#  list details either recent blobs or particular blob
 	ls service	#  ls blobs in table setcore.service, in no order
+	refresh 	#  refresh all materialized views
+	count		#  count blobs in all tables in jsonorg
 
 Environment:
 	SETSPACE_ROOT	$SETSPACE_ROOT
@@ -75,7 +77,17 @@ SELECT
   LIMIT
   	10
 END
-	exit 0
+}
+
+refresh()
+{
+	$PSQL <<END || die "psql refresh failed: exit status=$?"
+\\timing on
+
+SELECT
+	jsonorg.refresh_stat()
+;
+END
 }
 
 ls_blob()
@@ -104,7 +116,37 @@ SELECT
   WHERE
   	srv.blob = '$BLOB'
 END
-	exit 0
+}
+
+count_tables()
+{
+	$PSQL --expanded <<END 						|| \
+		die "count_tables: psql failed: exit status=$?"
+\\pset tuples_only off
+
+SELECT
+  (SELECT
+  	count(*)
+    FROM
+    	jsonorg.checker_255
+  ) AS checker_255,
+  (SELECT
+  	count(*)
+    FROM
+    	jsonorg.jsonb_255
+  ) AS jsonb_255,
+  (SELECT
+  	count(*)
+    FROM
+    	jsonorg.service
+  ) AS service,
+  (SELECT
+  	count(*)
+    FROM
+    	jsonorg.jsonb_255_key_word_set
+  ) AS jsonb_255_key_word_set
+END
+	
 }
 
 if [ $# = 0 ];  then
@@ -117,7 +159,6 @@ ACTION="$1";  shift
 case "$ACTION" in
 help)
 	help
-	exit 0
 	;;
 ls)
 	[ $# = 0 ] && ls_recent
@@ -138,7 +179,17 @@ ls)
 		;;
 	esac
 	;;
+
+count)
+	[ $# = 0 ] || die "count: unknown action: $1"
+	count_tables
+	;;
+
+refresh)
+	refresh
+	;;
 *)
 	die "unknown action: $ACTION"
 	;;
 esac
+exit 0
