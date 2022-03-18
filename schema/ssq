@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env perl
 #
 #  Synopsis:
 #	Command line front end to sql queries for all schemas.
@@ -9,6 +9,8 @@
 #	ssq setcore		#  help for "setcore" schema
 #	ssq setcore help	#  help for "setcore" schema
 #  Note:
+#	Consider rewriting in perl.
+#
 #	Add ability to pass CLI args to PSQL
 #
 #		SETSPACE_SSQ_PSQL_ARGV='--var=timing=on'
