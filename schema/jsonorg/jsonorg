@@ -1,0 +1,144 @@
+#!/bin/bash
+#
+#  Synopsis:
+#	Backend libexec for schema jsonorg, invoked by script bin/ssq
+#  Usage:
+#	ssq jsonorg help
+#
+
+PSQL='psql
+	--set=ON_ERROR_STOP=1
+	--no-psqlrc
+	--tuples-only
+	--pset null=Unknown
+	--quiet
+'
+
+die()
+{
+	echo "setcore: jsonorg: ERROR: $@" >&2
+	exit 1
+}
+
+help()
+{
+	cat <<END
+Usage: ssq jsonorg setcore [action] <options> ...
+
+Action:
+	help
+
+	ls [recent]	#  list recent 10 json blobs
+	ls [udig]	#  list details either recent blobs or particular blob
+	ls service	#  ls blobs in table setcore.service, in no order
+
+Environment:
+	SETSPACE_ROOT	$SETSPACE_ROOT
+	PGHOST		$PGHOST
+	PGPORT		$PGPORT
+	PGUSER		$PGUSER
+	PGDATABASE	$PGDATABASE
+Example:
+	ls		#  show recent blobs
+	ls <udig>	#  show details on specific blob
+	ls service	#  list contents of jsonorg.service, in no order
+END
+}
+
+ls_service()
+{
+	$PSQL --no-align <<END
+SELECT
+	blob
+  FROM
+  	jsonorg.service
+;
+END
+}
+
+ls_recent()
+{
+	$PSQL --expanded <<END || die "ls_recent: psql failed: exit status=$?"
+SELECT
+	srv.blob AS "Blob",
+	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
+                AS "Age",
+	pg_size_pretty(bc.byte_count) AS "Size"
+  FROM
+  	jsonorg.service srv
+	  JOIN setcore.service s ON (s.blob = srv.blob) 
+	  JOIN setcore.byte_count bc ON (bc.blob = srv.blob)
+  ORDER BY
+  	s.discover_time DESC,
+	bc.byte_count DESC,
+	srv.blob ASC
+  LIMIT
+  	10
+END
+	exit 0
+}
+
+ls_blob()
+{
+	local BLOB=$1
+
+	#
+	#  Note:
+	#	How do we know perl regex always enabled?
+	#
+	[[ $BLOB =~ ^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$ ]]		||
+		die "ls_blob: not a udig: $BLOB"
+	
+	$PSQL --expanded <<END
+\\pset tuples_only off
+
+SELECT
+	s.blob AS "Blob",
+	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
+                AS "Age",
+	pg_size_pretty(bc.byte_count) AS "Size"
+  FROM
+  	jsonorg.service srv
+	  JOIN setcore.service s ON (s.blob = srv.blob) 
+	  JOIN setcore.byte_count bc ON (bc.blob = srv.blob)
+  WHERE
+  	srv.blob = '$BLOB'
+END
+	exit 0
+}
+
+if [ $# = 0 ];  then
+	help
+	exit 0
+fi
+
+ACTION="$1";  shift
+
+case "$ACTION" in
+help)
+	help
+	exit 0
+	;;
+ls)
+	[ $# = 0 ] && ls_recent
+
+	ACTION="$1";		shift
+	case "$ACTION" in
+	recent)
+		ls_recent
+		;;
+	service)
+		ls_service
+		;;
+	[a-z]*:*)
+		ls_blob "$ACTION"
+		;;
+	*)
+		die "ls: unknown action: ls $ACTION"
+		;;
+	esac
+	;;
+*)
+	die "unknown action: $ACTION"
+	;;
+esac

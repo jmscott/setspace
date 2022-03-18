@@ -12,9 +12,10 @@ COMPILED=								\
 	JSON_checker							\
 	merge-stdin-jsonb_255
 
-PROGS=  $(COMPILED)							\
+SBINs=  $(COMPILED)							\
 	get-JSON_checker						\
 	merge-jsonb_255
+LIBEXECs=jsonorg
 
 all: $(COMPILED)
 clean:
@@ -30,6 +31,8 @@ install: all
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
 				-d $(JSONORG_PREFIX)/lib
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
+				-d $(JSONORG_PREFIX)/libexec
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
 				-d $(JSONORG_PREFIX)/src
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
 				-d $(JSONORG_PREFIX)/log
@@ -40,8 +43,11 @@ install: all
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
 				-d $(JSONORG_PREFIX)/tmp
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m u=rx,go=	\
-		$(PROGS) 						\
+		$(SBINs) 						\
 		$(JSONORG_PREFIX)/sbin
+	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m u=rx,go=	\
+		$(LIBEXECs) 						\
+		$(JSONORG_PREFIX)/libexec
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r		\
 		jsonorg.flow.example					\
 		merge-jsonb_255_key.sql					\
@@ -75,3 +81,4 @@ distclean:
 	rm -rf $(JSONORG_PREFIX)/lib
 	rm -rf $(JSONORG_PREFIX)/src
 	rm -rf $(JSONORG_PREFIX)/sbin
+	rm -rf $(JSONORG_PREFIX)/libexec
