@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/bin/bash
 #
 #  Synopsis:
 #	Command line front end to sql queries for all schemas.
@@ -60,10 +60,10 @@ test -r etc/profile && . etc/profile
 
 SCHEMAS=$(
 	find-schema | while read SCH;  do
-		test -e schema/$SCH/libexec/$SCH && echo $SCH
+		test -e schema/$SCH/libexec/ssq-$SCH && echo $SCH
 	done
 )
-test -n "$SCHEMAS" || die "no schema in $SETSPACE_ROOT/schema"
+test -n "$SCHEMAS" || die "no schemas in $SETSPACE_ROOT/schema"
 
 ls_schema()
 {
@@ -94,7 +94,7 @@ SCHEMA_ROOT=$SETSPACE_ROOT/schema/$SCHEMA
 test -d $SCHEMA_ROOT || die "no directory for schema: $SCHEMA"
 cd $SCHEMA_ROOT || die "cd schema root failed: $SCHEMA_ROOT"
 test etc/profile && . etc/profile
-SCHEMA_EXEC=libexec/$SCHEMA
+SCHEMA_EXEC=libexec/ssq-$SCHEMA
 test -x $SCHEMA_EXEC || die "no executable: $SCHEMA_EXEC"
 
 exec $SCHEMA_EXEC "$@"
