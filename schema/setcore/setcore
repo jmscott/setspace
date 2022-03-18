@@ -24,7 +24,7 @@ PSQL='psql
 
 die()
 {
-	echo "setcore: ERROR: $@" >&2
+	echo "ssq: setcore: ERROR: $@" >&2
 	exit 1
 }
 
