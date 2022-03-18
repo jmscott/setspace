@@ -9,6 +9,10 @@
 #	ssq setcore		#  help for "setcore" schema
 #	ssq setcore help	#  help for "setcore" schema
 #  Note:
+#	Add ability to pass CLI args to PSQL
+#
+#		SETSPACE_SSQ_PSQL_ARGV='--var=timing=on'
+#
 #	Think about command
 #
 #		ssq <udig>
@@ -54,7 +58,7 @@ test -r etc/profile && . etc/profile
 
 SCHEMAS=$(
 	find-schema | while read SCH;  do
-		test -e schema/$SCH/bin/$SCH && echo $SCH
+		test -e schema/$SCH/libexec/$SCH && echo $SCH
 	done
 )
 test -n "$SCHEMAS" || die "no schema in $SETSPACE_ROOT/schema"
@@ -64,9 +68,9 @@ ls_schema()
 	(
 		cat <<END
 Schema
--------
+--------
 END
-		echo $SCHEMAS | while read SCH;  do
+		echo $SCHEMAS | tr ' ' '\n' | while read SCH;  do
 			echo $SCH
 		done
 	) | column -s ' ' -t | sed 's/ *        //'
