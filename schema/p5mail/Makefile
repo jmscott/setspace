@@ -2,6 +2,8 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
+_MAKE=$(MAKE) $(MFLAGS)
+
 P5MAIL_PREFIX=$(SETSPACE_PREFIX)/schema/p5mail
 
 DIST=./setspace-schema-p5mail.dist
@@ -9,6 +11,7 @@ SBINs := $(shell (. $(DIST) && echo $$SBINs))
 LIBs := $(shell (. $(DIST) && echo $$LIBs))
 
 install:
+	cd .. && $(_MAKE) install-dirs
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)	 		\
 			-m=u=rwx,go= -d $(P5MAIL_PREFIX)/run
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)	 		\
@@ -37,5 +40,5 @@ distclean:
 		$(P5MAIL_PREFIX)/lib 					\
 
 world:
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) distclean
+	$(_MAKE) install

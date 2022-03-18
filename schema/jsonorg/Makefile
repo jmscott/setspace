@@ -8,6 +8,8 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
+_MAKE=$(MAKE) $(MFLAGS)
+
 COMPILED=								\
 	JSON_checker							\
 	merge-stdin-jsonb_255
@@ -15,13 +17,14 @@ COMPILED=								\
 SBINs=  $(COMPILED)							\
 	get-JSON_checker						\
 	merge-jsonb_255
-LIBEXECs=jsonorg
+LIBEXECs=ssq-jsonorg
 
 all: $(COMPILED)
 clean:
 	rm -f $(COMPILED) merge-stdin-jsonb_255.c
 
 install: all
+	cd .. && $(_MAKE) install-dirs
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
 				-d $(JSONORG_PREFIX)
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
@@ -81,4 +84,4 @@ distclean:
 	rm -rf $(JSONORG_PREFIX)/lib
 	rm -rf $(JSONORG_PREFIX)/src
 	rm -rf $(JSONORG_PREFIX)/sbin
-	rm -rf $(JSONORG_PREFIX)/libexec
+	rm -rf $(JSONORG_PREFIX)/libexec/

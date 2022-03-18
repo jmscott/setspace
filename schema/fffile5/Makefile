@@ -10,6 +10,8 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
+_MAKE=$(MAKE) $(MFLAGS)
+
 SBINs=									\
 	launchd-flowd-init						\
 	merge-file							\
@@ -28,6 +30,8 @@ clean:
 		merge-stdin-file_mime_encoding
 
 install: all
+	cd .. && $(_MAKE) install-dirs
+
 	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) 			\
 				-d $(FFFILE5_PREFIX)
 	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) 			\
@@ -98,7 +102,7 @@ merge-stdin-file_mime_encoding:						\
 	rm merge-stdin-file_mime_encoding.c
 
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install

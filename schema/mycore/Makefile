@@ -11,11 +11,14 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
+_MAKE=$(MAKE) $(MFLAGS)
+
 all: $(CGIBINs)
 clean:
 	rm -f $(CGIBINs)
 
 install: all
+	cd .. && $(_MAKE) install-dirs
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
 		-m u=rwx,g=rx,o= -d $(MYCORE_PREFIX)
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
@@ -51,7 +54,7 @@ distclean:
 	rm -rf $(MYCORE_PREFIX)/lib
 
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install

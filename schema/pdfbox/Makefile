@@ -8,6 +8,8 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
+_MAKE=$(MAKE) $(MFLAGS)
+
 JCOMPILED=								\
 	ExtractPagesUTF8.class						\
 	putPDDocument.class						\
@@ -27,10 +29,10 @@ clean:
 	rm -f $(JCOMPILED) $(ECPG_COMPILED)
 
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
 
 distclean:
 	rm -rf $(PDFBOX_PREFIX)/lib
@@ -50,6 +52,9 @@ ExtractPagesUTF8.class:  ExtractPagesUTF8.java
 	javac -cp $(PDFBOX_APP2_JAR) ExtractPagesUTF8.java
 
 install: all
+
+	cd .. && $(_MAKE) install-dirs
+
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER)			\
 		-d $(PDFBOX_PREFIX)
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER)			\

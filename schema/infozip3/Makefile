@@ -10,6 +10,8 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
+_MAKE=$(MAKE) $(MFLAGS)
+
 DIST=./setspace-schema-infozip3.dist
 SBINs := $(shell (. ./$(DIST) && echo $$SBINs))
 LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
@@ -21,6 +23,8 @@ clean:
 	rm -f $(COMPILEs)
 
 install:
+	cd .. && $(_MAKE) install-dirs
+
 	install -g $(INFOZIP3_GROUP) -o $(INFOZIP3_USER)		\
 				-d $(INFOZIP3_PREFIX)
 	install -g $(INFOZIP3_GROUP) -o $(INFOZIP3_USER) 		\

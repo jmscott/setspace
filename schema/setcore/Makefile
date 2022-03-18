@@ -26,6 +26,8 @@ clean:
 
 install: all
 
+	cd .. && $(_MAKE) install-dirs
+
 ifdef SETCORE_PREFIX
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)	 		\
 				-m=u=rwx,g=rx,o= -d $(SETCORE_ROOT)
@@ -65,10 +67,14 @@ ifdef SETCORE_PREFIX
 endif
 
 distclean:
-	rm -rf $(SETCORE_ROOT)/lib
-	rm -rf $(SETCORE_ROOT)/libexec
-	rm -rf $(SETCORE_ROOT)/src
-	rm -rf $(SETCORE_ROOT)/sbin
+	test ! -e $(SETCORE_ROOT)/lib ||				\
+		(cd $(SETCORE_ROOT)/lib && rm -rf $(LIBs))
+	test ! -e $(SETCORE_ROOT)/libexec ||				\
+		(cd $(SETCORE_ROOT)/libexec && rm -rf $(LIBEXECs))
+	test ! -e $(SETCORE_ROOT)/src ||				\
+		(cd $(SETCORE_ROOT)/src && rm -rf $(SRCs))
+	test ! -e $(SETCORE_ROOT)/sbin ||				\
+		(cd $(SETCORE_ROOT)/sbin && rm -rf $(SBINs))
 
 byte-bitmap: byte-bitmap.c ../../common.c
 	cc -o byte-bitmap $(CFLAGS) byte-bitmap.c

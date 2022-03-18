@@ -8,6 +8,8 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
+_MAKE=$(MAKE) $(MFLAGS)
+
 MYDASH_USER?=$(SETSPACE_USER)
 MYDASH_GROUP?=$(SETSPACE_GROUP)
 MYDASH_PREFIX?=$(SETSPACE_PREFIX)/schema/mydash
@@ -15,6 +17,7 @@ MYDASH_PREFIX?=$(SETSPACE_PREFIX)/schema/mydash
 all:
 
 install:
+	cd .. && $(_MAKE) install-dirs
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) -d $(MYDASH_PREFIX)
 	install -g $(MYDASH_GROUP) -o $(MYDASH_USER) 			\
 		-m u=rwx,go= -d $(MYDASH_PREFIX)/etc

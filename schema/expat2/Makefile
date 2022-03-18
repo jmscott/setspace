@@ -8,6 +8,8 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
+_MAKE=$(MAKE) $(MFLAGS)
+
 COMPILED= merge-stdin-xmlwf_utf8
 
 all: $(COMPILED)
@@ -16,6 +18,8 @@ clean:
 	rm -f $(COMPILED)
 
 install: all
+	cd .. && $(_MAKE) install-dirs
+
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 			\
 				-d $(EXPAT2_PREFIX)/etc
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m u=wrx,go=	\
@@ -53,10 +57,10 @@ distclean:
 	rm -rf $(EXPAT2_PREFIX)/sbin
 	rm -rf $(EXPAT2_PREFIX)/src
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
 
 merge-stdin-xmlwf_utf8:							\
 		merge-stdin-xmlwf_utf8.pgc				\

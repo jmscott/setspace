@@ -6,9 +6,10 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
-all:
-clean:
+_MAKE=$(MAKE) $(MFLAGS)
+
 install:
+	cd .. && $(_MAKE) install-dirs
 	install -g $(PREFIXIO_GROUP) -o $(PREFIXIO_USER) 		\
 				-d $(PREFIXIO_PREFIX)
 	install -g $(PREFIXIO_GROUP) -o $(PREFIXIO_USER) 		\
@@ -35,5 +36,5 @@ distclean:
 	rm -rf $(PREFIXIO_PREFIX)/lib
 
 world:
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) distclean
+	$(_MAKE) install

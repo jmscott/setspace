@@ -6,6 +6,8 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
+_MAKE=$(MAKE) $(MFLAGS)
+
 DIST=./setspace-schema-gnuzip.dist
 SBINs := $(shell (. ./$(DIST) && echo $$SBINs))
 LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
@@ -15,6 +17,7 @@ COMPILEs := $(shell (. ./$(DIST) && echo $$COMPILEs))
 all: $(COMPILEs)
 
 install:
+	cd .. && $(_MAKE) install-dirs
 	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) 			\
 				-d $(GNUZIP_PREFIX)
 	install -g $(GNUZIP_GROUP) -o $(GNUZIP_USER) 			\
@@ -48,10 +51,10 @@ distclean:
 	rm -rf $(GNUZIP_PREFIX)/lib
 	rm -rf $(GNUZIP_PREFIX)/src
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
 dist: all
 	make-dist $(DIST)
 

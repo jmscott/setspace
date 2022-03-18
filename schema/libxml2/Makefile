@@ -6,6 +6,8 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
+_MAKE=$(MAKE) $(MFLAGS)
+
 COMPILED=								\
 	merge-stdin-xml_doc						\
 	is-pg-well-formed
@@ -40,6 +42,8 @@ is-pg-well-formed:							\
 	rm is-pg-well-formed.c
 
 install: all
+	cd .. && $(_MAKE) install-dirs
+
 	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
 				-d $(LIBXML2_PREFIX)
 	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
@@ -80,3 +84,9 @@ distclean:
 	rm -rf $(LIBXML2_PREFIX)/lib
 	rm -rf $(LIBXML2_PREFIX)/src
 	rm -rf $(LIBXML2_PREFIX)/sbin
+
+world:
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install

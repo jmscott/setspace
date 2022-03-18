@@ -2,9 +2,11 @@
 #  Synposis:
 #	Makefile for setspace/schema/*
 #  Note:
-#	Why is $(MFLAGS) missing from invocations of $(MAKE)?
+#	Write script of recipe to make dirs in $SETSPACE_ROOT/schema/<schema>.
 #
-#	No distclean of PDFBOX_PREFIX if we disabled pdfbox compilation
+#		make-schema-dirs <schema> bin sbin lib etc tmp
+#
+#	Currently the permissions are set unreliably in each Makefile.
 #
 include ../local.mk
 include ../setspace.mk
@@ -27,8 +29,6 @@ all:
 	cd libxml2 && $(_MAKE) all
 	cd mycore && $(_MAKE) all
 	cd mydash && $(_MAKE) all
-	cd prefixio && $(_MAKE) all
-	cd jsonio && $(_MAKE) all
 	cd pdfbox && $(_MAKE) all
 	cd fffile5 && $(_MAKE) all
 	cd gnuzip && $(_MAKE) all
@@ -41,26 +41,17 @@ clean:
 	cd libxml2 && $(_MAKE) clean
 	cd mycore && $(_MAKE) clean
 	cd mydash && $(_MAKE) clean
-	cd prefixio && $(_MAKE) clean
-	cd jsonio && $(_MAKE) clean
 	cd pdfbox && $(_MAKE) clean
 	cd fffile5 && $(_MAKE) clean
 	cd gnuzip && $(_MAKE) clean
 	cd infozip3 && $(_MAKE) clean
 
+install-dirs:
+	cd .. && $(_MAKE) install-dirs
+
 install:
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
-		-m u=rwx,g=rx,o=					\
-		-d $(SETSPACE_PREFIX)/bin
 
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
-		-m u=rwx,g=rx,o=					\
-		-d $(SETSPACE_PREFIX)/lib
-
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
-		-m u=rwx,go=						\
-		-d $(SETSPACE_PREFIX)/sbin
-
+	$(_MAKE) install-dirs
 	#  install sql schemas
 
 	cd setcore && $(_MAKE) install
@@ -76,14 +67,14 @@ install:
 	cd gnuzip && $(_MAKE) install
 	cd infozip3 && $(_MAKE) install
 
-	#  Install lib/
+	#  Install files in lib/
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
 		-m u=rw,g=r,o=						\
 		$(LIBs)							\
 		$(SETSPACE_PREFIX)/lib
 
-	#  Install sbin/
+	#  Install files in sbin/
 
 	install								\
 		-g $(SETSPACE_GROUP)					\
@@ -92,7 +83,7 @@ install:
 		$(SBINs)						\
 		$(SETSPACE_PREFIX)/sbin
 
-	#  Install bin/
+	#  Install files in bin/
 
 	install								\
 		-g $(SETSPACE_GROUP)					\
@@ -115,7 +106,6 @@ distclean:
 	cd gnuzip && $(_MAKE) distclean
 	cd infozip3 && $(_MAKE) distclean
 
-	#  do NOT remove dirs $SETSPACE_PREFIX/{lib,bin,sbin}/
 	test ! -d $(SETSPACE_PREFIX)/lib ||				\
 		(cd $(SETSPACE_PREFIX)/lib;  rm -f $(LIBs))
 	test ! -d $(SETSPACE_PREFIX)/sbin ||				\

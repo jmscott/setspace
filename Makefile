@@ -15,6 +15,8 @@ ifeq "$(shell uname)" "Linux"
         RT_LINK=-lrt
 endif
 
+_MAKE=$(MAKE) $(MFLAGS)
+
 BINs=									\
 	append-brr							\
 	escape-json-utf8						\
@@ -101,19 +103,20 @@ check-local:
 	@test -d $(GODIST)					||	\
 		(echo "can not find GODIST dir: $(GODIST)"; false)
 all: check-local $(COMPILEs) $(CGI)
-	cd schema && $(MAKE) all
+	cd schema && $(_MAKE) all
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd www && $(MAKE) $(MFLAGS) all
+	cd www && $(_MAKE) all
 endif
 
 clean:
 	rm -f $(COMPILEs) $(CGI) spin-wait-blob.c
-	cd schema && $(MAKE) $(MFLAGS) clean
+	cd schema && $(_MAKE) clean
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd www && $(MAKE) $(MFLAGS) clean
+	cd www && $(_MAKE) clean
 endif
 
-install: all
+
+install-dirs:
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/bin
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
@@ -123,11 +126,15 @@ install: all
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/lib
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+				-d $(SETSPACE_PREFIX)/libexec
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/etc
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/src
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/tmp
+install: all
+	$(_MAKE) install-dirs
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		$(SBINs)						\
 		$(SETSPACE_PREFIX)/sbin
@@ -143,9 +150,9 @@ install: all
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
 		$(SRCs)							\
 		$(SETSPACE_PREFIX)/src
-	cd schema && $(MAKE) install
+	cd schema && $(_MAKE) install
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd www && $(MAKE) $(MFLAGS) install
+	cd www && $(_MAKE) install
 endif
 
 append-brr: append-brr.c common.c
@@ -182,9 +189,9 @@ spin-wait-blob:								\
 	rm spin-wait-blob.c
 
 distclean:
-	cd schema && $(MAKE) $(MFLAGS) distclean
+	cd schema && $(_MAKE) distclean
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd www && $(MAKE) $(MFLAGS) distclean
+	cd www && $(_MAKE) distclean
 endif
 	rm -rf $(SETSPACE_PREFIX)/bin
 	rm -rf $(SETSPACE_PREFIX)/sbin
@@ -194,7 +201,7 @@ endif
 	rm -rf $(SETSPACE_PREFIX)/libexec
 
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
