@@ -191,6 +191,7 @@ endif
 	rm -rf $(SETSPACE_PREFIX)/lib
 	rm -rf $(SETSPACE_PREFIX)/src
 	rm -rf $(SETSPACE_PREFIX)/sbin
+	rm -rf $(SETSPACE_PREFIX)/libexec
 
 world:
 	$(MAKE) $(MFLAGS) clean
