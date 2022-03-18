@@ -107,47 +107,10 @@ CREATE TRIGGER check_jsonability AFTER INSERT
 ;
 */
 
-DROP MATERIALIZED VIEW IF EXISTS jsonb_object_keys_stat CASCADE;
-CREATE MATERIALIZED VIEW jsonb_object_keys_stat(
-	object_key,
-	doc_count
-) AS SELECT
-	jsonb_object_keys(doc),
-	count(*)
-    FROM
-    	jsonb_255
-    WHERE
-    	jsonb_typeof(doc) = 'object'
-    GROUP BY
-    	1
-  WITH
-  	DATA
-;
-CREATE UNIQUE INDEX idx_jsonb_object_keys_key
-  ON jsonb_object_keys_stat(object_key)
-;
-COMMENT ON MATERIALIZED VIEW jsonb_object_keys_stat IS
-  'Stats for top level json keys'
-;
-
-DROP FUNCTION IF EXISTS refresh_stat();
-CREATE OR REPLACE FUNCTION refresh_stat() RETURNS void
-  AS $$
-  BEGIN
-  	REFRESH MATERIALIZED VIEW CONCURRENTLY jsonb_object_keys_stat;
-
-	ANALYZE jsonb_object_keys_stat;
-  END $$
-  LANGUAGE plpgsql
-;
-COMMENT ON FUNCTION refresh_stat IS
-  'Concurrently Refresh and Analyze All Materialied *_stat Views in jsonorg'
-;
-
 CREATE OR REPLACE FUNCTION jsonb_all_keys(_value jsonb)
   RETURNS
   	TABLE(key text)
-AS $$
+  AS $$
 	WITH RECURSIVE _tree (key, value) AS (
 	  SELECT
 	  	NULL AS key,
@@ -186,6 +149,46 @@ AS $$
 ;
 COMMENT ON FUNCTION jsonb_all_keys IS
   'Extract all keys in jsonb object' 
+;
+
+DROP MATERIALIZED VIEW IF EXISTS jsonb_object_keys_stat CASCADE;
+CREATE MATERIALIZED VIEW jsonb_object_keys_stat(
+	object_key,
+	doc_count
+) AS SELECT
+	jsonb_all_keys(doc),
+	count(*)
+    FROM
+    	jsonb_255
+    WHERE
+    	jsonb_typeof(doc) = 'object'
+    GROUP BY
+    	1
+  WITH
+  	DATA
+;
+CREATE UNIQUE INDEX idx_jsonb_object_keys_key
+  ON jsonb_object_keys_stat(object_key)
+;
+COMMENT ON MATERIALIZED VIEW jsonb_object_keys_stat IS
+  'Stats for top level json keys'
+;
+
+DROP FUNCTION IF EXISTS refresh_stat();
+CREATE OR REPLACE FUNCTION refresh_stat() RETURNS void
+  AS $$
+  BEGIN
+  	REFRESH MATERIALIZED VIEW 
+	  CONCURRENTLY
+		  jsonorg.jsonb_object_keys_stat
+	;
+
+	ANALYZE jsonorg.jsonb_object_keys_stat;
+  END $$
+  LANGUAGE plpgsql
+;
+COMMENT ON FUNCTION refresh_stat IS
+  'Concurrently Refresh and Analyze All Materialied *_stat Views in jsonorg'
 ;
 
 DROP TABLE IF EXISTS jsonb_255_key_word_set
