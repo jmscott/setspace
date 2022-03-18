@@ -65,13 +65,10 @@ ifdef SETCORE_PREFIX
 endif
 
 distclean:
-#ifdef SETCORE_ROOT
 	rm -rf $(SETCORE_ROOT)/lib
 	rm -rf $(SETCORE_ROOT)/libexec
 	rm -rf $(SETCORE_ROOT)/src
 	rm -rf $(SETCORE_ROOT)/sbin
-#endif
-
 
 byte-bitmap: byte-bitmap.c ../../common.c
 	cc -o byte-bitmap $(CFLAGS) byte-bitmap.c
