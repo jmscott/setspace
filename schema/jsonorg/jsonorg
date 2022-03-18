@@ -30,7 +30,8 @@ Action:
 
 	ls [recent]	#  list recent 10 json blobs
 	ls [udig]	#  list details either recent blobs or particular blob
-	ls service	#  ls blobs in table setcore.service, in no order
+	ls service	#  list blobs in table setcore.service, in no order
+	ls object	#  list objects in the schema
 	refresh 	#  refresh all materialized views
 	count		#  count blobs in all tables in jsonorg
 
@@ -149,6 +150,60 @@ END
 	
 }
 
+ls_object()
+{
+	$PSQL --expanded <<END || die "ls_object: psql failed: exit status=$?"
+SELECT
+	c.relname AS "Object",
+	CASE
+	  WHEN c.relkind = 'r'
+	  THEN 'Relation'
+	  WHEN c.relkind = 'v'
+	  THEN 'View'
+	  WHEN c.relkind = 'm'
+	  THEN 'Materialized View'
+	  ELSE
+	  	'Unknown: ' || c.relkind
+	END AS "Kind",
+	CASE
+	  WHEN pg_total_relation_size(c.oid) > 0
+	  THEN
+		'About '						||
+		pg_size_pretty(pg_total_relation_size(c.oid))		||
+		'ytes'
+	  WHEN c.relkind = 'v'
+	  THEN
+	  	'Unknown'
+	  ELSE
+	  	'Unknown'
+	END AS "Size",
+	CASE
+	  WHEN c.reltuples >= 0
+	  THEN
+		'About ' || c.reltuples || ' rows'
+	  ELSE
+	  	'Unknown'
+	END AS "Count"
+    FROM
+      	pg_catalog.pg_class c
+	  JOIN pg_catalog.pg_namespace n ON (
+	  	n.oid = c.relnamespace
+	  )
+    WHERE
+	n.nspname = 'jsonorg'
+	AND
+	c.relkind NOT IN ('i')
+    GROUP BY
+    	c.relname,
+	c.relkind,
+	c.oid
+    ORDER BY
+    	c.relkind = 'r' DESC,
+	c.relkind = 'm' DESC,
+	c.relkind = 'v' DESC
+END
+}
+
 if [ $# = 0 ];  then
 	help
 	exit 0
@@ -165,6 +220,9 @@ ls)
 
 	ACTION="$1";		shift
 	case "$ACTION" in
+	object)
+		ls_object
+		;;
 	recent)
 		ls_recent
 		;;
