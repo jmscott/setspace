@@ -14,14 +14,10 @@ include schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-BINs=									\
-	ssq
-LIBs=									\
-	fault-process.sh						\
-	psqlrc.example							\
-	schema-fault.sql
-SBINs=									\
-	create-all-schema
+DIST=setspace-schema.conf
+SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+
 all:
 	cd setcore && $(_MAKE) all
 	cd jsonorg && $(_MAKE) all
@@ -81,15 +77,6 @@ install:
 		$(SBINs)						\
 		$(SETSPACE_PREFIX)/sbin
 
-	#  Install files in bin/
-
-	install								\
-		-g $(SETSPACE_GROUP)					\
-		-o $(SETSPACE_USER)					\
-		-m u=rwx,g=rx,o=					\
-		$(BINs)							\
-		$(SETSPACE_PREFIX)/bin
-
 distclean:
 	cd setcore && $(_MAKE) distclean
 	cd jsonorg && $(_MAKE) distclean
@@ -108,8 +95,6 @@ distclean:
 		(cd $(SETSPACE_PREFIX)/lib;  rm -f $(LIBs))
 	test ! -d $(SETSPACE_PREFIX)/sbin ||				\
 		(cd $(SETSPACE_PREFIX)/sbin;  rm -f $(SBINs))
-	test ! -d $(SETSPACE_PREFIX)/bin ||				\
-		(cd $(SETSPACE_PREFIX)/bin;  rm -f $(BINs))
 world:
 	$(_MAKE) clean
 	$(_MAKE) all
