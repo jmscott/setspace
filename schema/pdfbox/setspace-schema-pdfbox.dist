@@ -1,0 +1,135 @@
+#
+#  Synopsis:
+#	Configuration file read by make-dist to build tar files.
+#  See:
+#	https://github.com/jmscott/work/blob/master/make-dist
+#  Note:
+#	Makefile variables can be extracted and defined from the the
+#	root.dist file with these recipes.  Example make code follows:
+#
+#		DIST=product.dist
+#
+#		SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
+#		LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+#		SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
+#		BINs := $(shell  (. ./$(DIST) && echo $$BINs))
+#		HTDOCs := $(shell  (. ./$(DIST) && echo $$HTDOCs))
+#		CGIBINs := $(shell  (. ./$(DIST) && echo $$CGIBINs))
+#		LIBEXEC := $(shell  (. ./$(DIST) && echo $$LIBEXECs))
+#		COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
+#
+
+#  Define PRODUCT to change name of tar file from $(basename $(pwd))
+#  to, say, foobar-YYYYMMDD_hhmm.tar.bz2
+
+#PRODUCT=foobar
+
+#
+#  Uncomment for compiled programs to be installed i bin/ or sbin/ and
+#  removed in "clean" recipes.
+#
+COMPILEs="
+	ExtractPagesUTF8.class
+	merge-all-extract_pages_utf8
+	merge-stdin-pddocument_information
+	merge-stdin-pddocument_information_metadata
+	putPDDocument.class
+	putPDDocumentInformation.class
+	putPDDocumentInformationMetadata.class
+"
+
+LIBs="
+	$(echo $COMPILEs | fgrep .class)
+	page-count-fts.sql
+	page-count-keyword.sql
+	page-count-phrase.sql
+	page-fts.sql
+	page-keyword-dist.sql
+	page-keyword.sql
+	page-phrase.sql
+	pdfbox.flow.example
+	pdfbox.rasql.example
+	phraseto_tsquery.sql
+	plainto_tsquery.sql
+	profile.example	
+	psqlrc.example
+	rummy.sql
+	schema-default.sql
+	schema.sql
+	setspace-schema-pdfbox.dist
+"
+
+BINs="
+	pdfq
+"
+
+SBINs="
+	$(echo $COMPILEs | fgrep -v .class)
+	append-page-pgtexts-brr
+	append-pgtexts-brr
+	merge-all-extract_pages_utf8
+	merge-extract_pages_utf8
+	merge-pddocument
+	merge-pddocument_information
+	merge-stdin-pddocument_information
+	merge-stdin-pddocument_information_metadata
+"
+
+#  Uncomment to create tmp/ directory
+TMP="
+"
+
+#  Uncomment to create cgibin/ directory
+#CGIBINs="
+#"
+
+#  Uncomment to create htdocs/ directory
+#HTDOCs="
+#"
+
+SRCs="
+	ExtractKeywords.java
+	ExtractPagesUTF8.java
+	merge-all-extract_pages_utf8.pgc
+	merge-stdin-pddocument_information.pgc
+	merge-stdin-pddocument_information_metadata.pgc
+	putPDDocument.java
+	putPDDocumentInformation.java
+	putPDDocumentInformationMetadata.java
+"
+
+#  Uncomment to create attic/ directory
+#ATTIC="
+#"
+
+#  Uncomment to create archive/ directory
+#ARCHIVE="
+#"
+
+#  Uncomment to create etc/ directory
+#ETC="
+#"
+
+#  Uncomment to create spool/ directory
+#SPOOL="
+#"
+
+#  Uncomment to create data/ directory
+#DATA="
+#"
+
+#  Uncomment to create run/ directory
+#RUN="
+#"
+
+#  Uncomment to create log/ directory
+#LOG="
+#"
+
+#  Uncomment to create cache/ directory
+#CACHE="
+#"
+
+#  Uncomment to create directory libexec/
+#LIBEXECs="
+#"

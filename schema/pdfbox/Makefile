@@ -3,6 +3,13 @@
 #	Makefile suitable for development of pdfbox in local directory.
 #  Variables:
 #	PDFBOX_APP2_JAR		#  path to jar file pdfbox-app-2*.jar
+#  Note:
+#	Replace dependency on ../../{common-ecpg,common}.c with
+#	$JMSCOTT_ROOT/lib/clang
+#
+#	Consider moving lib/*.class files to libexec/*.class
+#
+#	Replace bin/pdfq with new ssq libexec/ssq-pdfbox
 #
 include ../../local.mk
 include ../../setspace.mk
@@ -10,23 +17,17 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-JCOMPILED=								\
-	ExtractPagesUTF8.class						\
-	putPDDocument.class						\
-	putPDDocumentInformation.class					\
-	putPDDocumentInformationMetadata.class
+DIST=setspace-schema-pdfbox.dist
+COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
+SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
+BINs := $(shell  (. ./$(DIST) && echo $$BINs))
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
 
-ECPG_COMPILED=								\
-	merge-all-extract_pages_utf8					\
-	merge-stdin-pddocument_information				\
-	merge-stdin-pddocument_information_metadata			\
-
-COMPILED=$(JCOMPILED) $(ECPG_COMPILED)
-
-all: $(JCOMPILED) $(ECPG_COMPILED)
+all: $(COMPILEs)
 
 clean:
-	rm -f $(JCOMPILED) $(ECPG_COMPILED)
+	rm -f $(COMPILEs)
 
 world:
 	$(_MAKE) clean
@@ -79,49 +80,19 @@ install: all
 		-d $(PDFBOX_PREFIX)/etc
 
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m ug=r		\
-		$(JCOMPILED)						\
-		page-count-fts.sql					\
-		page-count-keyword.sql					\
-		page-count-phrase.sql					\
-		page-fts.sql						\
-		page-keyword-dist.sql					\
-		page-keyword.sql					\
-		page-phrase.sql						\
-		pdfbox.flow.example					\
-		pdfbox.rasql.example					\
-		phraseto_tsquery.sql					\
-		plainto_tsquery.sql					\
-		profile.example						\
-		psqlrc.example						\
-		rummy.sql						\
-		schema.sql						\
-		schema-default.sql					\
+		$(LIBs)							\
 		$(PDFBOX_PREFIX)/lib
 
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m u=rx		\
-		$(COMPILED)						\
-		append-page-pgtexts-brr					\
-		append-pgtexts-brr					\
-		cron-append-pgtexts-brr					\
-		merge-extract_pages_utf8				\
-		merge-pddocument					\
-		merge-pddocument_information				\
+		$(SBINs)						\
 		$(PDFBOX_PREFIX)/sbin
 
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m u=rx		\
-		pdfq							\
+		$(BINs)							\
 		$(PDFBOX_PREFIX)/bin
 
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m ugo=r		\
-		ExtractKeywords.java					\
-		ExtractPagesUTF8.java					\
-		Makefile						\
-		merge-all-extract_pages_utf8.pgc			\
-		merge-stdin-pddocument_information.pgc			\
-		merge-stdin-pddocument_information_metadata.pgc		\
-		putPDDocument.java					\
-		putPDDocumentInformation.java				\
-		putPDDocumentInformationMetadata.java			\
+		$(SRCs)							\
 		$(PDFBOX_PREFIX)/src
 
 frisk ff:
