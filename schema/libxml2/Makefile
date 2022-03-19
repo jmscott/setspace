@@ -1,6 +1,9 @@
 #
 #  Synopsis:
 #	Development Makefile for code to populate libxml2 schema.
+#  Note:
+#	Replace ../../{common-ecpg,common}.c with similar code in
+#	$JMSCOTT_ROOT/lib.
 #
 include ../../local.mk
 include ../../setspace.mk
@@ -8,20 +11,16 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-COMPILED=								\
-	merge-stdin-xml_doc						\
-	is-pg-well-formed
-PROGS=									\
-	get-is-pg-well-formed						\
-	get-xmllint							\
-	is-pg-well-formed						\
-	merge-stdin-xml_doc						\
-	merge-xml_doc
+DIST=setspace-schema-libxml2.dist
+COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
+SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
 
-all: $(COMPILED)
+all: $(COMPILEs)
 
 clean:
-	rm -f $(COMPILED) merge-stdin-xml_doc.c is-pg-well-formed.c
+	rm -f $(COMPILEs) merge-stdin-xml_doc.c is-pg-well-formed.c
 
 merge-stdin-xml_doc:							\
 		merge-stdin-xml_doc.pgc					\
@@ -63,18 +62,13 @@ install: all
 	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) 		\
 				-d $(LIBXML2_PREFIX)/tmp
 	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m u=rx,go=	\
-		$(PROGS) 						\
+		$(SBINs) 						\
 		$(LIBXML2_PREFIX)/sbin
-	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m a=r	\
-		libxml2.flow.example					\
-		profile.example						\
-		psqlrc.example						\
-		schema.sql						\
-		rummy.sql						\
+	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m a=r		\
+		$(LIBs)							\
 		$(LIBXML2_PREFIX)/lib
 	install -g $(LIBXML2_GROUP) -o $(LIBXML2_USER) -m a=r		\
-		is-pg-well-formed.pgc					\
-		merge-stdin-xml_doc.pgc					\
+		$(SRCs)							\
 		$(LIBXML2_PREFIX)/src
 
 frisk ff:
