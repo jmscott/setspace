@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Development Makefile for json routing of blob request records
+#	Dev/install Makefile for json routing of blob request records
 #
 include ../../local.mk
 include ../../setspace.mk
@@ -8,8 +8,12 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
+DIST=setspace-schema-jsonio.dist
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+
 install:
 	cd .. && $(_MAKE) install-dirs
+
 	install -g $(JSONIO_GROUP) -o $(JSONIO_USER) 		\
 				-d $(JSONIO_PREFIX)
 	install -g $(JSONIO_GROUP) -o $(JSONIO_USER) 		\
@@ -25,9 +29,7 @@ install:
 	install -g $(JSONIO_GROUP) -o $(JSONIO_USER) 		\
 				-d $(JSONIO_PREFIX)/tmp
 	install -g $(JSONIO_GROUP) -o $(JSONIO_USER) -m a=r	\
-		jsonio.flow.example					\
-		profile.example						\
-		psqlrc.example						\
+		$(LIBs)							\
 		$(JSONIO_PREFIX)/lib
 distclean:
 	rm -rf $(JSONIO_PREFIX)/lib
