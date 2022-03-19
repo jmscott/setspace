@@ -1,47 +1,48 @@
 #
 #  Synopsis:
 #	Makefile for udigset development
-#  Blame:
-#  	jmscott@setspace.com
+#  Note:
+#	Rename udigset to bloblog and merge ../drblob into this schema.
 #
 include ../../local.mk
+include ../../setspace.mk
 include ../schema.mk
 
-COMPILED=is-udig-set is-udig-sha-set
+_MAKE=$(MAKE) $(MFLAGS)
 
-all: $(COMPILED)
+DIST=setspace-schema-udigset.conf
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
+
+all: $(COMPILEs)
 
 clean:
-	rm -rf $(COMPILED)
+	rm -rf $(COMPILEs)
 
 install: all
-	install -g $(BLOBLOG_GROUP) -o $(BLOBLOG_USER) 		\
-				-d $(BLOBLOG_PREFIX)/etc
-	install -g $(BLOBLOG_GROUP) -o $(BLOBLOG_USER) 		\
-				-d $(BLOBLOG_PREFIX)/lib
-	install -g $(BLOBLOG_GROUP) -o $(BLOBLOG_USER) 		\
-				-d $(BLOBLOG_PREFIX)/log
-	install -g $(BLOBLOG_GROUP) -o $(BLOBLOG_USER) 		\
-				-d $(BLOBLOG_PREFIX)/run
-	install -g $(BLOBLOG_GROUP) -o $(BLOBLOG_USER) 		\
-				-d $(BLOBLOG_PREFIX)/sbin
-	install -g $(BLOBLOG_GROUP) -o $(BLOBLOG_USER) 		\
-				-d $(BLOBLOG_PREFIX)/spool
-	install -g $(BLOBLOG_GROUP) -o $(BLOBLOG_USER) 		\
-				-d $(BLOBLOG_PREFIX)/src
+	install -g $(UDIGSET_GROUP) -o $(UDIGSET_USER) 		\
+				-d $(UDIGSET_PREFIX)/etc
+	install -g $(UDIGSET_GROUP) -o $(UDIGSET_USER) 		\
+				-d $(UDIGSET_PREFIX)/lib
+	install -g $(UDIGSET_GROUP) -o $(UDIGSET_USER) 		\
+				-d $(UDIGSET_PREFIX)/log
+	install -g $(UDIGSET_GROUP) -o $(UDIGSET_USER) 		\
+				-d $(UDIGSET_PREFIX)/run
+	install -g $(UDIGSET_GROUP) -o $(UDIGSET_USER) 		\
+				-d $(UDIGSET_PREFIX)/sbin
+	install -g $(UDIGSET_GROUP) -o $(UDIGSET_USER) 		\
+				-d $(UDIGSET_PREFIX)/spool
+	install -g $(UDIGSET_GROUP) -o $(UDIGSET_USER) 		\
+				-d $(UDIGSET_PREFIX)/src
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-		profile.example						\
-		schema.sql						\
-		bloblog.flow.example					\
-		$(BLOBLOG_PREFIX)/lib
-	install -g $(BLOBLOG_GROUP) -o $(BLOBLOG_USER) 		\
-		is-udig-set						\
-		is-udig-sha-set						\
-		$(BLOBLOG_PREFIX)/sbin
-	install -g $(BLOBLOG_GROUP) -o $(BLOBLOG_USER) 		\
-		is-udig-set.c						\
-		is-udig-sha-set.c					\
-		$(BLOBLOG_PREFIX)/src
+		$(LIBs)
+		$(UDIGSET_PREFIX)/lib
+	install -g $(UDIGSET_GROUP) -o $(UDIGSET_USER) 			\
+		$(SBINs)						\
+		$(UDIGSET_PREFIX)/sbin
+	install -g $(UDIGSET_GROUP) -o $(UDIGSET_USER) 			\
+		$(SRCs)							\
+		$(UDIGSET_PREFIX)/src
 
 is-udig-set: is-udig-set.c
 	cc $(CFLAGS) -o is-udig-set is-udig-set.c
@@ -49,6 +50,10 @@ is-udig-sha-set: is-udig-sha-set.c
 	cc $(CFLAGS) -o is-udig-sha-set is-udig-sha-set.c
 
 distclean:
-	rm -rf $(BLOBLOG_PREFIX)/lib
-	rm -rf $(BLOBLOG_PREFIX)/sbin
-	rm -rf $(BLOBLOG_PREFIX)/src
+	rm -rf $(UDIGSET_PREFIX)/lib
+	rm -rf $(UDIGSET_PREFIX)/sbin
+	rm -rf $(UDIGSET_PREFIX)/src
+world:
+	$(_MAKE) clean 
+	$(_MAKE) all
+	$(_MAKE) distclean
