@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Development/Install Makefile
+#	Development/Install Makefile for schema expat2
 #  Usage:
 #	make distclean install
 #
@@ -10,12 +10,16 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-COMPILED= merge-stdin-xmlwf_utf8
+DIST=setspace-schema-expat2.dist
+SBINs := $(shell (. ./$(DIST) && echo $$SBINs))
+LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
+SRCs := $(shell (. ./$(DIST) && echo $$SRCs))
+COMPILEs := $(shell (. ./$(DIST) && echo $$COMPILEs))
 
-all: $(COMPILED)
+all: $(COMPILEs)
 
 clean:
-	rm -f $(COMPILED)
+	rm -f $(COMPILEs)
 
 install: all
 	cd .. && $(_MAKE) install-dirs
@@ -36,17 +40,17 @@ install: all
 				-d $(EXPAT2_PREFIX)/spool
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) 			\
 				-d $(EXPAT2_PREFIX)/tmp
+	echo "WTF: $(SBINs)"
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m u=rx,go=	\
-		merge-stdin-xmlwf_utf8					\
-		merge-xmlwf_utf8					\
+		$(SBINs)						\
 		$(EXPAT2_PREFIX)/sbin
+
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m a=r		\
-		expat2.flow.example					\
-		profile.example						\
-		schema.sql						\
+		$(LIBs)							\
 		$(EXPAT2_PREFIX)/lib
+
 	install -g $(EXPAT2_GROUP) -o $(EXPAT2_USER) -m a=r		\
-		merge-stdin-xmlwf_utf8.pgc				\
+		$(SRCs)							\
 		$(EXPAT2_PREFIX)/src
 
 frisk:
