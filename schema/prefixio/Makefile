@@ -8,6 +8,9 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
+DIST=setspace-schema-prefixio.dist
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+
 install:
 	cd .. && $(_MAKE) install-dirs
 	install -g $(PREFIXIO_GROUP) -o $(PREFIXIO_USER) 		\
@@ -25,12 +28,8 @@ install:
 	install -g $(PREFIXIO_GROUP) -o $(PREFIXIO_USER) 		\
 				-d $(PREFIXIO_PREFIX)/tmp
 	install -g $(PREFIXIO_GROUP) -o $(PREFIXIO_USER) -m a=r	\
-		prefixio.flow.example					\
-		profile.example						\
+		$(LIBs)							\
 		$(PREFIXIO_PREFIX)/lib
-
-frisk:
-	flowd frisk prefixio.flow.example
 
 distclean:
 	rm -rf $(PREFIXIO_PREFIX)/lib
