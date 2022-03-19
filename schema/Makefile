@@ -27,7 +27,6 @@ all:
 	cd jsonorg && $(_MAKE) all
 	cd expat2 && $(_MAKE) all
 	cd libxml2 && $(_MAKE) all
-	cd mycore && $(_MAKE) all
 	cd mydash && $(_MAKE) all
 	cd pdfbox && $(_MAKE) all
 	cd fffile5 && $(_MAKE) all
@@ -39,7 +38,6 @@ clean:
 	cd jsonorg && $(_MAKE) clean
 	cd expat2 && $(_MAKE) clean
 	cd libxml2 && $(_MAKE) clean
-	cd mycore && $(_MAKE) clean
 	cd mydash && $(_MAKE) clean
 	cd pdfbox && $(_MAKE) clean
 	cd fffile5 && $(_MAKE) clean
