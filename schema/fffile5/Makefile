@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #  Synopsis:
-#	Development Makefile for code to populate fffile5 schema.
+#	Dev/install Makefile for code to populate fffile5 schema.
 #  Note:
 #	Need to convert to sourced in make-dist file.
 #	See $JMSCOTT_ROOT/bin/make-dist --template
@@ -12,22 +12,16 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-SBINs=									\
-	launchd-flowd-init						\
-	merge-file							\
-	merge-file_mime_encoding					\
-	merge-file_mime_type						\
-	merge-stdin-file						\
-	merge-stdin-file_mime_encoding					\
-	merge-stdin-file_mime_type
+DIST=setspace-schema-fffile5.dist
+SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
+COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
 
 all: $(SBINs)
 
 clean:
-	rm -f								\
-		merge-stdin-file					\
-		merge-stdin-file_mime_type				\
-		merge-stdin-file_mime_encoding
+	rm -f $(COMPILEs)
 
 install: all
 	cd .. && $(_MAKE) install-dirs
@@ -54,16 +48,10 @@ install: all
 		$(SBINs) 						\
 		$(FFFILE5_PREFIX)/sbin
 	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) -m a=r		\
-		fffile5.flow.example					\
-		profile.example						\
-		psqlrc.example						\
-		rummy.sql						\
-		schema.sql						\
+		$(LIBs)							\
 		$(FFFILE5_PREFIX)/lib
 	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) -m a=r		\
-		merge-stdin-file.pgc					\
-		merge-stdin-file_mime_encoding.pgc			\
-		merge-stdin-file_mime_type.pgc				\
+		$(SRCs)							\
 		$(FFFILE5_PREFIX)/src
 
 frisk ff:
@@ -106,3 +94,5 @@ world:
 	$(_MAKE) all
 	$(_MAKE) distclean
 	$(_MAKE) install
+dist: all
+	make-dist $(DIST)
