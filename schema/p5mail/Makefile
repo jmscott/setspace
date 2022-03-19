@@ -12,6 +12,7 @@ LIBs := $(shell (. $(DIST) && echo $$LIBs))
 
 install:
 	cd .. && $(_MAKE) install-dirs
+
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)	 		\
 			-m=u=rwx,go= -d $(P5MAIL_PREFIX)/run
 	install -g $(SETCORE_GROUP) -o $(SETCORE_USER)	 		\
