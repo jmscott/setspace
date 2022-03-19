@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Development/Install Makefile
+#	Dev/Install Makefile for schema "mycore".
 #  Usage:
 #	make clean all install
 #  Note:
@@ -13,12 +13,13 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-all: $(CGIBINs)
-clean:
-	rm -f $(CGIBINs)
+DIST=setspace-schema-mycore.dist
+SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
 
-install: all
+install:
 	cd .. && $(_MAKE) install-dirs
+
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
 		-m u=rwx,g=rx,o= -d $(MYCORE_PREFIX)
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
@@ -32,29 +33,21 @@ install: all
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
 				-d $(MYCORE_PREFIX)/spool
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
-				-d $(MYCORE_PREFIX)/cgi-bin
-	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
 				-d $(MYCORE_PREFIX)/sbin
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
 				-d $(MYCORE_PREFIX)/tmp
 	install 							\
-		my_title2title						\
-		put-my_title						\
+		$(SBINs)						\
 		$(MYCORE_PREFIX)/sbin
 
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) -m a=r		\
-		mycore.flow.example					\
-		profile.example						\
-		psqlrc.example						\
-		schema.sql						\
-		select-my_title.sql					\
+		$(LIBs)							\
 		$(MYCORE_PREFIX)/lib
 
 distclean:
 	rm -rf $(MYCORE_PREFIX)/lib
+	rm -rf $(MYCORE_PREFIX)/sbin
 
 world:
-	$(_MAKE) clean
-	$(_MAKE) all
 	$(_MAKE) distclean
 	$(_MAKE) install
