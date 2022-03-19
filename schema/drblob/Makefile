@@ -5,83 +5,44 @@
 #  	jmscott@setspace.com
 #
 include ../../local.mk
+include ../../setspace.mk
 include ../schema.mk
 
-COMPILED=						\
-	is-brr-log					\
-	is-fdr-log					\
-	is-qdr-log					\
-	is-xdr-log
+_MAKE=$(MAKE) $(MFLAGS)
 
-all: $(COMPILED)
+DIST=./setspace-schema-drblob.dist
+SBINs := $(shell (. ./$(DIST) && echo $$SBINs))
+LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
+SRCs := $(shell (. ./$(DIST) && echo $$LIBs))
+COMPILEs := $(shell (. ./$(DIST) && echo $$COMPILEs))
+
+all: $(COMPILEs)
 
 clean:
-	rm -f $(COMPILED)
+	rm -f $(COMPILEs)
 
 install: all
-ifdef DRBLOB_PREFIX
+	echo "WTF: $(DRBLOB_ROOT)"
+	cd .. && $(_MAKE) install-dirs
 	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
 				-d $(DRBLOB_PREFIX)
-	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
-				-d $(DRBLOB_PREFIX)/spool
-	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
-				-d $(DRBLOB_PREFIX)/run
 	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
 				-d $(DRBLOB_PREFIX)/sbin
 	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
 				-d $(DRBLOB_PREFIX)/lib
 	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
-				-d $(DRBLOB_PREFIX)/log
-	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
-				-d $(DRBLOB_PREFIX)/etc
-	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
-				-d $(DRBLOB_PREFIX)/tmp
-	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
 				-d $(DRBLOB_PREFIX)/src
 	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
-		get-is-brr-log						\
-		get-is-fdr-log						\
-		get-is-qdr-log						\
-		get-is-xdr-log						\
-		is-brr-log						\
-		is-fdr-log						\
-		is-qdr-log						\
-		is-xdr-log						\
-		merge-blob						\
+		$(SBINs)						\
 		$(DRBLOB_PREFIX)/sbin
 
 	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER) 			\
-		create-temp-merge_brr_log.sql				\
-		create-temp-merge_fdr_log.sql				\
-		create-temp-merge_qdr_log.sql				\
-		create-temp-merge_xdr_log.sql				\
-		drblob.flow.example					\
-		merge-brr_log_time.sql					\
-		merge-brr_log_total.sql					\
-		merge-fdr_log_sequence.sql				\
-		merge-fdr_log_time.sql					\
-		merge-fdr_log_total.sql					\
-		merge-qdr_log_flow_sequence.sql				\
-		merge-qdr_log_query.sql					\
-		merge-qdr_log_time.sql					\
-		merge-qdr_log_total.sql					\
-		merge-xdr_log_flow_sequence.sql				\
-		merge-xdr_log_query.sql					\
-		merge-xdr_log_time.sql					\
-		merge-xdr_log_total.sql					\
-		profile.example						\
-		rummy.sql						\
-		schema.sql						\
+		$(LIBs)							\
 		$(DRBLOB_PREFIX)/lib
 
 	install -g $(DRBLOB_GROUP) -o $(DRBLOB_USER)			\
-		Makefile						\
-		is-brr-log.c						\
-		is-fdr-log.c						\
-		is-qdr-log.c						\
-		is-xdr-log.c						\
+		$(SRCs)							\
 		$(DRBLOB_PREFIX)/src
-endif
 
 is-brr-log: is-brr-log.c
 	cc $(CFLAGS) -o is-brr-log is-brr-log.c
@@ -93,11 +54,17 @@ is-xdr-log: is-xdr-log.c
 	cc $(CFLAGS) -o is-xdr-log is-xdr-log.c
 
 distclean:
-#ifdef DRBLOB_PREFIX
 	rm -rf $(DRBLOB_PREFIX)/lib
 	rm -rf $(DRBLOB_PREFIX)/src
 	rm -rf $(DRBLOB_PREFIX)/sbin
-#endif
+dist:
+	make-dist $(DIST)
+
+world:
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
 
 #  frisk the flow file
 ff frisk:
