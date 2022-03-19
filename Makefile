@@ -17,76 +17,12 @@ endif
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-BINs=									\
-	append-brr							\
-	escape-json-utf8						\
-	file-stat-size							\
-	is-utf8wf							\
-	spin-wait-blob
-
-SRCs=									\
-	Makefile							\
-	append-brr.c							\
-	common-ecpg.c							\
-	common.c							\
-	dec2pgbit.c							\
-	escape-json-utf8.c						\
-	file-stat-size.c						\
-	flip-tail.c							\
-	is-utf8wf.c							\
-	local-linux.mk.example						\
-	local-darwin.mk.example						\
-	macosx.c							\
-	spin-wait-blob.pgc						\
-	tas-run-lock.c							\
-	tas-run-unlock.c
-
-LIBs=									\
-	bash_login.example						\
-	crontab.conf.example						\
-	launchd-flowd.plist.example					\
-	profile.example							\
-	systemd-flowd.service.example
-
-COMPILEs=								\
-	append-brr							\
-	dec2pgbit							\
-	escape-json-utf8						\
-	file-stat-size							\
-	flip-tail							\
-	is-utf8wf							\
-	spin-wait-blob							\
-	tas-run-lock							\
-	tas-run-unlock
-
-SBINs=									\
-	SETSPACE_ROOT-bash						\
-	brr-flip							\
-	brr-flip-all							\
-	brr-stat							\
-	cron-rummy							\
-	dec2pgbit							\
-	find-brr							\
-	find-rolled-brr							\
-	find-schema							\
-	flip-tail							\
-	flowd-stat							\
-	launchd-flowd							\
-	ls-start-flowd							\
-	restart-all-flowd						\
-	restart-flowd							\
-	rummy								\
-	run-stat-flowd-tuple						\
-	run-stat-report							\
-	run-stat-tuple							\
-	ssctl								\
-	start-all-flowd							\
-	start-flowd							\
-	stop-all-flowd							\
-	stop-flowd							\
-	tail-flowd							\
-	tas-run-lock							\
-	tas-run-unlock
+DIST=setspace.conf
+SBINs := $(shell (. ./$(DIST) && echo $$SBINs))
+LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
+SRCs := $(shell (. ./$(DIST) && echo $$SRCs))
+BINs := $(shell (. ./$(DIST) && echo $$BINs))
+COMPILEs := $(shell (. ./$(DIST) && echo $$COMPILEs))
 
 check-local:
 	@test -n "$(PDFBOX_APP2_JAR)"				||	\
@@ -125,8 +61,6 @@ install-dirs:
 				-d $(SETSPACE_PREFIX)/schema
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/lib
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-				-d $(SETSPACE_PREFIX)/libexec
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/etc
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
@@ -198,10 +132,12 @@ endif
 	rm -rf $(SETSPACE_PREFIX)/lib
 	rm -rf $(SETSPACE_PREFIX)/src
 	rm -rf $(SETSPACE_PREFIX)/sbin
-	rm -rf $(SETSPACE_PREFIX)/libexec
 
 world:
 	$(_MAKE) clean
 	$(_MAKE) all
 	$(_MAKE) distclean
 	$(_MAKE) install
+
+dist:
+	make-dist setspace.conf
