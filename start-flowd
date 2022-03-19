@@ -3,9 +3,11 @@
 #  Synopsis:
 #	Boot a schema flowd server from either launchd, systemd or command-line
 #  Usage:
-#	SETSPACE_ROOT=/usr/local/setspace/opt/uspto
 #	start-flowd pdfbox
 #	start-flowd <schema>
+#  Note:
+#	Rename $SETSPACE_ROOT/schema/sbin/launchd-start-init to
+#	$SETSPACE_ROOT/schema/sbin/start-flowd-init
 #
 
 PROG=$(basename $0)
