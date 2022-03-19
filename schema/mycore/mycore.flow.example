@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Merge blobs into tables in schema mycore.
 #  Usage:
-#  	flowd server mycore.conf
+#  	flowd server etc/mycore.flow
 #  See:
 #  	mycore/lib/schema.sql
 #  Note:

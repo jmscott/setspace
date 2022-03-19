@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Flow blobs into "setcore" schema defined in PostgreSQL database
 #  Usage:
-#  	flowd server setcore.conf
+#  	flowd server dist/setcore.flow
 #  See:
 #  	schema/setcore/schema.sql
 #  Note:

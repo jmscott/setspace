@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Merge blobs into tables in schema mydash, like tagged urls.
 #  Usage:
-#  	flowd server mydash.conf
+#  	flowd server etc/mydash.flow
 #  See:
 #  	mydash/lib/schema.sql
 #  Note:

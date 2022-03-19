@@ -9,7 +9,7 @@
 #
 #		setcore.{byte_bitmap, byte_count, is_utf8}
 #  Usage:
-#  	flowd server prefixio.conf
+#  	flowd server etc/prefixio.flow
 #  Note:
 #	Consider a table that maps a prefix to schema brr.
 #

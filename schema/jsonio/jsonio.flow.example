@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Route blobs to schemas based upon patterns in a json blob.
 #  Usage:
-#  	flowd server jsonio.conf
+#  	flowd server etc/jsonio.flow
 #  Note:
 #	A race condition exists in "query in_jsonb_255_table".  the second
 #	condition may be false if another flow actually first merges tuple
