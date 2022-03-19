@@ -10,7 +10,7 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-schema-udigset.conf
+DIST=setspace-schema-udigset.dist
 LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
 COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
 
@@ -57,3 +57,5 @@ world:
 	$(_MAKE) clean 
 	$(_MAKE) all
 	$(_MAKE) distclean
+dist:
+	make-dist $(DIST)

@@ -28,60 +28,23 @@
 #  Uncomment for compiled programs to be installed i bin/ or sbin/ and
 #  removed in "clean" recipes.
 #
-COMPILEs="
-	append-brr
-	dec2pgbit
-	escape-json-utf8
-	file-stat-size
-	flip-tail
-	is-utf8wf
-	spin-wait-blob
-	tas-run-lock
-	tas-run-unlock
-"
+#COMPILEs="
+#"
 
 LIBs="
-	bash_login.example
-	crontab.conf.example
-	launchd-flowd.plist.example
-	profile.example
-	setspace.conf
-	systemd-flowd.service.example
+	fault-process.sh
+	psqlrc.example
+	schema-fault.sql
+	setspace-schema.dist
 "
 
-#  Note: move these to SBINs!
-BINs="
-	$COMPILEs
-"
+#  Uncoment to create bin/ directory
+#BINs="
+#"
 
 SBINs="
-	SETSPACE_ROOT-bash						\
-	brr-flip							\
-	brr-flip-all							\
-	brr-stat							\
-	cron-rummy							\
-	dec2pgbit							\
-	find-brr							\
-	find-rolled-brr							\
-	find-schema							\
-	flip-tail							\
-	flowd-stat							\
-	launchd-flowd							\
-	ls-start-flowd							\
-	restart-all-flowd						\
-	restart-flowd							\
-	rummy								\
-	run-stat-flowd-tuple						\
-	run-stat-report							\
-	run-stat-tuple							\
-	ssctl								\
-	start-all-flowd							\
-	start-flowd							\
-	stop-all-flowd							\
-	stop-flowd							\
-	tail-flowd							\
-	tas-run-lock							\
-	tas-run-unlock
+	create-all-schema
+	ssq
 "
 
 #  Uncomment to create tmp/ directory
@@ -97,23 +60,8 @@ SBINs="
 #"
 
 #  Uncomment to create src/ directory
-SRCs="
-	Makefile							\
-	append-brr.c							\
-	common-ecpg.c							\
-	common.c							\
-	dec2pgbit.c							\
-	escape-json-utf8.c						\
-	file-stat-size.c						\
-	flip-tail.c							\
-	is-utf8wf.c							\
-	local-linux.mk.example						\
-	local-darwin.mk.example						\
-	macosx.c							\
-	spin-wait-blob.pgc						\
-	tas-run-lock.c							\
-	tas-run-unlock.c
-"
+#SRCs="
+#"
 
 #  Uncomment to create attic/ directory
 #ATTIC="

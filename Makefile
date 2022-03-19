@@ -17,7 +17,7 @@ endif
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace.conf
+DIST=setspace.dist
 SBINs := $(shell (. ./$(DIST) && echo $$SBINs))
 LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
 SRCs := $(shell (. ./$(DIST) && echo $$SRCs))
@@ -140,4 +140,4 @@ world:
 	$(_MAKE) install
 
 dist:
-	make-dist setspace.conf
+	make-dist $(DIST)

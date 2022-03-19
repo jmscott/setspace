@@ -1,4 +1,4 @@
-#
+schema/Makefile #
 #  Synposis:
 #	Makefile for setspace/schema/*
 #  Note:
@@ -14,7 +14,7 @@ include schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-schema.conf
+DIST=setspace-schema.dist
 SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
 LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
 
@@ -100,3 +100,5 @@ world:
 	$(_MAKE) all
 	$(_MAKE) distclean
 	$(_MAKE) install
+dist:
+	make-dist $(DIST)

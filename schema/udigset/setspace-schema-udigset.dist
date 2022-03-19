@@ -28,14 +28,15 @@
 #  Uncomment for compiled programs to be installed i bin/ or sbin/ and
 #  removed in "clean" recipes.
 #
-#COMPILEs="
-#"
+COMPILEs="
+	is-udig-set
+	is-udig-sha-set
+"
 
 LIBs="
-	fault-process.sh
-	psqlrc.example
-	schema-fault.sql
-	setspace-schema.conf
+	profile.example
+	schema.sql
+	setspace-schema-udigset.dist
 "
 
 #  Uncoment to create bin/ directory
@@ -43,13 +44,12 @@ LIBs="
 #"
 
 SBINs="
-	create-all-schema
-	ssq
+	$COMPILEs
 "
 
 #  Uncomment to create tmp/ directory
-#TMP="
-#"
+TMP="
+"
 
 #  Uncomment to create cgibin/ directory
 #CGIBINs="
@@ -60,8 +60,10 @@ SBINs="
 #"
 
 #  Uncomment to create src/ directory
-#SRCs="
-#"
+SRCs="
+	is-udig-set.c
+	is-udig-sha-set.c
+"
 
 #  Uncomment to create attic/ directory
 #ATTIC="
@@ -72,24 +74,24 @@ SBINs="
 #"
 
 #  Uncomment to create etc/ directory
-#ETC="
-#"
+ETC="
+"
 
 #  Uncomment to create spool/ directory
-#SPOOL="
-#"
+SPOOL="
+"
 
 #  Uncomment to create data/ directory
 #DATA="
 #"
 
 #  Uncomment to create run/ directory
-#RUN="
-#"
+RUN="
+"
 
 #  Uncomment to create log/ directory
-#LOG="
-#"
+LOG="
+"
 
 #  Uncomment to create cache/ directory
 #CACHE="
