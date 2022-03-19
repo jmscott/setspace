@@ -6,21 +6,23 @@ include ../../local.mk
 include ../../setspace.mk
 include ../schema.mk
 
-COMPILED=merge-stdin-tsv_utf8 merge-stdin-text_utf8
-PROGS=									\
-	merge-stdin-text_utf8						\
-	merge-stdin-tsv_utf8						\
-	merge-text_utf8							\
-	merge-tsv_utf8
+_MAKE=$(MAKE) $(MFLAGS)
 
-all: $(COMPILED)
+DIST=setspace-schema-pgtexts.dist
+SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
+COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
+
+all: $(COMPILEs)
 clean:
-	rm -f $(COMPILED) merge-stdin-tsv_utf8.c
+	rm -f $(COMPILEs) merge-stdin-text_utf8.c merge-stdin-tsv_utf8.c
 
 merge-stdin-tsv_utf8:							\
 		merge-stdin-tsv_utf8.pgc				\
 		../../common.c						\
 		../../common-ecpg.c
+
 	ecpg merge-stdin-tsv_utf8.pgc
 	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-tsv_utf8.c		\
 			-o merge-stdin-tsv_utf8 -L$(PGLIB) -lecpg
@@ -30,12 +32,15 @@ merge-stdin-text_utf8:							\
 		merge-stdin-text_utf8.pgc				\
 		../../common.c						\
 		../../common-ecpg.c
+
 	ecpg merge-stdin-text_utf8.pgc
 	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-text_utf8.c		\
 			-o merge-stdin-text_utf8 -L$(PGLIB) -lecpg
 	rm merge-stdin-text_utf8.c
 
 install: all
+	cd .. $(_MAKE) install-dirs
+
 	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
 		-d $(PGTEXTS_PREFIX)
 	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER)			\
@@ -60,23 +65,15 @@ install: all
 		-d $(PGTEXTS_PREFIX)/etc
 
 	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER) -m ug=rx		\
-		profile.example						\
-		pgtexts.flow.example					\
-		rummy.sql						\
-		schema.sql						\
+		$(LIBs)							\
 		$(PGTEXTS_PREFIX)/lib
 
 	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER) -m u=rx		\
-		$(PROGS)						\
-		$(PGTEXTS_PREFIX)/sbin
-
-	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER) -m u=rx		\
-		goog2fts						\
+		$(SBINs)						\
 		$(PGTEXTS_PREFIX)/sbin
 
 	install -g $(PGTEXTS_GROUP) -o $(PGTEXTS_USER) -m ug=rx		\
-		Makefile						\
-		merge-stdin-tsv_utf8.pgc				\
+		$(SRCs)							\
 		$(PGTEXTS_PREFIX)/src
 
 distclean:
@@ -84,5 +81,8 @@ distclean:
 	rm -rf $(PGTEXTS_PREFIX)/src
 	rm -rf $(PGTEXTS_PREFIX)/sbin
 
-frisk ff:
-	flowd frisk pgtexts.flow.example
+world:
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
