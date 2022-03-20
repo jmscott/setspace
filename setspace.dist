@@ -150,3 +150,7 @@ SRCs="
 #  Uncomment to create directory libexec/
 #LIBEXECs="
 #"
+
+SYMLINKs="
+	$JMSCOTT_ROOT->.
+"

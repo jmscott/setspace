@@ -1,4 +1,4 @@
-#
+Makefile #
 #  Synopsis:
 #	Root makefile for setspace clients and spider environment.
 #  See:
@@ -67,6 +67,8 @@ install-dirs:
 				-d $(SETSPACE_PREFIX)/src
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/tmp
+	ln -fs $(JMSCOTT_ROOT) $(SETSPACE_PREFIX)
+
 install: all
 	$(_MAKE) install-dirs
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
