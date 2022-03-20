@@ -13,9 +13,9 @@ _MAKE=$(MAKE) $(MFLAGS)
 
 DIST=setspace-www.dist
 
-HTDOCs := $(shell  (. ./$(DIST) && echo $$HTDOCs))
+HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
 LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
-_HTDOCs=$(shell (echo $(HTDOCs) | tr ' ' '\n' | fgrep -v icon/))
+_HTDOCSs=$(shell (echo $(HTDOCSs) | tr ' ' '\n' | fgrep -v icon/))
 
 all:
 ifdef DASH_DNS_VHOST_SUFFIX
@@ -42,11 +42,9 @@ install-dirs:
 install:
 	$(_MAKE) install-dirs
 
-	@echo "WTF1: $(HTDOCs)"
-	@echo "WTF2: $(_HTDOCs)"
 	rsync -vax 							\
 		icon							\
-		$(_HTDOCs)						\
+		$(_HTDOCSs)						\
 		$(WWW_ROOT)/htdocs
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
 		$(LIBs)							\

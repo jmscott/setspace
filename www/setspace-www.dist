@@ -54,7 +54,7 @@ SBINs="
 #CGIBINs="
 #"
 
-HTDOCs="
+HTDOCSs="
 	screen.css
 	icon/README
 	icon/android-chrome-192x192.png
