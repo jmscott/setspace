@@ -1,4 +1,4 @@
-Makefile #
+#
 #  Synopsis:
 #	Root makefile for setspace clients and spider environment.
 #  See:
