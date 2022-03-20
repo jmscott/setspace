@@ -13,65 +13,79 @@ include ../../jmscott.mk
 include ../../setspace.mk
 include dash.mk
 
+_MAKE=$(MAKE) $(MFLAGS)
+
+DIST=setspace-www-dash.dist
+HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
+#		LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+#		SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
+
 ifndef DASH_DNS_VHOST_SUFFIX
 $(error DASH_DNS_VHOST_SUFFIX is not set)
 endif
 
 all:
-	cd schema && $(MAKE) $(MFLAGS) all
-	cd tag-http && $(MAKE) $(MFLAGS) all
+	cd schema && $(_MAKE) all
+	cd tag-http && $(_MAKE) all
 clean:
-	cd schema && $(MAKE) $(MFLAGS) clean
-	cd tag-http && $(MAKE) $(MFLAGS) clean
+	cd schema && $(_MAKE) clean
+	cd tag-http && $(_MAKE) clean
 
-install: all
+install-dirs:
+	cd .. && $(_MAKE) install-dirs
 
 	install -d $(WWW_PREFIX)/etc
-	test -e $(WWW_PREFIX)/etc/passwd				||\
-		install -m u=rw,g=r,o=					\
-			../apache2-passwd.example 			\
-			$(WWW_PREFIX)/etc/passwd
 	install -d $(WWW_PREFIX)/lib
 	install -d -m u=rwx,g=x,o= $(WWW_PREFIX)/cgi-bin
 	install -d $(WWW_PREFIX)/htdocs
 	install -m a=rwx -d $(WWW_PREFIX)/tmp
 
+install: all
+
+	$(_MAKE) install-dirs
+
+	#
+	#  Note:
+	#	only on makefile install.  not linked in "make-dist tar"
+	#	this may go away.
+	#
+
+	test -e $(WWW_PREFIX)/etc/passwd				||\
+		install -m u=rw,g=r,o=					\
+			../apache2-passwd.example 			\
+			$(WWW_PREFIX)/etc/passwd
+
 	install 							\
-		env.shtml						\
-		extra.shtml						\
-		footer.shtml						\
-		header.shtml						\
-		index.shtml						\
-		nav.shtml						\
-		screen.css						\
-		template.shtml						\
+		$(HTDOCSs)						\
 		$(WWW_PREFIX)/htdocs
 
 	#  set up symbolic links to $(JMSCOTT_ROOT) tools
 	test -e $(WWW_PREFIX)/cgi-bin/jmscott				||\
-		ln -s $(JMSCOTT_ROOT)/www/cgi-bin $(WWW_PREFIX)/cgi-bin/jmscott
+		ln -s ../../../jmscott $(WWW_PREFIX)/cgi-bin/jmscott
 	test -e $(WWW_PREFIX)/lib/jmscott				||\
-		ln -s $(JMSCOTT_ROOT)/www/lib $(WWW_PREFIX)/lib/jmscott
+		ln -s ../../../jmscott $(WWW_PREFIX)/lib/jmscott
 
 	#  set symbolic link to $(SETSPACE_ROOT)/www/htdocs/icon
 	test -e $(WWW_PREFIX)/htdocs/icon				||\
 		ln -s $(SETSPACE_PREFIX)/www/htdocs/icon		\
 		      $(WWW_PREFIX)/htdocs/icon
 
-	cd schema && $(MAKE) $(MFLAGS) install
-	cd gw && $(MAKE) $(MFLAGS) install
-	cd tag-http && $(MAKE) $(MFLAGS) install
+	cd schema && $(_MAKE) install
+	cd gw && $(_MAKE) install
+	cd tag-http && $(_MAKE) install
 
 distclean:
-	cd schema && $(MAKE) $(MFLAGS) distclean
-	cd gw && $(MAKE) $(MFLAGS) distclean
-	cd tag-http && $(MAKE) $(MFLAGS) distclean
+	cd schema && $(_MAKE) distclean
+	cd gw && $(_MAKE) distclean
+	cd tag-http && $(_MAKE) distclean
 	rm -rf $(WWW_PREFIX)/lib
 	rm -rf $(WWW_PREFIX)/cgi-bin
 	rm -rf $(WWW_PREFIX)/htdocs
 
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
+dist:
+	make-dist tar setspace-www-dash.dist
