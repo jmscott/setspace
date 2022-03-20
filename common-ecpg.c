@@ -2,6 +2,8 @@
  *  Synopsis:
  *	Common routines used by PostgreSQL ecpg code, depends on ./common.c
  *  Note:
+ *	Double check safetly of memove() call.
+ *
  *	Need to add explcit dependency on common.c
  *
  *	The process exit status of both warnings and errors are remapped through
