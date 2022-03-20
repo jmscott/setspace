@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Common routines used by PostgreSQL ecpg code, depends in common.c
+ *	Common routines used by PostgreSQL ecpg code, depends on ./common.c
  *  Note:
  *	Need to add explcit dependency on common.c
  *
