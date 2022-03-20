@@ -1,4 +1,4 @@
-schema/Makefile #
+#
 #  Synposis:
 #	Makefile for setspace/schema/*
 #  Note:
@@ -15,8 +15,8 @@ include schema.mk
 _MAKE=$(MAKE) $(MFLAGS)
 
 DIST=setspace-schema.dist
-SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
-LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+SBINs:=$(shell  (. ./$(DIST) && echo $$SBINs))
+LIBs:=$(shell  (. ./$(DIST) && echo $$LIBs))
 
 all:
 	cd setcore && $(_MAKE) all
