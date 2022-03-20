@@ -9,12 +9,22 @@ include ../setspace.mk
 
 WWW_ROOT=$(SETSPACE_PREFIX)/www
 
+_MAKE=$(MAKE) $(MFLAGS)
+
+DIST=setspace-www.dist
+
+HTDOCs := $(shell  (. ./$(DIST) && echo $$HTDOCs))
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+_HTDOCs=$(shell (echo $(HTDOCs) | tr ' ' '\n' | fgrep -v icon/))
+
 all:
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd dash && $(MAKE) $(MFLAGS) all
+	cd dash && $(_MAKE) all
 endif
 
-install:
+install-dirs:
+	cd .. && $(_MAKE) install-dirs
+
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		-d $(SETSPACE_PREFIX)
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
@@ -24,55 +34,44 @@ install:
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		-d $(WWW_ROOT)/htdocs
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+		-d $(WWW_ROOT)/htdocs/icon
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		-m a+wrx						\
 		-d $(WWW_ROOT)/tmp
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-		-d $(WWW_ROOT)/htdocs/icon
 
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
-			screen.css					\
+install:
+	$(_MAKE) install-dirs
+
+	@echo "WTF1: $(HTDOCs)"
+	@echo "WTF2: $(_HTDOCs)"
+	rsync -vax 							\
+		icon							\
+		$(_HTDOCs)						\
 		$(WWW_ROOT)/htdocs
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
-		icon/README						\
-		icon/android-chrome-192x192.png				\
-		icon/android-chrome-512x512.png				\
-		icon/apple-touch-icon.png				\
-		icon/browserconfig.xml					\
-		icon/favicon-16x16.png					\
-		icon/favicon-32x32.png					\
-		icon/favicon.ico					\
-		icon/favicon.svg					\
-		icon/favicon_package_v0.16.zip				\
-		icon/index.html.inc					\
-		icon/mstile-150x150.png					\
-		icon/safari-pinned-tab.svg				\
-		icon/site.webmanifest					\
-		$(WWW_ROOT)/htdocs/icon
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
-		apache2-vhost.conf.example				\
-		apache2-passwd.example					\
-		common-json.pl						\
-		common-time.pl						\
-		utf82blob.pl						\
+		$(LIBs)							\
 		$(WWW_ROOT)/lib
+
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd dash && $(MAKE) $(MFLAGS) install
+	cd dash && $(_MAKE) install
 endif
 
 distclean:
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd dash && $(MAKE) $(MFLAGS) distclean
+	cd dash && $(_MAKE) distclean
 endif
 	rm -rf $(WWW_ROOT)/htdocs
 	rm -rf $(WWW_ROOT)/lib
 
 clean:
 ifdef DASH_DNS_VHOST_SUFFIX
-	cd dash && $(MAKE) $(MFLAGS) clean
+	cd dash && $(_MAKE) clean
 endif
 
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
+dist:
+	make-dist $(DIST)
