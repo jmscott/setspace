@@ -134,6 +134,7 @@ endif
 	rm -rf $(SETSPACE_PREFIX)/lib
 	rm -rf $(SETSPACE_PREFIX)/src
 	rm -rf $(SETSPACE_PREFIX)/sbin
+	rm -f $(SETSPACE_PREFIX)/jmscott
 
 world:
 	$(_MAKE) clean
