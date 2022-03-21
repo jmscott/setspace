@@ -4,33 +4,20 @@
 #  See:
 #	https://github.com/jmscott/work/blob/master/make-dist
 #  Note:
-#	Consider changing all explicit  reference var $JMSCOTT_ROOT in
-#	SYMLINKs
+#	Makefile variables can be extracted and defined from the the
+#	root.dist file with these recipes.  Example make code follows:
 #
-#		SYMLINKs="
-#			$JMSCOTT_ROOT/www/cgi-bin->cgi-bin/jmscott
-#			$JMSCOTT_ROOT/www/lib->lib/jmscott
-#		"
+#		DIST=product.dist
 #
-#	to link to single dir jmscott/, which itself is link to appropriate
-#	$JMSCOTT_ROOT (typically /usr/local/jmscott).  In other words, the new
-#	SYMLINKS becomes
+#		COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
+#		SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
+#		LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+#		SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
+#		BINs := $(shell  (. ./$(DIST) && echo $$BINs))
+#		HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
+#		CGIBINs := $(shell  (. ./$(DIST) && echo $$CGIBINs))
+#		LIBEXEC := $(shell  (. ./$(DIST) && echo $$LIBEXECs))
 #
-#		SYMLINKs="
-#			$JMSCOTT_ROOT->jmscott
-#			jmscott/cgi-bin->cgi-bin/jmscott
-#			jmscott/lib www/lib->lib/jmscott
-#		"
-#
-
-#  Define PRODUCT to change name of tar file from $(basename $(pwd))
-#  to, say, foobar-YYYYMMDD_hhmm.tar.bz2
-
-#PRODUCT=foobar
-
-VAR2dir_local=(
-        [CGIBINs]='cgi-bin/schema'
-)
 
 #
 #  Uncomment for compiled programs to be installed i bin/ or sbin/ and
@@ -40,7 +27,11 @@ VAR2dir_local=(
 #"
 
 LIBs="
-	setspace-www-dash.dist
+	setspace-www-dash-schema.dist
+
+	stats.d/help.pl
+	stats.d/table.pl
+	stats.d/table.sch.pl
 "
 
 #  Uncoment to create bin/ directory
@@ -54,20 +45,17 @@ SBINs="
 #TMP="
 #"
 
-#  required for symbolic link to cgi-bin/jmscott and lib/jmscott
+#  Uncomment to create cgibin/ directory
 CGIBINs="
+	stats
 "
 
 #  Uncomment to create htdocs/ directory
 HTDOCSs="
-	env.shtml
-	extra.shtml
-	footer.shtml
-	header.shtml
 	index.shtml
 	nav.shtml
-	screen.css
-	template.shtml
+	stats.shtml
+	stats-sch.shtml
 "
 
 #  Uncomment to create src/ directory
@@ -109,9 +97,3 @@ HTDOCSs="
 #  Uncomment to create directory libexec/
 #LIBEXECs="
 #"
-
-SYMLINKs="
-	../../jmscott/www/cgi-bin->cgi-bin/jmscott
-	../../jmscott/www/lib->lib/jmscott
-	../../htdocs/icon->htdocs/icon
-"

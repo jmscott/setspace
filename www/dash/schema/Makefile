@@ -13,6 +13,11 @@ include ../../../jmscott.mk
 include ../../../setspace.mk
 include ../dash.mk
 
+_MAKE=$(MAKE) $(MFLAGS)
+
+DIST=setspace-www-dash-schema.dist
+HTDOCSs := $(shell (. ./$(DIST) && echo $$HTDOCSs))
+
 ifndef DASH_DNS_VHOST_SUFFIX
 $(error DASH_DNS_VHOST_SUFFIX is not set)
 endif
@@ -35,10 +40,7 @@ install: all
 	install -d $(WWW_PREFIX)/htdocs
 	install -d $(WWW_PREFIX)/htdocs/schema
 	install 							\
-		index.shtml						\
-		nav.shtml						\
-		stats.shtml						\
-		stats-sch.shtml						\
+		$(HTDOCSs)						\
 		$(WWW_PREFIX)/htdocs/schema
 
 	install -d $(WWW_PREFIX)/cgi-bin
