@@ -9,32 +9,45 @@
 #
 #		DIST=product.dist
 #
+#		COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
 #		SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
 #		LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
 #		SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
 #		BINs := $(shell  (. ./$(DIST) && echo $$BINs))
-#		HTDOCs := $(shell  (. ./$(DIST) && echo $$HTDOCs))
+#		HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
 #		CGIBINs := $(shell  (. ./$(DIST) && echo $$CGIBINs))
 #		LIBEXEC := $(shell  (. ./$(DIST) && echo $$LIBEXECs))
-#		COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
 #
 
-#  Define PRODUCT to change name of tar file from $(basename $(pwd))
-#  to, say, foobar-YYYYMMDD_hhmm.tar.bz2
+#  Uncomment to override default mappings of VARs to target directory
+VAR2dir_local=(
+	[LIBs]=jsonorg.d
+	[HTDOCSs]=jsonorg
+)
 
 #
 #  Uncomment for compiled programs to be installed i bin/ or sbin/ and
 #  removed in "clean" recipes.
 #
-#COMPILEs="
-#"
+COMPILEs="
+	jsonorg
+"
 
 LIBs="
-	apache2-vhost.conf.example
-	apache2-passwd.example
-	common-json.pl
-	common-time.pl
-	utf82blob.pl
+	jsonorg.cgi
+	jsonorg.d/common.pl
+	jsonorg.d/dl.fail.pl
+	jsonorg.d/dl.pl
+	jsonorg.d/help.pl
+	jsonorg.d/input.pl
+	jsonorg.d/mime.json.pl
+	jsonorg.d/post.topk.pl
+	jsonorg.d/pre.pl
+	jsonorg.d/select.topk.pl
+	jsonorg.d/span.fail.pl
+	jsonorg.d/span.nav.pl
+	jsonorg.d/table.pl
+	select-jsonb-keys.sql
 "
 
 #  Uncoment to create bin/ directory
@@ -53,6 +66,11 @@ SBINs="
 #"
 
 HTDOCSs="
+	detail.shtml
+	fail.shtml
+	index.shtml
+	nav.shtml
+	schema.shtml
 	screen.css
 "
 

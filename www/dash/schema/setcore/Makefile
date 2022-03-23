@@ -13,48 +13,46 @@ include ../../../../jmscott.mk
 include ../../../../setspace.mk
 include ../../dash.mk
 
-all: setcore setcore.d/help.pl
+_MAKE=$(MAKE) $(MFLAGS)
+
+DIST=setspace-www-dash-schema-setcore.dist
+COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
+
+all: $(COMPILEs)
 clean:
-	rm -f setcore setcore.d/help.pl
+	rm -f $(COMPILEs)
 
-install: all
+install-dirs:
+	cd .. && $(_MAKE) install-dirs
 
-	install -d $(WWW_PREFIX)/lib
-	install -d $(WWW_PREFIX)/lib/schema
 	install -d $(WWW_PREFIX)/lib/schema/setcore.d
 	install -d $(WWW_PREFIX)/htdocs/schema/setcore
-	install -d $(WWW_PREFIX)/cgi-bin/schema
-	install setcore $(WWW_PREFIX)/cgi-bin/schema
+install: all
+	$(_MAKE) install-dirs
 
+	install setcore $(WWW_PREFIX)/cgi-bin/schema
 	install								\
-		setcore.d/common.pl					\
-		setcore.d/dl.pl						\
-		setcore.d/help.pl					\
-		setcore.d/input.pl					\
-		setcore.d/pre.hex.pl					\
-		setcore.d/span.nav.pl					\
-		setcore.d/table.pl					\
+		$(LIBs)							\
 		$(WWW_PREFIX)/lib/schema/setcore.d
 	install								\
-		detail.shtml						\
-		index.shtml						\
-		nav.shtml						\
-		schema.shtml						\
-		screen.css						\
+		$(HTDOCSs)						\
 		$(WWW_PREFIX)/htdocs/schema/setcore
-	install setcore.cgi $(WWW_PREFIX)/lib/schema
 
 distclean:
 	rm -f $(WWW_PREFIX)/cgi-bin/schema/setcore
 	rm -rf $(WWW_PREFIX)/lib/schema/setcore.d
-	rm -f $(WWW_PREFIX)/lib/schema/setcore.cgi
 	rm -rf $(WWW_PREFIX)/htdocs/schema/setcore
 
 setcore setcore.d/help.pl: setcore.cgi
 	cgi2perl5 --source-path setcore.cgi --alias-path schema
 	chmod a+rx setcore
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
+
+dist:
+	make-dist $(DIST)

@@ -17,8 +17,6 @@ _MAKE=$(MAKE) $(MFLAGS)
 
 DIST=setspace-www-dash.dist
 HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
-#		LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
-#		SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
 
 ifndef DASH_DNS_VHOST_SUFFIX
 $(error DASH_DNS_VHOST_SUFFIX is not set)

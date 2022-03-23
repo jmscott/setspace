@@ -13,48 +13,43 @@ include ../../../../jmscott.mk
 include ../../../../setspace.mk
 include ../../dash.mk
 
-all: jsonorg jsonorg.d/help.pl
-clean:
-	rm -f jsonorg jsonorg.d/help.pl
+_MAKE=$(MAKE) $(MFLAGS)
 
-install: all
+DIST=setspace-www-dash-schema-jsonorg.dist
+
+COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
+
+all: $(COMPILEs)
+clean:
+	rm -f $(COMPILEs)
+
+install-dirs:
+	cd .. && $(_MAKE) install-dirs
 
 	install -d $(WWW_PREFIX)/lib/schema/jsonorg.d
 	install -d $(WWW_PREFIX)/htdocs/schema/jsonorg
-	install -d $(WWW_PREFIX)/cgi-bin/schema
+
+install: all
+
+	$(_MAKE) install-dirs
+
+	install -d $(WWW_PREFIX)/lib/schema/jsonorg.d
+	install -d $(WWW_PREFIX)/htdocs/schema/jsonorg
+
 	install jsonorg $(WWW_PREFIX)/cgi-bin/schema
 
 	install								\
-		jsonorg.d/common.pl					\
-		jsonorg.d/dl.fail.pl					\
-		jsonorg.d/dl.pl						\
-		jsonorg.d/help.pl					\
-		jsonorg.d/input.pl					\
-		jsonorg.d/mime.json.pl					\
-		jsonorg.d/post.topk.pl					\
-		jsonorg.d/pre.pl					\
-		jsonorg.d/select.topk.pl				\
-		jsonorg.d/span.fail.pl					\
-		jsonorg.d/span.nav.pl					\
-		jsonorg.d/table.pl					\
-		select-jsonb-keys.sql					\
+		$(LIBs)							\
 		$(WWW_PREFIX)/lib/schema/jsonorg.d
 	install								\
-		detail.shtml						\
-		fail.shtml						\
-		index.shtml						\
-		nav.shtml						\
-		schema.shtml						\
-		screen.css						\
+		$(HTDOCSs)						\
 		$(WWW_PREFIX)/htdocs/schema/jsonorg
-	install								\
-		jsonorg.cgi						\
-		$(WWW_PREFIX)/lib/schema
 
 distclean:
 	rm -f $(WWW_PREFIX)/cgi-bin/schema/jsonorg
 	rm -rf $(WWW_PREFIX)/lib/schema/jsonorg.d
-	rm -f $(WWW_PREFIX)/lib/schema/jsonorg.cgi
 	rm -rf $(WWW_PREFIX)/htdocs/schema/jsonorg
 
 jsonorg jsonorg.d/help.pl: jsonorg.cgi
@@ -64,7 +59,10 @@ jsonorg jsonorg.d/help.pl: jsonorg.cgi
 	chmod a+rx jsonorg
 
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
+
+dist:
+	make-dist $(DIST)

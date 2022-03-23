@@ -9,40 +9,37 @@
 #
 #		DIST=product.dist
 #
+#		COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
 #		SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
 #		LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
 #		SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
 #		BINs := $(shell  (. ./$(DIST) && echo $$BINs))
-#		HTDOCs := $(shell  (. ./$(DIST) && echo $$HTDOCs))
+#		HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
 #		CGIBINs := $(shell  (. ./$(DIST) && echo $$CGIBINs))
 #		LIBEXEC := $(shell  (. ./$(DIST) && echo $$LIBEXECs))
-#		COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
 #
 
-#  Define PRODUCT to change name of tar file from $(basename $(pwd))
-#  to, say, foobar-YYYYMMDD_hhmm.tar.bz2
+#  Uncomment to override default mappings of VARs to target directory
+VAR2dir_local=(
+	[HTDOCSs]='htdocs/icon'
+)
 
 #
-#  Uncomment for compiled programs to be installed i bin/ or sbin/ and
+#  Uncomment for compiled programs to be installed in bin/ or sbin/ and
 #  removed in "clean" recipes.
 #
 #COMPILEs="
 #"
 
-LIBs="
-	apache2-vhost.conf.example
-	apache2-passwd.example
-	common-json.pl
-	common-time.pl
-	utf82blob.pl
-"
+#LIBs="
+#"
 
 #  Uncoment to create bin/ directory
 #BINs="
 #"
 
-SBINs="
-"
+#SBINs="
+#"
 
 #  Uncomment to create tmp/ directory
 #TMP="
@@ -52,8 +49,23 @@ SBINs="
 #CGIBINs="
 #"
 
+#  Uncomment to create htdocs/ directory
 HTDOCSs="
-	screen.css
+	README
+	android-chrome-192x192.png
+	android-chrome-512x512.png
+	apple-touch-icon.png
+	browserconfig.xml
+	favicon-16x16.png
+	favicon-32x32.png
+	favicon.ico
+	favicon.svg
+	favicon_package_v0.16.zip
+	index.html.inc
+	mstile-150x150.png
+	safari-pinned-tab.svg
+	setspace-www-icon.dist
+	site.webmanifest
 "
 
 #  Uncomment to create src/ directory

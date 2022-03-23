@@ -13,55 +13,36 @@ include ../../../../jmscott.mk
 include ../../../../setspace.mk
 include ../../dash.mk
 
-all: pdfbox pdfbox.d/help.pl
+_MAKE=$(MAKE) $(MFLAGS)
+
+DIST=setspace-www-dash-schema-pdfbox.dist
+COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
+
+all: $(COMPILEs)
 clean:
-	rm -f pdfbox pdfbox.d/help.pl
+	rm -f $(COMPILEs)
+
+install-dirs:
+	cd .. && $(_MAKE) install-dirs
 
 install: all
+	$(_MAKE) install-dirs
 
-	install -d $(WWW_PREFIX)/lib/
-	install -d $(WWW_PREFIX)/lib/schema
 	install -d $(WWW_PREFIX)/lib/schema/pdfbox.d
 	install -d $(WWW_PREFIX)/htdocs/schema/pdfbox
-	install -d $(WWW_PREFIX)/cgi-bin
-	install -d $(WWW_PREFIX)/cgi-bin/schema
-	install pdfbox $(WWW_PREFIX)/cgi-bin/schema
 
 	install								\
-		pdfbox.d/a.mime.pl					\
-		pdfbox.d/common.pl					\
-		pdfbox.d/dl.extpg.pl					\
-		pdfbox.d/dl.pddoc.pl					\
-		pdfbox.d/dl.pdinfo.pl					\
-		pdfbox.d/dl.pl						\
-		pdfbox.d/help.pl					\
-		pdfbox.d/iframe.pdf.pl					\
-		pdfbox.d/input.mytitle.pl				\
-		pdfbox.d/input.pl					\
-		pdfbox.d/mime.pdf.pl					\
-		pdfbox.d/post.mytitle.pl				\
-		pdfbox.d/post.q.pl					\
-		pdfbox.d/span.nav.pl					\
-		pdfbox.d/table.exttsv.pl				\
-		pdfbox.d/table.pl					\
-		pdfbox.d/text.objdesc.pl				\
-		pdfbox.d/utf8.pg1.pl					\
+		$(LIBs)							\
 		$(WWW_PREFIX)/lib/schema/pdfbox.d
 	install								\
-		detail-tsv.shtml					\
-		detail.shtml						\
-		index.shtml						\
-		nav.shtml						\
-		schema.shtml						\
-		screen.css						\
-		title.shtml						\
+		$(HTDOCSs)						\
 		$(WWW_PREFIX)/htdocs/schema/pdfbox
-	install pdfbox.cgi $(WWW_PREFIX)/lib
 
 distclean:
 	rm -f $(WWW_PREFIX)/cgi-bin/schema/pdfbox
 	rm -rf $(WWW_PREFIX)/lib/schema/pdfbox.d
-	rm -f $(WWW_PREFIX)/lib/schema/pdfbox.cgi
 	rm -rf $(WWW_PREFIX)/htdocs/schema/pdfbox
 
 pdfbox: pdfbox.cgi
@@ -71,7 +52,10 @@ pdfbox: pdfbox.cgi
 	chmod a+rx pdfbox
 
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
+
+dist:
+	make-dist $(DIST)

@@ -1,4 +1,3 @@
-
 #
 #  Variable DASH_DNS_SUFFIX determines the directory name for the the
 #  web server, which matches the DNS name in the ssl certificate.  The
@@ -9,6 +8,9 @@
 #	dash.setspace.jmscott.tmonk.local
 #
 #  using a snake oil, self-signed ssl certificate built for development.
+#
+#  Note:
+#	WWW_PREFIX needs to be renamed to VHOST_PREFIX!
 #
 ifndef DASH_DNS_VHOST_SUFFIX
 $(error DASH_DNS_VHOST_SUFFIX is not set)

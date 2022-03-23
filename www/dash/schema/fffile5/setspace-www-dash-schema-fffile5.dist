@@ -9,32 +9,40 @@
 #
 #		DIST=product.dist
 #
+#		COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
 #		SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
 #		LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
 #		SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
 #		BINs := $(shell  (. ./$(DIST) && echo $$BINs))
-#		HTDOCs := $(shell  (. ./$(DIST) && echo $$HTDOCs))
+#		HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
 #		CGIBINs := $(shell  (. ./$(DIST) && echo $$CGIBINs))
 #		LIBEXEC := $(shell  (. ./$(DIST) && echo $$LIBEXECs))
-#		COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
 #
 
-#  Define PRODUCT to change name of tar file from $(basename $(pwd))
-#  to, say, foobar-YYYYMMDD_hhmm.tar.bz2
+#  Uncomment to override default mappings of VARs to target directory
+VAR2dir_local=(
+	[LIBs]='lib/schema'
+	[HTDOCSs]='htdocs/schema/fffile5'
+	[CGIBINs]=cgi-bin/schema
+)
 
 #
 #  Uncomment for compiled programs to be installed i bin/ or sbin/ and
 #  removed in "clean" recipes.
 #
-#COMPILEs="
-#"
+COMPILEs="
+	fffile5
+	fffile5.d/help.pl
+"
 
 LIBs="
-	apache2-vhost.conf.example
-	apache2-passwd.example
-	common-json.pl
-	common-time.pl
-	utf82blob.pl
+	fffile5.cgi
+	fffile5.d/dl.mt.pl
+	fffile5.d/help.pl
+	fffile5.d/mime.mt.pl
+	fffile5.d/post.mt.pl
+	fffile5.d/select.mt.pl
+	fffile5.d/span.nav.mt.pl
 "
 
 #  Uncoment to create bin/ directory
@@ -49,11 +57,15 @@ SBINs="
 #"
 
 #  Uncomment to create cgibin/ directory
-#CGIBINs="
-#"
+CGIBINs="
+	fffile5
+"
 
+#  Uncomment to create htdocs/ directory
 HTDOCSs="
-	screen.css
+	index.shtml
+	nav.shtml
+	schema.shtml
 "
 
 #  Uncomment to create src/ directory

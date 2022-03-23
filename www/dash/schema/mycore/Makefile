@@ -13,37 +13,38 @@ include ../../../../jmscott.mk
 include ../../../../setspace.mk
 include ../../dash.mk
 
+_MAKE=$(MAKE) $(MFLAGS)
+
+DIST=setspace-www-dash-schema-mycore.dist
+COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
+HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+
 all: mycore mycore.d/help.pl
 clean:
 	rm -f mycore mycore.d/help.pl
 
-install: all
-
-	install -d $(WWW_PREFIX)/lib
-	install -d $(WWW_PREFIX)/lib/schema
+install-dirs:
+	cd .. && $(_MAKE) install-dirs
 	install -d $(WWW_PREFIX)/lib/schema/mycore.d
 	install -d $(WWW_PREFIX)/htdocs/schema/mycore
-	install -d $(WWW_PREFIX)/cgi-bin
-	install -d $(WWW_PREFIX)/cgi-bin/schema
+
+install: all
+
+	$(_MAKE) install-dirs
+
 	install mycore $(WWW_PREFIX)/cgi-bin/schema
 
 	install								\
-		mycore.d/common.pl					\
-		mycore.d/dl.pl						\
-		mycore.d/help.pl					\
-		mycore.d/post.mime.pl					\
+		$(LIBs)							\
 		$(WWW_PREFIX)/lib/schema/mycore.d
 	install								\
-		index.shtml						\
-		nav.shtml						\
-		schema.shtml						\
+		$(HTDOCSs)						\
 		$(WWW_PREFIX)/htdocs/schema/mycore
-	install mycore.cgi $(WWW_PREFIX)/lib/schema
 
 distclean:
 	rm -f $(WWW_PREFIX)/cgi-bin/schema/mycore
 	rm -rf $(WWW_PREFIX)/lib/schema/mycore.d
-	rm -f $(WWW_PREFIX)/lib/schema/mycore.cgi
 	rm -rf $(WWW_PREFIX)/htdocs/schema/mycore
 
 mycore mycore.d/help.pl: mycore.cgi
@@ -53,7 +54,10 @@ mycore mycore.d/help.pl: mycore.cgi
 	chmod a+rx mycore
 
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
+
+dist:
+	make-dist setspace-www-dash-schema-mycore.dist

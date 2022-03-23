@@ -7,33 +7,36 @@ include ../../../../jmscott.mk
 include ../../../../setspace.mk
 include ../../dash.mk
 
-all: fffile5 fffile5.d/help.pl
-clean:
-	rm -f fffile5 fffile5.d/help.pl
+_MAKE=$(MAKE) $(MFLAGS)
 
-install: all
+DIST=setspace-www-dash-schema-fffile5.dist
+COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+CGIBINs := $(shell  (. ./$(DIST) && echo $$CGIBINs))
+HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
+
+all: $(COMPILEs)
+clean:
+	rm -f $(COMPILEs)
+
+install-dirs:
+	cd .. && $(_MAKE) install-dirs
 
 	install -d $(WWW_PREFIX)/lib/schema/fffile5.d
 	install -d $(WWW_PREFIX)/htdocs/schema/fffile5
-	install -d $(WWW_PREFIX)/cgi-bin/schema
-	install fffile5 $(WWW_PREFIX)/cgi-bin/schema
+
+install: all
+	$(_MAKE) install-dirs
 
 	install								\
-		fffile5.d/dl.mt.pl					\
-		fffile5.d/help.pl					\
-		fffile5.d/mime.mt.pl					\
-		fffile5.d/post.mt.pl					\
-		fffile5.d/select.mt.pl					\
-		fffile5.d/span.nav.mt.pl				\
+		$(LIBs)							\
 		$(WWW_PREFIX)/lib/schema/fffile5.d
 	install								\
-		index.shtml						\
-		nav.shtml						\
-		schema.shtml						\
+		$(HTDOCSs)						\
 		$(WWW_PREFIX)/htdocs/schema/fffile5
 	install								\
-		fffile5.cgi						\
-		$(WWW_PREFIX)/lib/schema
+		$(CGIBINs)						\
+		$(WWW_PREFIX)/cgi-bin/schema
 
 distclean:
 	rm -f $(WWW_PREFIX)/cgi-bin/schema/fffile5
@@ -48,7 +51,10 @@ fffile5 fffile5.d/help.pl: fffile5.cgi
 	chmod a+rx fffile5
 
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
+
+dist:
+	make-dist tar $(DIST)

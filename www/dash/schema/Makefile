@@ -17,52 +17,53 @@ _MAKE=$(MAKE) $(MFLAGS)
 
 DIST=setspace-www-dash-schema.dist
 HTDOCSs := $(shell (. ./$(DIST) && echo $$HTDOCSs))
+CGIBINs := $(shell (. ./$(DIST) && echo $$CGIBINs))
+LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
 
 ifndef DASH_DNS_VHOST_SUFFIX
 $(error DASH_DNS_VHOST_SUFFIX is not set)
 endif
 
-all: stats stats.d/help.pl
-	cd setcore && $(MAKE) $(MFLAGS) all
-	cd mycore && $(MAKE) $(MFLAGS) all
-	cd fffile5 && $(MAKE) $(MFLAGS) all
-	cd jsonorg && $(MAKE) $(MFLAGS) all
-	cd pdfbox && $(MAKE) $(MFLAGS) all
+all: $(COMPILEs)
+	cd setcore && $(_MAKE) all
+	cd mycore && $(_MAKE) all
+	cd fffile5 && $(_MAKE) all
+	cd jsonorg && $(_MAKE) all
+	cd pdfbox && $(_MAKE) all
 clean:
-	rm -f stats stats.d/help.pl
-	cd setcore && $(MAKE) $(MFLAGS) clean
-	cd mycore && $(MAKE) $(MFLAGS) clean
-	cd fffile5 && $(MAKE) $(MFLAGS) clean
-	cd jsonorg && $(MAKE) $(MFLAGS) clean
-	cd pdfbox && $(MAKE) $(MFLAGS) clean
+	rm -f $(COMPILEs)
+	cd setcore && $(_MAKE) clean
+	cd mycore && $(_MAKE) clean
+	cd fffile5 && $(_MAKE) clean
+	cd jsonorg && $(_MAKE) clean
+	cd pdfbox && $(_MAKE) clean
+
+install-dirs:
+	cd .. && $(_MAKE) install-dirs
+
+	install -d $(WWW_PREFIX)/htdocs/schema
+	install -d $(WWW_PREFIX)/cgi-bin/schema
+	install -d $(WWW_PREFIX)/lib/schema
+	install -d $(WWW_PREFIX)/lib/schema/stats.d
 
 install: all
-	install -d $(WWW_PREFIX)/htdocs
-	install -d $(WWW_PREFIX)/htdocs/schema
+	$(_MAKE) install-dirs
+
 	install 							\
 		$(HTDOCSs)						\
 		$(WWW_PREFIX)/htdocs/schema
-
-	install -d $(WWW_PREFIX)/cgi-bin
-	install -d $(WWW_PREFIX)/cgi-bin/schema
 	install								\
-		stats							\
+		$(CGIBINs)						\
 		$(WWW_PREFIX)/cgi-bin/schema
-
-	install -d $(WWW_PREFIX)/lib
-	install -d $(WWW_PREFIX)/lib/schema
-	install -d $(WWW_PREFIX)/lib/schema/stats.d
 	install								\
-		stats.d/help.pl						\
-		stats.d/table.pl					\
-		stats.d/table.sch.pl					\
+		$(LIBs)							\
 		$(WWW_PREFIX)/lib/schema/stats.d
 
-	cd setcore && $(MAKE) $(MFLAGS) install
-	cd mycore && $(MAKE) $(MFLAGS) install
-	cd fffile5 && $(MAKE) $(MFLAGS) install
-	cd jsonorg && $(MAKE) $(MFLAGS) install
-	cd pdfbox && $(MAKE) $(MFLAGS) install
+	cd setcore && $(_MAKE) install
+	cd mycore && $(_MAKE) install
+	cd fffile5 && $(_MAKE) install
+	cd jsonorg && $(_MAKE) install
+	cd pdfbox && $(_MAKE) install
 
 distclean:
 	rm -rf $(WWW_PREFIX)/cgi-bin/schema
@@ -70,11 +71,14 @@ distclean:
 	rm -rf $(WWW_PREFIX)/lib/schema
 
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
 
 stats stats.d/help.pl: stats.cgi
 	cgi2perl5 --source-path stats.cgi --alias-path schema
 	chmod a+rx stats
+
+dist:
+	make-dist $(DIST)

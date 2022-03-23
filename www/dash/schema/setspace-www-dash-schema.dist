@@ -19,16 +19,13 @@
 #		LIBEXEC := $(shell  (. ./$(DIST) && echo $$LIBEXECs))
 #
 
-#
-#  Uncomment for compiled programs to be installed i bin/ or sbin/ and
-#  removed in "clean" recipes.
-#
-#COMPILEs="
-#"
+COMPILEs="
+	stats
+	stats.d/help.pl
+"
 
 LIBs="
-	setspace-www-dash-schema.dist
-
+	stats.cgi
 	stats.d/help.pl
 	stats.d/table.pl
 	stats.d/table.sch.pl

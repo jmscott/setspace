@@ -15,7 +15,6 @@ DIST=setspace-www.dist
 
 HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
 LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
-_HTDOCSs=$(shell (echo $(HTDOCSs) | tr ' ' '\n' | fgrep -v icon/))
 
 all:
 ifdef DASH_DNS_VHOST_SUFFIX
@@ -34,17 +33,15 @@ install-dirs:
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		-d $(WWW_ROOT)/htdocs
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-		-d $(WWW_ROOT)/htdocs/icon
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		-m a+wrx						\
 		-d $(WWW_ROOT)/tmp
 
 install:
 	$(_MAKE) install-dirs
 
-	rsync -vax 							\
-		icon							\
-		$(_HTDOCSs)						\
+	echo WTF0
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
+		$(HTDOCSs)						\
 		$(WWW_ROOT)/htdocs
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
 		$(LIBs)							\
