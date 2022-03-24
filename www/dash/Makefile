@@ -5,6 +5,8 @@
 #	export DASH_DNS_VHOST_SUFFIX=jmscott.tmonk.local
 #	make clean all install
 #  Note:
+#	Consider moving "dash" to "vhost/dash".
+#
 #	Need to add permissions to install invocation, in particular,
 #	cgi-bin/
 #

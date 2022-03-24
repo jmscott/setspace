@@ -1,47 +1,61 @@
 #
 #  Synopsis:
-#	Development/Install Makefile for dash.setspace.$(DASH_DNS_VHOST_SUFFIX)
+#	Development/Install Makefile for uploading via http post.
 #  Usage:
 #	export DASH_DNS_VHOST_SUFFIX=jmscott.tmonk.local
-#	make clean all install
+#	make world
+#  Note:
+#	need to move "upload" dir to "gw/POST" !
 #
 include ../../../local.mk
 include ../../../jmscott.mk
 include ../../../setspace.mk
 include ../dash.mk
 
-all: upload upload.d/help.pl
+_MAKE=$(MAKE) $(MFLAGS)
+
+DIST=setspace-www-dash-upload.dist
+COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
+LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
+CGIBINs := $(shell  (. ./$(DIST) && echo $$CGIBINs))
+
+all: $(COMPILEs)
 clean:
-	rm -f upload upload.d/help.pl
+	rm -f $(COMPILEs)
+
+install-dirs:
+	cd .. && $(_MAKE) install-dirs
+	install -d $(WWW_PREFIX)/lib/upload.d
+	install -d $(WWW_PREFIX)/htdocs/upload
 
 install: all
 
-	install -d $(WWW_PREFIX)/lib/upload.d
-	install -d $(WWW_PREFIX)/htdocs/upload
-	install -d $(WWW_PREFIX)/cgi-bin
-	install upload $(WWW_PREFIX)/cgi-bin
+	$(_MAKE) install-dirs
 
 	install								\
-		upload.d/post.blob.pl					\
+		$(LIBs)							\
 		$(WWW_PREFIX)/lib/upload.d
 	install								\
-		index.shtml						\
+		$(HTDOCSs)						\
 		$(WWW_PREFIX)/htdocs/upload
 	install								\
-		upload.cgi						\
-		$(WWW_PREFIX)/lib
+		$(CGIBINs)						\
+		$(WWW_PREFIX)/cgi-bin
 
 distclean:
 	rm -f $(WWW_PREFIX)/cgi-bin/upload
 	rm -rf $(WWW_PREFIX)/lib/upload.d
-	rm -f $(WWW_PREFIX)/lib/upload.cgi
+	rm -rf $(WWW_PREFIX)/htdocs/upload
 
 upload: upload.cgi
 	cgi2perl5 --source-path upload.cgi
 	chmod a+rx upload
 
 world:
-	$(MAKE) $(MFLAGS) clean
-	$(MAKE) $(MFLAGS) all
-	$(MAKE) $(MFLAGS) distclean
-	$(MAKE) $(MFLAGS) install
+	$(_MAKE) clean
+	$(_MAKE) all
+	$(_MAKE) distclean
+	$(_MAKE) install
+dist:
+	make-dist $(DIST)

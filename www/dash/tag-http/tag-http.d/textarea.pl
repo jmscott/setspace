@@ -7,7 +7,7 @@
 
 our %QUERY_ARG;
 
-my $JS_PATH = "$ENV{SERVER_ROOT}/lib/tag-http.js";
+my $JS_PATH = "$ENV{SERVER_ROOT}/lib/tag-http.d/tag-http.js";
 my $JS;
 
 sub _die
