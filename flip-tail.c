@@ -1,7 +1,6 @@
 /*
  *  Synopsis:
  *	Atomatically flip either a fifo->regular or regular->fifo files
- *
  *  Usage:
  *  	flip-tail file spool/route/file_mime_pdf			\
  *  					spool/route/file_mime_pdf.12345
@@ -11,13 +10,13 @@
  *
  *  Description:
  *	Occasionally for a fifo we want to restart the reader process without
- *	blocking the writer process.  Consider two flowd processes connected
- *	over a one-way fifo.  If we stop the reader then the writer blocks until
- *	the reader restarts. In high traffic environments such blockage can be
- *	problematic.  flip-tail will atomatically transform the fifo into a
- *	regular file, where the inbound writes will accumlate in the new file
- *	and not block the writer.  After rebooting the reader, then flip back
- *	to fifo.
+ *	blocking the writer process.  Consider two coordinating processes
+ *	connected over a one-way fifo.  If we stop the reader then the writer
+ *	blocks until the reader restarts. In high traffic environments such
+ *	blockage can be	problematic.  flip-tail will atomatically transform
+ *	the fifo into a	regular file, where the inbound writes will accumlate
+ *	in the new file	and not block the writer.  After rebooting the reader,
+ *	then flip back to fifo.
  *
  *  Arguments:
  *  	new-type	fifo or file
