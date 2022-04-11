@@ -109,5 +109,5 @@ HTDOCSs="
 SYMLINKs="
 	../../jmscott/www/cgi-bin->cgi-bin/jmscott
 	../../jmscott/www/lib->lib/jmscott
-	../../htdocs/icon->htdocs/icon
+	../../../htdocs/icon->htdocs/setspace
 "

@@ -1,38 +1,29 @@
 #
 #  Synopsis:
-#	Development/Install Makefile for dash.setspace.$(DASH_DNS_VHOST_SUFFIX)
-#  Usage:
-#	export DASH_DNS_VHOST_SUFFIX=jmscott.tmonk.local
-#	make clean all install
+#	Makefile for www development environment of $(SETSPACE_ROOT)
 #  Note:
-#	Need to add permissions to install invocation, in particular,
-#	cgi-bin/
+#	Move "ifdef DASH_DNS_VHOST_SUFFIX" into dash/Makefile
 #
 include ../../local.mk
-include ../../jmscott.mk
 include ../../setspace.mk
+include ../www.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
 DIST=setspace-www-icon.dist
-HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
 
-ifndef DASH_DNS_VHOST_SUFFIX
-$(error DASH_DNS_VHOST_SUFFIX is not set)
-endif
-
-WWW_ROOT=$(SETSPACE_PREFIX)/www
+HTDOCSs := $(shell  (. $(DIST) && echo $$HTDOCSs))
 
 install-dirs:
 	cd .. && $(_MAKE) install-dirs
 
-	install -d $(WWW_ROOT)/htdocs/icon
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+		-d $(WWW_ROOT)/htdocs/icon
 
 install:
-
 	$(_MAKE) install-dirs
 
-	install 							\
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) -m ug=r,o=	\
 		$(HTDOCSs)						\
 		$(WWW_ROOT)/htdocs/icon
 
@@ -43,4 +34,4 @@ world:
 	$(_MAKE) distclean
 	$(_MAKE) install
 dist:
-	make-dist tar $(DIST)
+	make-dist $(DIST)

@@ -1,27 +1,30 @@
 #
 #  Synopsis:
-#	Configuration file read by make-dist to build tar files.
+#	Example configuration file read by make-dist to build tar files.
 #  See:
 #	https://github.com/jmscott/work/blob/master/make-dist
 #  Note:
+#	Rename make-dist-template.dist to make.dist.example
+#
 #	Makefile variables can be extracted and defined from the the
 #	root.dist file with these recipes.  Example make code follows:
 #
 #		DIST=product.dist
 #
-#		COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
-#		SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
-#		LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
-#		SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
-#		BINs := $(shell  (. ./$(DIST) && echo $$BINs))
-#		HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
-#		CGIBINs := $(shell  (. ./$(DIST) && echo $$CGIBINs))
-#		LIBEXEC := $(shell  (. ./$(DIST) && echo $$LIBEXECs))
+#		COMPILEs := \$(shell  (. ./\$(DIST) && echo \$\$COMPILEs))
+#		SBINs := \$(shell  (. ./\$(DIST) && echo \$\$SBINs))
+#		LIBs := \$(shell  (. ./\$(DIST) && echo \$\$LIBs))
+#		SRCs := \$(shell  (. ./\$(DIST) && echo \$\$SRCs))
+#		BINs := \$(shell  (. ./\$(DIST) && echo \$\$BINs))
+#		HTDOCSs := \$(shell  (. ./\$(DIST) && echo \$\$HTDOCSs))
+#		CGIBINs := \$(shell  (. ./\$(DIST) && echo \$\$CGIBINs))
+#		LIBEXEC := \$(shell  (. ./\$(DIST) && echo \$\$LIBEXECs))
 #
 
-#  Uncomment to override default mappings of VARs to target directory
+#  put icon details in $SETSPACE_ROOT/www/htdocs/icon
+
 VAR2dir_local=(
-	[HTDOCSs]='htdocs/icon'
+	[HTDOCs]='htdocs/icon'
 )
 
 #
@@ -49,9 +52,8 @@ VAR2dir_local=(
 #CGIBINs="
 #"
 
-#  Uncomment to create htdocs/ directory
+#  icons go into htdocs/icon.  See remapping above.
 HTDOCSs="
-	README
 	android-chrome-192x192.png
 	android-chrome-512x512.png
 	apple-touch-icon.png
@@ -106,4 +108,8 @@ HTDOCSs="
 
 #  Uncomment to create directory libexec/
 #LIBEXECs="
+#"
+
+#  Uncomment to create directory include/
+#INCLUDEs="
 #"

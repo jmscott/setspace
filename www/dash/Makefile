@@ -59,16 +59,17 @@ install: all
 		$(HTDOCSs)						\
 		$(WWW_PREFIX)/htdocs
 
-	#  set up symbolic links to $(JMSCOTT_ROOT) tools
+	#
+	#  Note:
+	#	these recipes should be written by make-dist
+	#	or made via "make-dist symlinks"/
+	#
 	test -e $(WWW_PREFIX)/cgi-bin/jmscott				||\
 		ln -s ../../../jmscott $(WWW_PREFIX)/cgi-bin/jmscott
 	test -e $(WWW_PREFIX)/lib/jmscott				||\
 		ln -s ../../../jmscott $(WWW_PREFIX)/lib/jmscott
-
-	#  set symbolic link to $(SETSPACE_ROOT)/www/htdocs/icon
 	test -e $(WWW_PREFIX)/htdocs/icon				||\
-		ln -s $(SETSPACE_PREFIX)/www/htdocs/icon		\
-		      $(WWW_PREFIX)/htdocs/icon
+		ln -s ../../../htdocs $(WWW_PREFIX)/htdocs/setspace
 
 	cd schema && $(_MAKE) install
 	cd gw && $(_MAKE) install
