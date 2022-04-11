@@ -13,6 +13,13 @@ See Also:
 Rememeber:
 	ERROR:  index row size 5296 exceeds btree version 4 maximum 2704 
 	for index "jsonb_255_key_set_pkey"
+
+	#
+	#  SMC: generalization of the jaccard metric, particularly suitable for
+	#  boolean attributes.
+	#
+	https://en.wikipedia.org/wiki/Simple_matching_coefficient
+
 Example Schemas:
 	jsonorg		json as defined by the program JSON_checker at json.org
 
