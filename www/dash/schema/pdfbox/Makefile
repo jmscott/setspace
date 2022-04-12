@@ -19,6 +19,7 @@ DIST=setspace-www-dash-schema-pdfbox.dist
 COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
 LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
 HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
+CGIBINs := $(shell  (. ./$(DIST) && echo $$CGIBINs))
 
 all: $(COMPILEs)
 clean:
@@ -26,12 +27,11 @@ clean:
 
 install-dirs:
 	cd .. && $(_MAKE) install-dirs
+	install -d $(WWW_PREFIX)/lib/schema/pdfbox.d
+	install -d $(WWW_PREFIX)/htdocs/schema/pdfbox
 
 install: all
 	$(_MAKE) install-dirs
-
-	install -d $(WWW_PREFIX)/lib/schema/pdfbox.d
-	install -d $(WWW_PREFIX)/htdocs/schema/pdfbox
 
 	install								\
 		$(LIBs)							\
@@ -39,6 +39,9 @@ install: all
 	install								\
 		$(HTDOCSs)						\
 		$(WWW_PREFIX)/htdocs/schema/pdfbox
+	install								\
+		$(CGIBINs)						\
+		$(WWW_PREFIX)/cgi-bin/schema/pdfbox
 
 distclean:
 	rm -f $(WWW_PREFIX)/cgi-bin/schema/pdfbox
