@@ -29,7 +29,6 @@ COMPILEs="
 LIBs="
 	profile.example
 	psqlrc.example
-	rummy.sql
 	schema.sql
 	setcore.flow.example
 	setspace-schema-setcore.dist

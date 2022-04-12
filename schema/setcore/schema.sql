@@ -7,16 +7,18 @@
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
  *  Note:
+ *	Should "service" and "rummy" be mutually exclusive?
+ *
  *	Why is domain rfc1123_hostname in schema setcore?
  *
- *	Index on byte_count.byte_count?
+ *	Index on byte_count.byte_count?  Perhaps a candidate for a brin index?
  *
  *	The maximum length for  domain rfc1123_hostname is one char too short
  *	according to this article.
  *
  *		https://github.com/selfboot/AnnotatedShadowSocks/issues/41
  *
- *	Seems that the length be <= 255 ascii chars.
+ *	Seems that the length be <= 255 ascii chars.  What about unicode/utf8?
  *
  *	Think about function has_utf8_prefix('prefix', bytea) that will hide
  *	exceptions for byte strings that are not castable to utf8.
@@ -188,6 +190,32 @@ CREATE DOMAIN uni_xstatus AS int2
 ;
 COMMENT ON DOMAIN uni_xstatus IS
   	'Exit status of Unix process, 0 <= 255'
+;
+
+DROP VIEW IF EXISTS rummy CASCADE;
+CREATE VIEW rummy AS 
+  SELECT
+	s.blob
+    FROM
+  	setcore.service s
+	  LEFT OUTER JOIN byte_count bc ON (bc.blob = s.blob)
+	  LEFT OUTER JOIN byte_bitmap bm ON (bm.blob = s.blob)
+	  LEFT OUTER JOIN byte_prefix_32 bp32 ON (bp32.blob = s.blob)
+	  LEFT OUTER JOIN byte_suffix_32 bs32 ON (bs32.blob = s.blob)
+	  LEFT OUTER JOIN is_utf8wf u8 ON (u8.blob = s.blob)
+    WHERE
+	bc.blob IS NULL
+	OR
+	bm.blob IS NULL
+	OR
+	u8.blob IS NULL
+	OR
+	bp32.blob IS NULL
+	OR
+	bs32.blob IS NULL
+;
+COMMENT ON VIEW rummy IS
+  'Blobs with attributes not discovered in schema setcore'
 ;
 
 COMMIT;

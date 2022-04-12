@@ -192,4 +192,35 @@ COMMENT ON FUNCTION refresh_stat IS
   'Concurrently Refresh and Analyze All Materialied *_stat Views in fffile5'
 ;
 
+/*
+ *  Synopsis:
+ *	Find recent blobs in service but not in a table in fffile5.*
+ *  Usage:
+ *	psql -f lib/rummy.sql
+ */
+DROP VIEW IF EXISTS rummy CASCADE;
+CREATE VIEW rummy AS
+  SELECT
+	DISTINCT s.blob
+    FROM
+  	setcore.service s
+	  LEFT OUTER JOIN file f ON (f.blob = s.blob)
+	  LEFT OUTER JOIN file_mime_type ft ON (ft.blob = s.blob)
+	  LEFT OUTER JOIN file_mime_encoding fe ON (fe.blob = s.blob)
+	  LEFT OUTER JOIN fault flt ON (flt.blob = s.blob)
+    WHERE
+  	(
+		f.blob IS NULL
+		OR
+		ft.blob IS NULL
+		OR
+		fe.blob IS NULL
+	)
+	AND
+	flt.blob IS NULL
+;
+COMMENT ON VIEW rummy IS
+  'All blobs with undiscover attributes in schema fffile5'
+;
+
 COMMIT;

@@ -3,6 +3,9 @@
 #	Development/Install Makefile
 #  Usage:
 #	make clean all install
+#  Note:
+#	Tue Apr 12 17:12:48 CDT 2022
+#		move files to make-dist *.dist file!
 #
 include ../../local.mk
 include ../../setspace.mk
@@ -56,7 +59,6 @@ install: all
 		merge-jsonb_255_key.sql					\
 		profile.example						\
 		psqlrc.example						\
-		rummy.sql						\
 		schema.sql						\
 		select-count-object-key.sql				\
 		$(JSONORG_PREFIX)/lib

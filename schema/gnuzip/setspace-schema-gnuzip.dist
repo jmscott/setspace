@@ -35,7 +35,6 @@ LIBs="
 	gnuzip.flow.example
 	profile.example
 	psqlrc.example
-	rummy.sql
 	schema.sql
 	select-gnuzip-candidate.sql
 	setspace-schema-gnuzip.dist

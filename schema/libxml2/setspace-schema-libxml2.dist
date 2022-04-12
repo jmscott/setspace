@@ -37,7 +37,6 @@ LIBs="
 	libxml2.flow.example
 	profile.example
 	psqlrc.example
-	rummy.sql
 	schema.sql
 	setspace-schema-libxml2.dist
 "

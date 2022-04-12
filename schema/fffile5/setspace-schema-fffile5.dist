@@ -38,7 +38,6 @@ LIBs="
 	fffile5.flow.example
 	profile.example
 	psqlrc.example
-	rummy.sql
 	schema.sql
 	setspace-schema-fffile5.dist
 "

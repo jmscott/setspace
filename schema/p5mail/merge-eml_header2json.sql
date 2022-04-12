@@ -10,7 +10,7 @@ SET search_path TO p5mail,jsonorg,public;
 
 BEGIN;
 
-CREATE TEMP VIEW rummy AS
+CREATE TEMP VIEW json_rummy AS
   SELECT
 	j.blob AS json_blob,
 	j.doc
@@ -44,5 +44,5 @@ INSERT INTO eml_header2json(
  	(doc->>'eml_blob')::udig AS eml_blob,
 	json_blob
     FROM
-    	rummy
+    	json_rummy
 ;

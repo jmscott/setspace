@@ -126,3 +126,5 @@ merge-stdin-pddocument_information_metadata:				\
 		-o merge-stdin-pddocument_information_metadata		\
 		-L$(PGLIB) -lecpg
 	rm merge-stdin-pddocument_information_metadata.c
+dev-links:
+	ln -s . lib

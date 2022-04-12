@@ -53,7 +53,6 @@ LIBs="
 	plainto_tsquery.sql
 	profile.example	
 	psqlrc.example
-	rummy.sql
 	schema-default.sql
 	schema.sql
 	setspace-schema-pdfbox.dist
