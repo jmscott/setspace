@@ -28,8 +28,9 @@ VAR2dir_local=(
 #  Uncomment for compiled programs to be installed in bin/ or sbin/ and
 #  removed in "clean" recipes.
 #
-#COMPILEs="
-#"
+COMPILEs="
+	pdfbox
+"
 
 LIBs="
 	pdfbox.cgi
@@ -65,8 +66,9 @@ SBINs="
 #"
 
 #  Uncomment to create cgibin/ directory
-#CGIBINs="
-#"
+CGIBINs="
+	pdfbox
+"
 
 #  Uncomment to create htdocs/ directory
 HTDOCSs="
