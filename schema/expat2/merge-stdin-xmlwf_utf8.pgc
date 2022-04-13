@@ -2,7 +2,7 @@
  *  Synopsis:
  *  	Merge stdout of command xmlwf into table expat2.xmlwf.
  *  Usage:
- *	merge-stdin-xmlwf 
+ *	merge-stdin-xmlwf_utf8
  *  Arguments:
  *  	1	udig of the blob
  *  	2	number of bytes to read on the standard input
@@ -61,7 +61,7 @@ EXEC SQL BEGIN DECLARE SECTION;
 	char *stdout;
 EXEC SQL END DECLARE SECTION;
 
-	if (argc != 3)
+	if (argc != 4)
 		die(EXIT_BAD_ARGC, "wrong number of arguments");
 
 	close(1);

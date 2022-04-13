@@ -11,12 +11,12 @@
 #	3	wrong number of arguments
 #	4	unexpected 'blobio get' error
 #	5	unexpected xmlwf error
-#	6	unexpected psql error
+#	6	unexpected sql error
 #  Environment:
 #	BLOBIO_SERVICE
 #	BLOBIO_GET_SERVICE
 #
-PROG=get-is_xmlwf
+PROG=merge-is_xmlwf
 BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
@@ -58,7 +58,11 @@ esac
 
 #  non zero exit code means wierdness, not xml validity  
 xmlwf $TMP_BLOB >$TMP_XMLWF
+STATUS=$?
 test $? = 0 || die "xmlwf failed >$TMP_XMLWF: exit status = $?" 5
 
-merge-stdin-xmlwf_utf8 $UDIG $(file-stat-size $TMP_XMLWF) < $TMP_XMLWF ||
-			die "merge-stdin-xmlwf failed: exit status=$?" 6
+merge-stdin-xmlwf_utf8
+	$UDIG								\
+	$(file-stat-size $TMP_XMLWF) 					\
+	$STATUS	< $TMP_XMLWF						||
+		die "merge-stdin-xmlwf failed: exit status=$?" 6

@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Populate th expat2 postgresql database schema
+#	Populate the expat2 postgresql database schema
 #  See:
 #	schema/expat2/schema.sql
 #  Note:

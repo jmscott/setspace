@@ -33,15 +33,32 @@ CREATE TABLE xmlwf_utf8
 			) NOT NULL
 );
 
-DROP VIEW IF EXISTS rummy;
+DROP TABLE IF EXISTS xmlwf_utf8_exit_status CASCADE;
+CREATE TABLE xmlwf_utf8_exit_status
+(
+	blob	udig
+			REFERENCES xmlwf_utf8
+			ON DELETE CASCADE
+			PRIMARY KEY,
+	status	setcore.uni_xstatus
+			NOT NULL
+);
+COMMENT ON TABLE xmlwf_utf8_exit_status IS
+  'Exit status of program xmlwf, which now is non-zero after breaking v2 api'
+;
+
+DROP VIEW IF EXISTS rummy CASCADE;
 CREATE VIEW rummy AS
   SELECT
-  	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'::udig
+  	x.blob
+    FROM
+    	xmlwf_utf8 x
+	  LEFT OUTER JOIN xmlwf_utf8_exit_status ex ON (ex.blob = x.blob)
     WHERE
-    	false
+    	ex.blob IS NULL
 ;
 COMMENT ON VIEW rummy IS
-  'XML Candidates with undiscovered attributes'
+  'Blobs with known unknown values of attributes in schema expat2'
 ;
 
 COMMIT;
