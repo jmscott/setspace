@@ -5,6 +5,7 @@
 #	make distclean install
 #
 include ../../local.mk
+include ../../jmscott.mk
 include ../../setspace.mk
 include ../schema.mk
 
@@ -66,11 +67,10 @@ world:
 	$(_MAKE) distclean
 	$(_MAKE) install
 
-merge-stdin-xmlwf_utf8:							\
-		merge-stdin-xmlwf_utf8.pgc				\
-		../../common.c						\
-		../../common-ecpg.c
+merge-stdin-xmlwf_utf8: merge-stdin-xmlwf_utf8.pgc ../../common-ecpg.c
 	ecpg merge-stdin-xmlwf_utf8.pgc
-	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-xmlwf_utf8.c 		\
+	$(CC) $(CFLAGS)							\
+		-I$(JMSCOTT_ROOT)/include 				\
+		-I$(PGINC) merge-stdin-xmlwf_utf8.c 			\
 		-o merge-stdin-xmlwf_utf8 -L$(PGLIB) -lecpg
-	rm merge-stdin-xmlwf_utf8.c
+	# rm merge-stdin-xmlwf_utf8.c

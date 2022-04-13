@@ -3,27 +3,21 @@
 #  Synopsis:
 #	Is a blob well formed xml, according to the expat2 xmlwf program?
 #  Usage:
-#	get-is_xmlwf <blob udig>
+#	merge-xmlwf_utf8 <blob udig>
 #  Exit Status:
 #	0	yes, is valid xml
 #	1	no, is not valid xml
 #	2	blob does not exist from $BLOBIO_GET_SERVICE
-#	3	wrong number of arguments
-#	4	unexpected 'blobio get' error
-#	5	unexpected xmlwf error
-#	6	unexpected sql error
+#	3	unexpected error
 #  Environment:
 #	BLOBIO_SERVICE
 #	BLOBIO_GET_SERVICE
+#	PG{HOST,PORT,USER,PASSWORD,DATABASE}
 #
-PROG=merge-is_xmlwf
+PROG=merge-xmlwf_utf8
 BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG-$$.blob
-
-#  bonedheaded xmlwf does NOT set exit code.
-#  we must test for size of error output file.
-#  ughh.
 TMP_XMLWF=${TMPDIR:=/tmp}/$PROG-$$.wf
 
 leave()
@@ -52,17 +46,28 @@ case $STATUS in
 	exit 2
 	;;
 *)
-	die "blobio get $UDIG $TMP_BLOB failed: exit status=$STATUS" 4
+	die "blobio get $UDIG $TMP_BLOB failed: exit status=$STATUS" 3
 	;;
 esac
 
-#  non zero exit code means wierdness, not xml validity  
 xmlwf $TMP_BLOB >$TMP_XMLWF
 STATUS=$?
-test $? = 0 || die "xmlwf failed >$TMP_XMLWF: exit status = $?" 5
 
-merge-stdin-xmlwf_utf8
+#
+#  Sadly, xmlwf broke the version2 api.  seems to have occured around
+#  version v2.4.  Previous 2 versions of xmlwf only returned 0, regardless of
+#  the parsability of the xml file.  around v2.4, the exit status suddenly
+#  indicated the parsability of the xml file, hence the new table
+#
+#	expat2.xmlwf_utf8_exit_status
+#
+#  may god bless semantic versioning.  however, we must never forget that
+#  the journey is both long and hard to a true engineering discipline of
+#  software.  until such time arrives, i (jsmscott) shall insist on calling
+#  programmers computer scientists.
+#
+merge-stdin-xmlwf_utf8							\
 	$UDIG								\
 	$(file-stat-size $TMP_XMLWF) 					\
 	$STATUS	< $TMP_XMLWF						||
-		die "merge-stdin-xmlwf failed: exit status=$?" 6
+		die "merge-stdin-xmlwf_utf8 failed: exit status=$?" 3

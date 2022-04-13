@@ -2,102 +2,116 @@
  *  Synopsis:
  *  	Merge stdout of command xmlwf into table expat2.xmlwf.
  *  Usage:
- *	merge-stdin-xmlwf_utf8
- *  Arguments:
- *  	1	udig of the blob
- *  	2	number of bytes to read on the standard input
+ *	merge-stdin-xmlwf_utf8 <udig> <sizeof-stdin>
  *  Exit Status:
  *  	0	ok, tuple was merged
- *  	1	Wrong number of arguments
- *  	2	Incorrect blob size
- *  	3	malloc() of xml buffer failed
- *	4	read() of standard input failed
- *	5	syntax error on udig
- *	6	sql error
- *	7	sql warning
- *	8	blob too small
- *	9	blob too large
- *  Blame:
- *  	jmscott@setspace.com
+ *  	1	unexpected error
  */
 
-static char progname[] = "merge-stdin-xmlwf";
+static char *jmscott_progname = "merge-stdin-xmlwf_utf8";
 
-#define EXIT_OK		0
-#define EXIT_BAD_ARGC	1
-#define EXIT_BAD_SIZE	2
-#define EXIT_BAD_MALLOC 3
-#define EXIT_BAD_READ	4
-#define EXIT_BAD_UDIG	5
-#define EXIT_SQLERROR	6
-#define EXIT_SQLWARN	7
-#define EXIT_BLOB_SMALL 8
-#define EXIT_BLOB_BIG   9
+#include <unistd.h>
 
-#define COMMON_NEED_READ_BLOB
-#include "../../common.c"
-
-#define COMMON_ECPG_NEED_SQL_WARNING
-#define COMMON_ECPG_NEED_SQL_ERROR
-#include "../../common-ecpg.c"
+#include "jmscott/die.c"
+#include "jmscott/udig.c"
+#include "jmscott/posio.c"
+#include "jmscott/ecpg.c"
 
 #include <stdlib.h>
 
-static struct _ecpg_sql_state_fault no_warn[] =
+static struct jmscott_ecpg_state_fault no_warn[] =
 {
         {"02000", -1},                //  no data for conflict on upsert/insert
         {(char *)0, -1}
 };
 
+static void
+die(char *msg)
+{
+	jmscott_die(1, msg);
+}
+
+static void
+die2(char *msg1, char *msg2)
+{
+	jmscott_die2(1, msg1, msg2);
+}
+
 int
 main(int argc, char **argv)
 {
-	int size;
-	size_t len;
-	char *sz;
+	size_t size;
+	char *err;
 
 EXEC SQL BEGIN DECLARE SECTION;
 	char *blob;
+	int exit_status;
 	char *stdout;
 EXEC SQL END DECLARE SECTION;
 
 	if (argc != 4)
-		die(EXIT_BAD_ARGC, "wrong number of arguments");
+		die("wrong number of arguments");
 
 	close(1);
 
-	//  parse the udig as argv[1]
+	//  parse the blob udig
+
 	blob = argv[1];
-	len = strlen(blob);
-	if (len < 34 || len > 255 || strchr(blob, ':') == NULL)
-		die2(EXIT_BAD_UDIG, "syntax error in xml udig", blob);
+if (blob)
+	fprintf(stderr, "WTF: blob=%p\n", blob);
+else
+	fprintf(stderr, "WTF: blob=0\n");
+	if ((err = jmscott_frisk_udig(blob)))
+		die2("can not parse udig", err);
 
-	//  parse the blob size as argv[2]
-	sz = argv[2];
-	len = strlen(sz);
-	if (len < 1 || len > 19)
-		die2(EXIT_BAD_SIZE, "blob size not > 0 and < 20 chars", sz);
+	//  parse the size of the blob
 
-	//  need to validate that all chars are decimal digits
-	size = atoi(sz);
-	if (size < 0)
-		die2(EXIT_BAD_SIZE, "atoi(blob size) <= 0", sz);
+	if ((err = jmscott_a2size_t(argv[2], &size)))
+		die2("can not parse blob size", err);
+
+	//  parse the exit status of process xmlwf
+
+	if ((err = jmscott_a2size_t(argv[3], (size_t *)&exit_status)))
+		die2("can not parse exit status size", err);
+	if (exit_status > 255)
+		die("exit status > 255");
 
 	//  allocate the xml buffer plus null byte
+
 	stdout = malloc(size + 1);
 	if (stdout == NULL)
-		die2(EXIT_BAD_MALLOC, "malloc(blob) failed", sz);
+		die2("malloc(blob) failed", argv[2]);
 	stdout[size] = 0;
 
-	_read_blob(0, stdout, size);
+	if (size > 0) {
+		int status = jmscott_read_exact(0, stdout, size);
 
-	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error(
-		(struct _ecpg_sql_state_fault *)0
+		if (status < 0) {
+			if (status == -1) {
+				err = strerror(errno);
+				die2("read(stdin) failed", err);
+			}
+			if (status == -2)
+				die("read(stdin): unexpected end of file");
+			if (status == -3)
+				die(
+					"read(stdin): unread data: "
+					" blob size may be wrong"
+				);
+			//
+			die("jmscott_read_exact(): impossible return value");
+		} else if (status != 0)
+			die("jmscott_read_exact(): impossible return value");
+	}
+
+	EXEC SQL WHENEVER SQLERROR CALL jmscott_ecpg_error(
+		(struct jmscott_ecpg_state_fault *)0
 	);
-	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_warning(no_warn);
+	EXEC SQL WHENEVER SQLWARNING CALL jmscott_ecpg_warning(no_warn);
 	EXEC SQL CONNECT TO default;
 
 	EXEC SQL BEGIN TRANSACTION;
+
 	/*
 	 *  Merge blob into expat2.xmlwf_utf8 table.
 	 */
@@ -111,7 +125,22 @@ EXEC SQL END DECLARE SECTION;
   	  ON CONFLICT
   		DO NOTHING
 	;
+	/*
+	 *  Merge process exit status into xmlwf_utf8_exit_status table.
+	 *  Table xmlwf_utf8_exit_status exists instead of as a field in
+	 *  xmlwf_utf8 because expat2 xmlwf broke api of exit status.
+	 */
+	EXEC SQL INSERT INTO expat2.xmlwf_utf8_exit_status(
+		blob,
+		exit_status
+	  ) VALUES (
+		:blob::udig,
+		:exit_status
+	  )
+  	  ON CONFLICT
+  		DO NOTHING
+	;
 	EXEC SQL END TRANSACTION;
 
-	_exit(EXIT_OK);
+	_exit(0);
 }
