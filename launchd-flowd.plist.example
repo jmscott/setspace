@@ -11,7 +11,7 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>setspace.schema.REPLACE_WITH_SCHEMA.flowd</string>
+  <string>SPACE.setspace.schema.REPLACE_WITH_SCHEMA.flowd</string>
 
   <key>KeepAlive</key>
   <true/>
