@@ -26,7 +26,8 @@
 \set ON_ERROR_STOP on
 \timing
 
-BEGIN;
+BEGIN TRANSACTION;
+
 DROP SCHEMA IF EXISTS setcore CASCADE;
 
 SET search_path TO setcore,public;
@@ -218,4 +219,4 @@ COMMENT ON VIEW rummy IS
   'Blobs with attributes not discovered in schema setcore'
 ;
 
-COMMIT;
+COMMIT TRANSACTION;
