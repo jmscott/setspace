@@ -33,6 +33,8 @@ install:
 		$(JSONIO_PREFIX)/lib
 distclean:
 	rm -rf $(JSONIO_PREFIX)/lib
+tar:
+	make-dist tar $(DIST)
 
 world:
 	$(_MAKE) distclean
