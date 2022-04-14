@@ -14,8 +14,9 @@
 \set ON_ERROR_STOP on
 \timing
 
-BEGIN;
-DROP SCHEMA IF EXISTS mycore cascade;
+BEGIN TRANSACTION;
+
+DROP SCHEMA IF EXISTS mycore CASCADE;
 CREATE SCHEMA mycore;
 COMMENT ON SCHEMA mycore IS
 	'My curated metadata about core blobs, like title, notes and tags'
@@ -163,4 +164,16 @@ CREATE TABLE tag
 COMMENT ON TABLE tags IS
         'Tags for my blobs'
 ;
-COMMIT;
+
+DROP VIEW IF EXISTS rummy CASCADE;
+CREATE VIEW rummy AS
+  SELECT
+  	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'::udig
+    WHERE
+    	false
+;
+COMMENT ON VIEW rummy IS
+  'Known unknown blobs in schema mycore'
+;
+
+COMMIT TRANSACTION;
