@@ -2,22 +2,20 @@
  *  Synopsis:
  *  	Merge stdout of command xmlwf into table expat2.xmlwf.
  *  Usage:
- *	merge-stdin-xmlwf_utf8 <udig> <sizeof-stdin>
+ *	merge-stdin-xmlwf_utf8 <udig> <sizeof-stdin> <wmlwf-exit-status>
  *  Exit Status:
- *  	0	ok, tuple was merged
+ *  	0	ok, tuples were merged into tables xmlwf_utf8[_exit_status].
  *  	1	unexpected error
  */
 
 static char *jmscott_progname = "merge-stdin-xmlwf_utf8";
-
-#include <unistd.h>
 
 #include "jmscott/die.c"
 #include "jmscott/udig.c"
 #include "jmscott/posio.c"
 #include "jmscott/ecpg.c"
 
-#include <stdlib.h>
+#include <stdlib.h>			//  for malloc()
 
 static struct jmscott_ecpg_state_fault no_warn[] =
 {
@@ -44,7 +42,7 @@ main(int argc, char **argv)
 	char *err;
 
 EXEC SQL BEGIN DECLARE SECTION;
-	char *blob;
+	VARCHAR blob[8+1+128+1];		//  algo:digest<null>
 	int exit_status;
 	char *stdout;
 EXEC SQL END DECLARE SECTION;
@@ -56,13 +54,9 @@ EXEC SQL END DECLARE SECTION;
 
 	//  parse the blob udig
 
-	blob = argv[1];
-if (blob)
-	fprintf(stderr, "WTF: blob=%p\n", blob);
-else
-	fprintf(stderr, "WTF: blob=0\n");
-	if ((err = jmscott_frisk_udig(blob)))
+	if ((err = jmscott_frisk_udig(argv[1])))
 		die2("can not parse udig", err);
+
 
 	//  parse the size of the blob
 
@@ -103,6 +97,13 @@ else
 		} else if (status != 0)
 			die("jmscott_read_exact(): impossible return value");
 	}
+	//  copy the blob into SQL varchar
+	{
+		int len = strlen(argv[1]);
+		memcpy(blob.arr, argv[1], len);
+		blob.arr[len] = 0;
+		blob.len = len;
+	}
 
 	EXEC SQL WHENEVER SQLERROR CALL jmscott_ecpg_error(
 		(struct jmscott_ecpg_state_fault *)0
@@ -132,7 +133,7 @@ else
 	 */
 	EXEC SQL INSERT INTO expat2.xmlwf_utf8_exit_status(
 		blob,
-		exit_status
+		status
 	  ) VALUES (
 		:blob::udig,
 		:exit_status

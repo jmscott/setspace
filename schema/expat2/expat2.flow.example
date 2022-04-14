@@ -2,8 +2,10 @@
 #  Synopsis:
 #	Populate the expat2 postgresql database schema
 #  See:
-#	schema/expat2/schema.sql
+#	schema/expat2/lib/schema.sql
 #  Note:
+#	please, add description of broken semantic api for expat2!
+#
 #	in query is_in_xmlwf_utf8_table, why testing for legnth(stdout) = 0.
 #	why not use exist code of xmlwf?
 #
@@ -47,19 +49,27 @@ sql query is_in_xmlwf_utf8_table row
 	    	expat2.xmlwf_utf8
 	    WHERE
 	    	blob = $1::udig
+	) AND EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	expat2.xmlwf_utf8_exit_status
+	    WHERE
+	    	blob = $1::udig
+
 	),
-	--  exit status of xmlwf 
+	--  exit status of xmlwf_utf8_exit_status
 	(SELECT
-		length(stdout) = 0
+		status = 0
 	  FROM
-	    	expat2.xmlwf_utf8
+	    	expat2.xmlwf_utf8_exit_status
 	  WHERE
 	    	blob = $1::udig
 	)
 	`;
 
 	result row is (
-		answer bool,
+		exists_in_both_tables bool,
 		is_xml bool
 	);
 }
@@ -78,7 +88,7 @@ command merge_xmlwf_utf8
 
 call merge_xmlwf_utf8(brr.udig)
   when
-  	is_in_xmlwf_utf8_table.answer == false
+  	is_in_xmlwf_utf8_table.exists_in_both_tables == false
 ;
 
 command append_libxml2_brr
@@ -98,7 +108,11 @@ call append_libxml2_brr(
 	brr.blob_size,
 	brr.wall_duration
 ) when
+	#  already exists in table xmlwf_utf8_exit_process
 	is_in_xmlwf_utf8_table.is_xml == true
+
 	or
+
+	#  just invoked merge-xmlwf_utf8 to populate tables
 	merge_xmlwf_utf8.exit_status == 0
 ;

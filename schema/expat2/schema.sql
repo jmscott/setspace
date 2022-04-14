@@ -28,10 +28,17 @@ CREATE TABLE xmlwf_utf8
 			REFERENCES setcore.is_utf8wf
 			ON DELETE CASCADE
 			PRIMARY KEY,
+	/*
+	 *  Note:
+	 *	How do we known stdout is utf8 text?
+	 */
 	stdout	text	CHECK (
 				length(stdout) < 256
 			) NOT NULL
 );
+COMMENT ON TABLE xmlwf_utf8 IS
+  'Store output of expat2 command xmlwf (see notes on broken v2 api)'
+;
 
 DROP TABLE IF EXISTS xmlwf_utf8_exit_status CASCADE;
 CREATE TABLE xmlwf_utf8_exit_status
