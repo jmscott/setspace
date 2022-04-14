@@ -201,7 +201,7 @@ COMMENT ON FUNCTION refresh_stat IS
 DROP VIEW IF EXISTS rummy CASCADE;
 CREATE VIEW rummy AS
   SELECT
-	DISTINCT s.blob
+	s.blob
     FROM
   	setcore.service s
 	  LEFT OUTER JOIN file f ON (f.blob = s.blob)
