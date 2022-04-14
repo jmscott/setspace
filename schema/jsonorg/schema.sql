@@ -5,8 +5,9 @@
 \set ON_ERROR_STOP on
 \timing
 
-BEGIN;
-DROP SCHEMA IF EXISTS jsonorg cascade;
+BEGIN TRANSACTION;
+
+DROP SCHEMA IF EXISTS jsonorg CASCADE;
 CREATE SCHEMA JSONORG;
 COMMENT ON SCHEMA jsonorg IS
 	'JSON blobs parseable by code from the site json.org'
@@ -334,4 +335,4 @@ UNION (
 
 REVOKE UPDATE ON ALL TABLES IN SCHEMA jsonorg FROM PUBLIC;
 
-COMMIT;
+COMMIT TRANSACTION;

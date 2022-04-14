@@ -13,7 +13,7 @@
 \set ON_ERROR_STOP on
 SET search_path TO fffile5,public;
 
-BEGIN;
+BEGIN TRANSACTION;
 
 DROP SCHEMA IF EXISTS fffile5 CASCADE;
 CREATE SCHEMA fffile5;
@@ -223,4 +223,4 @@ COMMENT ON VIEW rummy IS
   'All blobs with undiscover attributes in schema fffile5'
 ;
 
-COMMIT;
+COMMIT TRANSACTION;

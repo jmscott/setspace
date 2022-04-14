@@ -8,7 +8,7 @@
 
 \set ON_ERROR_STOP 1
 
-BEGIN;
+BEGIN TRANSACTION;
 
 DROP SCHEMA IF EXISTS gnuzip CASCADE;
 CREATE SCHEMA gnuzip;
@@ -126,4 +126,4 @@ COMMENT ON VIEW rummy IS
   'blobs with undiscovered attributes in schema gnuzip'
 ;
 
-COMMIT;
+COMMIT TRANSACTION;

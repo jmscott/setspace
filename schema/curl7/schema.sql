@@ -5,8 +5,9 @@
 \set ON_ERROR_STOP on
 \timing
 
-BEGIN;
-DROP SCHEMA IF EXISTS curl7 cascade;
+BEGIN TRANSACTION;
+
+DROP SCHEMA IF EXISTS curl7 CASCADE;
 CREATE SCHEMA curl7;
 COMMENT ON SCHEMA curl7 IS
 	'Schema for curlable urls'
@@ -14,4 +15,4 @@ COMMENT ON SCHEMA curl7 IS
 
 SET search_path TO curl7,public;
 
-COMMIT;
+COMMIT TRANSACTION;

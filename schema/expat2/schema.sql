@@ -9,7 +9,7 @@
 \set ON_ERROR_STOP on
 \timing
 
-BEGIN;
+BEGIN TRANSACTION;
 DROP SCHEMA IF EXISTS expat2 CASCADE;
 
 CREATE SCHEMA expat2;
@@ -68,4 +68,4 @@ COMMENT ON VIEW rummy IS
   'Blobs with known unknown values of attributes in schema expat2'
 ;
 
-COMMIT;
+COMMIT TRANSACTION;
