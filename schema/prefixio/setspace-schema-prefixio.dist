@@ -34,6 +34,7 @@
 LIBs="
 	prefixio.flow.example
 	profile.example
+	schema.sql
 	setspace-schema-prefixio.dist
 "
 
