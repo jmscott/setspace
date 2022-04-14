@@ -43,4 +43,16 @@ COMMENT ON COLUMN parser.blob IS
   'Blob of single email mime message parsed by perl Mime::Parser->parser()'
 ;
 
+
+DROP VIEW IF EXISTS rummy CASCADE;
+CREATE VIEW rummy AS
+  SELECT
+  	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'::udig
+    WHERE
+    	false
+;
+COMMENT ON VIEW rummy IS
+  'Known unknown blobs in schema mimetool'
+;
+
 END TRANSACTION;
