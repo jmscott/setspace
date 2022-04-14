@@ -6,7 +6,8 @@
 \set ON_ERROR_STOP 1
 SET search_path to mydash,public;
 
-BEGIN;
+BEGIN TRANSACTION;
+
 DROP SCHEMA IF EXISTS mydash CASCADE;
 CREATE SCHEMA mydash;
 COMMENT ON SCHEMA mydash IS
@@ -281,4 +282,15 @@ COMMENT ON COLUMN tag_http_host.host IS
   'The dns host name or ip4 address for the tagged http url'
 ;
 
-COMMIT;
+DROP VIEW IF EXISTS rummy CASCADE;
+CREATE VIEW rummy AS
+  SELECT
+  	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'::udig
+    WHERE
+    	false
+;
+COMMENT ON VIEW rummy IS
+  'Known unknown blobs in schema mycore'
+;
+
+COMMIT TRANSACTION;
