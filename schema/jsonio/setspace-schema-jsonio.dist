@@ -22,10 +22,8 @@
 #  Define PRODUCT to change name of tar file from $(basename $(pwd))
 #  to, say, foobar-YYYYMMDD_hhmm.tar.bz2
 
-#PRODUCT=foobar
-
 #
-#  Uncomment for compiled programs to be installed i bin/ or sbin/ and
+#  Uncomment for compiled programs to be installed in dirs bin/ or sbin/ and
 #  removed in "clean" recipes.
 #
 #COMPILEs="
@@ -35,6 +33,7 @@ LIBs="
 	jsonio.flow.example
 	profile.example
 	psqlrc.example
+	schema.sql
 	setspace-schema-jsonio.dist
 "
 

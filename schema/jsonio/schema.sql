@@ -1,0 +1,27 @@
+/*
+ *  Synopsis:
+ *	Schema for routing based upon json patterns.
+ */
+
+\set ON_ERROR_STOP true
+SET search_path TO jsonio,public;
+
+BEGIN TRANSACTION;
+
+DROP SCHEMA IF EXISTS jsonio;
+CREATE SCHEMA jsonio;
+COMMENT ON SCHEMA jsonio IS
+  'Routing rules for json blobs'
+;
+
+CREATE VIEW rummy AS
+  SELECT
+  	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'::udig
+    WHERE
+    	false
+;
+COMMENT ON VIEW rummy IS
+  'Known unknown blobs in schema jsonio'
+;
+
+COMMIT TRANSACTION;
