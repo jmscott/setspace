@@ -71,5 +71,15 @@ CREATE INDEX box_parser_readHeader_fld_idx ON
   box_parser_readHeader(blob, field)
 ; 
 
+DROP VIEW IF EXISTS rummy CASCADE;
+CREATE VIEW rummy AS
+  SELECT
+  	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'::udig
+    WHERE
+    	false
+;
+COMMENT ON VIEW rummy IS
+  'Known unknown blobs in schema p5mail'
+;
 
 END TRANSACTION;
