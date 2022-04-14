@@ -36,4 +36,17 @@ COMMENT ON COLUMN unzip_test.stdio_255 IS
   'Up to the first 256 chars of stderr/out on unzip -qt <blob>'
 ;
 
+--  Note: view rummy always returns empty, for now
+DROP VIEW IF EXISTS rummy CASCADE;
+CREATE VIEW rummy AS
+  SELECT
+	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'::udig
+    WHERE
+    	false
+;
+
+COMMENT ON VIEW rummy IS
+  'Known unknown blobs in schema infozip3'
+;
+
 END;
