@@ -5,7 +5,7 @@
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
  *  Note:
- *	WOuld be nice to remove macosx.[ch].
+ *	Would be nice to remove macosx.[ch].
  *	See this page for alternative method
  *
  *	http://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
