@@ -38,7 +38,6 @@ find-schema | while read SCH;  do
 	  sed '/^ *$/d'							|
 	  sed 's/ //g'							|
 	  sed "s/.*/$SCH	&/"
-	STATUS=${PIPESTATUS[*]}
-	test STATUS='0 0 0 0' ||
-			die "psql $SQL | sed failed: exit status=$STATUS"
+STATUS=${PIPESTATUS[*]}
+test STATUS='0 0 0 0' || die "psql $SQL | sed failed: exit status=$STATUS"
 done
