@@ -285,7 +285,7 @@ COMMENT ON COLUMN tag_http_host.host IS
 DROP VIEW IF EXISTS rummy CASCADE;
 CREATE VIEW rummy AS
   SELECT
-  	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'::udig
+  	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'::udig AS blob
     WHERE
     	false
 ;

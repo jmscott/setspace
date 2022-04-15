@@ -8,7 +8,7 @@ SET search_path TO jsonio,public;
 
 BEGIN TRANSACTION;
 
-DROP SCHEMA IF EXISTS jsonio;
+DROP SCHEMA IF EXISTS jsonio CASCADE;
 CREATE SCHEMA jsonio;
 COMMENT ON SCHEMA jsonio IS
   'Routing rules for json blobs'
@@ -16,7 +16,7 @@ COMMENT ON SCHEMA jsonio IS
 
 CREATE VIEW rummy AS
   SELECT
-  	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'::udig
+  	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'::udig AS blob
     WHERE
     	false
 ;
