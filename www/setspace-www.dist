@@ -37,6 +37,10 @@ LIBs="
 	utf82blob.pl
 "
 
+SYMLINKs="
+	jmscott->$JMSCOTT_ROOT/www
+"
+
 #  Uncoment to create bin/ directory
 #BINs="
 #"
@@ -45,8 +49,8 @@ SBINs="
 "
 
 #  Uncomment to create tmp/ directory
-#TMP="
-#"
+TMP="
+"
 
 #  Uncomment to create cgibin/ directory
 #CGIBINs="
