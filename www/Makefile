@@ -2,6 +2,9 @@
 #  Synopsis:
 #	Makefile for www development environment of $(SETSPACE_ROOT)
 #  Note:
+#	The symlink for $WWW_PREFIX/jmscott -> $JMSCOTT_ROOT does not exist,
+#	breaking make recipes in dash/Makefile!
+#
 #	Replace all the ifdef DASH_DNS_VHOST_SUFFIX with single error at the
 #	top of the make file.
 #
@@ -29,8 +32,6 @@ install-dirs:
 	cd .. && $(_MAKE) install-dirs
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
-		-d $(SETSPACE_PREFIX)
-	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		-d $(WWW_ROOT)
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		-d $(WWW_ROOT)/lib
@@ -39,6 +40,8 @@ install-dirs:
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		-m a+wrx						\
 		-d $(WWW_ROOT)/tmp
+	test -e $(WWW_ROOT)/jmscott					||\
+		ln -s $(JMSCOTT_ROOT)/www $(WWW_ROOT)/jmscott
 
 install:
 	$(_MAKE) install-dirs

@@ -64,11 +64,11 @@ install: all
 	#	these recipes should be written by make-dist
 	#	or made via "make-dist symlinks"/
 	#
-	test -e $(WWW_PREFIX)/cgi-bin/jmscott				||\
+	test -e $(WWW_PREFIX)/cgi-bin/jmscott				|| \
 		ln -s ../../../jmscott $(WWW_PREFIX)/cgi-bin/jmscott
-	test -e $(WWW_PREFIX)/lib/jmscott				||\
+	test -e $(WWW_PREFIX)/lib/jmscott				|| \
 		ln -s ../../../jmscott $(WWW_PREFIX)/lib/jmscott
-	test -e $(WWW_PREFIX)/htdocs/icon				||\
+	test -e $(WWW_PREFIX)/htdocs/setspace				|| \
 		ln -s ../../../htdocs $(WWW_PREFIX)/htdocs/setspace
 
 	cd schema && $(_MAKE) install
