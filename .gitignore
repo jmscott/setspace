@@ -6,9 +6,8 @@ flip-tail
 is-utf8wf
 local.mk
 macosx.o
-RFC3339Nano
 run
 spin-wait-blob
-spin-wait-blob.c
 tas-run-lock
 tas-run-unlock
+tmp
