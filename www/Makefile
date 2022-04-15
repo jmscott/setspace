@@ -77,4 +77,4 @@ world:
 	$(_MAKE) distclean
 	$(_MAKE) install
 dist:
-	make-dist $(DIST)
+	make-dist tar $(DIST)
