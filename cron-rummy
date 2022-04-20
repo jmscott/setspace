@@ -1,25 +1,19 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
-#	Cron job to "get" blobs with unknown facts and log details to spool.
+#	Cron job to "get" blobs with unknown facts and log to spool/rummy.rdr
 #  Usage:
-#	SBIN=/usr/local/setspace/sbin
-#	LOG=/usr/local/setspace/log
+#	SETSPACE_ROOT=/opt/local/jmscott/jmsdesk/setspace
+#	LOG=/opt/local/jmscott/jmsdesk/setspace/log/cron-rummy
 #
-#	* * * * * $SBIN/cron-rummy '-1 day' >>$LOG 2>&1
-#	24 * * * * $SBIN/cron-rummy '1 week' >>$LOG 2>&1
-#	01 4 * * * $SBIN/cron-rummy '1 month' >>$LOG 2>&1
-#	01 5 4 * * $SBIN/cron-rummy '1 year' >>$LOG 2>&1
+#	* * * * * $SETSPACE_ROOT/sbin/cron-rummy '-1 hour' >>$LOG-min.log 2>&1
+#	24 * * * * $SETSPACE_ROOT/sbin/cron-rummy '1 week' >>$LOG-hr.log 2>&1
 #  Exit Status:
 #	0	ok
 #	1	failed
 #  Note:
 #	A nice addition would be to display/log the discover time of each
 #	gotten blob.
-#
-#	Ought to "get" a blob only once, by tracking in an associative array.
-#
-#	Think about adding a "what" label to the rummy detail record.
 #
 
 PROG=cron-rummy
@@ -99,7 +93,7 @@ while read SCH U;  do
 
 	#  fetch the blob from the service
 
-	blobio get --udig $U --service $BLOBIO_SERVICE >/dev/null
+	blobio get --udig $U --service $BLOBIO_SERVICE --output-path /dev/null
 	STATUS=$?
 	case $STATUS in
 	0)
