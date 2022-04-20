@@ -11,8 +11,6 @@
  *
  *	Why is domain rfc1123_hostname in schema setcore?
  *
- *	Index on byte_count.byte_count?  Perhaps a candidate for a brin index?
- *
  *	The maximum length for  domain rfc1123_hostname is one char too short
  *	according to this article.
  *
