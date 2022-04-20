@@ -76,10 +76,19 @@ CREATE TABLE service
 				NOT NULL
 );
 COMMENT ON TABLE service IS
-	'Blobs known to exist at a particular point in time'
+  'Blobs known to exist at a particular point in time'
 ;
-CREATE INDEX service_discover_time ON service(discover_time);
-CREATE INDEX service_blob ON service USING hash(blob);
+CREATE INDEX service_discover_time
+  ON service(discover_time)
+; 
+CREATE INDEX service_blob
+  ON service
+  USING hash(blob)
+; 
+CREATE INDEX service_discover_time_brin
+  ON service
+  USING brin(discover_time)
+;
 
 DROP TABLE IF EXISTS setcore.byte_count cascade;
 CREATE TABLE byte_count
