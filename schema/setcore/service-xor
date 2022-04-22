@@ -3,6 +3,10 @@
 #  Synopsis:
 #	Find symmetric difference of blobio.service and setcore.service tables
 #  Note:
+#	Simplify by eliminating the BLOBIO_PG* vars.
+#
+#	Added timestamp or interval option.
+#
 #	PGPASSWORD is ignored.
 #
 
