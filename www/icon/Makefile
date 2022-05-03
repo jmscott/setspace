@@ -12,7 +12,7 @@ _MAKE=$(MAKE) $(MFLAGS)
 
 DIST=setspace-www-icon.dist
 
-HTDOCSs := $(shell  (. $(DIST) && echo $$HTDOCSs))
+HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
 
 install-dirs:
 	cd .. && $(_MAKE) install-dirs
