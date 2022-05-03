@@ -35,11 +35,12 @@ PDFBOX_APP2_JAR?=/usr/local/lib/pdfbox-app-2.jar
 PGHOME?=/usr/local/pgsql
 
 #
-#  Uncomment DASH_DNS_VHOST_SUFFIX if building web site dash.setspace.com.
+#  Uncomment DASH_DNS_VHOST_SUFFIX if building web site
+#  {dash,noc,www}.setspace.com.
 #  Otherwise, the entire www/* directory tree is not compiled nor installed.
 #
-#DASH_DNS_VHOST_PREFIX=dash
-#DASH_DNS_VHOST_SUFFIX=setspace.com
+#DASH_DNS_VHOST_PREFIX=www
+#DASH_DNS_VHOST_SUFFIX=com
 
 #  Location of go language distribution.
 
