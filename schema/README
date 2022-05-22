@@ -286,3 +286,9 @@ Possible Schemas:
 		https://github.com/pyjarrett/septum
 	lookscanned.io - pdf transformations.io
 		https://lookscanned.io
+	nfdump - https://github.com/phaag/nfdump
+		net flow package
+	bloaty - profiler of various executable formats
+		https://github.com/google/bloaty
+	hdf5 - yet another hetrogensous data file format, version 5
+		https://www.hdfgroup.org/
