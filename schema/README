@@ -292,3 +292,6 @@ Possible Schemas:
 		https://github.com/google/bloaty
 	hdf5 - yet another hetrogensous data file format, version 5
 		https://www.hdfgroup.org/
+	cuelang - text validation language
+		https://cuelang.org/
+	https://cuelang.org/
