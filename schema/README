@@ -298,4 +298,21 @@ Possible Schemas:
 		https://news.ycombinator.com/item?id=31670886
 	diffgram - Open Source Training Data Platform, also as a sold service
 		https://github.com/diffgram/diffgram
-
+	yacy - personal search engine
+		https://yacy.net/
+	archivebox - import browser history
+		https://github.com/ArchiveBox/ArchiveBox
+	pocket - export pocket data
+		https://datasette.io/tools/pocket-to-sqlite
+	raindrop - bookmark manager
+		https://raindrop.io/
+	linkace - exportable bookmark service
+		https://www.linkace.org/
+	shaarli - book mark service
+		https://github.com/shaarli/Shaarli
+	dynalist - outlining app
+		https://dynalist.io/
+	linkding - bookmark manager
+		https://github.com/sissbruecker/linkding
+	getupnext - persoanl info manager (mobile support)
+		https://www.getupnext.com/
