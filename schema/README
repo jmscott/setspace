@@ -320,3 +320,5 @@ Possible Schemas:
 		https://en.wiktionary.org/wiki/Wiktionary:Main_Page
 	ocrmypdf
 		https://ocrmypdf.readthedocs.io/en/latest/index.html
+	dhall - configuration language
+		https://dhall-lang.org/
