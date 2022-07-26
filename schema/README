@@ -322,3 +322,5 @@ Possible Schemas:
 		https://ocrmypdf.readthedocs.io/en/latest/index.html
 	dhall - configuration language
 		https://dhall-lang.org/
+	pg_jsonschema - extension to validate json schema!
+		https://github.com/supabase/pg_jsonschema
