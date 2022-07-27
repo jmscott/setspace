@@ -322,5 +322,9 @@ Possible Schemas:
 		https://ocrmypdf.readthedocs.io/en/latest/index.html
 	dhall - configuration language
 		https://dhall-lang.org/
+	hashlook - Open source tools and standards to lookup known files
+		https://hashlookup.io/
 	pg_jsonschema - extension to validate json schema!
 		https://github.com/supabase/pg_jsonschema
+	misp - network vulnerabilities database
+		https://www.misp-project.org/
