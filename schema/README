@@ -156,13 +156,11 @@ Possible Schemas:
 		Ruminate on semantic vector spaces
 			https://rom1504.medium.com/semantic-search-with-embeddings-index-anything-8fb18556443c
 			https://www.semi.technology/developers/weaviate/current/
-	pincone
-		similatiry search as a service
-			https://www.pinecone.io/
-	cuelang
-		Data validation lang: if golang and json had a baby
+	pincone - similatiry search as a service
+		https://www.pinecone.io/
+	cuelang - Data validation lang: if golang and json had a baby
 			https://cuelang.org/
-	trid
+	trid - yet another binrary file type analyzer
 		https://mark0.net/soft-trid-e.html
 
 	buildvu - pdf to html/svg converter
@@ -332,3 +330,18 @@ Possible Schemas:
 		https://news.ycombinator.com/item?id=32277998
 	rizin - Free and Open Source Reverse Engineering Framework
 		https://rizin.re/
+	DiffPDF - textual pdf diff
+		port install DiffPDF
+	difftastic - experimental file differ
+		port install difftastic
+
+	maxmind - maps IPv4 and IPv6 addresses to data records
+		https://maxmind.github.io/MaxMind-DB/
+	circl.lu - Computer Incident Response Center Luxembourg (CIRCL)
+		https://www.circl.lu/
+	metalook - Find published software by hashes
+		https://www.metalookup.com/
+	gpsjam - daily maps of gps jamming
+		https://gpsjam.org/
+	absbex - raw unfiltered flight data
+		https://www.adsbexchange.com/
