@@ -33,7 +33,6 @@ COMPILEs="
 	dec2pgbit
 	file-stat-size
 	flip-tail
-	is-utf8wf
 	spin-wait-blob
 	tas-run-lock
 	tas-run-unlock
@@ -104,7 +103,6 @@ SRCs="
 	dec2pgbit.c							\
 	file-stat-size.c						\
 	flip-tail.c							\
-	is-utf8wf.c							\
 	local-linux.mk.example						\
 	local-darwin.mk.example						\
 	macosx.c							\

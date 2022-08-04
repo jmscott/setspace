@@ -106,9 +106,6 @@ dec2pgbit: dec2pgbit.c
 escape-json-utf8: escape-json-utf8.c
 	cc -o escape-json-utf8 $(CFLAGS) escape-json-utf8.c
 
-is-utf8wf: is-utf8wf.c
-	cc -o is-utf8wf $(CFLAGS) is-utf8wf.c
-
 tas-run-lock: tas-run-lock.c
 	cc -o tas-run-lock $(CFLAGS) tas-run-lock.c
 

@@ -67,7 +67,7 @@ case $STATUS in
 	IS_NULL=no
 	EXIT_STATUS=0
 	;;
-1)
+1|2)
 	IS_NULL=yes
 	EXIT_STATUS=2
 	;;
