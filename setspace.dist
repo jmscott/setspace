@@ -31,7 +31,6 @@
 COMPILEs="
 	append-brr
 	dec2pgbit
-	escape-json-utf8
 	file-stat-size
 	flip-tail
 	is-utf8wf
@@ -103,7 +102,6 @@ SRCs="
 	common-ecpg.c							\
 	common.c							\
 	dec2pgbit.c							\
-	escape-json-utf8.c						\
 	file-stat-size.c						\
 	flip-tail.c							\
 	is-utf8wf.c							\
