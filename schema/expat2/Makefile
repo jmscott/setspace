@@ -72,5 +72,7 @@ merge-stdin-xmlwf_utf8: merge-stdin-xmlwf_utf8.pgc ../../common-ecpg.c
 	$(CC) $(CFLAGS)							\
 		-I$(JMSCOTT_ROOT)/include 				\
 		-I$(PGINC) merge-stdin-xmlwf_utf8.c 			\
-		-o merge-stdin-xmlwf_utf8 -L$(PGLIB) -lecpg
+		-o merge-stdin-xmlwf_utf8				\
+		-L$(PGLIB) -lecpg					\
+		-L$(JMSCOTT_ROOT)/lib -ljmscott
 	rm merge-stdin-xmlwf_utf8.c

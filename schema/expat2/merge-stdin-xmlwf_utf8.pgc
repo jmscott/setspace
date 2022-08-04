@@ -8,14 +8,10 @@
  *  	1	unexpected error
  */
 
-static char *jmscott_progname = "merge-stdin-xmlwf_utf8";
-
-#include "jmscott/die.c"
-#include "jmscott/udig.c"
-#include "jmscott/posio.c"
-#include "jmscott/ecpg.c"
-
+#include "jmscott/libjmscott.h"
 #include <stdlib.h>			//  for malloc()
+
+char *jmscott_progname = "merge-stdin-xmlwf_utf8";
 
 static struct jmscott_ecpg_state_fault no_warn[] =
 {
