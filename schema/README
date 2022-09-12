@@ -346,4 +346,6 @@ Possible Schemas:
 	absbex - raw unfiltered flight data
 		https://www.adsbexchange.com/
 	fissure - The Radio Freqency Framework
+	edi - electronic data interchange for business documents
+		https://www.ibm.com/topics/edi-electronic-data-interchange
 
