@@ -350,3 +350,7 @@ Possible Schemas:
 		https://www.ibm.com/topics/edi-electronic-data-interchange
 	ipdetective.io -  snoop bots based upon source ip
 		https://ipdetective.io/
+	dplace - Database of Places, Language, Culture and Environment
+		https://d-place.org/
+	hackmmap - hacker mind map for cli
+		https://github.com/nadrad/h-m-m
