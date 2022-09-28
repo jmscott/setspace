@@ -354,3 +354,9 @@ Possible Schemas:
 		https://d-place.org/
 	hackmmap - hacker mind map for cli
 		https://github.com/nadrad/h-m-m
+	pdfgrep - grep pdf files
+		https://pdfgrep.org/
+	docquery - semantic query for pdf files
+		https://github.com/impira/docquery
+	i18next - translate json files
+		https://translate.i18next.com/
