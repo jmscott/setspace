@@ -360,3 +360,7 @@ Possible Schemas:
 		https://github.com/impira/docquery
 	i18next - translate json files
 		https://translate.i18next.com/
+	builtwith - determine tech behind a web site
+		http://builtwith.com
+	gitrepo - github activity data in google bigdata
+		https://console.cloud.google.com/marketplace/details/github/github-repos?filter=solution-type:dataset
