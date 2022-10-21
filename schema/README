@@ -364,6 +364,7 @@ Possible Schemas:
 		http://builtwith.com
 	gitrepo - github activity data in google bigdata
 		https://console.cloud.google.com/marketplace/details/github/github-repos?filter=solution-type:dataset
-
+	searxnh - pritvate search engine
+		https://github.com/searxng/searxng
 	auditpipe - filesystem watcher
 		https://www.freebsd.org/cgi/man.cgi?query=auditpipe&sektion=4&apropos=0&manpath=FreeBSD+6.2-RELEASE
