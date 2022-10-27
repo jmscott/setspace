@@ -368,3 +368,5 @@ Possible Schemas:
 		https://github.com/searxng/searxng
 	auditpipe - filesystem watcher
 		https://www.freebsd.org/cgi/man.cgi?query=auditpipe&sektion=4&apropos=0&manpath=FreeBSD+6.2-RELEASE
+	sysstat - linux sysstat format
+		https://github.com/sysstat/sysstat
