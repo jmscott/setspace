@@ -372,5 +372,12 @@ Possible Schemas:
 		https://github.com/sysstat/sysstat
 	isdndb - world's largest book database
 		https://isbndb.com/
+	parquet - Apache Parquet is an open source, column-oriented data file
+		https://parquet.apache.org/
+	avero - Avro is a data serialization system.
+		https://avro.apache.org/docs/1.2.0/
+	clairvoyant - master list of big data file formats
+		https://www.clairvoyant.ai/blog/big-data-file-formats
+
 	explainpaper - A better way to read academic papers.
 		https://explainpaper.com
