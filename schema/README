@@ -378,6 +378,9 @@ Possible Schemas:
 		https://avro.apache.org/docs/1.2.0/
 	clairvoyant - master list of big data file formats
 		https://www.clairvoyant.ai/blog/big-data-file-formats
-
 	explainpaper - A better way to read academic papers.
 		https://explainpaper.com
+	openlib - Copyright free books
+		https://openlibrary.org/
+	langdect - Python library to detect language
+		https://pypi.org/project/langdetect/
