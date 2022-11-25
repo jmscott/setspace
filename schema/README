@@ -384,3 +384,8 @@ Possible Schemas:
 		https://openlibrary.org/
 	langdect - Python library to detect language
 		https://pypi.org/project/langdetect/
+	max.io - Mighty Inference Server (convert text to meaning)
+		https://max.io
+	heritrix - inet archive crawler recommened by googler Trevor Strohman
+		https://github.com/internetarchive/heritrix3
+		
