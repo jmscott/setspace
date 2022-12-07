@@ -388,4 +388,5 @@ Possible Schemas:
 		https://max.io
 	heritrix - inet archive crawler recommened by googler Trevor Strohman
 		https://github.com/internetarchive/heritrix3
-		
+	emanote - haskall note manager
+		https://emanote.srid.ca/
