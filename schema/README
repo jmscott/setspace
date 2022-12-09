@@ -390,3 +390,4 @@ Possible Schemas:
 		https://github.com/internetarchive/heritrix3
 	emanote - haskall note manager
 		https://emanote.srid.ca/
+	rsyncd - parse log file of standard rsync daemon 
