@@ -17,6 +17,8 @@ Schemas:
 	expat2		xml libexpat, version 2
 
 	exiftool	exif tool, version 11
+				https://news.ycombinator.com/item?id=34373928
+				https://exiftool.org/
 
 	fffile		well known Unix "Fine Free File" command
 	fffile5		well known Unix "Fine Free File V5" at github.com
@@ -391,3 +393,6 @@ Possible Schemas:
 	emanote - haskall note manager
 		https://emanote.srid.ca/
 	rsyncd - parse log file of standard rsync daemon 
+
+	tone - cross platform utility manipulate any audio metadata
+		https://github.com/sandreas/tone
