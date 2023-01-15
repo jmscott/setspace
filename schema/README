@@ -80,7 +80,7 @@ Possible Schemas:
 	hyperscan - high performance regex library from intel
 	pcap - Wireshark capture format
 	w3valid - w3 validator of flavors of html
-	exiv2 - generale c++ metadata extractor
+	exiv2 - generale c++ image metadata extractor
 	simdjson - Optimized json verifier from Daniel Lemire
 	hypersc - Hyper Scan Fast Regular expression library from Intel
 	scrapy - python web scraping framework
