@@ -396,3 +396,5 @@ Possible Schemas:
 
 	tone - cross platform utility manipulate any audio metadata
 		https://github.com/sandreas/tone
+	LINGUA::EN::NUMBERS - perl module to convert numbers to english
+		
