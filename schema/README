@@ -398,3 +398,5 @@ Possible Schemas:
 		https://github.com/sandreas/tone
 	LINGUA::EN::NUMBERS - perl module to convert numbers to english
 		
+	taggy - Open Taggy - JS text classification system
+		https://github.com/open-taggy/taggy
