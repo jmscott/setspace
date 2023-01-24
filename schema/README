@@ -404,3 +404,6 @@ Possible Schemas:
 
 	hlta - Hierarchical Latent Tree Analysis (HLTA)
 		https://github.com/kmpoon/hlta
+	nixos - declarative, reproducible unix repo
+		https://zero-to-nix.com/concepts/nixos#configuration
+		https://zero-to-nix.com/concepts/nixos#configuration
