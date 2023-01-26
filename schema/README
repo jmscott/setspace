@@ -406,4 +406,5 @@ Possible Schemas:
 		https://github.com/kmpoon/hlta
 	nixos - declarative, reproducible unix repo
 		https://zero-to-nix.com/concepts/nixos#configuration
-		https://zero-to-nix.com/concepts/nixos#configuration
+	composefs - immutable file system
+		https://github.com/containers/composefs
