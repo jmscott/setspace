@@ -177,7 +177,7 @@
     <dl>
      <dt>dval32</dt>
      <dd>
-       PDF Dictionary value &gt; 32768 chars,
+       PDF Dictionary value &lt; 32768 chars,
        with no carriage-return or line-feed
      </dd>
     </dl>
