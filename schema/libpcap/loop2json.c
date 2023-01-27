@@ -21,11 +21,7 @@
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
 
-#include "jmscott/die.c"
-#include "jmscott/hexdump.c"
-#include "jmscott/posio.c"
-#include "jmscott/time.c"
-#include "jmscott/json.c"
+#include "jmscott/libjmscott.h"
 
 #define MAX_TCP_PACKET	65535
 

@@ -13,6 +13,6 @@ all: loop2json
 
 loop2json: loop2json.c
 	$(CC) $(CFLAGS) -I$(JMSCOTT_ROOT)/include -I$(PCAPINC) 		\
-		loop2json.c -L$(PCAPLIB) -lpcap -o loop2json
+		loop2json.c -L$(JMSCOTT_ROOT)/lib -ljmscott -L$(PCAPLIB) -lpcap -o loop2json
 clean:
 	rm -f loop2json
