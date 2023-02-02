@@ -408,6 +408,8 @@ Possible Schemas:
 		https://zero-to-nix.com/concepts/nixos#configuration
 	composefs - immutable file system
 		https://github.com/containers/composefs
-	Pipelined Relational Query Language, pronounced “Prequel”
+	prqlang - Pipelined Relational Query Language, pronounced “Prequel”
 		https://prql-lang.org/
-		https://prql-lang.org/
+	dig9 - investigate parsing the output of dns tool "dig".
+		https://www.digwebinterface.com/
+		is output just dns zone file?
