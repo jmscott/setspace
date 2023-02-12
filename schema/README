@@ -414,3 +414,5 @@ Possible Schemas:
 		https://www.digwebinterface.com/
 		is output just dns zone file?
 		https://github.com/tigeli/bind-utils
+	imhex - Database of patterns for imhex binary editor
+		https://github.com/WerWolv/ImHex-Patterns
