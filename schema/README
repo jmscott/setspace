@@ -420,3 +420,6 @@ Possible Schemas:
 		https://toplist-central.com/categories
 	rfc5424 - bsd syslog validation
 		https://github.com/influxdata/go-syslog
+		https://github.com/Roguelazer/rust-syslog-rfc5424
+		https://github.com/bastjan/go-legacysyslog
+		https://github.com/wneessen/go-parsesyslog
