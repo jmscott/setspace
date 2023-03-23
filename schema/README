@@ -418,3 +418,5 @@ Possible Schemas:
 		https://github.com/WerWolv/ImHex-Patterns
 	toplist - ai driven top list index
 		https://toplist-central.com/categories
+	rfc5424 - bsd syslog validation
+		https://github.com/influxdata/go-syslog
