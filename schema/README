@@ -423,3 +423,5 @@ Possible Schemas:
 		https://github.com/Roguelazer/rust-syslog-rfc5424
 		https://github.com/bastjan/go-legacysyslog
 		https://github.com/wneessen/go-parsesyslog
+	deepdoc - A Document AI Package
+		https://github.com/deepdoctection/deepdoctection
