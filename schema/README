@@ -437,5 +437,6 @@ Possible Schemas:
 		https://blog.bigpicture.io/introducing-the-worlds-largest-open-source-company-dataset/
 	Whichlang - spoken language detection written in rust
 		https://github.com/quickwit-oss/whichlang
+		https://quickwit.io/blog/whichlang-language-detection-library
 	taodetect - language detection service
 		https://github.com/allan-simon/Tatodetect
