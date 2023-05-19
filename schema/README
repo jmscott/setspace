@@ -435,3 +435,5 @@ Possible Schemas:
 		https://pptr.dev/
 	BigPicture: World's Largest Open Source Company Dataset
 		https://blog.bigpicture.io/introducing-the-worlds-largest-open-source-company-dataset/
+	Whichlang - spoken language detection written in rust
+		https://github.com/quickwit-oss/whichlang
