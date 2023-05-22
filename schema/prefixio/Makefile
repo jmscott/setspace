@@ -8,8 +8,8 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-schema-prefixio.dist
-LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+MKMK=setspace-schema-prefixio.mkmk
+LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
 
 install:
 	cd .. && $(_MAKE) install-dirs
@@ -37,3 +37,5 @@ distclean:
 world:
 	$(_MAKE) distclean
 	$(_MAKE) install
+tar:
+	make-make tar $(MKMK)
