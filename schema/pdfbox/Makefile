@@ -17,12 +17,12 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-schema-pdfbox.dist
-COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
-SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
-BINs := $(shell  (. ./$(DIST) && echo $$BINs))
-LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
-SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
+MKMK=setspace-schema-pdfbox.mkmk
+COMPILEs := $(shell  (. ./$(MKMK) && echo $$COMPILEs))
+SBINs := $(shell  (. ./$(MKMK) && echo $$SBINs))
+BINs := $(shell  (. ./$(MKMK) && echo $$BINs))
+LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
+SRCs := $(shell  (. ./$(MKMK) && echo $$SRCs))
 
 all: $(COMPILEs)
 
