@@ -1,22 +1,22 @@
 #
 #  Synopsis:
-#	Configuration file read by make-dist to build tar files.
+#	Configuration file read by make-make to build tar files.
 #  See:
-#	https://github.com/jmscott/work/blob/master/make-dist
+#	https://github.com/jmscott/work/blob/master/make-make
 #  Note:
 #	Makefile variables can be extracted and defined from the the
-#	root.dist file with these recipes.  Example make code follows:
+#	product.mkmk file with these recipes.  Example make code follows:
 #
-#		DIST=product.dist
+#		MKMK=product.mkmk
 #
-#		SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
-#		LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
-#		SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
-#		BINs := $(shell  (. ./$(DIST) && echo $$BINs))
-#		HTDOCs := $(shell  (. ./$(DIST) && echo $$HTDOCs))
-#		CGIBINs := $(shell  (. ./$(DIST) && echo $$CGIBINs))
-#		LIBEXEC := $(shell  (. ./$(DIST) && echo $$LIBEXECs))
-#		COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
+#		SBINs := $(shell  (. ./$(MKMK) && echo $$SBINs))
+#		LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
+#		SRCs := $(shell  (. ./$(MKMK) && echo $$SRCs))
+#		BINs := $(shell  (. ./$(MKMK) && echo $$BINs))
+#		HTDOCs := $(shell  (. ./$(MKMK) && echo $$HTDOCs))
+#		CGIBINs := $(shell  (. ./$(MKMK) && echo $$CGIBINs))
+#		LIBEXEC := $(shell  (. ./$(MKMK) && echo $$LIBEXECs))
+#		COMPILEs := $(shell  (. ./$(MKMK) && echo $$COMPILEs))
 #
 
 #  Define PRODUCT to change name of tar file from $(basename $(pwd))
@@ -29,7 +29,7 @@ COMPILEs="
 "
 LIBs="
 	schema.sql
-	setspace-schema-infozip3.dist
+	setspace-schema-infozip3.mkmk
 "
 
 #BINs="
