@@ -2,7 +2,7 @@
 #  Synopsis:
 #	Development/Install Makefile for schema expat2
 #  Usage:
-#	make distclean install
+#	make world
 #
 include ../../local.mk
 include ../../jmscott.mk
@@ -11,11 +11,11 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-schema-expat2.dist
-SBINs := $(shell (. ./$(DIST) && echo $$SBINs))
-LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
-SRCs := $(shell (. ./$(DIST) && echo $$SRCs))
-COMPILEs := $(shell (. ./$(DIST) && echo $$COMPILEs))
+MKMK=setspace-schema-expat2.mkmk
+SBINs := $(shell (. ./$(MKMK) && echo $$SBINs))
+LIBs := $(shell (. ./$(MKMK) && echo $$LIBs))
+SRCs := $(shell (. ./$(MKMK) && echo $$SRCs))
+COMPILEs := $(shell (. ./$(MKMK) && echo $$COMPILEs))
 
 all: $(COMPILEs)
 
@@ -66,6 +66,8 @@ world:
 	$(_MAKE) all
 	$(_MAKE) distclean
 	$(_MAKE) install
+tar:
+	make-make tar $(MKMK)
 
 merge-stdin-xmlwf_utf8: merge-stdin-xmlwf_utf8.pgc ../../common-ecpg.c
 	ecpg merge-stdin-xmlwf_utf8.pgc
