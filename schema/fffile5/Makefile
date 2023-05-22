@@ -3,8 +3,7 @@
 #  Synopsis:
 #	Dev/install Makefile for code to populate fffile5 schema.
 #  Note:
-#	Need to convert to sourced in make-dist file.
-#	See $JMSCOTT_ROOT/bin/make-dist --template
+#	Need to convert to sourced in make-make file.
 #
 include ../../local.mk
 include ../../setspace.mk
@@ -12,11 +11,11 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-schema-fffile5.dist
-SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
-LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
-SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
-COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
+MKMK=setspace-schema-fffile5.mkmk
+SBINs := $(shell  (. ./$(MKMK) && echo $$SBINs))
+LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
+SRCs := $(shell  (. ./$(MKMK) && echo $$SRCs))
+COMPILEs := $(shell  (. ./$(MKMK) && echo $$COMPILEs))
 
 all: $(SBINs)
 
@@ -94,5 +93,5 @@ world:
 	$(_MAKE) all
 	$(_MAKE) distclean
 	$(_MAKE) install
-dist: all
-	make-dist $(DIST)
+tar: all
+	make-make tar $(MKMK)
