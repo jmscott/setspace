@@ -128,3 +128,6 @@ merge-stdin-pddocument_information_metadata:				\
 	rm merge-stdin-pddocument_information_metadata.c
 dev-links:
 	ln -s . lib
+
+tar:
+	make-make tar $(MKMK)
