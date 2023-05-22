@@ -3,6 +3,7 @@
 #	Development/Install Makefile for mydash schema
 #  Usage:
 #	make world
+#	make tar
 #
 include ../../local.mk
 include ../../setspace.mk
@@ -10,9 +11,9 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-schema-mydash.dist
-SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
-LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+MKMK=setspace-schema-mydash.mkmk
+SBINs := $(shell  (. ./$(MKMK) && echo $$SBINs))
+LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
 
 all:
 
@@ -59,3 +60,5 @@ dev:
 	test -e lib || ln -s . lib
 	test -e log || ln -s . log
 	test -e run || ln -s . run
+tar:
+	make-make tar $(MKMK)
