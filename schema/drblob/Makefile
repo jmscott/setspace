@@ -10,11 +10,11 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=./setspace-schema-drblob.dist
-SBINs := $(shell (. ./$(DIST) && echo $$SBINs))
-LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
-SRCs := $(shell (. ./$(DIST) && echo $$LIBs))
-COMPILEs := $(shell (. ./$(DIST) && echo $$COMPILEs))
+MKMK=./setspace-schema-drblob.mkmk
+SBINs := $(shell (. ./$(MKMK) && echo $$SBINs))
+LIBs := $(shell (. ./$(MKMK) && echo $$LIBs))
+SRCs := $(shell (. ./$(MKMK) && echo $$LIBs))
+COMPILEs := $(shell (. ./$(MKMK) && echo $$COMPILEs))
 
 all: $(COMPILEs)
 
@@ -57,8 +57,8 @@ distclean:
 	rm -rf $(DRBLOB_PREFIX)/lib
 	rm -rf $(DRBLOB_PREFIX)/src
 	rm -rf $(DRBLOB_PREFIX)/sbin
-dist:
-	make-dist $(DIST)
+tar:
+	make-make tar $(MKMK)
 
 world:
 	$(_MAKE) clean
