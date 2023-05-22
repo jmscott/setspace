@@ -6,9 +6,9 @@ _MAKE=$(MAKE) $(MFLAGS)
 
 P5MAIL_PREFIX=$(SETSPACE_PREFIX)/schema/p5mail
 
-DIST=./setspace-schema-p5mail.dist
-SBINs := $(shell (. $(DIST) && echo $$SBINs))
-LIBs := $(shell (. $(DIST) && echo $$LIBs))
+MKMK=./setspace-schema-p5mail.mkmk
+SBINs := $(shell (. $(MKMK) && echo $$SBINs))
+LIBs := $(shell (. $(MKMK) && echo $$LIBs))
 
 install:
 	cd .. && $(_MAKE) install-dirs
@@ -38,8 +38,9 @@ eml_header2json: loop2json.c
 distclean:
 	rm -rf 								\
 		$(P5MAIL_PREFIX)/sbin					\
-		$(P5MAIL_PREFIX)/lib 					\
-
+		$(P5MAIL_PREFIX)/lib
 world:
 	$(_MAKE) distclean
 	$(_MAKE) install
+tar:
+	make-make tar $(MKMK)
