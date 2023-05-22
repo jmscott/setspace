@@ -84,3 +84,5 @@ world:
 	$(_MAKE) all
 	$(_MAKE) distclean
 	$(_MAKE) install
+tar:
+	make-make tar $(MKMK)
