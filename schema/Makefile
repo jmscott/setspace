@@ -14,9 +14,9 @@ include schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-schema.dist
-SBINs:=$(shell  (. ./$(DIST) && echo $$SBINs))
-LIBs:=$(shell  (. ./$(DIST) && echo $$LIBs))
+MKMK=setspace-schema.mkmk
+SBINs:=$(shell  (. ./$(MKMK) && echo $$SBINs))
+LIBs:=$(shell  (. ./$(MKMK) && echo $$LIBs))
 
 all:
 	cd setcore && $(_MAKE) all
@@ -100,5 +100,5 @@ world:
 	$(_MAKE) all
 	$(_MAKE) distclean
 	$(_MAKE) install
-dist:
-	make-dist $(DIST)
+tar:
+	make-make tar $(MKMK)
