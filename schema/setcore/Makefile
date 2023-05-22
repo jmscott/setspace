@@ -12,12 +12,12 @@ _MAKE=$(MAKE) $(MFLAGS)
 #  setspace schema code always in setspace install directory
 SETCORE_PREFIX=$(SETSPACE_PREFIX)/schema/setcore
 
-DIST=./setspace-schema-setcore.dist
-COMPILEs := $(shell (. $(DIST) && echo $$COMPILEs))
-SBINs := $(shell (. $(DIST) && echo $$SBINs))
-LIBEXECs := $(shell (. $(DIST) && echo $$LIBEXECs))
-LIBs := $(shell (. $(DIST) && echo $$LIBs))
-SRCs := $(shell (. $(DIST) && echo $$SRCs))
+MKMK=./setspace-schema-setcore.mkmk
+COMPILEs := $(shell (. $(MKMK) && echo $$COMPILEs))
+SBINs := $(shell (. $(MKMK) && echo $$SBINs))
+LIBEXECs := $(shell (. $(MKMK) && echo $$LIBEXECs))
+LIBs := $(shell (. $(MKMK) && echo $$LIBs))
+SRCs := $(shell (. $(MKMK) && echo $$SRCs))
 
 all: $(COMPILEs)
 
@@ -93,5 +93,5 @@ world:
 	$(_MAKE) all
 	$(_MAKE) distclean
 	$(_MAKE) install
-dist:
-	make-dist $(DIST)
+tar:
+	make-make tar $(MKMK)

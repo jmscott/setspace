@@ -18,7 +18,6 @@
 #  to, say, foobar-YYYYMMDD_hhmmss.tar.bz2
 
 #PRODUCT=foobar
-PRODUCT=setspace-schema-setcore.dist
 COMPILEs="
 	byte-bitmap
 	byte-count
@@ -31,7 +30,7 @@ LIBs="
 	psqlrc.example
 	schema.sql
 	setcore.flow.example
-	setspace-schema-setcore.dist
+	setspace-schema-setcore.mkmk
 "
 
 LIBEXECs="
