@@ -8,11 +8,11 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=./setspace-schema-gnuzip.dist
-SBINs := $(shell (. ./$(DIST) && echo $$SBINs))
-LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
-SRCs := $(shell (. ./$(DIST) && echo $$LIBs))
-COMPILEs := $(shell (. ./$(DIST) && echo $$COMPILEs))
+MKMK=./setspace-schema-gnuzip.mkmk
+SBINs := $(shell (. ./$(MKMK) && echo $$SBINs))
+LIBs := $(shell (. ./$(MKMK) && echo $$LIBs))
+SRCs := $(shell (. ./$(MKMK) && echo $$LIBs))
+COMPILEs := $(shell (. ./$(MKMK) && echo $$COMPILEs))
 
 all: $(COMPILEs)
 
@@ -55,8 +55,8 @@ world:
 	$(_MAKE) all
 	$(_MAKE) distclean
 	$(_MAKE) install
-dist: all
-	make-dist $(DIST)
+tar: all
+	make-make tar $(MKMK)
 
 merge-stdin-gunzip_uncompressed_name: 					\
 		merge-stdin-gunzip_uncompressed_name.pgc		\
