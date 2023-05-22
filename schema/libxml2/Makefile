@@ -11,11 +11,11 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-schema-libxml2.dist
-COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
-LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
-SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
-SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
+MKMK=setspace-schema-libxml2.mkmk
+COMPILEs := $(shell  (. ./$(MKMK) && echo $$COMPILEs))
+LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
+SRCs := $(shell  (. ./$(MKMK) && echo $$SRCs))
+SBINs := $(shell  (. ./$(MKMK) && echo $$SBINs))
 
 all: $(COMPILEs)
 
