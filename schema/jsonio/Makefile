@@ -8,8 +8,8 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-schema-jsonio.dist
-LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+MKMK=setspace-schema-jsonio.mkmk
+LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
 
 install:
 	cd .. && $(_MAKE) install-dirs
@@ -34,7 +34,7 @@ install:
 distclean:
 	rm -rf $(JSONIO_PREFIX)/lib
 tar:
-	make-dist tar $(DIST)
+	make-make tar $(MKMK)
 
 world:
 	$(_MAKE) distclean
