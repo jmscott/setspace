@@ -10,9 +10,9 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-schema-udigset.dist
-LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
-COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
+MKMK=setspace-schema-udigset.mkmk
+LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
+COMPILEs := $(shell  (. ./$(MKMK) && echo $$COMPILEs))
 
 all: $(COMPILEs)
 
@@ -57,5 +57,5 @@ world:
 	$(_MAKE) clean 
 	$(_MAKE) all
 	$(_MAKE) distclean
-dist:
-	make-dist $(DIST)
+tar:
+	make-make tar $(MKMK)
