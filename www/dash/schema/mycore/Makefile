@@ -15,10 +15,10 @@ include ../../dash.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-www-dash-schema-mycore.dist
-COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
-HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
-LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+MKMK=setspace-www-dash-schema-mycore.mkmk
+COMPILEs := $(shell  (. ./$(MKMK) && echo $$COMPILEs))
+HTDOCSs := $(shell  (. ./$(MKMK) && echo $$HTDOCSs))
+LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
 
 all: mycore mycore.d/help.pl
 clean:
@@ -59,5 +59,5 @@ world:
 	$(_MAKE) distclean
 	$(_MAKE) install
 
-dist:
-	make-dist setspace-www-dash-schema-mycore.dist
+tar:
+	make-make tar setspace-www-dash-schema-mycore.mkmk
