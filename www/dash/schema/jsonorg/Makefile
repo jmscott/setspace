@@ -15,11 +15,11 @@ include ../../dash.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-www-dash-schema-jsonorg.dist
+MKMK=setspace-www-dash-schema-jsonorg.mkmk
 
-COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
-LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
-HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
+COMPILEs := $(shell  (. ./$(MKMK) && echo $$COMPILEs))
+LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
+HTDOCSs := $(shell  (. ./$(MKMK) && echo $$HTDOCSs))
 
 all: $(COMPILEs)
 clean:
@@ -64,5 +64,5 @@ world:
 	$(_MAKE) distclean
 	$(_MAKE) install
 
-dist:
-	make-dist $(DIST)
+tar:
+	make-make tar $(MKMK)
