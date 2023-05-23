@@ -14,8 +14,8 @@ include ../../../setspace.mk
 include ../dash.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
-DIST=setspace-www-dash-gw.dist
-HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
+MKMK=setspace-www-dash-gw.mkmk
+HTDOCSs := $(shell  (. ./$(MKMK) && echo $$HTDOCSs))
 
 ifndef DASH_DNS_VHOST_SUFFIX
 $(error DASH_DNS_VHOST_SUFFIX is not set)
@@ -37,5 +37,5 @@ distclean:
 world:
 	$(MAKE) $(MFLAGS) distclean
 	$(MAKE) $(MFLAGS) install
-dist:
-	make-dist $(DIST)
+tar:
+	make-make tar $(MKMK)
