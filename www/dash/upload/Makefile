@@ -14,11 +14,11 @@ include ../dash.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-www-dash-upload.dist
-COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
-LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
-HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
-CGIBINs := $(shell  (. ./$(DIST) && echo $$CGIBINs))
+MKMK=setspace-www-dash-upload.mkmk
+COMPILEs := $(shell  (. ./$(MKMK) && echo $$COMPILEs))
+LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
+HTDOCSs := $(shell  (. ./$(MKMK) && echo $$HTDOCSs))
+CGIBINs := $(shell  (. ./$(MKMK) && echo $$CGIBINs))
 
 all: $(COMPILEs)
 clean:
@@ -57,5 +57,5 @@ world:
 	$(_MAKE) all
 	$(_MAKE) distclean
 	$(_MAKE) install
-dist:
-	make-dist $(DIST)
+tar:
+	make-make tar $(MKMK)
