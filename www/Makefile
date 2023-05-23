@@ -18,10 +18,10 @@ include www.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-www.dist
+MKMK=setspace-www.mkmk
 
-HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
-LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
+HTDOCSs := $(shell  (. ./$(MKMK) && echo $$HTDOCSs))
+LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
 
 all:
 ifdef DASH_DNS_VHOST_SUFFIX
@@ -76,5 +76,5 @@ world:
 	$(_MAKE) all
 	$(_MAKE) distclean
 	$(_MAKE) install
-dist:
-	make-dist tar $(DIST)
+tar:
+	make-make tar $(MKMK)
