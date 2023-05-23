@@ -7,16 +7,16 @@
 #	Makefile variables can be extracted and defined from the the
 #	root.dist file with these recipes.  Example make code follows:
 #
-#		DIST=product.dist
+#		MKMK=product.mkmk
 #
-#		COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
-#		SBINs := $(shell  (. ./$(DIST) && echo $$SBINs))
-#		LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
-#		SRCs := $(shell  (. ./$(DIST) && echo $$SRCs))
-#		BINs := $(shell  (. ./$(DIST) && echo $$BINs))
-#		HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
-#		CGIBINs := $(shell  (. ./$(DIST) && echo $$CGIBINs))
-#		LIBEXEC := $(shell  (. ./$(DIST) && echo $$LIBEXECs))
+#		COMPILEs := $(shell  (. ./$(MKMK) && echo $$COMPILEs))
+#		SBINs := $(shell  (. ./$(MKMK) && echo $$SBINs))
+#		LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
+#		SRCs := $(shell  (. ./$(MKMK) && echo $$SRCs))
+#		BINs := $(shell  (. ./$(MKMK) && echo $$BINs))
+#		HTDOCSs := $(shell  (. ./$(MKMK) && echo $$HTDOCSs))
+#		CGIBINs := $(shell  (. ./$(MKMK) && echo $$CGIBINs))
+#		LIBEXEC := $(shell  (. ./$(MKMK) && echo $$LIBEXECs))
 #
 
 #  Uncomment to override default mappings of VARs to target directory
@@ -43,6 +43,8 @@ LIBs="
 	setcore.d/pre.hex.pl
 	setcore.d/span.nav.pl
 	setcore.d/table.pl
+
+	setspace-www-dash-schema-setcore.mkmk
 "
 
 #  Uncoment to create bin/ directory
