@@ -15,10 +15,10 @@ include ../dash.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-www-dash-schema.dist
-HTDOCSs := $(shell (. ./$(DIST) && echo $$HTDOCSs))
-CGIBINs := $(shell (. ./$(DIST) && echo $$CGIBINs))
-LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
+MKMK=setspace-www-dash-schema.mkmk
+HTDOCSs := $(shell (. ./$(MKMK) && echo $$HTDOCSs))
+CGIBINs := $(shell (. ./$(MKMK) && echo $$CGIBINs))
+LIBs := $(shell (. ./$(MKMK) && echo $$LIBs))
 
 ifndef DASH_DNS_VHOST_SUFFIX
 $(error DASH_DNS_VHOST_SUFFIX is not set)
@@ -80,5 +80,5 @@ stats stats.d/help.pl: stats.cgi
 	cgi2perl5 --source-path stats.cgi --alias-path schema
 	chmod a+rx stats
 
-dist:
-	make-dist $(DIST)
+tar:
+	make-make tar $(MKMK)
