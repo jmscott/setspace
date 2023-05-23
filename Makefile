@@ -17,12 +17,12 @@ endif
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace.dist
-SBINs := $(shell (. ./$(DIST) && echo $$SBINs))
-LIBs := $(shell (. ./$(DIST) && echo $$LIBs))
-SRCs := $(shell (. ./$(DIST) && echo $$SRCs))
-BINs := $(shell (. ./$(DIST) && echo $$BINs))
-COMPILEs := $(shell (. ./$(DIST) && echo $$COMPILEs))
+MKMK=setspace.mkmk
+SBINs := $(shell (. ./$(MKMK) && echo $$SBINs))
+LIBs := $(shell (. ./$(MKMK) && echo $$LIBs))
+SRCs := $(shell (. ./$(MKMK) && echo $$SRCs))
+BINs := $(shell (. ./$(MKMK) && echo $$BINs))
+COMPILEs := $(shell (. ./$(MKMK) && echo $$COMPILEs))
 
 check-local:
 	@test -n "$(PDFBOX_APP2_JAR)"				||	\
@@ -139,5 +139,5 @@ world:
 	$(_MAKE) distclean
 	$(_MAKE) install
 
-dist:
-	make-dist $(DIST)
+tar:
+	make-make tar $(MKMK)
