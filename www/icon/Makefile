@@ -10,9 +10,9 @@ include ../www.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-www-icon.dist
+MKMK=setspace-www-icon.mkmk
 
-HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
+HTDOCSs := $(shell  (. ./$(MKMK) && echo $$HTDOCSs))
 
 install-dirs:
 	cd .. && $(_MAKE) install-dirs
@@ -33,5 +33,5 @@ distclean:
 world:
 	$(_MAKE) distclean
 	$(_MAKE) install
-dist:
-	make-dist $(DIST)
+tar:
+	make-make tar $(MKMK)
