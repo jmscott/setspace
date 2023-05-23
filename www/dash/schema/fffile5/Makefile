@@ -9,11 +9,11 @@ include ../../dash.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-www-dash-schema-fffile5.dist
-COMPILEs := $(shell  (. ./$(DIST) && echo $$COMPILEs))
-LIBs := $(shell  (. ./$(DIST) && echo $$LIBs))
-CGIBINs := $(shell  (. ./$(DIST) && echo $$CGIBINs))
-HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
+MKMK=setspace-www-dash-schema-fffile5.mkmk
+COMPILEs := $(shell  (. ./$(MKMK) && echo $$COMPILEs))
+LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
+CGIBINs := $(shell  (. ./$(MKMK) && echo $$CGIBINs))
+HTDOCSs := $(shell  (. ./$(MKMK) && echo $$HTDOCSs))
 
 all: $(COMPILEs)
 clean:
@@ -56,5 +56,5 @@ world:
 	$(_MAKE) distclean
 	$(_MAKE) install
 
-dist:
-	make-dist tar $(DIST)
+tar:
+	make-make tar $(MKMK)
