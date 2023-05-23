@@ -17,8 +17,8 @@ include dash.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-DIST=setspace-www-dash.dist
-HTDOCSs := $(shell  (. ./$(DIST) && echo $$HTDOCSs))
+MKMK=setspace-www-dash.mkmk
+HTDOCSs := $(shell  (. ./$(MKMK) && echo $$HTDOCSs))
 
 ifndef DASH_DNS_VHOST_SUFFIX
 $(error DASH_DNS_VHOST_SUFFIX is not set)
@@ -44,12 +44,6 @@ install: all
 
 	$(_MAKE) install-dirs
 
-	#
-	#  Note:
-	#	only on makefile install.  not linked in "make-dist tar"
-	#	this may go away.
-	#
-
 	test -e $(WWW_PREFIX)/etc/passwd				||\
 		install -m u=rw,g=r,o=					\
 			../apache2-passwd.example 			\
@@ -59,11 +53,6 @@ install: all
 		$(HTDOCSs)						\
 		$(WWW_PREFIX)/htdocs
 
-	#
-	#  Note:
-	#	these recipes should be written by make-dist
-	#	or made via "make-dist symlinks"/
-	#
 	test -e $(WWW_PREFIX)/cgi-bin/jmscott				|| \
 		ln -s ../../../jmscott $(WWW_PREFIX)/cgi-bin/jmscott
 	test -e $(WWW_PREFIX)/lib/jmscott				|| \
@@ -88,5 +77,5 @@ world:
 	$(_MAKE) all
 	$(_MAKE) distclean
 	$(_MAKE) install
-dist:
-	make-dist tar setspace-www-dash.dist
+tar:
+	make-make tar setspace-www-dash.mkmk
