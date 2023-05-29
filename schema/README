@@ -440,3 +440,5 @@ Possible Schemas:
 		https://quickwit.io/blog/whichlang-language-detection-library
 	taodetect - language detection service
 		https://github.com/allan-simon/Tatodetect
+	fq - query binary data.  as "jq" is to json, fq is to binary.
+		https://github.com/wader/fq/blob/master/doc/demo.svg
