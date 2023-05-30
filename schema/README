@@ -442,3 +442,5 @@ Possible Schemas:
 		https://github.com/allan-simon/Tatodetect
 	fq - query binary data.  as "jq" is to json, fq is to binary.
 		https://github.com/wader/fq/blob/master/doc/demo.svg
+	jq - json query tool and pretty printer.
+		https://jqlang.github.io/jq/
