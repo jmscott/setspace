@@ -444,3 +444,6 @@ Possible Schemas:
 		https://github.com/wader/fq/blob/master/doc/demo.svg
 	jq - json query tool and pretty printer.
 		https://jqlang.github.io/jq/
+	safedocs - pdf db for malware, created by darpa/jpl
+		https://www.jpl.nasa.gov/news/jpl-creates-worlds-largest-pdf-archive-to-aid-malware-research
+		https://www.darpa.mil/news-events/2023-06-14
