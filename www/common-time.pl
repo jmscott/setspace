@@ -1,7 +1,9 @@
 #
-#  Symopsis:
-#	Convert time to 
-#  convert elapsed seconds to terse english description
+#  Synopsis:
+#	Convert time to convert elapsed seconds to terse english description
+#  Note:
+#	Move to jmscott/www/lib!
+#
 
 sub elapsed_seconds2terse_english
 {
