@@ -450,3 +450,7 @@ Possible Schemas:
 
 	mimesniff - standard for detecting mime type
 		https://mimesniff.spec.whatwg.org/
+	quivr - llm for any document type
+		https://github.com/StanGirard/quivr
+	tiktoken - chatgpt tokenizer
+		https://github.com/openai/tiktoken
