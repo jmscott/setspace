@@ -36,6 +36,7 @@ VAR2dir_local=(
 #"
 
 LIBs="
+	apache2-vhost.conf.example
 	setspace-www-dash.mkmk
 "
 
