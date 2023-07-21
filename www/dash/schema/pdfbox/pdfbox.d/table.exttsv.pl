@@ -57,7 +57,6 @@ SELECT
   	ep.page_number ASC,
 	tsv.ts_conf ASC
 ;
-;
 ));
 
 while (my $r = $qh->fetchrow_hashref()) {
