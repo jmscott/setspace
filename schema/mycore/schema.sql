@@ -34,9 +34,9 @@ COMMENT ON SCHEMA mycore IS
 ;
 SET search_path TO mycore,public;
 
-DROP DOMAIN IF EXISTS title_255 CASCADE;
-CREATE DOMAIN title_255 AS text CHECK (
-	length(value) < 256
+DROP DOMAIN IF EXISTS title_127 CASCADE;
+CREATE DOMAIN title_127 AS text CHECK (
+	length(value) < 128
 	AND
 	value ~ '[[:graph:]]'		--  at least something to display
 	AND
@@ -61,11 +61,11 @@ CREATE TABLE service
 DROP TABLE IF EXISTS title;
 CREATE TABLE title
 (
-	blob	udig
-			REFERENCES service
-			ON DELETE CASCADE
-			PRIMARY KEY,
-	title	title_255 NOT NULL,
+	blob		udig
+				REFERENCES service
+				ON DELETE CASCADE
+				PRIMARY KEY,
+	title		title_127 NOT NULL,
 
 	insert_time	setcore.inception NOT NULL
 			  DEFAULT now()
