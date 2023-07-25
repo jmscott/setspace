@@ -1,7 +1,18 @@
 /*
  *  Synopsis:
- *	Personal metadata about blobs, like title, notes and tags.
+ *	My personal metadata about blobs, like title, notes and tags.
+ *  Schema:
+ *	setcore,jsonorg
+ *  PG Extensions:
+ *	pg_trgm, rum
  *  Note:
+ *	No explcit binding to a particular user other than via table
+ *	mycore.service!  At some point we may need a table
+ *	mycore.json_service_request.  Or, perhaps row level security is the
+ *	path.
+ *
+ *	Really, really, really need json schema!
+ *
  *	Not clear if title_request.core_blob should point to title.blob
  *	or just point to setcore.title or even exist at all.  In other words,
  *	should table title_request simply summarize the json, with no
@@ -19,7 +30,7 @@ BEGIN TRANSACTION;
 DROP SCHEMA IF EXISTS mycore CASCADE;
 CREATE SCHEMA mycore;
 COMMENT ON SCHEMA mycore IS
-	'My curated metadata about core blobs, like title, notes and tags'
+  'My curated metadata about core blobs, like title, notes and tags'
 ;
 SET search_path TO mycore,public;
 
@@ -36,17 +47,31 @@ CREATE DOMAIN title_255 AS text CHECK (
 	value !~ '[[:space:]][[:space:]]'	--  multiple spaces
 );
 
-DROP TABLE IF EXISTS title;
-CREATE TABLE title
+DROP TABLE IF EXISTS service CASCADE;
+CREATE TABLE service
 (
 	blob	udig
 			REFERENCES setcore.service
 			ON DELETE CASCADE
 			PRIMARY KEY,
-	title	title_255 NOT NULL
+	insert_time	setcore.inception NOT NULL
+			  default now()
+);
+
+DROP TABLE IF EXISTS title;
+CREATE TABLE title
+(
+	blob	udig
+			REFERENCES service
+			ON DELETE CASCADE
+			PRIMARY KEY,
+	title	title_255 NOT NULL,
+
+	insert_time	setcore.inception NOT NULL
+			  DEFAULT now()
 );
 COMMENT ON TABLE title IS
-	'My title for any blob'
+  'My title for any blob'
 ;
 CREATE INDEX idx_title ON title USING hash(blob);
 
@@ -71,12 +96,10 @@ COMMENT ON TABLE title_tsv IS
 ;
 
 /*
- *  Note:
- *	Should att core_blob refer to title(blob) or setcore(blob) or
- *	any blob at all?
+ *  A json request to modify the title of a blob.
  */
-DROP TABLE IF EXISTS title_request;
-CREATE TABLE title_request
+DROP TABLE IF EXISTS json_title_merge;
+CREATE TABLE json_title_merge
 (
 	request_blob	udig
 				REFERENCES jsonorg.jsonb_255(blob)
@@ -84,15 +107,27 @@ CREATE TABLE title_request
 				PRIMARY KEY,
 	core_blob	udig
 				REFERENCES title(blob)
-				ON DELETE CASCADE,
-	request_time	setcore.inception
-				NOT NULL,
-
-	--  requests are strictly ordered by time
-	UNIQUE		(core_blob, request_time)
+				ON DELETE CASCADE
 );
-CREATE INDEX title_request_time ON title_request USING brin(request_time);
-COMMENT ON TABLE title_request IS
+COMMENT ON TABLE json_title_merge IS
+  'JSON Request to change the title of blob'
+;
+
+/*
+ *  A json request to delete the title of a blob.
+ */
+DROP TABLE IF EXISTS json_title_delete;
+CREATE TABLE json_title_delete
+(
+	request_blob	udig
+				REFERENCES jsonorg.jsonb_255(blob)
+				ON DELETE CASCADE
+				PRIMARY KEY,
+	core_blob	udig
+				REFERENCES title(blob)
+				ON DELETE CASCADE
+);
+COMMENT ON TABLE json_title_merge IS
   'JSON Request to change the title of blob'
 ;
 
@@ -100,7 +135,7 @@ DROP TABLE IF EXISTS note;
 CREATE TABLE note
 (
 	blob	udig
-			REFERENCES setcore.service(blob)
+			REFERENCES service(blob)
 			ON DELETE CASCADE,
 	insert_time	timestamptz
 				DEFAULT NOW(),
@@ -112,7 +147,7 @@ CREATE TABLE note
 	PRIMARY KEY	(blob, insert_time)
 );
 COMMENT ON TABLE note IS
-	'My notes for any blob'
+  'My notes for any blob'
 ;
 
 DROP TABLE IF EXISTS CASCADE;
@@ -143,37 +178,89 @@ DROP TABLE IF EXISTS tags CASCADE;
 CREATE TABLE tags
 (
         tag     text    CHECK (
-                                tag ~ '^[[:graph:]]{1,32}$'
+                                tag ~ '[[:alpha:]][_[:alnum:]]{0,31}$'
+				and
+                                tag ~ '^[[:upper:]]{1,32}$'
                         )
                         PRIMARY KEY
 );
 COMMENT ON TABLE tags IS
-        'All my tags for my blobs'
+  'All my tags for any of my blobs'
+;
+
+/*
+ *  A json request to merge tags into tabs tabs.
+ */
+DROP TABLE IF EXISTS json_tags_merge;
+CREATE TABLE json_tags_merge
+(
+	request_blob	udig
+				REFERENCES jsonorg.jsonb_255(blob)
+				ON DELETE CASCADE
+				PRIMARY KEY
+);
+COMMENT ON TABLE json_tags_merge IS
+  'JSON Request to merge new tags into table tabs'
+;
+
+/*
+ *  A json request to delete from table "tags".
+ */
+DROP TABLE IF EXISTS json_tags_merge;
+CREATE TABLE json_tags_delete
+(
+	request_blob	udig
+				REFERENCES jsonorg.jsonb_255(blob)
+				ON DELETE CASCADE
+				PRIMARY KEY
+);
+COMMENT ON TABLE json_tags_delete IS
+  'JSON Request to delete tags into table tabs'
 ;
 
 DROP TABLE IF EXISTS tag;
 CREATE TABLE tag
 (
         blob    udig
-                        REFERENCES setcore.service
+                        REFERENCES service
                         ON DELETE CASCADE,
         tag     text    REFERENCES tags
                         ON DELETE CASCADE,
-        PRIMARY KEY     (blob, tag)
+        PRIMARY KEY     (blob, tag),
+	UNIQUE		(tag, blob)
 );
 COMMENT ON TABLE tags IS
         'Tags for my blobs'
 ;
 
-DROP VIEW IF EXISTS rummy CASCADE;
-CREATE VIEW rummy AS
-  SELECT
-  	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'::udig AS blob
-    WHERE
-    	false
+/*
+ *  A json request to merge tags into "tab" table.
+ */
+DROP TABLE IF EXISTS json_tab_merge;
+CREATE TABLE json_tab_merge
+(
+	request_blob	udig
+				REFERENCES jsonorg.jsonb_255(blob)
+				ON DELETE CASCADE
+				PRIMARY KEY
+);
+COMMENT ON TABLE json_tab_merge IS
+  'JSON Request to merge tag into table tab for a particular blob'
 ;
-COMMENT ON VIEW rummy IS
-  'Known unknown blobs in schema mycore'
+
+/*
+ *  A json request to delete from table "tag".
+ */
+DROP TABLE IF EXISTS json_tab_merge;
+CREATE TABLE json_tab_delete
+(
+	request_blob	udig
+				REFERENCES jsonorg.jsonb_255(blob)
+				ON DELETE CASCADE
+				PRIMARY KEY
+);
+COMMENT ON TABLE json_tab_delete IS
+  'JSON Request to delete all rows for a particular tab in table tag'
 ;
 
 COMMIT TRANSACTION;
