@@ -106,7 +106,7 @@ CREATE TABLE json_title_merge
 				ON DELETE CASCADE
 				PRIMARY KEY,
 	core_blob	udig
-				REFERENCES title(blob)
+				REFERENCES service(blob)
 				ON DELETE CASCADE
 );
 COMMENT ON TABLE json_title_merge IS
@@ -124,7 +124,7 @@ CREATE TABLE json_title_delete
 				ON DELETE CASCADE
 				PRIMARY KEY,
 	core_blob	udig
-				REFERENCES title(blob)
+				REFERENCES service(blob)
 				ON DELETE CASCADE
 );
 COMMENT ON TABLE json_title_merge IS
