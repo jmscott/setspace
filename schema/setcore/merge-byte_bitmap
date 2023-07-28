@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	Merge the 256 bitmap of all bytes into the table setcore.byte_bitmap
