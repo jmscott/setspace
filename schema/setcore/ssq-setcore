@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	setcore schema querier backend libexeced by front end script "ssq".
@@ -72,22 +72,37 @@ SELECT
                 AS "Age",
 	pg_size_pretty(bc.byte_count) AS "Size",
 	CASE
-	  WHEN u8.is_utf8 THEN
+	  WHEN u8.is_utf8 IS NULL THEN
+	  	'Unknown'
+          WHEN u8.is_utf8 THEN
 	  	'Yes'
 	  ELSE
 	  	'No'
 	END AS "UTF-8",
 	CASE
+	  WHEN p32.prefix IS NULL THEN
+	  	'Unknown'
 	  WHEN u8.is_utf8 THEN
 	  	convert_from(p32.prefix, 'UTF-8')
 	  ELSE
 		p32.prefix::text
-	END AS "32 Byte Prefix"
+	END AS "32 Byte Prefix",
+	CASE
+	  WHEN s32.suffix IS NULL THEN
+	  	'Unknown'
+	  WHEN u8.is_utf8 THEN
+	  	convert_from(s32.suffix, 'UTF-8')
+	  ELSE
+		s32.suffix::text
+	END AS "32 Byte Suffix",
+	bb.bitmap::text AS "Byte Bitmap"
   FROM
   	setcore.service s
 	  LEFT OUTER JOIN setcore.byte_count bc ON (bc.blob = s.blob)
 	  LEFT OUTER JOIN setcore.is_utf8wf u8 ON (u8.blob = s.blob)
 	  LEFT OUTER JOIN setcore.byte_prefix_32 p32 ON (p32.blob = s.blob)
+	  LEFT OUTER JOIN setcore.byte_suffix_32 s32 ON (s32.blob = s.blob)
+	  LEFT OUTER JOIN setcore.byte_bitmap bb ON (bb.blob = s.blob)
   ORDER BY
   	s.discover_time DESC,
 	bc.byte_count DESC,
@@ -118,22 +133,37 @@ SELECT
                 AS "Age",
 	pg_size_pretty(bc.byte_count) AS "Size",
 	CASE
+	  WHEN u8.is_utf8 IS NULL THEN
+	  	'Unknown'
 	  WHEN u8.is_utf8 THEN
 	  	'Yes'
 	  ELSE
 	  	'No'
 	END AS "UTF-8",
 	CASE
+	  WHEN p32.prefix IS NULL THEN
+	  	'Unknown'
 	  WHEN u8.is_utf8 THEN
 	  	convert_from(p32.prefix, 'UTF-8')
 	  ELSE
 		p32.prefix::text
-	END AS "32 Byte Prefix"
+	END AS "32 Byte Prefix",
+	CASE
+	  WHEN s32.suffix IS NULL THEN
+	  	'Unknown'
+	  WHEN u8.is_utf8 THEN
+	  	convert_from(s32.suffix, 'UTF-8')
+	  ELSE
+		s32.suffix::text
+	END AS "32 Byte Suffix",
+	bb.bitmap::text AS "Byte Bitmap"
   FROM
   	setcore.service s
 	  LEFT OUTER JOIN setcore.byte_count bc ON (bc.blob = s.blob)
 	  LEFT OUTER JOIN setcore.is_utf8wf u8 ON (u8.blob = s.blob)
 	  LEFT OUTER JOIN setcore.byte_prefix_32 p32 ON (p32.blob = s.blob)
+	  LEFT OUTER JOIN setcore.byte_suffix_32 s32 ON (s32.blob = s.blob)
+	  LEFT OUTER JOIN setcore.byte_bitmap bb ON (bb.blob = s.blob)
   WHERE
   	s.blob = '$BLOB'
 END
