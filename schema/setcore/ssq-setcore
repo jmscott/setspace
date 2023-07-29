@@ -12,6 +12,8 @@
 #  See:
 #	$SETSPACE_ROOT/bin/ssq
 #	$SETSPACE_ROOT/bin/ssq setcore help
+#  Note:
+#	Think about adding "Is Rummy".  Does being a rummy imply nt in service?
 #
 
 PSQL='psql
