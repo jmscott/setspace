@@ -4,6 +4,8 @@
  *  Usage:
  *	PGDATABASE=condor
  *	psql -f select-my_title.sql | head -1 | my_title2title
+ *  Note:
+ *	Deprecated, so probably ought to remove.
  */
 \set QUIET 1
 \pset tuples_only

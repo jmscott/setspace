@@ -4,6 +4,8 @@
 #	Put version1 blob titles to json for mycore.title tables.
 #  Usage:
 #	put-my_title <v1-pghost> <v1-pgport> <v1-pguser> <v1-pgdatabase>
+#  Note:
+#	Deprecated since move to mycore.
 #
 
 TMP_JSON=${TMPDIR:=/tmp}/$(basename $0)-json.$$

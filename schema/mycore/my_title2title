@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 #
 #  Synopsis:
-#	Convert my_title rows into json requests for mycore.title.
+#	Convert my_title rows into json requests for merging mycore.title.
 #  Usage:
 #	psql -f select-my_title.sql | head -1 | my_title2title
 #	my_title2title <<END
@@ -9,6 +9,8 @@
 #	END
 #  See Also:
 #	select-my_title.sql
+#  Note:
+#	Deprecated since move to mycore.
 #
 
 use utf8;
@@ -45,18 +47,15 @@ die 'wrong number of arguments' unless @ARGV == 0;
 
 while (<STDIN>) {
 	chomp;
-	my ($blob, $title, $blob_discover_unix_epoch) = split("\t");
+	my ($blob, $title) = split("\t");
 
-	die "field #1: blob: not a udig: $blob"
-		unless $blob =~ m/^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$/;
-	die "field #2: title: longer than 511 chars: $title"
-					unless length($title) < 512; 
+	die "field #1core blob: not a udig: $blob"
+		unless $blob =~m/^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$/;
+	die "field #2: title: greater than 255 chars: $title"
+					unless length($title) < 256
+	;
 
-	#  Note: not fully match time: 2012-10-18 16:59:21.747884-05
-	die "field #3: blob_discover_unix_epoch: not digits: " .
-	    "$blob_discover_unix_epoch"
-				unless $blob_discover_unix_epoch =~ m/^\d{10}$/;
-	$blob = utf82json_string($blob);
+	$core_blob = utf82json_string($blob);
 
 	my $new_title = $title;
 
@@ -76,19 +75,13 @@ while (<STDIN>) {
 {
 	"mycore.schema.setspace.com": {
 		"title": {
-			"blob": $blob,
+			"blob": $core_blob,
 			"title": $new_title
 		}
 	},
-	"version1.schema.setspace.com": {
-		"my_title.public": {
-			"blob": $blob,
-			"title": $title,
-			"blob-discover-unix-epoch": $blob_discover_unix_epoch
-		}
-	},
 	"note": "batch loaded by jmscott with script sbin/my_title2title",
-	"request-unix-epoch": $request_unix_epoch
+	"request-unix-epoch": $request_unix_epoch,
+	"request_title": $title,
 }
 END
 }
