@@ -454,3 +454,5 @@ Possible Schemas:
 		https://github.com/StanGirard/quivr
 	tiktoken - chatgpt tokenizer
 		https://github.com/openai/tiktoken
+	pdfio - simple c lib to read/write pdf by author of CUPS
+		https://www.msweet.org/pdfio/index.html
