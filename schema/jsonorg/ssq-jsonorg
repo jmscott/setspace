@@ -16,21 +16,21 @@ PSQL='psql
 
 die()
 {
-	echo "setcore: jsonorg: ERROR: $@" >&2
+	echo "ssq-jsonorg: ERROR: $@" >&2
 	exit 1
 }
 
 help()
 {
 	cat <<END
-Usage: ssq jsonorg setcore [action] <options> ...
+Usage: ssq jsonorg [action] <options> ...
 
 Action:
 	help
 
 	ls [recent]	#  list recent 10 json blobs
 	ls [udig]	#  list details either recent blobs or particular blob
-	ls service	#  list blobs in table setcore.service, in no order
+	ls service	#  list blobs in table jsonorg.service, in no order
 	ls object	#  list objects in the schema
 	refresh 	#  refresh all materialized views
 	count		#  count blobs in all tables in jsonorg
@@ -218,7 +218,8 @@ help)
 ls)
 	[ $# = 0 ] && ls_recent
 
-	ACTION="$1";		shift
+	ACTION="$1"
+
 	case "$ACTION" in
 	object)
 		ls_object
@@ -233,7 +234,7 @@ ls)
 		ls_blob "$ACTION"
 		;;
 	*)
-		die "ls: unknown action: ls $ACTION"
+		die "ls: unknown action: $ACTION"
 		;;
 	esac
 	;;
