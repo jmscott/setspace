@@ -460,3 +460,5 @@ Possible Schemas:
 		https://github.com/moj-analytical-services/splink
 	arxgen - parse arxiv.org files
 		https://github.com/microsoft/ARXGEN/tree/master
+	docx4j - Java for manipulating MS Open XML (Word docx, Powerpoint pptx, and Excel xlsx) files.
+		https://www.docx4java.org/trac/docx4j
