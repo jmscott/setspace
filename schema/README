@@ -464,3 +464,5 @@ Possible Schemas:
 		https://www.docx4java.org/trac/docx4j
 	Simplify-Docx - convert docx -> json, from microsoft
 		https://github.com/microsoft/Simplify-Docx
+	ooxml - An Office OpenXML parser writen in Rust
+		https://lib.rs/crates/ooxml
