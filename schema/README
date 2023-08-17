@@ -462,3 +462,5 @@ Possible Schemas:
 		https://github.com/microsoft/ARXGEN/tree/master
 	docx4j - Java for manipulating MS Open XML (Word docx, Powerpoint pptx, and Excel xlsx) files.
 		https://www.docx4java.org/trac/docx4j
+	Simplify-Docx - convert docx -> json, from microsoft
+		https://github.com/microsoft/Simplify-Docx
