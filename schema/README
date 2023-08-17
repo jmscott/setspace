@@ -456,3 +456,7 @@ Possible Schemas:
 		https://github.com/openai/tiktoken
 	pdfio - simple c lib to read/write pdf by author of CUPS
 		https://www.msweet.org/pdfio/index.html
+	splink - probablistic sql data linkage
+		https://github.com/moj-analytical-services/splink
+	arxgen - parse arxiv.org files
+		https://github.com/microsoft/ARXGEN/tree/master
