@@ -466,3 +466,5 @@ Possible Schemas:
 		https://github.com/microsoft/Simplify-Docx
 	ooxml - An Office OpenXML parser writen in Rust
 		https://lib.rs/crates/ooxml
+	grassun - GRASS Solar Data
+		https://grass.osgeo.org/grass82/manuals/r.sun.html
