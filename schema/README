@@ -468,3 +468,5 @@ Possible Schemas:
 		https://lib.rs/crates/ooxml
 	grassun - GRASS Solar Data
 		https://grass.osgeo.org/grass82/manuals/r.sun.html
+	grobid - extracting information from scholarly documents
+		https://github.com/kermitt2/grobid
