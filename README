@@ -34,6 +34,9 @@ Example Schemas:
 	expat2		xml libexpat, version 2
 
 	pgtexts		PostgreSQL Text Search
+
+	whatwg		web standard (like url) implementations
+				https://github.com/whatwg/url
 See:
 	https://github.com/jmscott/setspace/tree/master/schema
 	https://github.com/jmscott/blobio
