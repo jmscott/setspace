@@ -472,3 +472,5 @@ Possible Schemas:
 		https://github.com/kermitt2/grobid
 	whatwg - web standard (like url) implementations
 		https://github.com/whatwg/url
+	ieeoiu - ieee organization unique id (mac address)
+		https://standards-oui.ieee.org/
