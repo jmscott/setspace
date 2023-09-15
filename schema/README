@@ -475,3 +475,5 @@ Possible Schemas:
 	ieeoiu - ieee organization unique id (mac address)
 		https://standards-oui.ieee.org/
 		https://www.mit.edu/~map/Ethernet/
+	ipapi = geolocation database
+		https://ipapi.is/geolocation.html
