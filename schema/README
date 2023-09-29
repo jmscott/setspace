@@ -479,3 +479,6 @@ Possible Schemas:
 		https://ipapi.is/geolocation.html
 	httrack - track whole html web sites
 		https://www.httrack.com/
+	zippy - detect ai generated text by compression ratios
+		https://github.com/thinkst/zippy
+		https://news.ycombinator.com/item?id=37682872
