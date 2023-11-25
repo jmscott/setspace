@@ -482,3 +482,7 @@ Possible Schemas:
 	zippy - detect ai generated text by compression ratios
 		https://github.com/thinkst/zippy
 		https://news.ycombinator.com/item?id=37682872
+	iperf - network flow wbandwidth code
+		https://iperf.fr/
+	ipguide - arin ip mappings
+		https://ip.guide/
