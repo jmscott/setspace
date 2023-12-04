@@ -486,3 +486,5 @@ Possible Schemas:
 		https://iperf.fr/
 	ipguide - arin ip mappings
 		https://ip.guide/
+	gomapsc - google mps scaper
+		https://github.com/gosom/google-maps-scraper
