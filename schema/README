@@ -498,3 +498,5 @@ Possible Schemas:
 		https://github.com/Fadi002/de4py
 	commonpaper - template contracts
 		https://commonpaper.com/standards/
+	nmap-formatter - reformat nmap output to html, csv, json, grapviz
+		https://github.com/vdjagilev/nmap-formatter/tree/main
