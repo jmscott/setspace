@@ -500,3 +500,5 @@ Possible Schemas:
 		https://commonpaper.com/standards/
 	nmap-formatter - reformat nmap output to html, csv, json, grapviz
 		https://github.com/vdjagilev/nmap-formatter/tree/main
+	proofwiki: compendium of math proofs
+		https://proofwiki.org/wiki/Main_Page
