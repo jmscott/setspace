@@ -504,3 +504,5 @@ Possible Schemas:
 		https://proofwiki.org/wiki/Main_Page
 	metamath: automated math proofs
 		https://us.metamath.org/
+	streamlit.io: web framework for sharing data
+		https://streamlit.io
