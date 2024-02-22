@@ -506,3 +506,5 @@ Possible Schemas:
 		https://us.metamath.org/
 	streamlit.io: web framework for sharing data
 		https://streamlit.io
+	axaparsr: document parser suitable for ai
+		https://github.com/axa-group/Parsr?tab=readme-ov-file
