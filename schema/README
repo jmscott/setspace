@@ -508,3 +508,5 @@ Possible Schemas:
 		https://streamlit.io
 	axaparsr: document parser suitable for ai
 		https://github.com/axa-group/Parsr?tab=readme-ov-file
+	ipld.io/CAR - content addressable archive
+		https://ipld.io/specs/transport/car/carv1/
