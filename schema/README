@@ -512,3 +512,7 @@ Possible Schemas:
 		https://ipld.io/specs/transport/car/carv1/
 	morphos: 3d data of natural history
 		https://www.morphosource.org/
+	pdfplumber - yet another pdf cruncher
+		https://github.com/jsvine/pdfplumber
+	open-parse (osparse?) - generic parsers for machine learning
+		https://github.com/Filimoa/open-parse
