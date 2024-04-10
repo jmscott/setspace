@@ -516,3 +516,11 @@ Possible Schemas:
 		https://github.com/jsvine/pdfplumber
 	open-parse (osparse?) - generic parsers for machine learning
 		https://github.com/Filimoa/open-parse
+	ocsr - open source ocr, similar to tesseract
+		https://github.com/robertknight/ocrs
+	djvu js viewer
+		https://djvu.js.org/
+	pdf2djvu - convert pdf to djvu
+		https://jwilk.net/software/
+	Any2DjVu - convert to djvu, server based
+		http://djvu.org/
