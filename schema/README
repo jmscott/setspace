@@ -524,3 +524,7 @@ Possible Schemas:
 		https://jwilk.net/software/
 	Any2DjVu - convert to djvu, server based
 		http://djvu.org/
+	pdf2md - convert pdf to masrkdown
+		https://github.com/VikParuchuri/marker
+	surya - OCR, layout analysis, and line detection in 90+ languages
+		https://github.com/VikParuchuri/surya
