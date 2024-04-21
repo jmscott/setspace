@@ -528,3 +528,6 @@ Possible Schemas:
 		https://github.com/VikParuchuri/marker
 	surya - OCR, layout analysis, and line detection in 90+ languages
 		https://github.com/VikParuchuri/surya
+	pandapro - Pandas Profiling, data summarizing
+		https://pypi.org/project/pandas-profiling/
+		
