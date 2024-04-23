@@ -530,4 +530,5 @@ Possible Schemas:
 		https://github.com/VikParuchuri/surya
 	pandapro - Pandas Profiling, data summarizing
 		https://pypi.org/project/pandas-profiling/
-		
+	SumatraPDF - fast pdf reader	
+		https://www.sumatrapdfreader.org/free-pdf-reader
