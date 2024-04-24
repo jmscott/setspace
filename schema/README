@@ -532,3 +532,5 @@ Possible Schemas:
 		https://pypi.org/project/pandas-profiling/
 	SumatraPDF - fast pdf reader	
 		https://www.sumatrapdfreader.org/free-pdf-reader
+	hashicl - HCL is the HashiCorp configuration language.
+		https://github.com/hashicorp/hcl
