@@ -534,3 +534,7 @@ Possible Schemas:
 		https://www.sumatrapdfreader.org/free-pdf-reader
 	hashicl - HCL is the HashiCorp configuration language.
 		https://github.com/hashicorp/hcl
+	rclang - Ruud’s Configuration Language
+		https://rcl-lang.org/
+	applepkl - apple configuration language
+		https://github.com/apple/pkl
