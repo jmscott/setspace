@@ -538,3 +538,5 @@ Possible Schemas:
 		https://rcl-lang.org/
 	applepkl - apple configuration language
 		https://github.com/apple/pkl
+	pdftocgen - table of contents for pdf file
+		https://krasjet.com/voice/pdf.tocgen/
