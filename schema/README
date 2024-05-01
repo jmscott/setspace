@@ -540,3 +540,5 @@ Possible Schemas:
 		https://github.com/apple/pkl
 	pdftocgen - table of contents for pdf file
 		https://krasjet.com/voice/pdf.tocgen/
+	typespec - TypeSpec: A New Language for API-Centric Development
+		https://typespec.io/blog/2024-04-25-introducing
