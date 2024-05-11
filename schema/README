@@ -542,3 +542,5 @@ Possible Schemas:
 		https://krasjet.com/voice/pdf.tocgen/
 	typespec - TypeSpec: A New Language for API-Centric Development
 		https://typespec.io/blog/2024-04-25-introducing
+	vectorio - universal VDF format for vector datasets
+		https://github.com/ai-northstar-tech/vector-io
