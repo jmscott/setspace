@@ -2,22 +2,17 @@
 #  Synopsis:
 #	Flow blobs into "setcore" schema defined in PostgreSQL database
 #  Usage:
-#  	flowd server dist/setcore.flow
+#  	flowd server setcore.conf
 #  See:
 #  	schema/setcore/schema.sql
-#  Note:
-#	core_exists() is not properly spin waiting for existence in all tables,
-#	so request records are not properly appened to
-#	prefixio/spool/setcore.brr from time to time.
 #
-
 
 boot
 {
-	brr_capacity = 256;
-	flow_worker_count = 16;
-	os_exec_worker_count = 12;
-	os_exec_capacity = 12;
+	brr_capacity = 8;
+	flow_worker_count = 8;
+	os_exec_worker_count = 4;
+	os_exec_capacity = 2;
 
 	xdr_roll_duration = "24h";
 	fdr_roll_duration = "24h";
@@ -37,8 +32,39 @@ sql database setspace
 	data_source_name =
 		"fallback_application_name=flowd.setcore sslmode=disable";
 	max_idle_conns = 0;
-	max_open_conns = 32;
+	max_open_conns = 2;
 }
+
+#
+#  Synopsis:
+#	Does the blob exist in storage?
+#
+command eat_blob
+{
+	path = "blobio";
+	argv = (
+		"eat",
+		"--service",
+		"$EDIT_ME!,
+		"--udig"
+	);
+	exit_status is OK when in {0, 1};
+}
+
+command not_flown
+{
+	path = "true";
+}
+
+call not_flown()
+  when
+  	brr$flowing == false
+;
+
+call eat_blob(brr.udig)
+  when
+  	not_flown.exit_status == 0
+;
 
 #
 #  Synopsis:
@@ -46,7 +72,6 @@ sql database setspace
 #
 sql query in_service_table row
 {
-
 	result row is (
 		answer bool
 	);
@@ -65,101 +90,12 @@ sql query in_service_table row
 	`;
 }
 
-command brr_on_network
-{
-	path = "true";
-}
-
-command brr_off_network
-{
-	path = "true";
-}
-
-sql exec merge_service
-{
-
-	statement = `
-
-	INSERT INTO setcore.service(
-		blob
-	  ) VALUES(
-	  	$1::udig
-	  ) ON CONFLICT
-	  	DO NOTHING
-	;
-
-	`;
-}
-
-call brr_off_network()
+query in_service_table(brr.udig)
   when
-	(
-		brr.chat_history == "no"
-		and
-		(
-			brr.verb == "eat"
-			or
-			brr.verb == "get"
-		)
-	)
-	or
-	(
-		brr.verb == "take"
-		and
-		brr.chat_history == "ok,ok,ok"
-	)
+  	not_flown.exit_status == 0
 ;
 
-call brr_on_network()
-  when
-  (
-  	(
-		brr.verb == "eat"
-		or
-		brr.verb == "get"
-		or
-		brr.verb == "wrap"
-		or
-		brr.verb == "roll"
-	)
-	and
-	brr.chat_history == "ok"
-  )
-  or
-  (
-  	brr.verb == "put"
-	and
-	brr.chat_history == "ok,ok"
-  )
-  or
-  (
-  	brr.verb == "give"
-	and
-	brr.chat_history == "ok,ok,ok"
-  )
-;
-
-#  is the blob already in the service table?
-#
-query in_service_table(brr.udig);
-
-#
-#  Synopsis:
-#	Delete zombies
-#
-command is_zombie_alive
-{
-	path = "blobio";
-	argv = (
-		"eat",
-		"--service",
-		"bio4:127.0.0.1:1797",
-		"--udig"
-	);
-	exit_status is OK when in {0, 1};
-}
-
-sql exec delete_blob
+sql exec delete_service
 {
 	statement = `
 
@@ -173,51 +109,53 @@ sql exec delete_blob
 
 }
 
-call is_zombie_alive(brr.udig)
+query delete_service(brr.udig)
   when
-	#
-	#  brr record says blob does not exist.
-	#
-  	brr_off_network.exit_status == 0
+  	eat_blob.exit_status == 1
 	and
-
-	#
-	#  Database thinks blob does exist.
-	#
 	in_service_table.answer == true
 ;
 
-query delete_blob(brr.udig)
-  when
-  	is_zombie_alive.exit_status == 1
-;
+sql exec merge_service
+{
+	statement = `
 
-query merge_service(brr.udig)
+	INSERT INTO setcore.service(
+		blob
+	  ) VALUES(
+	  	$1::udig
+	  ) ON CONFLICT
+	  	DO NOTHING
+	;
+
+	`;
+}
+
+query merge_service()
   when
-  	brr_on_network.exit_status == 0
+  	eat_blob.exit_status == 0
 	and
 	in_service_table.answer == false
 ;
 
-command service_exists
+command service_sunk
 {
 	path = "true";
-	exit_status is OK when in {0, 1};
 }
 
-call service_exists(brr.udig)
+call service_sunk(brr.udig)
   when
+	#
+	#  Another process may have just merged this blob into setcore.service,
+	#  in which case sqlstate == "00000" but rows affected == 0.
+	#  The sqlstate code is different for exec versus a query that returns
+	#  tuples.  An exec always returns 00000, regardless if
+	#  rows_affected == 0, which is not true for a query returning tuples,
+	#  which returns sqlstate  "02000".
+	#
+
   	merge_service.rows_affected == 1
 	or
-	#  Another thread merged the tuple into table service
-	#
-	#  Note:
-	#	the sqlstate code is different for exec versus a
-	#	query that returns tuples.  An exec always returns
-	#	00000, regardless is rows_affected == 0, which is not
-	#	true for a query returning tuples, which returns sqlstate
-	#	"02000".
-	#
 	merge_service.sqlstate == "00000"
 	or
 	in_service_table.answer == true
@@ -228,7 +166,6 @@ call service_exists(brr.udig)
 #
 sql query in_byte_count_table row
 {
-
 	result row is (
 		answer bool
 	);
@@ -253,22 +190,23 @@ command merge_byte_count
 	exit_status is OK when in {0, 1};
 }
 
-query in_byte_count_table(brr.udig);
+query in_byte_count_table(brr.udig)
+  when
+  	service_sunk.exit_status == 0
+;
 
 #  merge an in service blob not in the byte count table
 
 call merge_byte_count(brr.udig)
   when
   	in_byte_count_table.answer == false
-	and
-	service_exists.exit_status == 0
 ;
 
-#  Is the blob in the byte_bitmap_table?
-
+#
+#  Is the blob in the byte_bitmap table?
+#
 sql query in_byte_bitmap_table row
 {
-
 	result row is (
 		answer bool
 	);
@@ -283,7 +221,7 @@ sql query in_byte_bitmap_table row
 	    WHERE
 		blob = $1::udig
 	);
-	
+
 	`;
 }
 
@@ -293,25 +231,103 @@ command merge_byte_bitmap
 	exit_status is OK when in {0, 1};
 }
 
-query in_byte_bitmap_table(brr.udig);
+query in_byte_bitmap_table(brr.udig)
+  when
+  	service_sunk.exit_status == 0
+;
+
+#  merge an in service blob not in the byte count table
 
 call merge_byte_bitmap(brr.udig)
   when
   	in_byte_bitmap_table.answer == false
-	and
-	service_exists.exit_status == 0
 ;
 
-command byte_bitmap_exists
+command merge_byte_prefix_32
 {
-	path = "true";
+	path = "sbin/merge-byte_prefix_32";
+	exit_status is OK when in {0, 1};
 }
 
-call byte_bitmap_exists()
+#
+#  Synopsis:
+#	Populate byte_prefix_32 table
+#
+sql query in_byte_prefix_32_table row
+{
+
+	result row is (
+		answer bool
+	);
+
+	statement = `
+
+	SELECT exists (
+	  SELECT
+		blob
+	    FROM
+		setcore.byte_prefix_32
+	    WHERE
+		blob = $1::udig
+	);
+	
+	`;
+}
+
+query in_byte_prefix_32_table(brr.udig)
   when
-  	merge_byte_bitmap.exit_status == 0
-	or
-	in_byte_bitmap_table.answer == true
+  	service_sunk.exit_status == 0
+;
+
+#  merge an in service blob not in the byte count table
+
+call merge_byte_prefix_32(brr.udig)
+  when
+  	in_byte_prefix_32_table.answer == false
+;
+
+command merge_byte_suffix_32
+{
+	path = "sbin/merge-byte_suffix_32";
+	exit_status is OK when in {0, 1};
+}
+
+#
+#  Synopsis:
+#	Populate byte_suffix_32 table
+#
+sql query in_byte_suffix_32_table row
+{
+
+	result row is (
+		answer bool
+	);
+
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+		blob
+	    FROM
+		setcore.byte_suffix_32
+	    WHERE
+		blob = $1::udig
+	);
+	
+	`;
+}
+
+
+query in_byte_suffix_32_table(brr.udig)
+  when
+  	service_sunk.exit_status == 0
+;
+
+#  merge an in service blob not in the byte count table
+
+call merge_byte_suffix_32(brr.udig)
+  when
+  	in_byte_suffix_32_table.answer == false
 ;
 
 #
@@ -390,7 +406,10 @@ sql query merge_is_utf8wf row
 
 }
 
-query in_is_utf8wf_table(brr.udig);
+query in_is_utf8wf_table(brr.udig)
+  when
+  	service_sunk.exit_status == 0
+;
 
 #  does the blob contain the char 0xff?
 
@@ -423,7 +442,7 @@ sql query has_char_0xff row {
 
 query has_char_0xff(brr.udig)
   when
-	byte_bitmap_exists.exit_status == 0
+	in_byte_bitmap_table.answer == true
 ;
 
 call get_is_utf8wf(brr.udig)
@@ -457,7 +476,7 @@ query merge_is_utf8wf_not(brr.udig)
 	and
 	in_is_utf8wf_table.answer == false
 	and
-	service_exists.exit_status == 0
+	service_sunk.exit_status == 0
 ;
 
 query merge_is_utf8wf(brr.udig, get_is_utf8wf.exit_status)
@@ -470,87 +489,7 @@ query merge_is_utf8wf(brr.udig, get_is_utf8wf.exit_status)
 		get_is_utf8wf.exit_status == 2		#  merge empty blob
 	)
 	and
-	service_exists.exit_status == 0
-;
-
-#
-#  Synopsis:
-#	Populate byte_prefix_32 table
-#
-sql query in_byte_prefix_32_table row
-{
-
-	result row is (
-		answer bool
-	);
-
-	statement = `
-
-	SELECT exists (
-	  SELECT
-		blob
-	    FROM
-		setcore.byte_prefix_32
-	    WHERE
-		blob = $1::udig
-	);
-	
-	`;
-}
-
-command merge_byte_prefix_32
-{
-	path = "sbin/merge-byte_prefix_32";
-	exit_status is OK when in {0, 1};
-}
-
-query in_byte_prefix_32_table(brr.udig);
-
-call merge_byte_prefix_32(brr.udig)
-  when
-  	in_byte_prefix_32_table.answer == false
-	and
-	service_exists.exit_status == 0
-;
-
-#
-#  Synopsis:
-#	Populate byte_suffix_32 table
-#
-sql query in_byte_suffix_32_table row
-{
-
-	result row is (
-		answer bool
-	);
-
-	statement = `
-
-	SELECT EXISTS (
-	  SELECT
-		blob
-	    FROM
-		setcore.byte_suffix_32
-	    WHERE
-		blob = $1::udig
-	);
-	
-	`;
-}
-
-command merge_byte_suffix_32
-{
-	path = "sbin/merge-byte_suffix_32";
-	exit_status is OK when in {0, 1};
-}
-
-query in_byte_suffix_32_table(brr.udig);
-
-call merge_byte_suffix_32(brr.udig)
-  when
-  	in_byte_suffix_32_table.answer == false
-	and
-	service_exists.exit_status == 0
+	service_sunk.exit_status == 0
 ;
 
 command core_exists
@@ -587,7 +526,14 @@ call core_exists()
 		merge_byte_suffix_32.exit_status == 0
 	)
 	and
-	byte_bitmap_exists.exit_status == 0
+	#
+  	#  tuple in table byte_suffix_32 does indeed exist
+	#
+  	(
+		in_byte_bitmap_table.answer == true
+		or
+		merge_byte_bitmap.exit_status == 0
+	)
 
 	# 
   	#  tuple in table byte_count does indeed exist
@@ -614,21 +560,6 @@ call core_exists()
 		or
 		merge_is_utf8wf_not.rows_affected == 1
 	)
-;
-
-#  Note: unfortunatly attributes and global names share a name space,
-#        so append _ to end of command name.
-#
-command is_utf8_
-{
-	path = "true";
-}
-
-call is_utf8_()
-  when
-	in_is_utf8wf_table.is_utf8 == true
-	or
-	merge_is_utf8wf.is_utf8 == true
 ;
 
 command append_fffile5_brr
