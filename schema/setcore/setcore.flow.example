@@ -45,7 +45,7 @@ command eat_blob
 	argv = (
 		"eat",
 		"--service",
-		"$EDIT_ME!,
+		"$EDIT_ME!",
 		"--udig"
 	);
 	exit_status is OK when in {0, 1};
