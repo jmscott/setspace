@@ -45,7 +45,7 @@ command eat_blob
 	argv = (
 		"eat",
 		"--service",
-		"$EDIT_ME!",
+		"fs:/opt/jmscott/jmsdesk/blobio",
 		"--udig"
 	);
 	exit_status is OK when in {0, 1};
@@ -131,7 +131,7 @@ sql exec merge_service
 	`;
 }
 
-query merge_service()
+query merge_service(brr.udig)
   when
   	eat_blob.exit_status == 0
 	and
