@@ -7,8 +7,6 @@
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
  *  Note:
- *	Should "service" and "rummy" be mutually exclusive?
- *
  *	Why is domain rfc1123_hostname in schema setcore?
  *
  *	The maximum length for  domain rfc1123_hostname is one char too short
@@ -63,6 +61,8 @@ CREATE DOMAIN rfc1123_hostname AS text
 );
 
 --  existing blobs
+
+--  Note: add a trigger insuring in service blobs not in view "rummy"?
 
 DROP TABLE IF EXISTS setcore.service CASCADE;
 CREATE TABLE service
