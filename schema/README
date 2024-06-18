@@ -544,3 +544,6 @@ Possible Schemas:
 		https://typespec.io/blog/2024-04-25-introducing
 	vectorio - universal VDF format for vector datasets
 		https://github.com/ai-northstar-tech/vector-io
+	pypdfa - a pure python library for pdf
+		https://pypi.org/project/pypdf/
+		
