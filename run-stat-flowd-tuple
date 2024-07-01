@@ -59,7 +59,7 @@ GYR_PATH=run/flowd.gyr
 if [ -e $FLOW_PATH ]; then
 	if [ -e $PID_PATH ];  then
 		if [ -s $PID_PATH ];  then
-			if stale-mtime $STALE_AFTER $PID_PATH;  then
+			if file-stale-mtime $STALE_AFTER $PID_PATH;  then
 				_P=$(pgrep -F $PID_PATH >/dev/null)
 				STATUS=$?
 				case $STATUS in
@@ -106,7 +106,7 @@ fi
 
 #  is -s test redundant with above -s test?
 if [ -s $PID_PATH ];  then
-	PID_MTIME=$(stat-mtime $PID_PATH)
+	PID_MTIME=$(file-stat-mtime $PID_PATH)
 	BOOT_EPOCH=$(tail -1 $PID_PATH)
 fi
 
