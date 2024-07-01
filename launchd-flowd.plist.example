@@ -28,8 +28,8 @@
   <!--
   	Only define env SETSPACE_ROOT.  All other env vars defined in
 	
-		$SETSPACE_ROOT./etc/profile
-		$SETSPACE_ROOT/schema/etc/REPLACE_WITH_SCHEMA/etc/profile
+		$SETSPACE_ROOT/etc/profile
+		$SETSPACE_ROOT/schema/REPLACE_WITH_SCHEMA/etc/profile
   -->
   <key>EnvironmentVariables</key>
   <dict>
