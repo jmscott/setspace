@@ -34,17 +34,19 @@ COMMENT ON SCHEMA mycore IS
 ;
 SET search_path TO mycore,public;
 
-DROP DOMAIN IF EXISTS title_127 CASCADE;
-CREATE DOMAIN title_127 AS text CHECK (
-	length(value) < 128
+DROP DOMAIN IF EXISTS title_255 CASCADE;
+CREATE DOMAIN title_255 AS text CHECK (
+	length(value) < 256
 	AND
 	value ~ '[[:graph:]]'		--  at least something to display
 	AND
-	value !~ '^[[:space:]]+'	--  no leading space
+	value !~ '^[[:space:]]'		--  no leading space
 	AND
-	value !~ '[[:space:]]+$'	--  no trailing space
+	value !~ '[[:space:]]$'		--  no trailing space
 	AND
-	value !~ '[[:space:]][[:space:]]'	--  multiple spaces
+	value !~ '[\t\n\f\r]'		--  no tab/newline/formfeed/carriage
+	AND
+	value !~ '[[:space:]][[:space:]]'	--  no multiple spaces
 );
 
 DROP TABLE IF EXISTS service CASCADE;
@@ -65,10 +67,11 @@ CREATE TABLE title
 				REFERENCES service
 				ON DELETE CASCADE
 				PRIMARY KEY,
-	title		title_127 NOT NULL,
+	title		title_255
+				NOT NULL,
 
 	insert_time	setcore.inception NOT NULL
-			  DEFAULT now()
+				DEFAULT now()
 );
 COMMENT ON TABLE title IS
   'My title for any blob'
