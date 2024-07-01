@@ -1,27 +1,23 @@
 /*
  *  Synopsis:
- *	Write the 32 byte suffix of the blob as ascii hexidecimal
+ *	Write the hexidecimal value of the up to the final 32 bytes of a blob.
+ *  Usage:
+ *	byte-suffix-32 <path/to/blob>
  *  Exit Status:
  *  	0	ok, wrote suffix
- *	1	bad argument count on command line
- *  	2	error reading standard input
- *  	3	error writing standard output
+ *	1	unknown error
+ *  Note:
+ *	Replaced ../../common.s with using libjmscott functions.
  */
 #include <string.h>
-#include <stdio.h>
 #include <errno.h>
+#include <fcntl.h>
 
-#define EXIT_BAD_ARGC		1
-#define EXIT_BAD_READ		2
-#define EXIT_BAD_WRITE		3
+#include "jmscott/libjmscott.h"
 
-static char progname[] = "byte-suffix-32";
+extern int	errno;
 
-#define COMMON_NEED_READ
-#define COMMON_NEED_WRITE
-#include "../../common.c"
-
-#define FLIP_BUF() (bp == bufA ? bufB : bufA)
+char *jmscott_progname = "byte-suffix-32";
 
 static char nib2hex[] =
 {
@@ -29,29 +25,8 @@ static char nib2hex[] =
 	'a', 'b', 'c', 'd', 'e', 'f'
 };
 
-static int
-fill(unsigned char *buf, int *pnr)
-{
-	unsigned char *p, *p_limit;
-
-	p = buf;
-	p_limit = buf + PIPE_MAX;
-	while (p < p_limit) {
-		int nr;
-
-		nr = _read(0, p, p_limit - p);
-		if (nr == 0)
-			break;
-		p += nr;
-	}
-	if (p - buf == 0)
-		return 0;
-	*pnr = p - buf;
-	return 1;
-}
-
 static void
-byte2hex(char *tgt, unsigned char *src, int nbytes)
+byte2hex(unsigned char *tgt, unsigned char *src, size_t nbytes)
 {
 	unsigned char *src_limit;
 
@@ -61,89 +36,73 @@ byte2hex(char *tgt, unsigned char *src, int nbytes)
 		*tgt++ = nib2hex[*src & 0xf];
 		src++;
 	}
+	*tgt = '\n';
 }
 
-//  convert bytes to hex, write to standard out and exit
+static void
+die(char *msg)
+{
+	if (errno > 0)
+		jmscott_die2(1, msg, strerror(errno));
+	else
+		jmscott_die(1, msg);
+}
 
 static void
-put_hex(char *hex, unsigned char *bp, int nbytes)
+diea(int argc)
 {
-	int nhex = nbytes * 2;
-
-	byte2hex(hex, bp, nbytes);
-	hex[nhex] = '\n';
-	_write(1, hex, nhex + 1);
-	_exit(0);
+	jmscott_die_argc(1, argc, 1, "byte-suffix-32 <path/to/blob>");
 }
 
 int
 main(int argc, char **argv)
 {
-	unsigned char bufA[PIPE_MAX], bufB[PIPE_MAX], *bp, *bp1, *bp2;
-	int tail_nr;
-	int nbuf = 0;
-	char hex[65];
+	unsigned char buf[32];
+	unsigned char hex[32+32+1];		//  no zero termination
 
-#if PIPE_MAX < 32
-	"this compilation error means that PIPE_MAX < 32 bytes"
-#endif
-
-	if (argc != 1)
-		die(EXIT_BAD_ARGC, "wrong number of command line arguments");
+	if (argc != 2)
+		diea(argc);
 	(void)argv;
+	jmscott_close(0);
 
-	//  read exactly PIPE_MAX bytes or read the tail of the blob,
-	//  alternating between bufA and bufB.
+	char *path = argv[1];
+	int in = jmscott_open(path, O_RDONLY, 0);
+	if (in < 0)
+		die("open(blob) failed");
 
-	bp = bufA;
-	while (fill(bp, &tail_nr)) {
-		nbuf++;
-		if (bp == bufA)
-			bp = bufB;
-		else
-			bp = bufA;
-	}
-
-	bp = (bp == bufA ? bufB : bufA);
-
-	//  final read() of blob got at least 32 bytes
-
-	if (tail_nr >= 32)
-		put_hex(hex, bp + tail_nr - 32, 32);
-	
-	//  zero length blob
-
-	if (nbuf == 0)
+	struct stat st;
+	if (jmscott_fstat(in, &st) < 0)
+		die("fstat(in) failed");
+	if (st.st_size == 0)
 		_exit(0);
 
-	//  total blob size < 32 bytes
+	size_t nb = 32;
+	if (st.st_size > 32) {
+		off_t off = st.st_size - 32;
+		if (jmscott_lseek(in, off, SEEK_CUR) < 0)
+			die("lseek(blob) failed");
+	} else
+		nb = st.st_size;
 
-	if (nbuf == 1)
-		put_hex(hex, bp, tail_nr);
-
-	//  we now know that the suffix will be exactly 32 bytes.
-
-	//  is the suffix entirely in the previous block
-
-	if (tail_nr == PIPE_MAX)
-		put_hex(hex, bp + PIPE_MAX - 32, 32);
-
-	//  tail block was read less than PIPE_MAX bytes, so 32 byte suffix
-	//  spans final two chunks, where the length of tail chunk is 0 <&&< 32
-	//  bytes and that the length of previous chunk is exactly PIPE_MAX
-	//  bytes.
-
-	if (bp == bufA) {
-		bp1 = bufB;
-		bp2 = bufA;
-	} else {
-		bp1 = bufA;
-		bp2 = bufB;
+	errno = 0;
+	switch (jmscott_read_exact(in, (void *)buf, nb)) {
+	case 0:
+		break;
+	case -1:
+		die("read(in:<=32) failed");
+	case -2:
+		die("read(in:<=32): unexpected end of file");
+	case -3:
+		//  poll always returns data ready on EOF.  uggh.
+		//  read_exact returns -2 when <32 bytes not read,
+		//  should be ok.  posiz has no way to determine at
+		//  eof other than read()==0
+		break;
 	}
 
-	byte2hex(hex, bp1 + (PIPE_MAX - (32 - tail_nr)), 32 - tail_nr);
-	byte2hex(hex + (64 - tail_nr * 2), bp2, tail_nr);
-	hex[64] = '\n';
-	_write(1, hex, 65);
+	byte2hex(hex, buf, nb);
+	if (jmscott_write(1, hex, nb * 2 + 1) < 0)
+		die("write(hex) failed");
+
 	_exit(0);
 }

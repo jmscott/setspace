@@ -1,6 +1,9 @@
 #
 #  Synopsis:
 #	Makefile for various programs in schema "setcore".
+#  Note:
+#	env var JMSCOTT_ROOT is hardcoded to /usr/local/jmscott !
+#	this code written years before libjmscott and needs to be converted!
 #
 
 include ../../local.mk
@@ -85,8 +88,12 @@ byte-count: byte-count.c ../../common.c
 byte-prefix-32: byte-prefix-32.c ../../common.c
 	cc -o byte-prefix-32 $(CFLAGS) byte-prefix-32.c
 
+#  Define JMSCOTT_ROOT!
 byte-suffix-32: byte-suffix-32.c ../../common.c
-	cc -o byte-suffix-32 $(CFLAGS) byte-suffix-32.c
+	cc -o byte-suffix-32						\
+		-I/usr/local/jmscott/include				\
+		-L/usr/local/jmscott/lib				\
+		$(CFLAGS) byte-suffix-32.c -ljmscott			\
 
 world:
 	$(_MAKE) clean

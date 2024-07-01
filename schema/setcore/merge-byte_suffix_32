@@ -27,8 +27,11 @@ TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
 
 die()
 {
-	echo "$PROG: ERROR: $1" >&2
-	exit $2
+	STATUS=$1
+	shift
+
+	echo "$PROG: ERROR: $@" >&2
+	exit $STATUS
 }
 
 leave()
@@ -39,7 +42,7 @@ leave()
 
 trap leave EXIT INT TERM QUIT
 
-test $# = 1 || die 'wrong number of arguments' 2
+test $# = 1 || die 2 'wrong number of arguments'
 BLOB=$1
 
 #  fetch the blob into temp file
@@ -53,12 +56,12 @@ case $STATUS in
 	exit 1
 	;;
 *)
-	die "blobio get failed: exit status=$STATUS" 3
+	die 3 "blobio get failed: exit status=$STATUS"
 	;;
 esac
 
-PREFIX=$(byte-suffix-32 <$TMP_BLOB)
-test $? = 0 || die "byte-suffix-32 failed: exit status=$?" 4
+PREFIX=$(byte-suffix-32 $TMP_BLOB)
+test $? = 0 || die 4 "byte-suffix-32 failed: exit status=$?"
 
 #  merge new record
 psql --quiet --no-psqlrc <<END
@@ -72,6 +75,6 @@ INSERT INTO setcore.byte_suffix_32 (
   	DO NOTHING
 ;
 END
-test $? = 0 || die "psql insert failed: exit status=$?" 5
+test $? = 0 || die 5 "psql insert failed: exit status=$?"
 
 exit 0
