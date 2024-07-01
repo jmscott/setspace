@@ -21,6 +21,22 @@ boot
 	heartbeat_duration = "10s";
 }
 
+#
+#  Synopsis:
+#	Does the blob exist in storage?
+#
+command eat_blob
+{
+	path = "blobio";
+	argv = (
+		"eat",
+		"--service",
+		"fs:${BLOBIO_ROOT}",
+		"--udig"
+	);
+	exit_status is OK when in {0, 1};
+}
+
 sync map seen_udig[string]bool;
 
 tail bio4d
@@ -37,23 +53,13 @@ sql database setspace
 	max_open_conns = 2;
 }
 
-#
-#  Synopsis:
-#	Does the blob exist in storage?
-#
-command eat_blob
-{
-	path = "blobio";
-	argv = (
-		"eat",
-		"--service",
-		"${BLOBIO_GET_SERVICE}",
-		"--udig"
-	);
-	exit_status is OK when in {0, 1};
-}
 
 command first_flight
+{
+	path = "true";
+}
+
+command byte_bitmap_exists
 {
 	path = "true";
 }
@@ -244,6 +250,13 @@ call merge_byte_bitmap(bio4d.udig)
   	in_byte_bitmap_table.answer == false
 ;
 
+call byte_bitmap_exists(bio4d.udig)
+  when
+  	in_byte_bitmap_table.answer == true
+	or
+	merge_byte_bitmap.exit_status == 0
+;
+
 command merge_byte_prefix_32
 {
 	path = "sbin/merge-byte_prefix_32";
@@ -318,7 +331,6 @@ sql query in_byte_suffix_32_table row
 	`;
 }
 
-
 query in_byte_suffix_32_table(bio4d.udig)
   when
   	service_sunk.exit_status == 0
@@ -340,7 +352,6 @@ call merge_byte_suffix_32(bio4d.udig)
 #
 sql query in_is_utf8wf_table row
 {
-
 	result row is (
 		answer	bool,
 		is_utf8	bool
@@ -443,7 +454,7 @@ sql query has_char_0xff row {
 
 query has_char_0xff(bio4d.udig)
   when
-	in_byte_bitmap_table.answer == true
+	byte_bitmap_exists.exit_status == 0
 ;
 
 call get_is_utf8wf(bio4d.udig)
