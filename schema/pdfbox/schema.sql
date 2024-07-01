@@ -2,14 +2,14 @@
  *  Synopsis:
  *	Schema of the pdfbox.apache.org version 2 api
  *  Usage:
- *	#  this script needs to include $SETSPACE_ROOT/lib/schema-fault.sql
+ *	#  this script needs to include $SETSPACE_ROOT/lib/schema-default.sql
  *	cd $SETSPACE_ROOT
  *	psql -f lib/schema.sql
  *  See:
  *	https://pdfbox.apache.org
  *  Note:
  *	Tue Apr 12 17:27:58 CDT 2022
- *		schema-fault.sql needs to point be a subclass of
+ *		schema-default.sql needs to point be a subclass of
  *		setcore.fault!
  *
  *	Create int domain pdf_page_number impsoing limit < 2603538.
@@ -73,8 +73,8 @@ REVOKE UPDATE ON pddocument FROM public;
 
 --  this script must be invoked in directory $SETSPACE_ROOT/schema/pdfbox
 
-\echo including lib/schema-fault.sql
-\include lib/schema-fault.sql
+\echo including lib/schema-default.sql
+\include lib/schema-default.sql
 
 CREATE OR REPLACE FUNCTION is_pddocument_disjoint() RETURNS TRIGGER
   AS $$
