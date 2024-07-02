@@ -79,19 +79,19 @@ install: all
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER)			\
 		-d $(PDFBOX_PREFIX)/etc
 
-	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m ug=r		\
+	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m u=rw,g=r,o=	\
 		$(LIBs)							\
 		$(PDFBOX_PREFIX)/lib
 
-	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m u=rx		\
+	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m u=rwx,go=	\
 		$(SBINs)						\
 		$(PDFBOX_PREFIX)/sbin
 
-	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m u=rx		\
+	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m u=rwx,g=rx,o=	\
 		$(BINs)							\
 		$(PDFBOX_PREFIX)/bin
 
-	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m ugo=r		\
+	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m u=rw,g=r,o=	\
 		$(SRCs)							\
 		$(PDFBOX_PREFIX)/src
 
