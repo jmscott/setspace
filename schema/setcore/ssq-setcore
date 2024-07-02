@@ -148,18 +148,14 @@ SELECT
 	CASE
 	  WHEN p32.prefix IS NULL THEN
 	  	'Unknown'
-	  WHEN u8.is_utf8 THEN
-	  	convert_from(p32.prefix, 'UTF-8')
 	  ELSE
-		p32.prefix::text
+	  	encode(p32.prefix, 'escape')
 	END AS "32 Byte Prefix",
 	CASE
 	  WHEN s32.suffix IS NULL THEN
 	  	'Unknown'
-	  WHEN u8.is_utf8 THEN
-	  	convert_from(s32.suffix, 'UTF-8')
 	  ELSE
-		s32.suffix::text
+	  	encode(s32.suffix, 'escape')
 	END AS "32 Byte Suffix",
 	bb.bitmap::text AS "Byte Bitmap"
   FROM
