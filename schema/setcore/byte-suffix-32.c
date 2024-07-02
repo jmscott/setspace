@@ -90,8 +90,12 @@ main(int argc, char **argv)
 		break;
 	case -1:
 		die("read(in:<=32) failed");
+		/* NOTREACHED */
+		break;
 	case -2:
 		die("read(in:<=32): unexpected end of file");
+		/*NOTREACHED */
+		break;
 	case -3:
 		//  poll always returns data ready on EOF.  uggh.
 		//  read_exact returns -2 when <32 bytes not read,
