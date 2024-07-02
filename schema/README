@@ -546,4 +546,6 @@ Possible Schemas:
 		https://github.com/ai-northstar-tech/vector-io
 	pypdfa - a pure python library for pdf
 		https://pypi.org/project/pypdf/
+	recode - command to convert various character sets
+		https://github.com/rrthomas/recode/
 		
