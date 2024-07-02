@@ -157,7 +157,13 @@ SELECT
 	  ELSE
 	  	encode(s32.suffix, 'escape')
 	END AS "32 Byte Suffix",
-	bb.bitmap::text AS "Byte Bitmap"
+	bb.bitmap::text AS "Byte Bitmap",
+	CASE
+	  WHEN rum.blob IS NULL THEN
+	  	'No'
+	  ELSE
+	  	'Yes'
+	END AS "Is Rummy"
   FROM
   	setcore.service s
 	  LEFT OUTER JOIN setcore.byte_count bc ON (bc.blob = s.blob)
@@ -165,6 +171,7 @@ SELECT
 	  LEFT OUTER JOIN setcore.byte_prefix_32 p32 ON (p32.blob = s.blob)
 	  LEFT OUTER JOIN setcore.byte_suffix_32 s32 ON (s32.blob = s.blob)
 	  LEFT OUTER JOIN setcore.byte_bitmap bb ON (bb.blob = s.blob)
+	  LEFT OUTER JOIN setcore.rummy rum ON (rum.blob = s.blob)
   WHERE
   	s.blob = '$BLOB'
 END
