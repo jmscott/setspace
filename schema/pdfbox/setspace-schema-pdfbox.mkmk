@@ -39,7 +39,7 @@ COMPILEs="
 "
 
 LIBs="
-	$(echo $COMPILEs | fgrep .class)
+	$(echo $COMPILEs | grep -F .class)
 	page-count-fts.sql
 	page-count-keyword.sql
 	page-count-phrase.sql
