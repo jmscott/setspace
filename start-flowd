@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	Boot a schema flowd server from either launchd, systemd or command-line
