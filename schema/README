@@ -548,4 +548,5 @@ Possible Schemas:
 		https://pypi.org/project/pypdf/
 	recode - command to convert various character sets
 		https://github.com/rrthomas/recode/
-		
+	diff-pdf - diff two pdfs, out is a pdf!	
+		https://vslavik.github.io/diff-pdf/
