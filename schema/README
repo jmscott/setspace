@@ -124,6 +124,7 @@ Possible Schemas:
 		https://github.com/go-enry/go-enry
 	gitling - lang detector used at giuthub
 		https://github.com/github/linguist
+		https://github.com/github-linguist/linguist
 	scc - stats on programming languages files
 		https://github.com/boyter/scc
 	binwalk - libmagic (fffile) tuned for binary files and forensics
