@@ -9,6 +9,12 @@
 #	sum of flows with at least 1 query of process not OK.
 #
 #	See the particular etc/*.flow file for what is OK or not OK.
+#
+#		State
+#		OK		flowd verified running
+#		OFFL		flowd offline, run/*.{pid,gyr} empty
+#		YETI		flowd seems to exist but not seen by pgrep
+#		ZOMBI		flowd online run/*.{pid,gyr} not empty
 #  Usage:
 #	sbin/run-stat-flowd-tuple flowd 
 #	sbin/run-stat-flowd-tuple flowd>wework
@@ -16,8 +22,8 @@
 #	0	gyr tuple written
 #	1	unexpected error, no tuple written
 #  Note:
-#	Copied from $BLOBIO_ROOT/sbin/run-stat-flowd-tuple, so patches
-#	to blobio MUST propagate to this script.
+#	Despartley need to need simplify and unifiy with similar script in
+#	blobio/sbin/run-stat-flowd-tuple!
 #
 
 STALE_AFTER=61		#  need to derive heartbeat values in etc/<schema>.flow
