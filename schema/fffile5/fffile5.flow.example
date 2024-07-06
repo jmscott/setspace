@@ -34,6 +34,8 @@ boot
 	heartbeat_duration = "10s";
 }
 
+sync map first_seen_blob[string]bool;
+
 sql database setspace
 {
 	driver_name = "postgres";
@@ -47,6 +49,16 @@ tail brr
 {
 	path = "spool/setcore.brr";
 }
+
+command first_seen
+{
+	path = "true";
+}
+
+call first_seen(brr.udig)
+  when
+  	first_seen_blob.LoadOrStore(brr.udig, true).loaded == false
+;
 
 sql query in_service_table row
 {
@@ -68,7 +80,10 @@ sql query in_service_table row
 	);
 }
 
-query in_service_table(brr.udig);
+query in_service_table(brr.udig)
+  when
+  	first_seen.exit_status == 0
+;
 
 sql query in_file_or_fault_table row
 {
