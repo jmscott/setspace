@@ -38,6 +38,13 @@ boot
 	heartbeat_duration = "10s";
 }
 
+sync map first_seen_blob[string]bool;
+
+command first_seen
+{
+	path = "true";
+}
+
 sql database setspace
 {
 	driver_name = "postgres";
@@ -51,6 +58,11 @@ tail brr
 {
 	path = "spool/setcore.brr";
 }
+
+call first_seen()
+  when
+  	first_seen_blob.LoadOrStore(brr.udig, true).loaded == false
+;
 
 #
 #  Is the utf8 blob framed with json object or array chars?
@@ -110,7 +122,10 @@ SELECT EXISTS (
 	);
 }
 
-query may_be_json_object_or_array(brr.udig);
+query may_be_json_object_or_array(brr.udig)
+  when
+  	first_seen.exit_status == 0
+;
 
 command append_jsonorg_brr
 {
@@ -166,8 +181,11 @@ sql query prefix_is_percentPDF row
 		answer bool
 	);
 }
-query prefix_is_percentPDF(brr.udig);
 
+query prefix_is_percentPDF(brr.udig)
+  when
+  	first_seen.exit_status == 0
+;
 
 call append_pdfbox_brr(
 	brr.start_time,
@@ -232,7 +250,11 @@ SELECT EXISTS (
 		answer bool
 	);
 }
-query may_be_xml(brr.udig);
+
+query may_be_xml(brr.udig)
+  when
+  	first_seen.exit_status == 0
+;
 
 command append_expat2_brr
 {
@@ -270,7 +292,10 @@ SELECT
 		answer bool
 	);
 }
-query may_be_gnuzip(brr.udig);
+query may_be_gnuzip(brr.udig)
+  when
+  	first_seen.exit_status == 0
+;
 
 command append_gnuzip_brr
 {
@@ -317,7 +342,11 @@ sql query prefix_is_PK_zip row
 	);
 }
 
-query prefix_is_PK_zip(brr.udig);
+query prefix_is_PK_zip(brr.udig)
+  when
+  	first_seen.exit_status == 0
+;
+
 command append_infozip3_brr
 {
 	path = "append-brr";
