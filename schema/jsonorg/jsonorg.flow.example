@@ -26,6 +26,13 @@ boot
 	heartbeat_duration = "10s";
 }
 
+sync map first_seen_blob[string]bool;
+
+command first_seen
+{
+	path = "true";
+}
+
 sql database setspace
 {
 	driver_name = "postgres";
@@ -39,6 +46,11 @@ tail brr
 {
 	path = "spool/prefixio.brr";
 }
+
+call first_seen(brr.udig)
+  when
+  	first_seen_blob.LoadOrStore(brr.udig, true).loaded == false
+;
 
 #
 #  Synopsis:
@@ -99,6 +111,8 @@ command brr_has_size
 
 call brr_has_size()
   when
+  first_seen.exit_status == 0
+  and (
   (
 	brr.verb == "get"
 	and
@@ -115,10 +129,13 @@ call brr_has_size()
 	brr.verb == "give"
 	and
 	brr.chat_history == "ok,ok,ok"
-  )
+  ))
 ;
 
-query in_service_table(brr.udig);
+query in_service_table(brr.udig)
+  when
+  	first_seen.exit_status == 0
+;
 
 query is_in_checker_255_table(brr.udig)
   when
