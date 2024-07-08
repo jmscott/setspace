@@ -4,10 +4,7 @@
 #  Usage:
 #  	flowd server etc/jsonio.flow
 #  Note:
-#	A race condition exists in "query in_jsonb_255_table".  the second
-#	condition may be false if another flow actually first merges tuple
-#	into checker_255.  the first may be to wrap whole session in a lock
-#	or to consulde the sqlstate code.
+#	Consder a cli tool like jq, keeping load off pgdb.
 #
 #	Think about an SQL table driven route table instead of explicit recipes.
 #
@@ -47,6 +44,13 @@ tail jsonorg
 	path = "spool/jsonorg.brr";
 }
 
+sync map first_seen_blob[string]bool;
+
+command first_seen
+{
+	path = "true";
+}
+
 #
 #  Route to schema when top level object "mycore.schema.setspace.com" exits.
 #
@@ -69,7 +73,15 @@ SELECT EXISTS (
 	);
 }
 
-query is_mycore_json(jsonorg.udig);
+call first_seen(jsonorg.udig)
+  when
+  	first_seen_blob.LoadOrStore(jsonorg.udig, true).loaded == false
+;
+
+query is_mycore_json(jsonorg.udig)
+  when
+  	first_seen.exit_status == 0
+;
 
 command append_mycore_brr
 {
@@ -89,47 +101,4 @@ call append_mycore_brr(
        jsonorg.wall_duration
 ) when
 	is_mycore_json.exists == true
-;
-
-#
-#  Schema MyDash: top level object: "mydash.schema.setspace.com"
-#
-sql query is_mydash_json row
-{
-	statement = `
-SELECT EXISTS (
-  SELECT
-  	blob
-    FROM
-	jsonorg.jsonb_255
-    WHERE
-    	blob = $1
-	AND
-        doc ? 'mydash.schema.setspace.com'
-);
-	`;
-	result row is (
-		exists bool
-	);
-}
-query is_mydash_json(jsonorg.udig);
-
-command append_mydash_brr
-{
-       path = "append-brr";
-       argv = (
-               "../mydash/spool/jsonio.brr"
-       );
-}
-
-call append_mydash_brr(
-       jsonorg.start_time,
-       jsonorg.transport,
-       jsonorg.verb,
-       jsonorg.udig,
-       jsonorg.chat_history,
-       jsonorg.blob_size,
-       jsonorg.wall_duration
-) when
-	is_mydash_json.exists == true
 ;
