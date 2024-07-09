@@ -27,6 +27,7 @@ cd $SETSPACE_ROOT || die "cd SETSPACE_ROOT failed: exit status=$?"
 cat <<END
 
 Who Am I: $(hostname):$SETSPACE_ROOT
+Load Avg: $(uptime | sed 's/.*load average: //')
      Now: $(date)
 
 END
