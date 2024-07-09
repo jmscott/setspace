@@ -31,7 +31,6 @@
 COMPILEs="
 	append-brr
 	dec2pgbit
-	file-stat-size
 	flip-tail
 	spin-wait-blob
 	tas-run-lock
@@ -101,7 +100,6 @@ SRCs="
 	common-ecpg.c							\
 	common.c							\
 	dec2pgbit.c							\
-	file-stat-size.c						\
 	flip-tail.c							\
 	local-linux.mk.example						\
 	local-darwin.mk.example						\

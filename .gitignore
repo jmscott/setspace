@@ -1,7 +1,6 @@
 append-brr
 dec2pgbit
 escape-json-utf8
-file-stat-size
 flip-tail
 local.mk
 macosx.o
