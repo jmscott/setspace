@@ -46,9 +46,10 @@ cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
 . etc/profile
 
 run-stat-report								|
+  grep '^[a-z][a-z0-9_]* '						|
   cut -f1,2								|
-  fgrep -wv 'DOWN'							|
-  fgrep -wv 'OFF'							|
+  grep -F -wv 'DOWN'							|
+  grep -F -wv 'OFFL'							|
   sort									|
   while read SCHEMA STATE;  do
 	log "stop flowd of schema: $SCHEMA ($STATE)"
