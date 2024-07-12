@@ -2,6 +2,9 @@
 #
 #  Synopsis:
 #	Find symmetric difference of blobio.service and setcore.service tables
+#  Usage:
+#	. $SETSPACE_ROOT/schema/setcore/etc/profile
+#	service-xor >service-xor.out
 #  Note:
 #	Simplify by eliminating the BLOBIO_PG* vars.
 #
