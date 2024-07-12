@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	Find symmetric difference of blobio.service and setcore.service tables
+#	Find symeteric difference difference of {setcore,blobio}.service blobs
 #  Usage:
 #	. $SETSPACE_ROOT/schema/setcore/etc/profile
-#	service-xor >service-xor.out
+#	service-xor-yesterday >service-xor-yesterday.out
 #  Note:
 #	Simplify by eliminating the BLOBIO_PG* vars.
-#
-#	Added timestamp or interval option.
 #
 #	PGPASSWORD is ignored.
 #
@@ -36,6 +34,7 @@ die()
 comm -3							\
 <(							\
 psql							\
+	--var since=yesterday				\
 	--host $BLOBIO_PGHOST				\
 	--port $BLOBIO_PGPORT				\
 	--user $BLOBIO_PGUSER				\
@@ -44,27 +43,32 @@ psql							\
 	--tuples-only					\
 	--quiet						\
 	--no-psqlrc					\
-	--command 					\
-"
+	<<EOF
 SELECT
 	blob::text
   FROM
   	blobio.service
+  WHERE
+  	discover_time >= :'since'
   ORDER BY
   	1 asc
-")							\
+EOF
+)							\
 <(
 psql							\
+	--var since=yesterday				\
 	--no-align					\
 	--tuples-only					\
 	--quiet						\
 	--no-psqlrc					\
-	--command 					\
-"
+	<<EOF2
 SELECT
 	blob::text
   FROM
   	setcore.service
+  WHERE
+  	discover_time >= :'since'
   ORDER BY
   	1 asc
-")
+EOF2
+)

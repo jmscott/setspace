@@ -46,13 +46,14 @@ SBINs="
 	merge-byte_prefix_32
 	merge-byte_suffix_32
 	service-xor
+	service-xor-yesterday
 "
 
-CGIBINs="
-"
+#CGIBINs="
+#"
 
-HTDOCs="
-"
+#HTDOCs="
+#"
 
 SRCs="
 	byte-bitmap.c
@@ -62,23 +63,27 @@ SRCs="
 "
 
 #  Uncomment to create etc/ directory
-#ETC=""
+ETC="
+"
 
 #  Uncomment to create spool/ directory
-SPOOL=""
+SPOOL="
+"
 
 #  Uncomment to create data/ directory
 #DATA=""
 
 #  Uncomment to create run/ directory
-RUN=""
+RUN="
+"
 
 #  Uncomment to create log/ directory
-#LOG=""
+LOG="
+"
 
 #  Uncomment to create cache/ directory
 #CACHE=""
 
 #  Uncomment to create tmp/ directory
-#TMP=""
-
+TMP="
+"
