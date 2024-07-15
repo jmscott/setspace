@@ -28,18 +28,24 @@
 #  Uncomment for compiled programs to be installed i bin/ or sbin/ and
 #  removed in "clean" recipes.
 #
-COMPILEs="
-	ExtractPagesUTF8.class
+PGCOMPILEs="
 	merge-all-extract_pages_utf8
 	merge-stdin-pddocument_information
 	merge-stdin-pddocument_information_metadata
+"
+JCOMPILES="
+	ExtractPagesUTF8.class
 	putPDDocument.class
 	putPDDocumentInformation.class
 	putPDDocumentInformationMetadata.class
 "
+COMPILEs="
+	$JCOMPILEs
+	$PGCOMPILEs
+"
 
 LIBs="
-	$(echo $COMPILEs | grep -F .class)
+	$JCOMPILES
 	page-count-fts.sql
 	page-count-keyword.sql
 	page-count-phrase.sql
@@ -63,7 +69,7 @@ BINs="
 "
 
 SBINs="
-	$(echo $COMPILEs | grep -vF .class)
+	$PGCOMPILEs
 	append-page-pgtexts-brr
 	append-pgtexts-brr
 	merge-extract_pages_utf8
