@@ -88,10 +88,10 @@ SELECT
 	  	encode(p32.prefix, 'escape')
 	END AS "32 Byte Prefix",
 	CASE
-	  WHEN p32.suffix IS NULL THEN
+	  WHEN p32.prefix IS NULL THEN
 	  	'Unknown'
 	  ELSE
-	  	encode(p32.suffix, 'escape')
+	  	encode(p32.prefix, 'escape')
 	END AS "32 Byte Suffix",
 	bb.bitmap::text AS "Byte Bitmap",
 	CASE
