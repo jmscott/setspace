@@ -3,7 +3,8 @@
 #  Synopsis:
 #	Extract all pages from pdf and merge into tables extract_page_utf8.
 #  Usage:
-#	merge-extract_pages_utf8 <pdf blob> english
+#	merge-extract_pages_utf8 english <pdf blob>
+#	merge-extract_pages_utf8 <tsconfig> <pdf blob>
 #  Exit Status
 #	0	pages merged ok
 #	1	pdf blob not found
