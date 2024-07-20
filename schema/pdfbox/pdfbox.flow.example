@@ -1,8 +1,16 @@
 #
 #  Synopsis:
-#	Populate a PostgreSQL schema with the facts extracted by Apache pdfbox 
+#	Populate the schema "pdfbox" usng java code from pdfbox.apache.org
+#  Description:
+#	Populate following tables in schema "pdfbox"
+#		pddocument
+#		pddocument_information
+#		extract_pages_utf8
+#		page_text_utf8
+#		page_tsv_utf8
+#	
 #  See:
-#	schema.sql
+#	pdfbox/lib/schema.sql
 #
 
 boot
@@ -30,35 +38,16 @@ sql database setspace
 
 tail brr
 {
+	#path = "support/resync/spool/fs.brr";
 	path = "spool/prefixio.brr";
 }
 
-command brr_on_network
+sync map first_seen_map[string]bool;
+
+command first_seen
 {
 	path = "true";
 }
-
-call brr_on_network()
-  when (
-	brr.verb == "put"
-	or
-	brr.verb == "get"
-	or
-	brr.verb == "eat"
-	or
-	brr.verb == "wrap"
-	or
-	brr.verb == "roll"
-	or
-	brr.verb == "give"
-  ) and (
-	brr.chat_history == "ok"
-	or
-	brr.chat_history == "ok,ok"
-	or
-	brr.chat_history == "ok,ok,ok"
-  )
-;
 
 sql query in_service row
 {
@@ -79,9 +68,30 @@ sql query in_service row
 	);
 }
 
+command is_empty
+{
+	path = "true";
+}
+
+call is_empty(brr.udig)
+  when
+  	brr.udig == "btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15"
+	or
+	brr.udig == "sha:da39a3ee5e6b4b0d3255bfef95601890afd80709"
+	or
+	brr.udig == "bc160:b472a266d0bd89c13706a4132ccfb16f7c3b9fcb"
+;
+
+call first_seen(brr.udig)
+  when
+  	first_seen_map.LoadOrStore(brr.udig, true).loaded == false
+	or
+	is_empty.exit_status == 0
+;
+
 query in_service(brr.udig)
   when
-  	brr_on_network.exit_status == 0
+  	first_seen.exit_status == 0
 ;
 
 #  determine if the pdf exists in various pddocument tables
@@ -162,31 +172,18 @@ command merge_pddocument
         };
 }
 
+#  Note:  need to rewrite using the sync map.  for now just do no-op.
 command lock_pddocument
 {
-	path = "tas-run-lock";
-	argv = (
-		"merge-pddocument"
-	);
-	exit_status is OK when in {
-                0,			#  ok, lock file created
-                1			#  lock already exists
-        };
+	path = "true";
 }
 
 command unlock_pddocument
 {
-	path = "tas-run-unlock";
-	argv = (
-		"merge-pddocument"
-	);
-	exit_status is OK when in {
-                0,			#  ok, lock file removed
-                1			#  lock file does not exist
-        };
+	path = "true";
 }
 
-call lock_pddocument(brr.udig)
+call lock_pddocument()
   when
   	in_pddocs.ok == false
 	and
@@ -198,7 +195,7 @@ call merge_pddocument(brr.udig)
   	lock_pddocument.exit_status == 0
 ;
 
-call unlock_pddocument(brr.udig)
+call unlock_pddocument()
   when
 	#  uggh.  kludgy way to test for process termination
   	merge_pddocument.exit_status == 0
@@ -223,29 +220,15 @@ command merge_pddocument_information
 
 command lock_pddocument_information
 {
-	path = "tas-run-lock";
-	argv = (
-		"merge-pddocument_information"
-	);
-	exit_status is OK when in {
-                0,			#  ok, lock file created
-                1			#  lock already exists
-        };
+	path = "true";
 }
 
 command unlock_pddocument_information
 {
-	path = "tas-run-unlock";
-	argv = (
-		"merge-pddocument_information"
-	);
-	exit_status is OK when in {
-                0,			#  ok, lock file removed
-                1			#  lock file does not exist
-        };
+	path = "true";
 }
 
-call lock_pddocument_information(brr.udig)
+call lock_pddocument_information()
   when
   	in_pddocs.ok_info == false
 	and
@@ -257,7 +240,7 @@ call merge_pddocument_information(brr.udig)
   	lock_pddocument_information.exit_status == 0
 ;
 
-call unlock_pddocument_information(brr.udig)
+call unlock_pddocument_information()
   when
 	#  kludgy way to test for process termination
   	merge_pddocument_information.exit_status == 0
@@ -284,26 +267,12 @@ command merge_extract_pages_utf8
 
 command lock_extract_pages_utf8
 {
-	path = "tas-run-lock";
-	argv = (
-		"merge-extract_pages_utf8"
-	);
-	exit_status is OK when in {
-                0,			#  ok, lock file created
-                1			#  lock already exists
-        };
+	path = "true";
 }
 
 command unlock_extract_pages_utf8
 {
-	path = "tas-run-unlock";
-	argv = (
-		"merge-extract_pages_utf8"
-	);
-	exit_status is OK when in {
-                0,			#  ok, lock file removed
-                1			#  lock file does not exist
-        };
+	path = "true";
 }
 
 #  determine if the pages of the pdf have been extracted.
@@ -348,7 +317,7 @@ query in_extract(brr.udig)
   	in_service.ok == true
 ;
 
-call lock_extract_pages_utf8(brr.udig)
+call lock_extract_pages_utf8()
   when
   	#  not in the table extract_pages_utf8 or fault
   	in_extract.ok == false
@@ -369,7 +338,7 @@ call merge_extract_pages_utf8(brr.udig)
   	lock_extract_pages_utf8.exit_status == 0
 ;
 
-call unlock_extract_pages_utf8(brr.udig)
+call unlock_extract_pages_utf8()
   when
 	#  uggh.  kludgy way to test for process termination
   	merge_extract_pages_utf8.exit_status == 0
