@@ -6,6 +6,8 @@
 #  See:
 #  	mydash/lib/schema.sql
 #  Note:
+#	replace programs tas-* with sync map!
+#
 #	query merge_tag_http needs to only accept http urls.
 #	currently "about:*" urls (typically accidents) trigger errors.
 #

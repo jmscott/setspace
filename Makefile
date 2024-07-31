@@ -106,12 +106,6 @@ dec2pgbit: dec2pgbit.c
 escape-json-utf8: escape-json-utf8.c
 	cc -o escape-json-utf8 $(CFLAGS) escape-json-utf8.c
 
-tas-run-lock: tas-run-lock.c
-	cc -o tas-run-lock $(CFLAGS) tas-run-lock.c
-
-tas-run-unlock: tas-run-unlock.c
-	cc -o tas-run-unlock $(CFLAGS) tas-run-unlock.c
-
 spin-wait-blob:								\
 		spin-wait-blob.pgc					\
 		common.c						\

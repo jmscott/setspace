@@ -33,8 +33,6 @@ COMPILEs="
 	dec2pgbit
 	flip-tail
 	spin-wait-blob
-	tas-run-lock
-	tas-run-unlock
 "
 
 LIBs="
@@ -77,13 +75,11 @@ SBINs="
 	stop-all-flowd							\
 	stop-flowd							\
 	tail-flowd							\
-	tas-run-lock							\
-	tas-run-unlock
 "
 
 #  Uncomment to create tmp/ directory
-#TMP="
-#"
+TMP="
+"
 
 #  Uncomment to create cgibin/ directory
 #CGIBINs="
@@ -105,8 +101,6 @@ SRCs="
 	local-darwin.mk.example						\
 	macosx.c							\
 	spin-wait-blob.pgc						\
-	tas-run-lock.c							\
-	tas-run-unlock.c
 "
 
 #  Uncomment to create attic/ directory
@@ -118,8 +112,8 @@ SRCs="
 #"
 
 #  Uncomment to create etc/ directory
-#ETC="
-#"
+ETC="
+"
 
 #  Uncomment to create spool/ directory
 #SPOOL="
@@ -142,8 +136,8 @@ SRCs="
 #"
 
 #  Uncomment to create directory libexec/
-#LIBEXECs="
-#"
+LIBEXECs="
+"
 
 SYMLINKs="
 	$JMSCOTT_ROOT->.

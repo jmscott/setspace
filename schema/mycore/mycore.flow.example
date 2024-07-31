@@ -6,6 +6,8 @@
 #  See:
 #  	mycore/lib/schema.sql
 #  Note:
+#	Replace tas-* with sync map!
+#
 #	Not correctly comparing most recent request row in table title.
 #	A more recent request should update the title table instead of
 #	BO NOTHING!

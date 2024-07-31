@@ -6,6 +6,4 @@ local.mk
 macosx.o
 run
 spin-wait-blob
-tas-run-lock
-tas-run-unlock
 tmp
