@@ -553,3 +553,8 @@ Possible Schemas:
 		https://vslavik.github.io/diff-pdf/
         ai10052 - document clustering
 		https://10052.ai/
+	coqui-ai - text to voice
+		https://github.com/coqui-ai
+	tortise - text to vpce
+		https://github.com/neonbjb/tortoise-tts
+
