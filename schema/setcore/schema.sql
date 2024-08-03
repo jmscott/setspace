@@ -226,4 +226,143 @@ COMMENT ON VIEW rummy IS
   'Blobs with attributes not discovered in schema setcore'
 ;
 
+DROP DOMAIN IF EXISTS name63 CASCADE;
+CREATE DOMAIN name63 AS text
+  CHECK (
+  	value ~ '^[a-z][a-z0-9]{0,62}$'
+  )
+;
+COMMENT ON DOMAIN name63 IS
+  '63 character names of schema, command queries, etc'
+;
+
+DROP DOMAIN IF EXISTS xdr_signal CASCADE;
+CREATE DOMAIN xdr_signal AS smallint
+  CHECK (
+  	value >= 0 AND value <= 127
+  )
+;
+COMMENT ON DOMAIN xdr_signal IS
+  'Unix signal in an xdr record'
+;
+
+DROP TABLE IF EXISTS flow_schema CASCADE;
+CREATE TABLE flow_schema
+(
+	schema_name	name63 PRIMARY KEY
+);
+COMMENT ON TABLE flow_schema IS
+  'SetSpace Schemas defined in setspace/schema/<schema_name>'
+;
+
+DROP TABLE IF EXISTS flow_command CASCADE;
+CREATE TABLE flow_command
+(
+	schema_name	name63,
+	command_name	name63,
+
+	FOREIGN KEY	(schema_name) REFERENCES flow_schema,
+	PRIMARY KEY	(schema_name, command_name)
+);
+COMMENT ON TABLE flow_command IS
+  'A command defined in file <schema_name>/etc/<schema_name>.flow'
+;
+
+DROP TABLE IF EXISTS fault_flow_call CASCADE;
+CREATE TABLE fault_flow_call
+(
+	schema_name	name63,
+	call_name	name63,
+	blob		udig,
+
+	start_time	inception,
+
+	exit_class	text CHECK (
+				exit_class IN (
+					'OK', 'ERR', 'SIG', 'NOPS'
+				)
+			),
+	exit_status	uni_xstatus
+				DEFAULT 0
+				NOT NULL,
+	signal		xdr_signal
+				DEFAULT 0
+				NOT NULL,
+	FOREIGN KEY	(schema_name, call_name) REFERENCES flow_command,
+
+	PRIMARY KEY	(schema_name, call_name, blob)
+);
+COMMENT ON TABLE fault_flow_call IS
+  'Track call faults in file schema/<schema_name>/etc/<schema_name>.flow'
+;
+
+DROP TABLE IF EXISTS fault_flow_call_output CASCADE;
+CREATE TABLE fault_flow_call_output
+(
+	schema_name	name63,
+	call_name	name63,
+	blob		udig,
+
+	stdout		text CHECK (
+				length(stdout) < 4096
+			)
+			NOT NULL,
+	stderr		text CHECK (
+				length(stderr) < 4096
+			)
+			NOT NULL,
+
+	FOREIGN KEY	(schema_name, call_name, blob)
+			  REFERENCES fault_flow_call,
+	PRIMARY KEY	(schema_name, call_name, blob)
+);
+COMMENT ON TABLE fault_flow_call_output IS
+  'Std{out,err} for a particular flow call'
+;
+
+DROP TABLE IF EXISTS flow_sql_query CASCADE;
+CREATE TABLE flow_sql_query
+(
+	schema_name	name63,
+	query_name	name63,
+
+	FOREIGN KEY	(schema_name) REFERENCES flow_schema,
+	PRIMARY KEY	(schema_name, query_name)
+);
+COMMENT ON TABLE flow_sql_query IS
+  'A sql query (and exec) defined in file <schema_name>/etc/<schema_name>.flow'
+;
+
+DROP DOMAIN IF EXISTS sqlerror CASCADE;
+CREATE DOMAIN sqlerror AS text
+  CHECK (
+  	value ~ '^[0-9][0-9A-Z]{4}$'
+  )
+;
+
+DROP TABLE IF EXISTS fault_flow_query CASCADE;
+CREATE TABLE fault_flow_query
+(
+	schema_name	name63,
+	query_name	name63,
+	blob		udig,
+
+	start_time	inception,
+
+	termination_class	text CHECK (
+				termination_class IN (
+					'OK', 'ERR'
+				)
+			),
+	sql_state	sqlerror
+				NOT NULL,
+
+	FOREIGN KEY	(schema_name, query_name) REFERENCES flow_sql_query,
+
+	PRIMARY KEY	(schema_name, query_name, blob)
+);
+COMMENT ON TABLE fault_flow_query IS
+  'Track sql query faults in file schema/<schema_name>/etc/<schema_name>.flow'
+;
+
 COMMIT TRANSACTION;
