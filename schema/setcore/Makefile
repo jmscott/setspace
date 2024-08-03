@@ -102,3 +102,7 @@ world:
 	$(_MAKE) install
 tar:
 	make-make tar $(MKMK)
+dev-links:
+	test -e lib || ln -s . lib
+clean-links:
+	rm -f lib
