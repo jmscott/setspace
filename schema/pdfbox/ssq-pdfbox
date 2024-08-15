@@ -1,0 +1,172 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	pdfbox schema querier backend libexeced by front end script "ssq".
+#  Usage:
+#	BLOB=btc20:b0e889a067b5d4fff15c3d6e646554939a793783
+#
+#	ssq-setcore help
+#	ssq-setcore ls
+#	ssq-setcore ls $BLOB
+#	ssq-setcore ls service | sort | xargs bio-file
+#  See:
+#	$SETSPACE_ROOT/bin/ssq
+#	$SETSPACE_ROOT/bin/ssq pdfbox help
+#  Note:
+#	Think about adding "Is Rummy".  Does being a rummy imply nt in service?
+#
+
+PSQL='psql
+	--set=ON_ERROR_STOP=1
+	--no-psqlrc
+	--tuples-only
+	--pset null=Unknown
+	--quiet
+'
+
+die()
+{
+	echo "ssq: pdfbox: ERROR: $@" >&2
+	exit 1
+}
+
+help()
+{
+	cat <<END
+Usage: pdfbox [action] <options> ...
+
+Action:
+	help
+
+	ls [udig]	#  list details either recent blobs or particular blob
+	ls service	#  ls blobs in table setcore.service, in no order
+
+Environment:
+	SETSPACE_ROOT	$SETSPACE_ROOT
+	PGHOST		$PGHOST
+	PGPORT		$PGPORT
+	PGUSER		$PGUSER
+	PGDATABASE	$PGDATABASE
+Example:
+	ls		#  show recent blobs
+	ls <udig>	#  show details on specific blob
+	ls service	#  list contents of table setcore.service, in no order
+END
+}
+
+ls_service()
+{
+	$PSQL --no-align <<END
+SELECT
+	blob
+  FROM
+  	pdfbox.service
+;
+END
+}
+
+ls_recent()
+{
+	$PSQL --expanded <<END || die "ls_recent: psql failed: exit status=$?"
+SELECT
+	s.blob AS "Blob",
+	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
+                AS "Age",
+	pg_size_pretty(bc.byte_count) AS "Size",
+	pd.number_of_pages AS "Page Count",
+	CASE
+	  WHEN rum.blob IS NULL THEN
+	  	'No'
+	  ELSE
+	  	'Yes'
+	END AS "Is Rummy"
+  FROM
+  	setcore.service s
+	  JOIN setcore.byte_count bc ON (bc.blob = s.blob)
+	  LEFT OUTER JOIN setcore.rummy rum ON (rum.blob = s.blob)
+	  JOIN pdfbox.pddocument pd ON (pd.blob = s.blob)
+  WHERE
+  	s.discover_time > 'yesterday'
+  ORDER BY
+  	s.discover_time DESC,
+	bc.byte_count DESC,
+	s.blob ASC
+  LIMIT
+  	10
+END
+	exit 0
+}
+
+ls_blob()
+{
+	local BLOB=$1
+
+	#
+	#  Note:
+	#	How do we know perl regex always enabled?
+	#
+	[[ $BLOB =~ ^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$ ]]		||
+		die "ls_blob: not a udig: $BLOB"
+	
+	$PSQL --expanded <<END
+SELECT
+	s.blob AS "Blob",
+	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
+                AS "Age",
+	pg_size_pretty(bc.byte_count) AS "Size",
+	pd.number_of_pages AS "Page Count",
+	CASE
+	  WHEN rum.blob IS NULL THEN
+	  	'No'
+	  ELSE
+	  	'Yes'
+	END AS "Is Rummy"
+  FROM
+  	setcore.service s
+	  JOIN setcore.byte_count bc ON (bc.blob = s.blob)
+	  LEFT OUTER JOIN setcore.rummy rum ON (rum.blob = s.blob)
+	  JOIN pdfbox.pddocument pd ON (pd.blob = s.blob)
+  WHERE
+	s.blob = "$BLOB"
+END
+	exit 0
+}
+
+if [ $# = 0 ];  then
+	help
+	exit 0
+fi
+
+test -n "$SETSPACE_ROOT" || die 'env not defined: SETSPACE_ROOT'
+export SETCORE_ROOT=$SETSPACE_ROOT/schema/setcore
+test -d $SETCORE_ROOT || die "no setcore directory: $SETCORE_ROOT"
+
+test -r $SETSPACE_ROOT/etc/profile && . $SETSPACE_ROOT/etc/profile
+test -r $SETCORE_ROOT/etc/profile && . $SETCORE_ROOT/etc/profile
+
+ACTION="$1";  shift
+
+case "$ACTION" in
+help)
+	help
+	exit 0
+	;;
+ls)
+	[ $# = 0 ] && ls_recent
+	ACTION="$1";		shift
+	case "$ACTION" in
+	service)
+		ls_service
+		;;
+	[a-z]*:*)
+		ls_blob "$ACTION"
+		;;
+	*)
+		die "ls: unknown action: ls $ACTION"
+		;;
+	esac
+	;;
+*)
+	die "unknown action: $ACTION"
+	;;
+esac

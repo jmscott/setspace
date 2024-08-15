@@ -1,4 +1,4 @@
-#
+#exec
 #  Synopsis:
 #	Makefile suitable for development of pdfbox in local directory.
 #  Variables:
@@ -8,8 +8,6 @@
 #	$JMSCOTT_ROOT/lib/clang
 #
 #	Consider moving lib/*.class files to libexec/*.class
-#
-#	Replace bin/pdfq with new ssq libexec/ssq-pdfbox
 #
 include ../../local.mk
 include ../../setspace.mk
@@ -22,6 +20,7 @@ COMPILEs := $(shell  (. ./$(MKMK) && echo $$COMPILEs))
 SBINs := $(shell  (. ./$(MKMK) && echo $$SBINs))
 BINs := $(shell  (. ./$(MKMK) && echo $$BINs))
 LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
+LIBEXECs := $(shell  (. ./$(MKMK) && echo $$LIBEXECs))
 SRCs := $(shell  (. ./$(MKMK) && echo $$SRCs))
 
 all: $(COMPILEs)
@@ -37,6 +36,7 @@ world:
 
 distclean:
 	rm -rf $(PDFBOX_PREFIX)/lib
+	rm -rf $(PDFBOX_PREFIX)/libexec
 	rm -rf $(PDFBOX_PREFIX)/src
 	rm -rf $(PDFBOX_PREFIX)/sbin
 
@@ -61,6 +61,8 @@ install: all
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER)			\
 		-d $(PDFBOX_PREFIX)/lib
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER)			\
+		-d $(PDFBOX_PREFIX)/libexec
+	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER)			\
 		-d $(PDFBOX_PREFIX)/sbin
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER)			\
 		-d $(PDFBOX_PREFIX)/bin
@@ -82,6 +84,10 @@ install: all
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m u=rw,g=r,o=	\
 		$(LIBs)							\
 		$(PDFBOX_PREFIX)/lib
+
+	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m u=rwx,g=xr,o=	\
+		$(LIBEXECs)						\
+		$(PDFBOX_PREFIX)/libexec
 
 	install -g $(PDFBOX_GROUP) -o $(PDFBOX_USER) -m u=rwx,go=	\
 		$(SBINs)						\
@@ -128,6 +134,7 @@ merge-stdin-pddocument_information_metadata:				\
 	rm merge-stdin-pddocument_information_metadata.c
 dev-links:
 	ln -s . lib
+	ln -s . libexec
 
 tar:
 	make-make tar $(MKMK)

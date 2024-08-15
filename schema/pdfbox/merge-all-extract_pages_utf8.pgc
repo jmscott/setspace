@@ -100,7 +100,7 @@ EXEC SQL END DECLARE SECTION;
 	EXEC SQL CONNECT TO default;
 
 	/*
-	 *  Merge blob into pdfbox.page_text_utf8 table.
+	 *  Merge blob into pdfbox.page_text_utf8 table in single tx
 	 */
 	EXEC SQL BEGIN TRANSACTION;
 	for (page_number = 1;  page_number < 2603538;  page_number++) {

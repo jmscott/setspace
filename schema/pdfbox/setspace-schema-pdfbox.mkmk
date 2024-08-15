@@ -33,7 +33,7 @@ PGCOMPILEs="
 	merge-stdin-pddocument_information
 	merge-stdin-pddocument_information_metadata
 "
-JCOMPILES="
+JCOMPILEs="
 	ExtractPagesUTF8.class
 	putPDDocument.class
 	putPDDocumentInformation.class
@@ -109,29 +109,30 @@ SRCs="
 #"
 
 #  Uncomment to create etc/ directory
-#ETC="
-#"
+ETC="
+"
 
 #  Uncomment to create spool/ directory
-#SPOOL="
-#"
+SPOOL="
+"
 
 #  Uncomment to create data/ directory
 #DATA="
 #"
 
 #  Uncomment to create run/ directory
-#RUN="
-#"
+RUN="
+"
 
 #  Uncomment to create log/ directory
-#LOG="
-#"
+LOG="
+"
 
 #  Uncomment to create cache/ directory
 #CACHE="
 #"
 
 #  Uncomment to create directory libexec/
-#LIBEXECs="
-#"
+LIBEXECs="
+	ssq-pdfbox
+"

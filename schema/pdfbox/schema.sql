@@ -2,17 +2,13 @@
  *  Synopsis:
  *	Schema of the pdfbox.apache.org version 2 api
  *  Usage:
- *	#  this script needs to include $SETSPACE_ROOT/lib/schema-default.sql
  *	cd $SETSPACE_ROOT
- *	psql -f lib/schema.sql
+ *	psql -f schema/pdfbox/lib/schema.sql
  *  See:
  *	https://pdfbox.apache.org
  *  Note:
  *	Tue Apr 12 17:27:58 CDT 2022
- *		schema-default.sql needs to point be a subclass of
- *		setcore.fault!
- *
- *	Create int domain pdf_page_number impsoing limit < 2603538.
+ *	Create int domain pdf_page_number where limit < 2603538.
  *
  *	Need to create tsv on colums pddocument_information.{title,author}
  *
@@ -73,53 +69,6 @@ REVOKE UPDATE ON pddocument FROM public;
 
 --  this script must be invoked in directory $SETSPACE_ROOT/schema/pdfbox
 
-\echo including lib/schema-default.sql
-\include lib/schema-default.sql
-
-CREATE OR REPLACE FUNCTION is_pddocument_disjoint() RETURNS TRIGGER
-  AS $$
-  DECLARE
-	in_both bool;
-  BEGIN
-	WITH ok AS (
-	  SELECT
-		count(*) AS count
-	  FROM
-		pdfbox.pddocument
-	  WHERE
-		blob = new.blob
-  	), fault AS (
-	  SELECT
-		count(*) AS count
-	    FROM
-		pdfbox.fault
-	    WHERE
-		table_name = 'pddocument'
-		AND
-		blob = new.blob
-	  ) SELECT INTO in_both
-		(ok.count + fault.count) = 2
-	      FROM
-		ok,
-		fault
-	;
-	IF in_both THEN
-		RAISE EXCEPTION
-		'pddocument and process_fault must be disjoint';
-	END IF;
-	RETURN new;
-
-  END $$
-  LANGUAGE plpgsql
-;
-COMMENT ON FUNCTION is_pddocument_disjoint IS
-  'Verify that the pdf is not in both table pddocument and fault_pddocument'
-;
-
-CREATE TRIGGER is_pddocument_disjoint AFTER INSERT ON pddocument
-  FOR EACH ROW EXECUTE PROCEDURE is_pddocument_disjoint()
-;
-
 DROP DOMAIN IF EXISTS dval32 CASCADE;
 CREATE DOMAIN dval32 AS text 
   CHECK (
@@ -167,55 +116,6 @@ CREATE INDEX idx_pddocument_information ON pddocument_information
 ;
 REVOKE UPDATE ON TABLE pddocument_information FROM public;
 
-CREATE OR REPLACE FUNCTION is_pddocument_information_disjoint() RETURNS TRIGGER
-  AS $$
-  DECLARE
-	in_both bool;
-  BEGIN
-
-	WITH ok AS (
-	  SELECT
-		count(*) AS count
-	  FROM
-		pdfbox.pddocument_information
-	  WHERE
-		blob = new.blob
-  	), fault AS (
-	  SELECT
-		count(*) AS count
-	    FROM
-		pdfbox.fault
-	    WHERE
-		table_name = 'pddocument_information'
-		AND
-		blob = new.blob
-	  ) SELECT INTO in_both
-		(ok.count + fault.count) = 2
-	      FROM
-		ok,
-		fault
-	;
-	IF in_both THEN
-		RAISE EXCEPTION
-		'pddocument_information and process_fault must be disjoint';
-	END IF;
-	RETURN new;
-  END $$
-  LANGUAGE plpgsql
-;
-COMMENT ON FUNCTION is_pddocument_information_disjoint IS
-  'Verify tables pddocument_information and fault are disjoint'
-;
-
-CREATE TRIGGER is_pddocument_information_disjoint
-  AFTER INSERT ON pddocument_information
-  FOR EACH ROW EXECUTE PROCEDURE is_pddocument_information_disjoint()
-;
-CREATE TRIGGER is_fault_pddocument_information_disjoint
-  AFTER INSERT ON fault
-  FOR EACH ROW EXECUTE PROCEDURE is_pddocument_information_disjoint()
-;
-
 /*
  *  Track individual pages in a pdf blob.
  *
@@ -249,111 +149,6 @@ CREATE TABLE extract_pages_utf8
 );
 COMMENT ON TABLE extract_pages_utf8 IS
   'Pages of UTF8 Text extracted by java class ExtractPagesUTF8'
-;
-
-CREATE OR REPLACE FUNCTION is_extract_pages_utf8_disjoint()
-  RETURNS TRIGGER
-  AS $$
-  DECLARE
-	in_both bool;
-  BEGIN
-	/*
-	 *  Note: rewrite extract_pages_utf8_count with EXISTS.
-	 */
-	WITH ok AS (
-	  SELECT
-		count(distinct pdf_blob) AS count
-	  FROM
-		pdfbox.extract_pages_utf8
-	  WHERE
-		pdf_blob = new.pdf_blob
-  	), fault AS (
-	  SELECT
-		count(*) AS count
-	    FROM
-		pdfbox.fault
-	    WHERE
-	    	table_name = 'extract_pages_utf8'
-		AND
-		blob = new.pdf_blob
-	  ) SELECT INTO in_both
-		(ok.count + fault.count) = 2
-	      FROM
-		ok,
-		fault
-	;
-	IF in_both THEN
-		RAISE EXCEPTION
-		'extract_pages_utf8 and process_fault must be disjoint';
-	END IF;
-	RETURN new;
-  END $$
-  LANGUAGE plpgsql
-;
-COMMENT ON FUNCTION is_extract_pages_utf8_disjoint IS
-  'Verify the pdf for extract_pages_utf8 is not in fault'
-;
-
-DROP TRIGGER IF EXISTS is_extract_pages_utf8_disjoint
-  ON
-  	extract_pages_utf8
-;
-CREATE TRIGGER is_extract_pages_utf8_disjoint
-  AFTER INSERT ON extract_pages_utf8
-  FOR EACH ROW EXECUTE PROCEDURE is_extract_pages_utf8_disjoint()
-;
-
-CREATE OR REPLACE FUNCTION is_fault_extract_pages_utf8_disjoint()
-  RETURNS TRIGGER
-  AS $$
-  DECLARE
-	in_both bool;
-  BEGIN
-	/*
-	 *  Note: rewrite extract_pages_utf8_count with EXISTS.
-	 */
-	WITH ok AS (
-	  SELECT
-		count(distinct pdf_blob) AS count
-	  FROM
-		pdfbox.extract_pages_utf8
-	  WHERE
-		pdf_blob = new.blob
-  	), fault AS (
-	  SELECT
-		count(*) AS count
-	    FROM
-		pdfbox.fault
-	    WHERE
-	    	table_name = 'extract_pages_utf8'
-		AND
-		blob = new.blob
-	  ) SELECT INTO in_both
-		(ok.count + fault.count) = 2
-	      FROM
-		ok,
-		fault
-	;
-	IF in_both THEN
-		RAISE EXCEPTION
-		'extract_pages_utf8 and process_fault must be disjoint';
-	END IF;
-
-	RETURN new;
-  END $$
-  LANGUAGE plpgsql
-;
-COMMENT ON FUNCTION is_fault_extract_pages_utf8_disjoint IS
-  'Verify the pdf is not in both tables fault and extract_pages_utf8'
-;
-
-DROP TRIGGER IF EXISTS is_fault_extract_pages_utf8_disjoint
-  ON
-  	fault_extract_pages_utf8
-;
-CREATE TRIGGER is_fault_extract_pages_utf8_disjoint
-  AFTER INSERT ON fault
-  FOR EACH ROW EXECUTE PROCEDURE is_fault_extract_pages_utf8_disjoint()
 ;
 
 /*
@@ -416,7 +211,7 @@ CREATE TABLE page_tsv_utf8
 					page_number
 				)
 				ON DELETE CASCADE
-;
+);
 CREATE INDEX page_tsv_utf8_rumidx ON page_tsv_utf8
   USING
   	rum (tsv rum_tsvector_ops)
@@ -425,79 +220,56 @@ COMMENT ON TABLE page_tsv_utf8 IS
   'Text search vectors for Pages of UTF8 Text extracted from a pdf blob'
 ;
 
+DROP VIEW IF EXISTS fault CASCADE;
+CREATE VIEW fault AS
+  SELECT
+  	DISTINCT blob
+    FROM
+    	setcore.fault_flow_call ffc
+    WHERE
+    	ffc.schema_name = 'pdfbox'
+;
+COMMENT ON VIEW fault IS
+  'Candidate PDF blobs with a fault of any sort'
+;
+
 /*
  *  Synopsis:
  *	Find unresolved pddocument and extract_pages_ut8 blobs
- *  Usage:
- *	psql -f rummy.sql
  */
 DROP VIEW IF EXISTS rummy CASCADE;
 CREATE VIEW rummy AS
   SELECT
-  	pre.blob
+  	pd.blob
     FROM
-    	setcore.byte_prefix_32 pre
-	  --  discovered after certain time
-	  INNER JOIN setcore.service s ON (s.blob = pre.blob)
-
-	  --  pddocument table
-	  LEFT OUTER JOIN pdfbox.pddocument pd ON
-	  	(pd.blob = pre.blob)
-	  LEFT OUTER JOIN pdfbox.fault_process fpd ON (
-		fpd.table_name = 'pddocument'
-		AND
-		fpd.blob = pre.blob
+    	pdfbox.pddocument pd
+	  JOIN setcore.service s ON (
+	  	s.blob = pd.blob
 	  )
-
-	  --  pddocument_information table
-	  LEFT OUTER JOIN pdfbox.pddocument_information pdi ON
-	  	(pdi.blob = pre.blob)
-	  LEFT OUTER JOIN pdfbox.fault_process fpdi ON (
-	  	fpdi.table_name = 'pddocument_information'
-		AND
-	  	fpdi.blob = pre.blob
+	  LEFT OUTER JOIN pdfbox.pddocument_information pdi ON (
+	  	pdi.blob = pd.blob
+	  )
+	  LEFT OUTER JOIN fault flt ON (
+	  	flt.blob = pd.blob
 	  )
     WHERE
-	--  Note: need to check all core tables in setcore, not just prefix!!
-
-	--  blob begins with 'PDF-'
-  	substring(pre.prefix, 1, 4) = '\x25504446'
-	AND
-	(
-		--  not in either [fault_]pddocument
-		(pd.blob IS NULL AND fpd.blob IS NULL)
+        flt.blob IS NULL
+	AND (
+		pdi.blob IS NULL
 		OR
-
-		--  not in either [fault_]pddocument_information
-		(pdi.blob IS NULL AND fpdi.blob IS NULL)
-
-		--  but not in extract_pages_utf8 or fault_extract_pages_utf8.
-		OR
-		(
-			(pd.blob IS NOT NULL OR pdi.blob IS NOT NULL)
-			AND
-			NOT EXISTS (
-			  SELECT
-				page.pdf_blob
-			    FROM
-				pdfbox.extract_pages_utf8 page
-			    WHERE
-				page.pdf_blob = pre.blob
-			  UNION
-			  SELECT
-				flt.blob
-			    FROM
-				pdfbox.fault_process flt
-			    WHERE
-			    	flt.table_name = 'extract_pages_utf8'
-				AND
-				flt.blob = pre.blob
-			)
+		NOT EXISTS (
+		  SELECT
+			ex.pdf_blob
+		    FROM
+			pdfbox.extract_pages_utf8 ex
+		    WHERE
+			ex.pdf_blob = pd.blob
 		)
 	)
 ;
+
 COMMENT ON VIEW rummy IS
-  'Blobs with known unknown attributes, wating to be discovered'
+  'Blobs with to be discovered attributes'
 ;
 
 COMMIT;

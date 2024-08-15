@@ -1,6 +1,7 @@
 ExtractPagesUTF8.class
 etc
 lib
+libexec
 log
 merge-all-extract_pages_utf8
 merge-stdin-pddocument_information
