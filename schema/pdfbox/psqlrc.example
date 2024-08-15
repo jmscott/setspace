@@ -1,1 +1,1 @@
-set search_path to pdfbox,mycore,public;
+set search_path to pdfbox,mycore,setcore,public;
