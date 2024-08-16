@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #   Synopsis:
 #   	Merge a json blob read on standard input into table jsonorg.jsonb_255.
@@ -17,7 +17,7 @@
 #	BLOBIO_SERVICE
 #	BLOBIO_GET_SERVICE
 #  
-PROG=merge-blob-jsonb_255
+PROG=merge-jsonb_255
 BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
 
