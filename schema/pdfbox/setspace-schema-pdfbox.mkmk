@@ -45,7 +45,7 @@ COMPILEs="
 "
 
 LIBs="
-	$JCOMPILES
+	$JCOMPILEs
 	page-count-fts.sql
 	page-count-keyword.sql
 	page-count-phrase.sql
