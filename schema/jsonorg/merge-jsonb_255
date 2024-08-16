@@ -35,7 +35,7 @@ leave()
 
 trap leave EXIT
 
-test $# = 2 || die 'wrong number of arguments' 2
+test $# = 2 || die "wrong number of arguments: got $#, expected 2" 2
 
 UDIG=$1
 SIZE=$2
