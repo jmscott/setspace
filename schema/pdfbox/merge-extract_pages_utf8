@@ -103,7 +103,7 @@ STATUS=$?
 test -e STDERR || die "java write to stderr failed" 
 
 test $STATUS = 0 ||
-	_fault "java ExtractPagesUTF8 failed: exit status=$?" 4
+	_fault "java ExtractPagesUTF8 failed: exit status=$STATUS" 4
 
 #  loop through the page files to put the blobs and record udigs in <page>.udig
 
