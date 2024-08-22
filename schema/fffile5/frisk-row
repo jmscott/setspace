@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	Frisk out rare wierd rows produced by the well knwon "file" command.

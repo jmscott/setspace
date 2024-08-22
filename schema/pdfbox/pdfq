@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	English fulltext, phrase or keyword query of tables in pdfbox schema.

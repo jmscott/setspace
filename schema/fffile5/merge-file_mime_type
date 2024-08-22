@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	Run 'file --mime-type --brief' on blob and answer to PostgreSQL.

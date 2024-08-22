@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	Extract all pages from pdf and merge into tables extract_page_utf8.

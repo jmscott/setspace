@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	Merge the output of "unzip -t <blob>" into table infozip3.unzip_test

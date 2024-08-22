@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	Backend libexec for schema jsonorg, invoked by script bin/ssq

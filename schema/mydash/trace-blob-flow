@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	Trace a blob using the description records in schema/*/log/*.[fqx]dr

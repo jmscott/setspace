@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	Merge a pending UTF8 blob into table pgtexts.text_utf8.

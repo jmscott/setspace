@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	Create all schemas known to setspace in $SETSPACE_ROOT/schema

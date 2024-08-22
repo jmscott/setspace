@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	Exec a login bash shell with SETSPACE_ROOT set to $1

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	Extract the PDDocument scalars from PDF and merge into PostgreSQL

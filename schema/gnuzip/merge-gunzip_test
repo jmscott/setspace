@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #       Merge exit status of "gunzip -tq"  into sql table gunzip_test.

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	Is a blob well formed xml, according to the expat2 xmlwf program?

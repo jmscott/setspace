@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	Append a brr for the utf8 blob of a pdf blob to the pgtexts spool.

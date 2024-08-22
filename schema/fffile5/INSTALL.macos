@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #
 #  Synopsis:
 #	Install find fast file command on macos using ports.
