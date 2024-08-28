@@ -25,7 +25,7 @@
 #PRODUCT=foobar
 
 #
-#  Uncomment for compiled programs to be installed i bin/ or sbin/ and
+#  Uncomment for compiled programs to be installed bin/ or sbin/ and
 #  removed in "clean" recipes.
 #
 PGCOMPILEs="
@@ -59,7 +59,7 @@ LIBs="
 	plainto_tsquery.sql
 	profile.example	
 	psqlrc.example
-	schema-default.sql
+	schema-fault.sql
 	schema.sql
 	setspace-schema-pdfbox.mkmk
 "
