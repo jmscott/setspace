@@ -9,22 +9,17 @@
 
 BEGIN;
 
-INSERT INTO pdfbox.fault_table (
-	table_name
-) VALUES
-	('pddocument'),
-	('pddocument_information'),
-	('extract_pages_utf8'),
-	('pddocument_information_metadata_custom')
-;
+INSERT INTO setcore.flow_schema VALUES('pdfbox') ON CONFLICT DO NOTHING;
 
-INSERT INTO pdfbox.fault_program (
-	program_name
+INSERT INTO setcore.flow_command (
+	schema_name,
+	command_name
 ) VALUES
-	('merge-pddocument'),
-	('merge-pddocument_information'),
-	('merge-extract_pages_utf8'),
-	('merge-pddocument_information_metadata_custom')
+	('pdfbox', 'merge_pddocument'),
+	('pdfbox', 'merge_pddocument_information'),
+	('pdfbox', 'merge_extract_pages_utf8')
+  ON CONFLICT
+  	DO NOTHING
 ;
 
 COMMIT;
