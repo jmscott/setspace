@@ -18,7 +18,12 @@
 #  to, say, foobar-YYYYMMDD_hhmmss.tar.bz2
 
 #PRODUCT=foobar
+PGCOMPILEs="
+        merge-stdin-fault_flow_call
+"
+
 COMPILEs="
+	$PGCOMPILEs
 	byte-bitmap
 	byte-count
 	byte-prefix-32
@@ -26,6 +31,7 @@ COMPILEs="
 "
 
 LIBs="
+	fault-flow.sh
 	profile.example
 	psqlrc.example
 	schema.sql
@@ -60,6 +66,7 @@ SRCs="
 	byte-count.c
 	byte-prefix-32.c
 	byte-suffix-32.c
+	merge-stdin-fault_flow_call.pgc
 "
 
 #  Uncomment to create etc/ directory

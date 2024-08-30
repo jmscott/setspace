@@ -275,8 +275,6 @@ CREATE TABLE fault_flow_call
 	call_name	name63,
 	blob		udig,
 
-	start_time	inception,
-
 	exit_class	text CHECK (
 				exit_class IN (
 					'OK', 'ERR', 'SIG', 'NOPS'
@@ -288,6 +286,7 @@ CREATE TABLE fault_flow_call
 	signal		xdr_signal
 				DEFAULT 0
 				NOT NULL,
+	insert_time	inception DEFAULT now() NOT NULL,
 	FOREIGN KEY	(schema_name, call_name) REFERENCES flow_command,
 
 	PRIMARY KEY	(schema_name, call_name, blob)
@@ -296,17 +295,13 @@ COMMENT ON TABLE fault_flow_call IS
   'Track call faults in file schema/<schema_name>/etc/<schema_name>.flow'
 ;
 
-DROP TABLE IF EXISTS fault_flow_call_output CASCADE;
-CREATE TABLE fault_flow_call_output
+DROP TABLE IF EXISTS fault_flow_call_stderr CASCADE;
+CREATE TABLE fault_flow_call_stderr
 (
 	schema_name	name63,
 	call_name	name63,
 	blob		udig,
 
-	stdout		text CHECK (
-				length(stdout) < 4096
-			)
-			NOT NULL,
 	stderr		text CHECK (
 				length(stderr) < 4096
 			)
@@ -316,7 +311,7 @@ CREATE TABLE fault_flow_call_output
 			  REFERENCES fault_flow_call,
 	PRIMARY KEY	(schema_name, call_name, blob)
 );
-COMMENT ON TABLE fault_flow_call_output IS
+COMMENT ON TABLE fault_flow_call_stderr IS
   'Std{out,err} for a particular flow call'
 ;
 
@@ -626,8 +621,6 @@ CREATE TABLE fault_flow_query
 	query_name	name63,
 	blob		udig,
 
-	start_time	inception,
-
 	termination_class	text CHECK (
 				termination_class IN (
 					'OK', 'ERR'
@@ -635,6 +628,7 @@ CREATE TABLE fault_flow_query
 			),
 	sql_state	pg_sqlerror
 				NOT NULL,
+	insert_time	inception DEFAULT now() NOT NULL,
 
 	FOREIGN KEY	(schema_name, query_name) REFERENCES flow_sql_query,
 
