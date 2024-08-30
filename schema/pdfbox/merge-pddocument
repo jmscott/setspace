@@ -6,83 +6,102 @@
 #	merge-pddocument <udig>
 #  Exit Status:
 #	0	ok, extracted pddocument info and stored into PostgreSQL
-#	1	pdf load failed
-#	2	blob does not exist
-#	3	error with script invocation or setup
-#	4	unexpected blobio error
-#	5	unexpected java putPDDocument failed
-#	6	pg database error
+#	1	blob does not exist
+#	2	unexpected error
 #  Environment:
 #	BLOBIO_SERVICE
 #	BLOBIO_GET_SERVICE
 #	TMPDIR
 #  Note:
-#	How do we know the output of putPDDocument is always UTF-8?
+#	Need to merge fault into flow file, instead of in this script.
 #
 
-START_TIME=$(RFC3339Nano)
+START_EPOCH=$(date +%s)
 PROG=merge-pddocument
-GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
-TMPDIR=${TMPDIR:=/tmp}
 PSQL='psql --no-psqlrc --quiet'
-ALGORITHM=${BLOBIO_ALGORITHM:=btc20}
 
-TMP_BLOB=$TMPDIR/$PROG-$$.pdf
-TMP_ROW=$TMPDIR/$PROG-$$.row
-TMP_STDERR=$TMPDIR/$PROG-stderr.$$.out
+SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
+TMPDIR=${TMPDIR:=/tmp}
+WORK_DIR=$TMPDIR/$PROG-$$.d
+
+TMP_BLOB=$WORK_DIR/BLOB
+TMP_ROW=$WORK_DIR/ROW
 
 leave()
 {
-	rm -f $TMP_BLOB $TMP_ROW $TMP_STDERR
+	rm -fr $WORK_DIR
 }
-trap leave EXIT
 
 die()
 {
-	STATUS=$2
-	echo "$PROG: ERROR: $1" >&2
+	local STATUS=$2
+
+	local MSG="$PROG: ERROR: $1"
+	echo $MSG >&2
+
+	#
+	#  Best effort to get all of stderr into setcore fault table
+	#
+	(
+		echo $MSG
+		if [ -d "$WORK_DIR" && -s STDERR ];  then
+			cat STDERR >&2
+			cat STDERR
+		fi
+	) | merge-stdin-fault_flow_call					\
+		pdfbox merge_pddocument	$UDIG ERR $STATUS 0
+
+	#  reset exit status if fault INSERT fails
+
+	local PSTATUS=${PIPESTATUS[*]}
+	if [ "$PSTATUS" != '0 0' -a $STATUS = 0 ];  then
+		STATUS=3
+	fi
 	exit $STATUS
 }
 
-_fault()
-{
-	source $SETSPACE_ROOT/lib/fault-process.sh ||
-			die "source fault-process.sh failed: exit status=$?" 3
-	fault_process pdfbox pddocument $UDIG "$1" $TMP_STDERR $2 $START_TIME
-}
-
+trap leave EXIT
 test $# = 1 || die "wrong number of arguments: got $#, expected 1" 3
-UDIG=$1
+BLOB=$1
+UDIG="--udig $BLOB"
+
+mkdir $WORK_DIR || die "mkdir failed: $WORK_DIR"
+cd $WORK_DIR || die "cd work dir failed: exit status=$?"
 
 #  fetch the pdf blob
 
-blobio get --udig $UDIG --output-path $TMP_BLOB --service $GET_SERVICE
+blobio get $UDIG $SERVICE --output-path $TMP_BLOB
 STATUS=$?
 case $STATUS in
 0)
 	;;
 1)
-	exit 2
+	exit 1
 	;;
 *)
-	die "blobio get pdf failed: exit status=$?" 4
+	die "blobio get pdf failed: exit status=$?" 3
 	;;
 esac
 
 #  execute the java extract.  although we expect only 0 and no stderr,
-#  0 with stderr is normal.  an exit status of 1 indicates a failed load
-#  of the pdf file.
+#  0 with stderr is normal for pdfbox.
+#  an exit status of 1 indicates a failed load of the pdf file.
 
 java -server -cp $CLASSPATH putPDDocument <$TMP_BLOB >$TMP_ROW 2>$TMP_STDERR
 STATUS=$?
-test -e $TMP_STDERR || die "write to temp failed: $TMP_STDERR" 3
 
+#  insure at least file STDERR exists
+test -e STDERR || die "write to temp failed: $TMP_STDERR"
 test $STATUS = 0							||
-	_fault "java putPDDocument failed: exit status=$STATUS" 5
+	die "java putPDDocument failed: exit status=$STATUS"
 	
+#
 #  pdf loaded and scalars extracted
-#  Note: are we reading UTF-8?
-
+#
+#  Note:
+#	are we reading UTF-8?
+#	does read return error code?
+#
 read								\
 	NUMBER_OF_PAGES						\
 	DOCUMENT_ID						\
