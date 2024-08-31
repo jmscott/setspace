@@ -2,11 +2,10 @@
  *  Synopsis:
  *	Atomatically flip either a fifo->regular or regular->fifo files
  *  Usage:
- *  	flip-tail file spool/route/file_mime_pdf			\
- *  					spool/route/file_mime_pdf.12345
- *  	flip-tail fifo spool/route/file_mime_pdf 			\
- *  					spool/route/file_mime_pdf.1234
- *  	flip-tail file spool/setspace.brr setspace-1439576646.brr
+ *	SRC=spool/route/file_mime_pdf
+ *	TGT=spool/route/file_mime_pdf-$(date +'%Y%m%d_%H%M%S')
+ *  	flip-tail file $SRC $TGT
+ *  	flip-tail fifo $SRC $TGT
  *
  *  Description:
  *	Occasionally for a fifo we want to restart the reader process without
