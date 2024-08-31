@@ -14,12 +14,8 @@
  *  See:
  *	flip-tail and c programs in schema directories.
  *  Note:
- *	Move {common,common-cli}.c to $JMSCOTT_ROOT/lib
- *
- *	Rename common.c to unistd.c or common-cli.c?
- *
- *	Should defined PIPE_MAX be changed to
- *	COMMON_MSG_SIZE or COMMON_ATOMIC_MSG_SIZE?
+ *	Deprecated these function with the libjmscott versions.
+ *	Move {common,common-epcg}.c to $JMSCOTT_ROOT/lib
  */
 #include <fcntl.h>
 #include <unistd.h>
@@ -387,7 +383,7 @@ _file_exists(char *path)
 
 /*
  *  slurp a stable file into a buffer, reallocing the buffer and size as needed.
- *  allocate an extra byte for null termination is needed.
+ *  allocate an extra byte for null termination.
  *  return the number of bytes read.
  */
 static ssize_t
