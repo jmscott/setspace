@@ -4,7 +4,7 @@
 #	Flip an active blob request log file for a particular schema.
 #  Usage:
 #	brr-flip <schema>
-#	brr-flip setspace
+#	brr-flip setcore
 #  See:
 #	flip-tail.c
 #  Exit Status:
