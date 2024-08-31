@@ -24,6 +24,7 @@
 #
 #	Thinks about count stats to command 'ssq ls'
 #
+PROG=$(basename $0)
 
 die()
 {
@@ -38,11 +39,11 @@ help()
 {
 	cat <<END
 Usage:
-	$(PROG)					#  list help
-	$(PROG) help				#  ..
-	$(PROG) ls				#  list queryable schemas
-	$(PROG) <schema>			#  help for particulare schema
-	$(PROG) <schema> [action] [...options]	#  schema specfic queries
+	$PROG					#  list help
+	$PROG help				#  ..
+	$PROG ls				#  list queryable schemas
+	$PROG <schema>				#  help for particulare schema
+	$PROG <schema> [action] [...options]	#  schema specfic queries
 Environment:
 	SETSPACE_ROOT		$SETSPACE_ROOT
 END
