@@ -557,4 +557,5 @@ Possible Schemas:
 		https://github.com/coqui-ai
 	tortise - text to vpce
 		https://github.com/neonbjb/tortoise-tts
-
+	PGroonga - multilingual text search
+		https://supabase.com/docs/guides/database/extensions/pgroonga
