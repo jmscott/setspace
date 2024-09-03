@@ -1,1 +1,1 @@
-SET search_path TO fffile5,public;
+SET search_path TO fffile5,setcore,public;
