@@ -105,5 +105,6 @@ SRCs="
 #"
 
 #  Uncomment to create directory libexec/
-#LIBEXECs="
-#"
+LIBEXECs="
+	ssq-fffile5
+"

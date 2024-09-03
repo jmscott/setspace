@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	Backed for script sbin/ssq.
+#  Usage:
+#	ssq fffile5 ls
+#
