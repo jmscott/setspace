@@ -33,7 +33,6 @@
 
 LIBs="
 	fault-process.sh
-	psqlrc.example
 	schema-fault.sql
 	setspace-schema.mkmk
 "
@@ -44,7 +43,6 @@ LIBs="
 
 SBINs="
 	create-all-schema
-	ssq
 "
 
 #  Uncomment to create tmp/ directory
@@ -95,6 +93,6 @@ SBINs="
 #CACHE="
 #"
 
-#  Uncomment to create directory libexec/
+#  Uncomment to create libexec/ directory
 #LIBEXECs="
 #"
