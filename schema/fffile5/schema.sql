@@ -223,4 +223,17 @@ COMMENT ON VIEW rummy IS
   'All blobs with undiscover attributes in schema fffile5'
 ;
 
+DROP VIEW IF EXISTS service CASCADE;
+CREATE VIEW service AS
+  SELECT
+  	f.blob
+    FROM
+    	file f
+	  JOIN file_mime_type fm ON (fm.blob = f.blob)
+	  JOIN file_mime_encoding fe ON (fe.blob = f.blob)
+;
+COMMENT ON VIEW service IS
+  'Blobs with file, mime type and encoding known' 
+;
+
 COMMIT TRANSACTION;
