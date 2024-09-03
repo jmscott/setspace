@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	ssq-trace <udig>
+#
+
+PROG=$(basename $0)
+PSQL='psql --no-psqlrc --tuples-only --no-align'
+
+SCHEMAs="
+	fffile5
+	jsonorg
+	pdfbox
+	setcore
+"
+
+die() {
+	echo "$PROG: ERROR: $@" >&2
+	exit 1
+}
+
+UDIG=$1
+if [[ $UDIG =~ ^[a-z] ]];  then
+	true
+else
+	die "not a udig: $UDIG"
+fi
+
+cat <<END
+UDig:
+	$UDIG
+Schema:
+END
+
+for SCH in $SCHEMAs;  do
+	$PSQL <<END || die "psql failed: exit status=$?"
+SELECT
+	'	$SCH: ' || EXISTS (
+	  SELECT
+	  	blob
+	    FROM
+	    	$SCH.service
+	    WHERE
+	    	blob = '$UDIG'
+	)
+;
+END
+done | column -s ':' -t
