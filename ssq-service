@@ -20,7 +20,7 @@ die() {
 }
 
 UDIG=$1
-if [[ $UDIG =~ ^[a-z] ]];  then
+if [[ $UDIG =~ ^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$ ]];  then
 	true
 else
 	die "not a udig: $UDIG"
