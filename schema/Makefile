@@ -91,10 +91,10 @@ distclean:
 	cd gnuzip && $(_MAKE) distclean
 	cd infozip3 && $(_MAKE) distclean
 
-	test ! -d $(SETSPACE_PREFIX)/lib ||				\
-		(cd $(SETSPACE_PREFIX)/lib;  rm -f $(LIBs))
 	test ! -d $(SETSPACE_PREFIX)/sbin ||				\
 		(cd $(SETSPACE_PREFIX)/sbin;  rm -f $(SBINs))
+	test ! -d $(SETSPACE_PREFIX)/lib ||				\
+		(cd $(SETSPACE_PREFIX)/lib;  rm -f $(LIBs))
 world:
 	$(_MAKE) clean
 	$(_MAKE) all

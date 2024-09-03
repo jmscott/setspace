@@ -20,6 +20,7 @@ _MAKE=$(MAKE) $(MFLAGS)
 MKMK=setspace.mkmk
 SBINs := $(shell (. ./$(MKMK) && echo $$SBINs))
 LIBs := $(shell (. ./$(MKMK) && echo $$LIBs))
+LIBEXECs := $(shell (. ./$(MKMK) && echo $$LIBEXECs))
 SRCs := $(shell (. ./$(MKMK) && echo $$SRCs))
 BINs := $(shell (. ./$(MKMK) && echo $$BINs))
 COMPILEs := $(shell (. ./$(MKMK) && echo $$COMPILEs))
@@ -62,6 +63,8 @@ install-dirs:
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/lib
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+				-d $(SETSPACE_PREFIX)/libexec
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/etc
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 				-d $(SETSPACE_PREFIX)/src
@@ -82,6 +85,10 @@ install: all
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
 		$(LIBs)							\
 		$(SETSPACE_PREFIX)/lib
+
+	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER) 		\
+		$(LIBEXECs)						\
+		$(SETSPACE_PREFIX)/libexec
 
 	install -g $(SETSPACE_GROUP) -o $(SETSPACE_USER)		\
 		$(SRCs)							\
@@ -123,6 +130,7 @@ endif
 	rm -rf $(SETSPACE_PREFIX)/bin
 	rm -rf $(SETSPACE_PREFIX)/sbin
 	rm -rf $(SETSPACE_PREFIX)/lib
+	rm -rf $(SETSPACE_PREFIX)/libexec
 	rm -rf $(SETSPACE_PREFIX)/src
 	rm -rf $(SETSPACE_PREFIX)/sbin
 	rm -f $(SETSPACE_PREFIX)/jmscott

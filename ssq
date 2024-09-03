@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	Command line front end to sql queries for all schemas.
+#  Usage:
+#	ssq			#  help
+#	ssq ls			#  list all schemas
+#	ssq service <udig>	#  check of <schema>.service for udig
+#	ssq setcore help	#  help for "setcore" schema
+#  Note:
+#	In help() why are tabs aligned in vi but not in cat of message?
+#
+PROG=$(basename $0)
+
+die()
+{
+	cat >&2 <<END
+ERROR: $@
+usage: ssq [help | ls | service | [<schema>] [...options]]
+END
+	exit 1
+}
+
+help()
+{
+	cat <<END
+Usage:
+	$PROG			#  list help
+	$PROG help		#  ..
+	$PROG ls		#  list queryable schemas
+	$PROG service <udig>	#  trace a blob through schemas
+Environment:
+	SETSPACE_ROOT		$SETSPACE_ROOT
+END
+}
+
+#  help message
+if [ $# = 0 -o \( $# = 1 -a \( "$1" = help -o "$1" = --help \) \) ];  then
+	help
+	exit 0
+fi
+
+test -n "$SETSPACE_ROOT" || die "env not defined: SETSPACE_ROOT"
+cd $SETSPACE_ROOT || die "cd failed: $SETSPACE_ROOT"
+test -r etc/profile && . etc/profile
+
+ls_schema()
+{
+	SCHEMAS=$(
+		find-schema | while read SCH;  do
+			test -e schema/$SCH/libexec/ssq-$SCH && echo $SCH
+		done
+	)
+	test -n "$SCHEMAS" || die "no schemas in $SETSPACE_ROOT/schema"
+	(
+		cat <<END
+Schema
+--------
+END
+		echo $SCHEMAS | tr ' ' '\n' | while read SCH;  do
+			echo $SCH
+		done
+	) | column -s ' ' -t | sed 's/ *        //'
+}
+
+ACTION=$1
+shift
+
+case $ACTION in
+service)
+	test $# = 1 || die "service: wrong argument count: expected 1, got $#"
+	exec libexec/ssq-service $1
+	;;
+ls)
+	test $# = 0 || die "ls: wrong argument count: expected 0, got $#"
+	ls_schema
+	exit 0
+	;;
+esac
+SCHEMA=$1
+SCHEMA_DIR=schema/$SCHEMA
+test -d $SCHEMA_DIR || die "not a schema: $SCHEMA"
+
+SCHEMA_EXEC=$SCHEMA_DIR/libexec/ssq-$SCHEMA
+test -x $SCHEMA_EXEC || die "can not query schema: $SCHEMA"
+exec $SCHEMA_EXEC "$@"
