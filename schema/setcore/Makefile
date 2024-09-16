@@ -25,7 +25,7 @@ SRCs := $(shell (. $(MKMK) && echo $$SRCs))
 all: $(COMPILEs)
 
 clean:
-	rm -f $(COMPILEs) merge-stdin-fault_flow_call.c
+	rm -f $(COMPILEs)
 
 install: all
 
@@ -94,18 +94,6 @@ byte-suffix-32: byte-suffix-32.c ../../common.c
 		-I$(JMSCOTT_ROOT)/include				\
 		-L$(JMSCOTT_ROOT)/lib				\
 		$(CFLAGS) byte-suffix-32.c -ljmscott
-
-merge-stdin-fault_flow_call:						\
-		merge-stdin-fault_flow_call.pgc				\
-		../../common.c						\
-		../../common-ecpg.c
-	ecpg merge-stdin-fault_flow_call.pgc
-	$(CC) $(CFLAGS) -I$(PGINC) -I$(JMSCOTT_ROOT)/include 		\
-		merge-stdin-fault_flow_call.c				\
-		-o merge-stdin-fault_flow_call 				\
-		-L$(PGLIB) -L$(JMSCOTT_ROOT)/lib			\
-		-lecpg -ljmscott
-	rm merge-stdin-fault_flow_call.c
 
 world:
 	$(_MAKE) clean
