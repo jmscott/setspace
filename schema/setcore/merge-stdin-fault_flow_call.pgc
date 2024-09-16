@@ -40,8 +40,6 @@ static char *usage = "merge-stdin-fault_flow_call schema command ...";
 int
 main(int argc, char **argv)
 {
-	//int input_size = 0;
-
 EXEC SQL BEGIN DECLARE SECTION;
 	char *schema_name;
 	char *call_name;
@@ -53,8 +51,9 @@ EXEC SQL BEGIN DECLARE SECTION;
 
 EXEC SQL END DECLARE SECTION;
 
-	if (argc != 7)
-		jmscott_die_argc(EXIT_BAD, argc, 7, usage);
+	argc--;
+	if (argc != 6)
+		jmscott_die_argc(EXIT_BAD, argc, 6, usage);
 	jmscott_close(1);
 
 	schema_name = argv[1];
