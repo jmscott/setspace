@@ -24,7 +24,7 @@ export PGHOST=/tmp
 export PGPORT=5432
 export PGUSER=postgres
 export PGPASSWORD=
-export PGDATABASE=setspace
+export PGDATABASE=$USER
 PATH=$PATH:$PGHOME/bin
 export LD_LIBRARY_PATH=$PGHOME/lib:$LD_LIBRARY_PATH
 
