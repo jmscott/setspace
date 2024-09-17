@@ -1,0 +1,27 @@
+#
+#  Synopsis:
+#	Profile for setfault server
+#  Usage:
+#	. $SETSPACE_ROOT/schema/setfault/etc/profile
+#
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/setfault
+export TMPDIR=$SCHEMA_ROOT/tmp
+
+export SETFAULT_ROOT=${PDFBOX_ROOT:=$SCHEMA_ROOT}
+
+PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH:$SETSPACE_ROOT/sbin
+
+#  merge all schemas into table setfault.flowd_schema
+
+find-schema | merge-flowd_schema
+STATUS=${PIPESTATUS[*]}
+test "$STATUS" = '0 0' || die "merge-flowd_schema failed: exit status=$STATUS"
+
+#  merge flowd commands into table setfault.flowd_command
+
+find-schema | while read SCH;  do
+	merge-flowd_command $SCH					||
+		die "merge-flowd_command failed: exit status=$?"
+done
+STATUS=${PIPESTATUS[*]}
+test "$STATUS" = '0 0' || die "merge-flowd_command failed: exit status=$STATUS"

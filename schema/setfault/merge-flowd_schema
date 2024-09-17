@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# 
+#  Synopsis:
+#	Merge a schema into table setfault.flowd_schema
+#  Usage:
+#	merge-flowd_schema <schema1> <schema2> ...
+#	echo "$SCHEMAs" | merge-flowd_schema
+#  Exit Status:
+#	0	all schema merged
+#	1	unexpected error mering schema into db
+#
+
+PROG=$(basename $0)
+PSQL='psql --quiet --no-psqlrc --no-readline'
+
+die()
+{
+	FAULT="$(date): ERROR: $@"
+	test -d run && (
+		echo $FAULT >>run/$PROG.fault				||
+			echo "WARN: echo >run/failt failed: exit status=$?" >&2
+	)
+
+	echo  "$PROG: ERROR: $@" >&2
+	exit 1
+}
+
+test -n "$SETSPACE_ROOT" || die 'env not defined: SETSPACE_ROOT'
+cd $SETSPACE_ROOT || die "cd SETSPACE_ROOT failed: exit status=$?"
+
+. etc/profile || die ". etc/profile failed: exit status=$?"
+
+merge_schema()
+{
+	local SCHEMA=$1
+
+	$PSQL <<END || die "psql merge failed: exit status=$?"
+INSERT INTO setfault.flowd_schema (
+	schema_name
+  ) VALUES('$SCHEMA')
+      ON CONFLICT DO NOTHING
+; 
+END
+	return 0
+}
+
+case $# in
+0)
+	while read SCH;  do
+		merge_schema $SCH || die "merge_schema failed: exit status=$?"
+	done
+	;;
+*)
+	for SCH in $@;  do
+		merge_schema $SCH || die "merge_schema failed: exit status=$?"
+	done
+	;;
+esac
+exit 0

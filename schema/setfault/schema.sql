@@ -3,7 +3,7 @@
  *	Schema for faults generated while processing for blobs for any schema.
  *  Note:
  *	Should faults for a particular blob exist after blob vanishes from
- *	setcore.service?  Currently, yes.
+ *	setfault.service?  Currently, yes.
  */
 
 \set ON_ERROR_STOP on
@@ -23,13 +23,9 @@ COMMENT ON SCHEMA setfault IS
 DROP DOMAIN IF EXISTS name63 CASCADE;
 CREATE DOMAIN name63 AS text
   CHECK (
-  	value ~ '^[a-z][a-z0-9_]{0,62}$'
+  	value ~ '^[a-zA-Z][a-zA-Z0-9_]{0,62}$'
   )
 ;
-COMMENT ON DOMAIN name63 IS
-  '63 character names of schema, command queries, etc'
-;
-
 COMMENT ON DOMAIN name63 IS
   '63 character names of schema, command queries, etc'
 ;
@@ -107,11 +103,7 @@ CREATE TABLE flowd_call_fault_stderr
 	command_name	name63,
 	blob		udig,
 
-	stderr		text CHECK (
-				--  4megs, for common but ridiculous
-				--  java tracebacks
-				length(stderr) < 4*1024*1024	-- 4megs
-			) NOT NULL,
+	stderr_blob	udig NOT NULL,
 
 	PRIMARY KEY	(schema_name, command_name, blob),
 	FOREIGN KEY	(schema_name, command_name, blob)
