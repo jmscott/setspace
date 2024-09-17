@@ -6,14 +6,15 @@
  *	defined in schema.mk.
  */
 set search_path to 
-	setcore,
-	mycore,
-	fffile5,
 	expat2,
+	fffile5,
 	jsonorg,
 	libxml2,
-	pdfbox,
+	mycore,
 	mydash,
+	pdfbox,
+	setcore,
+	setfault,
 	public
 ;
 -- Show how long each query takes to execute
