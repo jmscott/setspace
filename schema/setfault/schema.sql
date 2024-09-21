@@ -70,9 +70,7 @@ CREATE TABLE flowd_call_fault
 	blob		udig REFERENCES setcore.service ON DELETE CASCADE,
 
 	exit_class	text CHECK (
-				exit_class IN (
-					'OK', 'ERR', 'SIG', 'NOPS'
-				)
+				exit_class IN ('ERR', 'SIG', 'NOPS')
 			) NOT NULL,
 	exit_status	smallint CHECK (
 				exit_status >= 0
@@ -84,34 +82,26 @@ CREATE TABLE flowd_call_fault
 				AND
 				signal <= 127
 			),
+	stdout_blob	udig,
+	stderr_blob	udig,
+
 	insert_time	setcore.inception DEFAULT now() NOT NULL,
 
 	PRIMARY KEY	(schema_name, command_name, blob),
 
 	FOREIGN KEY	(schema_name, command_name) REFERENCES flowd_command
 );
-COMMENT ON TABLE flowd_call_fault IS
-  'Faults in flowd process for particu;ar blob'
-;
 CREATE INDEX flowd_call_fault_when ON flowd_call_fault(insert_time);
 CREATE INDEX flowd_call_fault_blob ON flowd_call_fault USING hash(blob);
 
-DROP TABLE IF EXISTS flowd_call_fault_stderr CASCADE;
-CREATE TABLE flowd_call_fault_stderr
-(
-	schema_name	name63,
-	command_name	name63,
-	blob		udig,
-
-	stderr_blob	udig NOT NULL,
-
-	PRIMARY KEY	(schema_name, command_name, blob),
-	FOREIGN KEY	(schema_name, command_name, blob)
-				REFERENCES flowd_call_fault
-				ON DELETE CASCADE
-);
-COMMENT ON TABLE flowd_call_fault_stderr IS
-  'Standard error of fault call in flowd for a particular blob'
+COMMENT ON TABLE flowd_call_fault IS
+  'Fault in flowd process for particular blob and command'
+;
+COMMENT ON COLUMN flowd_call_fault.stderr_blob IS
+  'Stderr blob of fault in flowd call for particular blob and command'
+;
+COMMENT ON COLUMN flowd_call_fault.stdout_blob IS
+  'Stdout blob of fault in flowd call for particular blob and command'
 ;
 
 DROP TABLE IF EXISTS pg_sql_error CASCADE;
