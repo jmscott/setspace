@@ -40,6 +40,7 @@
 LIBs="
 	profile.example
 	psqlrc.example
+	schema.sql
 "
 
 #  Uncoment to create bin/ directory
