@@ -28,6 +28,10 @@ cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
 
 found_brr()
 {
+	local SPOOL=schema/$1/spool
+
+	test -d $SPOOL || return
+
 	find schema/$1/spool						\
 		-maxdepth 1						\
 		-name '*.brr'						\
