@@ -82,9 +82,10 @@ public class putPDDocumentInformation
 	public static void main(String[] args) throws Exception
 	{
 		if (args.length != 0) {
-			System.err.println("ERROR: " +
+			System.err.println(
 				putPDDocumentInformation.class.getName() +
-				   ": wrong number of arguments");
+				": ERROR: wrong number of arguments"
+			);
 			System.exit(4);
 		}
 

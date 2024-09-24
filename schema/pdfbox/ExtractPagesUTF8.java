@@ -35,7 +35,8 @@ public final class ExtractPagesUTF8
 	public static void main(String[] args) throws IOException
 	{
 		if (args.length != 0) {
-			System.err.println("ERROR: ExtractPagesUTF8: " +
+			System.err.println(
+				"ExtractPagesUTF8: ERROR: " +
 				           "wrong number of arguments");
 			System.exit(3);
 		}
