@@ -1,6 +1,8 @@
 /*
  *  Synopsis:
- *  	Merge pages in directory into extract_pages_utf8, page_{text,tsv}_utf8.
+ *  	Merge pages in directory into pdfbox.extract_pages_{utf8,text,tsv}.
+ *  Description:
+ *
  *  Usage:
  *	merge-all-extract_pages_utf8 <udig> <ts_conf>
  *  Arguments:
@@ -8,11 +10,7 @@
  *	2	tsv vector configuration
  *  Exit Status:
  *  	0	ok, all pages were merged
- *  	1	program invocation error
- *  	2	malloc() failed
- *	3	error reading from file system
- *	4	sql error
- *	5	sql warning
+ *	1	unexpected error
  *  Note:
  *	Should warns be logged but no cause an abort.  In particluar
  *	the error
@@ -25,43 +23,109 @@
  *
  *	for an example of pages with words that can not be indexed.
  */
+#include <fcntl.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-static char progname[] = "merge-all-extract_pages_utf8";
+#include <stdio.h>
+
+#include "jmscott/libjmscott.h"
+
+char *jmscott_progname = "merge-all-extract_pages_utf8";
+static char *usage = "merge-all-extract_pages_utf8 <udig> <tsvector config>";
 
 #define EXIT_OK		0
-#define EXIT_BAD_INVO	1
-#define EXIT_BAD_MALLOC 2
-
-//  map all i/o errors onto error code 3
-
-#define EXIT_BAD_OPEN	3
-#define EXIT_BAD_READ	3
-#define EXIT_BLOB_SMALL	3
-#define EXIT_BLOB_BIG	3
-#define EXIT_BAD_STAT	3
-#define EXIT_BAD_CLOSE	3
-#define EXIT_BAD_SLURP	3
-
-#define EXIT_SQLERROR	4
-#define EXIT_SQLWARN	5
-
-#define COMMON_NEED_FILE_EXISTS
-#define COMMON_NEED_SLURP
-#define COMMON_NEED_IS_UDIG
-#include "../../common.c"
-
-#define COMMON_ECPG_NEED_SQL_WARNING
-#define COMMON_ECPG_NEED_SQL_ERROR
-#include "../../common-ecpg.c"
+#define EXIT_BAD	1
 
 //  ignore these sql warnings
 
-static struct _ecpg_sql_state_fault no_warns[] =
+static struct jmscott_ecpg_state_fault no_warns[] =
 {
 	{"02000",	-1},	//  no data found due to upsert conflict 
 	{"54000",	-1},	//  word is too long to be indexed
 	{(char *)0,	-1}
 };
+
+static void
+die(char *msg)
+{
+	jmscott_die(EXIT_BAD, msg);
+}
+
+static void
+die2(char *msg1, char *msg2)
+{
+	jmscott_die2(EXIT_BAD, msg1, msg2);
+}
+
+static void
+die3(char *msg1, char *msg2, char *msg3)
+{
+	jmscott_die3(EXIT_BAD, msg1, msg2, msg3);
+}
+
+static int
+file_exists(char *path) {
+
+	errno = 0;
+	if (jmscott_access(path, F_OK) == 0)
+		return 1;
+	if (errno == ENOENT)
+		return 0;
+	die2("access(txt) failed", strerror(errno));
+
+	/*NOT REACHED*/
+	return 0;
+}
+
+/*
+ *  slurp a stable file into a buffer, reallocing the buffer and size as needed.
+ *  allocate an extra byte for null termination.
+ *  return the number of bytes read.
+ */
+static ssize_t
+slurp(char *what, char *path, void **buf, ssize_t *buf_size)
+{
+	struct stat st;
+
+	if (jmscott_stat(path, &st) != 0)
+		die3(what, "stat() failed", strerror(errno));
+
+	//  alloc enough for file bytes plus null termination
+
+	if (st.st_size + 1 > *buf_size) {
+		void *p = realloc(*buf, st.st_size + 1);
+		if (p == NULL)
+			die3(what, "realloc() failed", strerror(errno));
+		*buf = p;
+		*buf_size = st.st_size + 1;
+	}
+
+	if (!*buf)
+		die("slurp: unexpected null target buffer");
+
+	int fd = jmscott_open(path, O_RDONLY, 0);
+	if (fd < 0)
+		die3(what, "open(exact) failed", strerror(errno));
+	int status = jmscott_read_exact(fd, *buf, st.st_size);
+	if (jmscott_close(fd) != 0 && status == 0)
+		die3(what, "close(exact) failed", strerror(errno));
+
+	switch (status) {
+	case 0:
+		return st.st_size;
+	case -1:
+		die3(what, "read(exact) failed", strerror(errno));
+	case -2:
+		die2(what, "read(exact): unexpected end-of-file");
+	case -3:
+		die2(what, "read(exact): unread bytes");
+	}
+	die2(what, "read(exact): unexpected status");
+
+	/*NOT REACHED*/
+	return 0;
+}
 
 int
 main(int argc, char **argv)
@@ -76,27 +140,28 @@ EXEC SQL BEGIN DECLARE SECTION;
 	int page_number;
 EXEC SQL END DECLARE SECTION;
 
-	if (argc != 3)
-		die(EXIT_BAD_INVO, "wrong number of arguments");
+	if (--argc != 2)
+		jmscott_die_argc(EXIT_BAD, argc, 2, usage);
 
 	close(1);
 
 	//  frisk the pdf udig from argv[1]
 
 	pdf_blob = argv[1];
-	if (!_is_udig(pdf_blob))
-		die2(EXIT_BAD_INVO, "syntax error in pdf udig", pdf_blob);
+	char *err;
+	if ((err = jmscott_frisk_udig(pdf_blob)))
+		die2("can not parse pdf udig", pdf_blob);
 
-	// the configuration for the text search vector
+	// the configuration for the text search vectors
 
 	ts_conf = argv[2];
 	if (!ts_conf[0])
-		die(EXIT_BAD_INVO, "zero length text search config");
+		die("zero length text search config");
 
-	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error(
-		(struct _ecpg_sql_state_fault *)0
+	EXEC SQL WHENEVER SQLERROR CALL jmscott_ecpg_error(
+		(struct jmscott_ecpg_state_fault *)0
 	);
-	EXEC SQL WHENEVER SQLWARNING CALL _ecpg_sql_warning(no_warns);
+	EXEC SQL WHENEVER SQLWARNING CALL jmscott_ecpg_warning(no_warns);
 	EXEC SQL CONNECT TO default;
 
 	/*
@@ -110,18 +175,24 @@ EXEC SQL END DECLARE SECTION;
 		//  read the page txt into memory from, say, 0000009.txt
 
 		snprintf(path, sizeof path, "%07d.txt", page_number);
-		if (!_file_exists(path))
+		if (!file_exists(path))
 			break;
-		nread = _slurp(path, (void **)&txt, &txt_size);
+		nread = slurp("page txt", path, (void **)&txt, &txt_size);
 		txt[nread] = 0;
 
-		//  read udig of the text page from, say,  0000009.udig 
+		//  read the udig of the txt page from file <page number>.udig
 
 		snprintf(path, sizeof path, "%07d.udig", page_number);
-		nread = _slurp(path, (void **)&page_udig, &page_udig_size);
+		nread = slurp("page udig",
+				path,
+				(void **)&page_udig,
+				&page_udig_size
+		);
 		page_udig[nread - 1] = 0;	//  terminate at new line
-		if (!_is_udig(page_udig))
-			die(EXIT_BAD_READ, "bad page text udig");
+
+		err = jmscott_frisk_udig(page_udig);
+		if (err)
+			die2("bad page text udig", err);
 
 		EXEC SQL INSERT INTO pdfbox.extract_pages_utf8(
 			pdf_blob,
@@ -147,9 +218,12 @@ EXEC SQL END DECLARE SECTION;
   			DO NOTHING
 		;
 	}
+	if (txt) {
+		free(txt);
+		txt = 0;
+	}
 	/*
-	 *  Refresh the text search vectors for all pages
-	 *  in the pdf file.
+	 *  Refresh text search vectors for all pages in the pdf file.
 	 */
 	EXEC SQL INSERT INTO pdfbox.page_tsv_utf8(
 		pdf_blob,
