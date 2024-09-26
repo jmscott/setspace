@@ -3,7 +3,7 @@
  *	Schema for faults generated while processing for blobs for any schema.
  *  Note:
  *	Should faults for a particular blob exist after blob vanishes from
- *	setfault.service?  Currently, yes.
+ *	setops.service?  Currently, yes.
  */
 
 \set ON_ERROR_STOP on
@@ -11,12 +11,12 @@
 
 BEGIN TRANSACTION;
 
-DROP SCHEMA IF EXISTS setfault CASCADE;
+DROP SCHEMA IF EXISTS setops CASCADE;
 
-SET search_path TO setfault,public;
+SET search_path TO setops,public;
 
-CREATE SCHEMA setfault;
-COMMENT ON SCHEMA setfault IS
+CREATE SCHEMA setops;
+COMMENT ON SCHEMA setops IS
 	'Faults generated while processing blobs for any schema'
 ;
 

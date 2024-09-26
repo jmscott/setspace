@@ -20,6 +20,7 @@ LIBs:=$(shell  (. ./$(MKMK) && echo $$LIBs))
 
 all:
 	cd setcore && $(_MAKE) all
+	cd setops && $(_MAKE) all
 	cd jsonorg && $(_MAKE) all
 	cd expat2 && $(_MAKE) all
 	cd libxml2 && $(_MAKE) all
@@ -31,6 +32,7 @@ all:
 
 clean:
 	cd setcore && $(_MAKE) clean
+	cd setops && $(_MAKE) clean
 	cd jsonorg && $(_MAKE) clean
 	cd expat2 && $(_MAKE) clean
 	cd libxml2 && $(_MAKE) clean
@@ -49,6 +51,7 @@ install:
 	#  install sql schemas
 
 	cd setcore && $(_MAKE) install
+	cd setops && $(_MAKE) install
 	cd jsonorg && $(_MAKE) install
 	cd expat2 && $(_MAKE) install
 	cd libxml2 && $(_MAKE) install
@@ -79,6 +82,7 @@ install:
 
 distclean:
 	cd setcore && $(_MAKE) distclean
+	cd setops && $(_MAKE) distclean
 	cd jsonorg && $(_MAKE) distclean
 	cd expat2 && $(_MAKE) distclean
 	cd libxml2 && $(_MAKE) distclean

@@ -46,7 +46,7 @@ merge_schema_command()
 		esac
 
 		$PSQL <<END || die "psql merge failed: exit status=$?"
-INSERT INTO setfault.flowd_command (
+INSERT INTO setops.flowd_command (
 	schema_name,
 	command_name
   ) VALUES('$SCHEMA', '$CMD')

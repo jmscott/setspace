@@ -1,23 +1,23 @@
 #
 #  Synopsis:
-#	Profile for setfault server
+#	Profile for setops server
 #  Usage:
-#	. $SETSPACE_ROOT/schema/setfault/etc/profile
+#	. $SETSPACE_ROOT/schema/setops/etc/profile
 #
-SCHEMA_ROOT=$SETSPACE_ROOT/schema/setfault
+SCHEMA_ROOT=$SETSPACE_ROOT/schema/setops
 export TMPDIR=$SCHEMA_ROOT/tmp
 
-export SETFAULT_ROOT=${PDFBOX_ROOT:=$SCHEMA_ROOT}
+export SETOPS_ROOT=${PDFBOX_ROOT:=$SCHEMA_ROOT}
 
 PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH:$SETSPACE_ROOT/sbin
 
-#  merge all schemas into table setfault.flowd_schema
+#  merge all schemas into table setops.flowd_schema
 
 find-schema | merge-flowd_schema
 STATUS=${PIPESTATUS[*]}
 test "$STATUS" = '0 0' || die "merge-flowd_schema failed: exit status=$STATUS"
 
-#  merge flowd commands into table setfault.flowd_command
+#  merge flowd commands into table setops.flowd_command
 
 find-schema | while read SCH;  do
 	merge-flowd_command $SCH					||

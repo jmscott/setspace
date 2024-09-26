@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 
 #  Synopsis:
-#	Merge a schema into table setfault.flowd_schema
+#	Merge a schema into table setops.flowd_schema
 #  Usage:
 #	merge-flowd_schema <schema1> <schema2> ...
 #	echo "$SCHEMAs" | merge-flowd_schema
@@ -35,7 +35,7 @@ merge_schema()
 	local SCHEMA=$1
 
 	$PSQL <<END || die "psql merge failed: exit status=$?"
-INSERT INTO setfault.flowd_schema (
+INSERT INTO setops.flowd_schema (
 	schema_name
   ) VALUES('$SCHEMA')
       ON CONFLICT DO NOTHING

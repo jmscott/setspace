@@ -15,7 +15,7 @@
 #  Environment:
 #	BLOBIO_ALGORITHM
 #  Exit Status:
-#	0	fault merged into table setfault.flowd_call_fault
+#	0	fault merged into table setops.flowd_call_fault
 #	1	unexpected error (no fault written)
 #
 PROG=$(basename $0)
@@ -89,7 +89,7 @@ STDOUT_BLOB=$(eat stdout $STDOUT_PATH)
 STDERR_BLOB=$(eat stdout $STDERR_PATH)
 
 $PSQL <<END || die "psql insert failed: exit status=$?"
-INSERT INTO setfault.flowd_call_fault(
+INSERT INTO setops.flowd_call_fault(
 	schema_name,
 	command_name,
 	blob,

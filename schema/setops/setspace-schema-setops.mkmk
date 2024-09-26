@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Configuration file read by make-make for schema 'setfault'.
+#	Configuration file read by make-make for schema 'setops'.
 #  See:
 #	https://github.com/jmscott/work/blob/master/make-make
 #  Note:
@@ -48,6 +48,7 @@ LIBs="
 #"
 
 SBINs="
+	merge-flowd_call_fault
 	merge-flowd_command
 	merge-flowd_schema
 "
@@ -102,7 +103,7 @@ LOG="
 
 #  Uncomment to create directory libexec/
 LIBEXECs="
-	ssq-setfault
+	ssq-setops
 "
 
 #  Uncomment to create directory include/

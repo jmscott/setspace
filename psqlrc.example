@@ -13,9 +13,9 @@ set search_path to
 	mycore,
 	mydash,
 	pdfbox,
-	setcore,
-	setfault,
 	public
+	setcore,
+	setops,
 ;
 -- Show how long each query takes to execute
 \timing
