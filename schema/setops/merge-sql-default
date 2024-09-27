@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	Merge default sql vlues into tables setops.flowd_*
+#  Usage:
+#	sbin/merge-sql-default
+#  Exit Status:
+#	0	all defaulyt values merged
+#	1	unexpected error
+#
+PROG=$(basename $0)
+
+die() {
+	echo "$PROG: ERROR: $@"
+}
+
+test $# = 0 || die "wrong number of cli args: got $#, need 0"
+test -n "$SETSPACE_ROOT" || die 'env var not defined: SETSPACE_ROOT'
+cd $SETSPACE_ROOT || die "cd SETSPACE_ROOT failed: exit status=$?"
+
+PROFILE=schema/setops/etc/profile
+test -r $PROFILE || die "can not read file: $PROFILE"
+. schema/setops/etc/profile
+
+find-schema | merge-flowd_schema
+STATUS=${PIPESTATUS[*]}
+test "$STATUS" = '0 0' || die "merge-flowd_schema failed: exit status=$STATUS"
+
+#  merge flowd commands into table setops.flowd_command
+
+find-schema | while read SCH;  do
+	merge-flowd_command $SCH					||
+		die "merge-flowd_command failed: exit status=$?"
+done
+STATUS=${PIPESTATUS[*]}
+test "$STATUS" = '0 0' || die "merge-flowd_command failed: exit status=$STATUS"

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 # 
 #  Synopsis:
 #	Merge commands in <schema>/etc/<schema>.flow in table flowd_command

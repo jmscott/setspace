@@ -56,4 +56,3 @@ case $# in
 	done
 	;;
 esac
-exit 0

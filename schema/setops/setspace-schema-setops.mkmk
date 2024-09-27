@@ -51,6 +51,7 @@ SBINs="
 	merge-flowd_call_fault
 	merge-flowd_command
 	merge-flowd_schema
+	merge-sql-default
 "
 
 #  Uncomment to create tmp/ directory

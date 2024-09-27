@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Profile for setops server
+#	Profile for setops environment
 #  Usage:
 #	. $SETSPACE_ROOT/schema/setops/etc/profile
 #
@@ -11,17 +11,5 @@ export SETOPS_ROOT=${PDFBOX_ROOT:=$SCHEMA_ROOT}
 
 PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH:$SETSPACE_ROOT/sbin
 
-#  merge all schemas into table setops.flowd_schema
-
-find-schema | merge-flowd_schema
-STATUS=${PIPESTATUS[*]}
-test "$STATUS" = '0 0' || die "merge-flowd_schema failed: exit status=$STATUS"
-
-#  merge flowd commands into table setops.flowd_command
-
-find-schema | while read SCH;  do
-	merge-flowd_command $SCH					||
-		die "merge-flowd_command failed: exit status=$?"
-done
-STATUS=${PIPESTATUS[*]}
-test "$STATUS" = '0 0' || die "merge-flowd_command failed: exit status=$STATUS"
+merge-sql-default							||
+	echo "etc/profile: ERROR: merge-sql-default failed: exit status=$?" >&2
