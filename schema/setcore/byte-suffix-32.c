@@ -6,8 +6,6 @@
  *  Exit Status:
  *  	0	ok, wrote suffix
  *	1	unknown error
- *  Note:
- *	Replaced ../../common.s with using libjmscott functions.
  */
 #include <string.h>
 #include <errno.h>
