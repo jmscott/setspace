@@ -49,6 +49,15 @@ die(char *msg)
 }
 
 static void
+die2(char *msg1, char *msg2)
+{
+	if (errno > 0)
+		jmscott_die3(1, msg1, msg2, strerror(errno));
+	else
+		jmscott_die2(1, msg1, msg2);
+}
+
+static void
 diea(int argc)
 {
 	jmscott_die_argc(1, argc, 1, "byte-suffix-32 <path/to/blob>");
@@ -89,18 +98,12 @@ main(int argc, char **argv)
 	case 0:
 		break;
 	case -1:
-		die("read(in:<=32) failed");
+		die2("read(in:<=32) failed", strerror(errno));
 		/* NOTREACHED */
 		break;
 	case -2:
 		die("read(in:<=32): unexpected end of file");
 		/*NOTREACHED */
-		break;
-	case -3:
-		//  poll always returns data ready on EOF.  uggh.
-		//  read_exact returns -2 when <32 bytes not read,
-		//  should be ok.  posiz has no way to determine at
-		//  eof other than read()==0
 		break;
 	}
 
