@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	List queryable schemas
+#
+
+find-schema | while read SCH;  do
+	test -e schema/$SCH/libexec/ssq-$SCH && echo $SCH
+done | sort

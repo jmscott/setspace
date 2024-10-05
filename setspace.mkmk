@@ -4,6 +4,8 @@
 #  See:
 #	https://github.com/jmscott/work/blob/master/make-make
 #  Note:
+#	Move most of BINs to SBINs
+#
 #	Makefile variables can be extracted and defined from the the
 #	product.mkmk file with these recipes.  Example make code follows:
 #
@@ -139,6 +141,7 @@ ETC="
 
 #  Uncomment to create directory libexec/
 LIBEXECs="
+	ssq-ls
 	ssq-service
 "
 
