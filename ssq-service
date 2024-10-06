@@ -1,20 +1,10 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	ssq-service <udig>
+#	ssq-service <udig>, called from script bin/ssq for "service" action
 #
 
 PROG=$(basename $0)
-PSQL="psql
-	--quiet
-	--set ON_ERROR_STOP=1
-	--no-psqlrc
-	--tuples-only
-	--no-align
-	--no-readline
-"
-
-SCHEMAs=$(ssq ls)
 
 die() {
 	echo "$PROG: ERROR: $@" >&2
@@ -23,39 +13,4 @@ die() {
 
 test $# -eq 1 || die "wrong number of cli args: got $#, want 1"
 
-UDIG=$1;  shift
-if [[ $UDIG =~ ^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$ ]];  then
-	true
-else
-	die "not a udig: $UDIG"
-fi
-
-cat <<END
-UDig:
-	$UDIG
-Schema:
-	Name	In Service
-	------	-------
-END
-
-for SCH in $SCHEMAs;  do
-	$PSQL <<END || die "psql failed: exit status=$?"
-\f '	'
-SELECT
-	'	$SCH' AS name,
-	EXISTS (
-	  SELECT
-	  	blob
-	    FROM
-	    	$SCH.service
-	    WHERE
-	    	blob = '$UDIG'
-	) AS in_service
-  ORDER BY
-  	in_service,
-	name
-;
-END
-done
-
-exit 0
+exec libexec/$PROG-udig $@
