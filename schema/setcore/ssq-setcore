@@ -5,212 +5,45 @@
 #  Usage:
 #	BLOB=btc20:b0e889a067b5d4fff15c3d6e646554939a793783
 #
-#	setcore help
-#	setcore l@-is
-#	setcore ls $BLOB
-#	setcore ls service | sort | xargs bio-file
-#  See:
-#	$SETSPACE_ROOT/bin/ssq
-#	$SETSPACE_ROOT/bin/ssq setcore help
+#	ssq setcore help
 #  Note:
 #	Think about adding "Is Rummy".  Does being a rummy imply nt in service?
 #
-
-PSQL='psql
-	--set=ON_ERROR_STOP=1
-	--no-psqlrc
-	--tuples-only
-	--pset null=Unknown
-	--quiet
-'
-
-die()
-{
-	echo "ssq: setcore: ERROR: $@" >&2
-	exit 1
-}
+PROG=$(basename $0)
 
 help()
 {
-	cat <<END
-Usage: setcore [action] <options> ...
-
-Action:
-	help
-
-	ls [udig]	#  list details either recent blobs or particular blob
-	ls service	#  ls blobs in table setcore.service, in no order
-
-Environment:
-	SETSPACE_ROOT	$SETSPACE_ROOT
-	PGHOST		$PGHOST
-	PGPORT		$PGPORT
-	PGUSER		$PGUSER
-	PGDATABASE	$PGDATABASE
-Example:
-	ls		#  show recent blobs
-	ls <udig>	#  show details on specific blob
-	ls service	#  list contents of table setcore.service, in no order
-END
+	echo "usage: $PROG [service|ls|rummy]"
 }
 
-ls_service()
+die()
 {
-	$PSQL --no-align <<END
-SELECT
-	blob
-  FROM
-  	setcore.service
-;
-END
-}
-
-ls_recent()
-{
-	$PSQL --expanded <<END || die "ls_recent: psql failed: exit status=$?"
-SELECT
-	s.blob AS "Blob",
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
-                AS "Age",
-	pg_size_pretty(bc.byte_count) AS "Size",
-	CASE
-	  WHEN u8.is_utf8 IS NULL THEN
-	  	'Unknown'
-          WHEN u8.is_utf8 THEN
-	  	'Yes'
-	  ELSE
-	  	'No'
-	END AS "UTF-8",
-	CASE
-	  WHEN p32.prefix IS NULL THEN
-	  	'Unknown'
-	  ELSE
-	  	encode(p32.prefix, 'escape')
-	END AS "32 Byte Prefix",
-	CASE
-	  WHEN p32.prefix IS NULL THEN
-	  	'Unknown'
-	  ELSE
-	  	encode(p32.prefix, 'escape')
-	END AS "32 Byte Suffix",
-	bb.bitmap::text AS "Byte Bitmap",
-	CASE
-	  WHEN rum.blob IS NULL THEN
-	  	'No'
-	  ELSE
-	  	'Yes'
-	END AS "Is Rummy"
-  FROM
-  	setcore.service s
-	  LEFT OUTER JOIN setcore.byte_count bc ON (bc.blob = s.blob)
-	  LEFT OUTER JOIN setcore.is_utf8wf u8 ON (u8.blob = s.blob)
-	  LEFT OUTER JOIN setcore.byte_prefix_32 p32 ON (p32.blob = s.blob)
-	  LEFT OUTER JOIN setcore.byte_suffix_32 s32 ON (s32.blob = s.blob)
-	  LEFT OUTER JOIN setcore.byte_bitmap bb ON (bb.blob = s.blob)
-	  LEFT OUTER JOIN setcore.rummy rum ON (rum.blob = s.blob)
-  ORDER BY
-  	s.discover_time DESC,
-	bc.byte_count DESC,
-	s.blob ASC
-  LIMIT
-  	10
-END
-	exit 0
-}
-
-ls_blob()
-{
-	local BLOB=$1
-
-	#
-	#  Note:
-	#	How do we know perl regex always enabled?
-	#
-	[[ $BLOB =~ ^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$ ]]		||
-		die "ls_blob: not a udig: $BLOB"
-	
-	$PSQL --expanded <<END
-\\pset tuples_only off
-
-SELECT
-	s.blob AS "Blob",
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
-                AS "Age",
-	pg_size_pretty(bc.byte_count) AS "Size",
-	CASE
-	  WHEN u8.is_utf8 IS NULL THEN
-	  	'Unknown'
-	  WHEN u8.is_utf8 THEN
-	  	'Yes'
-	  ELSE
-	  	'No'
-	END AS "UTF-8",
-	CASE
-	  WHEN p32.prefix IS NULL THEN
-	  	'Unknown'
-	  ELSE
-	  	encode(p32.prefix, 'escape')
-	END AS "32 Byte Prefix",
-	CASE
-	  WHEN s32.suffix IS NULL THEN
-	  	'Unknown'
-	  ELSE
-	  	encode(s32.suffix, 'escape')
-	END AS "32 Byte Suffix",
-	bb.bitmap::text AS "Byte Bitmap",
-	CASE
-	  WHEN rum.blob IS NULL THEN
-	  	'No'
-	  ELSE
-	  	'Yes'
-	END AS "Is Rummy"
-  FROM
-  	setcore.service s
-	  LEFT OUTER JOIN setcore.byte_count bc ON (bc.blob = s.blob)
-	  LEFT OUTER JOIN setcore.is_utf8wf u8 ON (u8.blob = s.blob)
-	  LEFT OUTER JOIN setcore.byte_prefix_32 p32 ON (p32.blob = s.blob)
-	  LEFT OUTER JOIN setcore.byte_suffix_32 s32 ON (s32.blob = s.blob)
-	  LEFT OUTER JOIN setcore.byte_bitmap bb ON (bb.blob = s.blob)
-	  LEFT OUTER JOIN setcore.rummy rum ON (rum.blob = s.blob)
-  WHERE
-  	s.blob = '$BLOB'
-END
-	exit 0
+	echo "$PROG: ERROR: $@" >&2
+	exit 1
 }
 
 if [ $# = 0 ];  then
 	help
 	exit 0
 fi
+ACTION=$1
+shift
 
-test -n "$SETSPACE_ROOT" || die 'env not defined: SETSPACE_ROOT'
-export SETCORE_ROOT=$SETSPACE_ROOT/schema/setcore
-test -d $SETCORE_ROOT || die "no setcore directory: $SETCORE_ROOT"
+cd schema/setcore || die "cd schema/setcore failed: exit status=$?"
 
-test -r $SETSPACE_ROOT/etc/profile && . $SETSPACE_ROOT/etc/profile
-test -r $SETCORE_ROOT/etc/profile && . $SETCORE_ROOT/etc/profile
-
-ACTION="$1";  shift
+test -r etc/profile && . etc/profile
 
 case "$ACTION" in
 help)
 	help
 	exit 0
 	;;
+service)
+	exec libexec/ssq-setcore-service
+	;;
 ls)
-	[ $# = 0 ] && ls_recent
-	ACTION="$1";		shift
-	case "$ACTION" in
-	service)
-		ls_service
-		;;
-	[a-z]*:*)
-		ls_blob "$ACTION"
-		;;
-	*)
-		die "ls: unknown action: ls $ACTION"
-		;;
-	esac
+	test $# = 0 && exec libexec/ssq-setcore-ls-recent
+	exec libexec/ssq-setcore-ls $@
 	;;
 *)
 	die "unknown action: $ACTION"
