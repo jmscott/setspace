@@ -404,4 +404,15 @@ COMMENT ON VIEW service IS
   'Blobs involved with faults in devops for setspace'
 ;
 
+DROP VIEW IF EXISTS rummy CASCADE;
+CREATE VIEW rummy AS
+  SELECT
+  	null::udig
+    WHERE
+    	false
+;
+COMMENT ON VIEW IS
+  'Unresolved blobs on schema setops'
+;
+
 COMMIT;
