@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	query setcore schema for blobs in service
+#  Usage:
+#	BLOB=btc20:b0e889a067b5d4fff15c3d6e646554939a793783
+#
+#	ssq setcore help
+#  Note:
+#	Think about adding "Is Rummy".  Does being a rummy imply nt in service?
+#
+PROG=$(basename $0)
+
+PSQL='psql
+	--no-align
+	--set=ON_ERROR_STOP=1
+	--no-psqlrc
+	--tuples-only
+	--pset null=Unknown
+	--quiet
+	--no-readline
+'
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&2
+	exit 1
+}
+
+$PSQL <<END || die "psql setcore.service failed: exit status=$?"
+SELECT
+	blob
+  FROM
+  	setcore.service
+;
+END

@@ -34,18 +34,17 @@ cd schema/setcore || die "cd schema/setcore failed: exit status=$?"
 test -r etc/profile && . etc/profile
 
 case "$ACTION" in
-help)
+help|--help)
 	help
 	exit 0
 	;;
-service)
-	exec libexec/ssq-setcore-service
-	;;
-ls)
-	test $# = 0 && exec libexec/ssq-setcore-ls-recent
-	exec libexec/ssq-setcore-ls $@
+service|ls)
 	;;
 *)
 	die "unknown action: $ACTION"
 	;;
 esac
+
+SCH_LIBEXEC=libexec/ssq-setcore-$ACTION
+test -x $SCH_LIBEXEC || die "no libexec for action '$ACTION'"
+exec $SCH_LIBEXEC $@

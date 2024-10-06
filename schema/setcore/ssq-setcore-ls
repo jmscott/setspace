@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	script to invoke libexec/ssq-setcore-ls-* scripts
+#
+PROG=$(basename $0)
+
+help()
+{
+	echo "usage: $PROG [service|ls]"
+}
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&2
+	exit 1
+}
+
+test $# -eq 0 && exec libexec/ssq-setcore-ls-recent
+
+test $# -eq 1 || die "wrong cli args for ls blob: got $#, want 1"
+exec libexec/ssq-setcore-ls-blob "$1"

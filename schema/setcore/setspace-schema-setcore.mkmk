@@ -36,6 +36,7 @@ LIBs="
 
 LIBEXECs="
 	ssq-setcore
+	ssq-setcore-ls
 	ssq-setcore-ls-blob
 	ssq-setcore-ls-recent
 	ssq-setcore-service
