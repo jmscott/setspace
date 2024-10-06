@@ -2,6 +2,8 @@
 #
 #  Synopsis:
 #	ssq service <blob>, called from libexec/ssq-service
+#  Note:
+#	Assemble single sql instead of exec for each schema.
 #
 
 PROG=$(basename $0)
