@@ -27,9 +27,12 @@ help()
 {
 	cat <<END
 Usage:
-	$PROG [help|--help]	#  ..
+	$PROG <schema> ...	#  query on a schema
+	$PROG <schema> help	#  help for queries on this schema
 	$PROG ls			#  list queryable schemas
-	$PROG service <udig>	#  trace a blob through schemas
+	$PROG service <udig>	#  trace a blob through schemas service tables
+
+	$PROG [help|--help]	#  ...
 END
 }
 
@@ -42,21 +45,6 @@ fi
 test -n "$SETSPACE_ROOT" || die "env not defined: SETSPACE_ROOT"
 cd $SETSPACE_ROOT || die "cd failed: $SETSPACE_ROOT"
 test -r etc/profile && . etc/profile
-
-ls_schema()
-{
-	SCHEMAS=$(
-		find-schema | while read SCH;  do
-			test -e schema/$SCH/libexec/ssq-$SCH && echo $SCH
-		done
-	)
-	test -n "$SCHEMAS" || die "no schemas in $SETSPACE_ROOT/schema"
-	(
-		echo $SCHEMAS | tr ' ' '\n' | while read SCH;  do
-			echo $SCH
-		done
-	) | column -s ' ' -t | sed 's/ *        //'
-}
 
 ACTION="$1"
 shift
