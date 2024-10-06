@@ -82,8 +82,10 @@ CREATE TABLE flowd_call_fault
 				AND
 				signal <= 127
 			),
-	stdout_blob	udig,
-	stderr_blob	udig,
+	stdout_blob	udig REFERENCES setcore.service(blob)
+			  ON DELETE SET NULL,
+	stderr_blob	udig REFERENCES setcore.service(blob)
+			  ON DELETE SET NULL,
 
 	insert_time	setcore.inception DEFAULT now() NOT NULL,
 
@@ -379,6 +381,27 @@ INSERT INTO pg_sql_error VALUES
 	('XX000', 'internal_error'),
 	('XX001', 'data_corrupted'),
 	('XX002', 'index_corrupted')
+;
+
+DROP VIEW IF EXISTS service CASCADE;
+CREATE VIEW service AS
+    SELECT
+  	blob
+      FROM
+    	flowd_call_fault
+  UNION
+    SELECT
+  	stdout_blob
+      FROM
+    	flowd_call_fault
+  UNION
+    SELECT
+  	stderr_blob
+      FROM
+    	flowd_call_fault
+;
+COMMENT ON VIEW service IS
+  'Blobs involved with faults in devops for setspace'
 ;
 
 COMMIT;
