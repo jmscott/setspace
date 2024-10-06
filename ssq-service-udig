@@ -36,7 +36,7 @@ Schema:
 	------	-------
 END
 
-for SCH in $(ssq ls);  do
+for SCH in $(ssq ls | sort);  do
 	$PSQL <<END || die "psql failed: exit status=$?"
 \f '	'
 SELECT
@@ -49,9 +49,6 @@ SELECT
 	    WHERE
 	    	blob = '$UDIG'
 	) AS in_service
-  ORDER BY
-  	in_service,
-	name
 ;
 END
 done
