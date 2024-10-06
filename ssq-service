@@ -6,8 +6,8 @@
 
 PROG=$(basename $0)
 PSQL="psql
+	--quiet
 	--set ON_ERROR_STOP=1
-	--field-separator=:
 	--no-psqlrc
 	--tuples-only
 	--no-align
@@ -30,17 +30,17 @@ else
 	die "not a udig: $UDIG"
 fi
 
-(
 cat <<END
 UDig:
 	$UDIG
 Schema:
-	Name:In Service
-	-------:-------
+	Name	In Service
+	------	-------
 END
 
 for SCH in $SCHEMAs;  do
 	$PSQL <<END || die "psql failed: exit status=$?"
+\f '	'
 SELECT
 	'	$SCH' AS name,
 	EXISTS (
@@ -56,6 +56,6 @@ SELECT
 	name
 ;
 END
-done) | column -s ':' -t
+done
 
 exit 0
