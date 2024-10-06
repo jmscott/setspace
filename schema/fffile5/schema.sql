@@ -195,8 +195,10 @@ COMMENT ON FUNCTION refresh_stat IS
 /*
  *  Synopsis:
  *	Find recent blobs in service but not in a table in fffile5.*
- *  Usage:
- *	psql -f lib/rummy.sql
+ *  Note:
+ *	Querying setcore.service is incorrect.  Onstead, need to find all
+ *	blobs defined in at least one fffile5.* table but not in all fffile5.*
+ *	tables.
  */
 DROP VIEW IF EXISTS rummy CASCADE;
 CREATE VIEW rummy AS
