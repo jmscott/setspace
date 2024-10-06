@@ -225,9 +225,9 @@ CREATE VIEW fault AS
   SELECT
   	DISTINCT blob
     FROM
-    	setcore.fault_flow_call ffc
+    	setops.flowd_call_fault flt
     WHERE
-    	ffc.schema_name = 'pdfbox'
+    	flt.schema_name = 'pdfbox'
 ;
 COMMENT ON VIEW fault IS
   'Candidate PDF blobs with a fault of any sort'
@@ -270,6 +270,29 @@ CREATE VIEW rummy AS
 
 COMMENT ON VIEW rummy IS
   'Blobs with to be discovered attributes'
+;
+
+DROP VIEW IF EXISTS service;
+CREATE VIEW service AS
+  SELECT
+  	pd.blob
+    FROM
+    	pddocument pd
+	  JOIN pddocument_information pi ON (
+	  	pi.blob = pd.blob
+	  )
+    WHERE
+    	EXISTS (
+	  SELECT
+	  	pdf_blob
+	    FROM
+	    	extract_pages_utf8
+	    WHERE
+	    	pdf_blob = pd.blob
+	)
+;
+COMMENT ON VIEW service IS
+  'Proven PDF blobs according to apache pdfbox'
 ;
 
 COMMIT;
