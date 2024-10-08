@@ -38,7 +38,7 @@ help|--help)
 	help
 	exit 0
 	;;
-service|ls)
+service|ls|rummy)
 	;;
 *)
 	die "unknown action: $ACTION"
