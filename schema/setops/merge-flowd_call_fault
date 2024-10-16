@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	Merge fault for a flowd call
+#	Merge fault for a flowd call.
 #  Usage:
 #	merge-flowd_call_fault						\
 #		pdfbox							\
@@ -17,7 +17,13 @@
 #  Exit Status:
 #	0	fault merged into table setops.flowd_call_fault
 #	1	unexpected error (no fault written)
+#  Note:
+#	Would be nice to eliminate the spin-wait-blob code.  Without the code
+#	the std{out,err} can not reference setcore.service.
 #
+
+set -x
+
 PROG=$(basename $0)
 PSQL='psql --no-psqlrc --quiet --no-readline'
 export TMP_INPUT_PATH
@@ -29,7 +35,7 @@ leave()
 
 die()
 {
-	echo "ERROR: $@" >&2
+	echo "$PROG: ERROR: $@" >&2
 	exit 1
 }
 
@@ -62,6 +68,7 @@ eat() {
 	case "$SRC_PATH" in
 	-)
 		TMP_INPUT_PATH=${TMPDIR:=/tmp}/$PROG-$WHAT-$$.blob
+
 		#  slurp stdin for for stderr
 		cat >$TMP_INPUT_PATH || die "cat >$WHAT failed: exit status=$?"
 		SRC_PATH=$TMP_INPUT_PATH
@@ -86,7 +93,18 @@ eat() {
 }
 
 STDOUT_BLOB=$(eat stdout $STDOUT_PATH)
-STDERR_BLOB=$(eat stdout $STDERR_PATH)
+STDERR_BLOB=$(eat stderr $STDERR_PATH)
+
+#
+#  Note:
+#	wait for std{out,err} blobs to appear in table setcore.service;
+#	otherwise, the foreign key reference in flowd_call-fault causes
+#	INSERT to fail.  Seems like a better way should exist.
+#
+spin-wait-blob setcore.service blob 32 $STDOUT_BLOB			||
+			die "spin-wait-blob stdout failed: exit status=$?: $"
+spin-wait-blob setcore.service blob 32 $STDERR_BLOB			||
+			die "spin-wait-blob stderr failed: exit status=$?"
 
 $PSQL <<END || die "psql insert failed: exit status=$?"
 INSERT INTO setops.flowd_call_fault(

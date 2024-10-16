@@ -6,71 +6,53 @@
 #	merge-pddocument <udig>
 #  Exit Status:
 #	0	ok, extracted pddocument info and stored into PostgreSQL
-#	1	blob does not exist
+#	1	pdf blob does not exist
 #	2	unexpected error
 #  Environment:
 #	BLOBIO_SERVICE
 #	BLOBIO_GET_SERVICE
 #	TMPDIR
 #  Note:
+#	Need to insure putPDDocument always writes utf8 and not utf16!
+#
 #	Need to merge fault into flow file, instead of in this script.
 #
 
-START_EPOCH=$(date +%s)
 PROG=merge-pddocument
-PSQL='psql --no-psqlrc --quiet'
-
+PSQL='psql --no-psqlrc --quiet --no-readline --set=ON_ERROR_STOP=1'
 SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
-TMPDIR=${TMPDIR:=/tmp}
-WORK_DIR=$TMPDIR/$PROG-$$.d
-
-TMP_BLOB=$WORK_DIR/BLOB
-TMP_ROW=$WORK_DIR/ROW
+WORK_DIR=${TMPDIR:=/tmp}/$PROG-$$.d
 
 leave()
 {
-	rm -fr $WORK_DIR
+	rm -fr "$WORK_DIR"						||
+		echo "$PROG: ERROR: rm work dir failed: exit status=$?" >&2
 }
 
 die()
 {
-	local STATUS=$2
-
-	local MSG="$PROG: ERROR: $1"
-	echo $MSG >&2
-
-	#
-	#  Best effort to get all of stderr into setcore fault table
-	#
-	(
-		echo $MSG
-		if [ -d "$WORK_DIR" && -s STDERR ];  then
-			cat STDERR >&2
-			cat STDERR
-		fi
-	) | merge-stdin-fault_flow_call					\
-		pdfbox merge_pddocument	$UDIG ERR $STATUS 0
-
-	#  reset exit status if fault INSERT fails
-
-	local PSTATUS=${PIPESTATUS[*]}
-	if [ "$PSTATUS" != '0 0' -a $STATUS = 0 ];  then
-		STATUS=3
-	fi
-	exit $STATUS
+	source $SETSPACE_SCHEMA_ROOT/lib/merge-fault.bash
+	die_merge merge_pddocument $@
 }
 
+jdie()
+{
+	die "java putPDDocument: $@"
+}
+
+test $# = 1 || die "wrong number of arguments: got $#, need 1"
+PDF_UDIG=$1
+UDIG="--udig $PDF_UDIG"
+
 trap leave EXIT
-test $# = 1 || die "wrong number of arguments: got $#, expected 1" 3
-BLOB=$1
-UDIG="--udig $BLOB"
+trap '' PIPE
 
 mkdir $WORK_DIR || die "mkdir failed: $WORK_DIR"
 cd $WORK_DIR || die "cd work dir failed: exit status=$?"
 
 #  fetch the pdf blob
 
-blobio get $UDIG $SERVICE --output-path $TMP_BLOB
+blobio get $UDIG $SERVICE --output-path BLOB
 STATUS=$?
 case $STATUS in
 0)
@@ -79,22 +61,42 @@ case $STATUS in
 	exit 1
 	;;
 *)
-	die "blobio get pdf failed: exit status=$?" 3
+	die "blobio get pdf failed: exit status=$?"
 	;;
 esac
 
 #  execute the java extract.  although we expect only 0 and no stderr,
-#  0 with stderr is normal for pdfbox.
-#  an exit status of 1 indicates a failed load of the pdf file.
+#  0 with output to stderr is normal for pdfbox.
+#  an exit status of 1 indicates a failed load of the pdf file
 
-java -server -cp $CLASSPATH putPDDocument <$TMP_BLOB >$TMP_ROW 2>$TMP_STDERR
+java -server -cp $CLASSPATH putPDDocument <BLOB >ROW 2>STDERR
 STATUS=$?
-
 #  insure at least file STDERR exists
-test -e STDERR || die "write to temp failed: $TMP_STDERR"
+
+test -e STDERR || die "write to temp failed: STDERR"
+test -e ROW || die "write to temp failed: ROW"
+
+case $STATUS in
+0)
+	;;
+2)
+	jdie 'load of pdf failed: exit status=2'
+	;;
+3)
+	jdie 'invocation error: exit status=3'
+	;;
+4)
+	jdie 'unexpected java exception: exit status=4'
+	;;
+*)
+	jdie "impossible java exit status: $STATUS"
+	;;
+esac
+
 test $STATUS = 0							||
-	die "java putPDDocument failed: exit status=$STATUS"
-	
+	die "putPDDocument failed: exit status=$STATUS"
+test -s ROW || die 'ROW of putPDDocument is empty'
+
 #
 #  pdf loaded and scalars extracted
 #
@@ -108,9 +110,9 @@ read								\
 	VERSION							\
 	IS_ALL_SECURITY_TO_BE_REMOVED				\
 	IS_ENCRYPTED						\
-<$TMP_ROW
+<ROW
 
-$PSQL <<EOF || die "psql insert failed: exit status=$?" 7
+$PSQL <<EOF || die "psql insert failed: exit status=$?"
 
 INSERT INTO
   pdfbox.pddocument(
@@ -121,7 +123,7 @@ INSERT INTO
 	is_all_security_to_be_removed,
 	is_encrypted
     ) VALUES (
-    	'$UDIG',
+    	'$PDF_UDIG',
 	$NUMBER_OF_PAGES,
 	$DOCUMENT_ID,
 	$VERSION,

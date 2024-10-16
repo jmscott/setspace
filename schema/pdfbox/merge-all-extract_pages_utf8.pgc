@@ -4,7 +4,7 @@
  *  Description:
  *
  *  Usage:
- *	merge-all-extract_pages_utf8 <udig> <ts_conf>
+ *	merge-all-extract_pages_utf8 <ts_conf> <pdf-udig>
  *  Arguments:
  *  	1	udig of the pdf blob
  *	2	tsv vector configuration
@@ -12,7 +12,7 @@
  *  	0	ok, all pages were merged
  *	1	unexpected error
  *  Note:
- *	Should warns be logged but no cause an abort.  In particluar
+ *	Should WARN be logged but no cause an abort.  In particluar
  *	the error
  *
  *		'SQLWARNING: 54000: word is too long to be indexed'
@@ -32,12 +32,17 @@
 #include "jmscott/libjmscott.h"
 
 char *jmscott_progname = "merge-all-extract_pages_utf8";
-static char *usage = "merge-all-extract_pages_utf8 <udig> <tsvector config>";
+static char *usage =
+	"merge-all-extract_pages_utf8 <tsvector config> <pdf-udig>"
+;
 
 #define EXIT_OK		0
 #define EXIT_BAD	1
 
 //  ignore these sql warnings
+
+extern int jmscott_ecpg_error_code;
+extern int jmscott_ecpg_warn_code;
 
 static struct jmscott_ecpg_state_fault no_warns[] =
 {
@@ -65,7 +70,7 @@ die3(char *msg1, char *msg2, char *msg3)
 }
 
 static int
-file_exists(char *path) {
+txt_exists(char *path) {
 
 	errno = 0;
 	if (jmscott_access(path, F_OK) == 0)
@@ -118,10 +123,8 @@ slurp(char *what, char *path, void **buf, ssize_t *buf_size)
 		die3(what, "read(exact) failed", strerror(errno));
 	case -2:
 		die2(what, "read(exact): unexpected end-of-file");
-	case -3:
-		die2(what, "read(exact): unread bytes");
 	}
-	die2(what, "read(exact): unexpected status");
+	jmscott_panic2(what, "read(exact): impossible status");
 
 	/*NOT REACHED*/
 	return 0;
@@ -135,8 +138,8 @@ EXEC SQL BEGIN DECLARE SECTION;
 	char *txt = 0;
 	long txt_size = 0;
 	char *ts_conf;
-	char *page_udig = 0;
-	long page_udig_size = 0;
+	char *page_blob = 0;
+	long page_blob_size = 0;
 	int page_number;
 EXEC SQL END DECLARE SECTION;
 
@@ -144,19 +147,21 @@ EXEC SQL END DECLARE SECTION;
 		jmscott_die_argc(EXIT_BAD, argc, 2, usage);
 
 	close(1);
+	jmscott_ecpg_error_code = jmscott_ecpg_warn_code = 1;
+
+	// the configuration for the text search vectors
+
+	ts_conf = argv[1];
+	if (!ts_conf[0])
+		die("zero length text search config");
 
 	//  frisk the pdf udig from argv[1]
 
-	pdf_blob = argv[1];
+	pdf_blob = argv[2];
 	char *err;
 	if ((err = jmscott_frisk_udig(pdf_blob)))
 		die2("can not parse pdf udig", pdf_blob);
 
-	// the configuration for the text search vectors
-
-	ts_conf = argv[2];
-	if (!ts_conf[0])
-		die("zero length text search config");
 
 	EXEC SQL WHENEVER SQLERROR CALL jmscott_ecpg_error(
 		(struct jmscott_ecpg_state_fault *)0
@@ -175,7 +180,7 @@ EXEC SQL END DECLARE SECTION;
 		//  read the page txt into memory from, say, 0000009.txt
 
 		snprintf(path, sizeof path, "%07d.txt", page_number);
-		if (!file_exists(path))
+		if (!txt_exists(path))
 			break;
 		nread = slurp("page txt", path, (void **)&txt, &txt_size);
 		txt[nread] = 0;
@@ -185,12 +190,12 @@ EXEC SQL END DECLARE SECTION;
 		snprintf(path, sizeof path, "%07d.udig", page_number);
 		nread = slurp("page udig",
 				path,
-				(void **)&page_udig,
-				&page_udig_size
+				(void **)&page_blob,
+				&page_blob_size
 		);
-		page_udig[nread - 1] = 0;	//  terminate at new line
+		page_blob[nread - 1] = 0;	//  terminate at new line
 
-		err = jmscott_frisk_udig(page_udig);
+		err = jmscott_frisk_udig(page_blob);
 		if (err)
 			die2("bad page text udig", err);
 
@@ -200,7 +205,7 @@ EXEC SQL END DECLARE SECTION;
 			page_number
 		  ) VALUES (
 			:pdf_blob::udig,
-			:page_udig,
+			:page_blob,
 			:page_number
 		  ) ON CONFLICT
 			DO NOTHING

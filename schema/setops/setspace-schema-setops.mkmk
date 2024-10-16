@@ -55,8 +55,8 @@ SBINs="
 "
 
 #  Uncomment to create tmp/ directory
-#TMP="
-#"
+TMP="
+"
 
 #  Uncomment to create cgi-bin/ directory
 #CGIBINs="

@@ -56,7 +56,7 @@ install: all
 	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) -m a=r		\
 		$(LIBs)							\
 		$(FFFILE5_PREFIX)/lib
-	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) -m a=r		\
+	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) -m a=rx		\
 		$(LIBEXECs)						\
 		$(FFFILE5_PREFIX)/libexec
 	install -g $(FFFILE5_GROUP) -o $(FFFILE5_USER) -m a=r		\

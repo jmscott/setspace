@@ -137,7 +137,7 @@ parse_query()
 }
 
 test -n "$PDFBOX_ROOT" || die 'environment not defined: PDFBOX_ROOT' 4
-test $# -gt 1 || die "wrong number of arguments: expected > 1, got $#" 4
+test $# -gt 1 || die "wrong number of arguments: got $#, need > 1" 4
 
 case "$1" in
 page)

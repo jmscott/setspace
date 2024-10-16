@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	list details for fffile5 for a particular blob
+#  Usage:
+#	ssq fffile5 ls <udig>
+#  Note:
+#	Query assumes blob exists in fffile5.file table.  Why?
+#	Can we do a multiy way magic join across all 4 tables:
+#	file, file_mime_type, file_mime_encoding, fault?
+#
+PROG=$(basename $0)
+
+PSQL='psql
+	--expanded
+	--tuples-only
+	--set=ON_ERROR_STOP=1
+	--no-psqlrc
+	--no-readline
+'
+
+help()
+{
+	echo "usage: $PROG"
+}
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&2
+	exit 1
+}
+
+test $# = 1 || die "wrong number of cli arg: got $#, want 1"
+
+BLOB=$1
+shift
+
+#
+#  Note:
+#	How do we know perl regex always enabled?
+#
+[[ $BLOB =~ ^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$ ]]			||
+				die "not a udig: $BLOB"
+	
+$PSQL <<END || die "psql ls blob failed: exit status=$?"
+SELECT
+	f.blob AS "Blob",
+	f.file_type AS "File Type",
+	f.mime_type AS "Mime Type",
+	f.mime_encoding AS "Mime Encoding"
+	CASE
+	  WHEN flt.blob IS NULL THEN 'No'
+	  ELSE 'Yes'
+	END AS "Faulted?",
+	CASE
+	  WHEN rum.blob IS NULL THEN 'No'
+	  ELSE 'Yes'
+	END AS "Rummy?"
+  FROM
+  	fffile5.service f
+	  LEFT OUTER JOIN fffile5.file_mime_type mt ON (mt.blob = f.blob)
+	  LEFT OUTER JOIN fffile5.file_mime_encoding mt ON (me.blob = f.blob),
+	  LEFT OUTER JOIN fffile5.fault flt ON (flt.blob = f.blob),
+	  LEFT OUTER JOIN fffile5.rummy rum ON (rum.blob = f.blob)
+  WHERE
+  	f.blob = '$BLOB'
+END
+
+exit 0

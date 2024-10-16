@@ -1,3 +1,22 @@
 #!/usr/bin/env bash
+#
+#  Synopsis:
+#	Libexeced script for ssq to query faults, etc from schema setops.
+#  Usage:
+#	ssq setops service	#  List all blobs
+#
+
+PROG=$(basename $0)
+PSQL=
+
+die()
+{
+	echp "$PROG: ERROR: $@" >&2
+	exit 1
+}
+
+test $# = 1 || die "wrong cli arg count: got $#, want 1"
+
+cd $SETSP
 
 exit 0

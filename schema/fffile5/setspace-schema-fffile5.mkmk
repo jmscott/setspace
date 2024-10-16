@@ -104,7 +104,11 @@ SRCs="
 #CACHE="
 #"
 
-#  Uncomment to create directory libexec/
 LIBEXECs="
 	ssq-fffile5
+	ssq-fffile5-ls
+	ssq-fffile5-ls-blob
+	ssq-fffile5-ls-recent
+	ssq-fffile5-rummy
+	ssq-fffile5-service
 "

@@ -15,9 +15,8 @@
  *			<column_name> = <blob>::udig
  *	  	)
  *
- *	The sleep duration is doubled after each failure.
  *  Usage:
- *	spin-wait-blob <table> <row> <timeout> <blob udig>
+ *	spin-wait-blob <table> <row> <trys> <blob udig>
  *  Exit Status:
  *	0	blob appeared
  *	1	blob never appeared
@@ -59,7 +58,7 @@ static char progname[] = "spin-wait-blob";
 int
 main(int argc, char **argv)
 {
-	int timeout, waited = 0;
+	int try_count;
 	char *table_name, *column_name, *blob;
 EXEC SQL BEGIN DECLARE SECTION;
 	bool blob_exists;
@@ -74,18 +73,17 @@ EXEC SQL END DECLARE SECTION;
 	blob = argv[4];
 
 	/*
-	 *  Parse the timeout seconds.
+	 *  Parse the number of trys.
 	 */
 	{
-		char *sec = argv[3];
-		size_t len = strlen(sec);
+		char *trys = argv[3];
+		size_t len = strlen(trys);
 
 		if (len < 1 || len > 19)
-			die2(EXIT_BAD_INVO,
-				"timeout second not > 0 and < 20 chars", sec);
-		timeout = atoi(sec);
-		if (timeout <= 0)
-			die2(EXIT_BAD_INVO, "timeout second <= 0", sec);
+			die2(EXIT_BAD_INVO,"trys not > 0 and < 20 chars", trys);
+		try_count = atoi(trys);
+		if (try_count <= 0)
+			die2(EXIT_BAD_INVO, "negative number of trys", trys);
 	}
 
 	EXEC SQL WHENEVER SQLERROR CALL _ecpg_sql_error(
@@ -121,14 +119,14 @@ EXEC SQL END DECLARE SECTION;
 
 	EXEC SQL PREPARE get_blob FROM :query;
 
-again:
+AGAIN:
 	EXEC SQL EXECUTE get_blob INTO :blob_exists;
 
 	if (blob_exists)
 		_exit(EXIT_OK);
 
-	if (waited++ >= timeout)
+	if (--try_count <= 0)
 		_exit(EXIT_NO_BLOB);
 	sleep(1);
-	goto again;
+	goto AGAIN;
 }

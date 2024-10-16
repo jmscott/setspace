@@ -7,7 +7,7 @@ PROG=$(basename $0)
 
 help()
 {
-	echo "usage: $PROG ls <udig>"
+	echo "usage: $PROG [service|ls]"
 }
 
 die()
@@ -19,14 +19,4 @@ die()
 test $# -eq 0 && exec libexec/ssq-fffile5-ls-recent
 
 test $# -eq 1 || die "wrong cli args for ls blob: got $#, want 1"
-ACTION=$1; shift
-
-case "$ACTION" in
-ls|service|rummy)
-	;;
-*)
-	die "unknown action: $ACTION"
-	;;
-esac
-
-exec libexec/ssq-fffile5-$ACTION $@
+exec libexec/ssq-fffile5-ls-blob "$1"

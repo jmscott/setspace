@@ -11,6 +11,8 @@
 #	
 #  See:
 #	pdfbox/lib/schema.sql
+#  Note:
+#	Faulting needs to be merged into this flow and not in bash scripts!
 #
 
 boot
@@ -68,25 +70,18 @@ sql query in_service row
 	);
 }
 
-command is_empty
-{
-	path = "true";
-}
-
-call is_empty(brr.udig)
-  when
-  	brr.udig == "btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15"
-	or
-	brr.udig == "sha:da39a3ee5e6b4b0d3255bfef95601890afd80709"
-	or
-	brr.udig == "bc160:b472a266d0bd89c13706a4132ccfb16f7c3b9fcb"
-;
-
 call first_seen(brr.udig)
   when
   	first_seen_map.LoadOrStore(brr.udig, true).loaded == false
-	or
-	is_empty.exit_status == 0
+	and
+	#  is not an empty blob
+	(
+		brr.udig != "btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15"
+		and
+		brr.udig != "sha:da39a3ee5e6b4b0d3255bfef95601890afd80709"
+		and
+		brr.udig != "bc160:b472a266d0bd89c13706a4132ccfb16f7c3b9fcb"
+	)
 ;
 
 query in_service(brr.udig)
@@ -94,8 +89,13 @@ query in_service(brr.udig)
   	first_seen.exit_status == 0
 ;
 
+#
 #  determine if the pdf exists in either pddocument or pddocument_information
 #  tables or is in fault.
+#
+#  if either pddocument{_information} fault, then we do not attempt to
+#  extract pages.
+#
 
 sql query in_pddocs row
 {
@@ -119,11 +119,11 @@ sql query in_pddocs row
 		  SELECT
 		  	blob
 		    FROM
-		    	setcore.fault_flow_call
+		    	setops.flowd_call_fault
 		    WHERE
 		    	schema_name = 'pdfbox'
 			AND
-		    	call_name = 'merge_pddocument'
+		    	command_name = 'merge_pddocument'
 			AND
 		    	blob = $1::udig
 		),
@@ -145,11 +145,11 @@ sql query in_pddocs row
 		  SELECT
 		  	blob
 		    FROM
-		    	setcore.fault_flow_call
+		    	setops.flowd_call_fault
 		    WHERE
 		    	schema_name = 'pdfbox'
 			AND
-		    	call_name = 'merge_pddocument_information'
+		    	command_name = 'merge_pddocument_information'
 			AND
 		    	blob = $1::udig
 		)
@@ -158,7 +158,8 @@ sql query in_pddocs row
 
 	result row is (
 		ok_doc		bool,
-		flt_doc	bool,
+		flt_doc		bool,
+
 		ok_info		bool,
 		flt_info	bool
 	);
@@ -177,14 +178,19 @@ query in_pddocs(brr.udig)
 command merge_pddocument
 {
 	path = "merge-pddocument";
+
 	exit_status is OK when in {
-                0,      #  ok, extracted pddocument info and stored into PG
-                1,      #  pdf load failed
-                2       #  blob does not exist
+                0,      #  ok, extracted pddocument info and stored into db
+                1       #  blob does not exist
         };
 }
 
-call merge_pddocument(brr.udig);
+call merge_pddocument(brr.udig)
+  when
+  	in_pddocs.ok_doc == false
+	and
+  	in_pddocs.flt_doc == false
+;
 
 ###
 #
@@ -196,12 +202,16 @@ command merge_pddocument_information
 	path = "merge-pddocument_information";
 	exit_status is OK when in {
                 0,      #  ok, extracted pddocument info and stored into PG
-                1,      #  pdf load failed
-                2       #  blob does not exist
+                1       #  blob does not exist
         };
 }
 
-call merge_pddocument_information(brr.udig);
+call merge_pddocument_information(brr.udig)
+  when
+  	in_pddocs.ok_info == false
+	and
+  	in_pddocs.flt_info == false
+;
 
 ###
 #
@@ -215,8 +225,7 @@ command merge_extract_pages_utf8
 		"english"
 	);
 	exit_status is OK when in {
-                0,      #  ok, extracted pddocument info and stored into PG
-                1      #  pdf load failed (but still tuple stored in PG)
+                0      #  ok, extracted pddocument info and stored into PG
         };
 }
 
@@ -242,11 +251,11 @@ sql query in_extract row
 		  SELECT
 		  	blob
 		    FROM
-		    	setcore.fault_flow_call
+		    	setops.flowd_call_fault
 		    WHERE
 		    	schema_name = 'pdfbox'
 			and
-		    	call_name = 'merge-extract_pages_utf8'
+		    	command_name = 'merge_extract_pages_utf8'
 			AND
 		    	blob = $1::udig
 		)
@@ -260,8 +269,15 @@ sql query in_extract row
 
 query in_extract(brr.udig)
   when
-  	#  blob is in service
-  	in_service.ok == true
+  	#  extract tables depend reference pddocument 
+  	in_pddocs.ok_doc == true
+	or
+	in_pddocs.flt_doc == true
 ;
 
-call merge_extract_pages_utf8(brr.udig);
+call merge_extract_pages_utf8(brr.udig)
+  when
+  	in_extract.ok == false
+	or
+	merge_pddocument.exit_status == 0
+;

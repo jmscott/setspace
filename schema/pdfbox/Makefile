@@ -1,4 +1,4 @@
-#exec
+#
 #  Synopsis:
 #	Makefile suitable for development of pdfbox in local directory.
 #  Variables:
@@ -45,9 +45,6 @@ putPDDocument.class:  putPDDocument.java
 
 putPDDocumentInformation.class:  putPDDocumentInformation.java
 	javac -cp $(PDFBOX_APP2_JAR) putPDDocumentInformation.java
-
-putPDDocumentInformationMetadata.class:  putPDDocumentInformationMetadata.java
-	javac -cp $(PDFBOX_APP2_JAR) putPDDocumentInformationMetadata.java
 
 ExtractPagesUTF8.class:  ExtractPagesUTF8.java
 	javac -cp $(PDFBOX_APP2_JAR) ExtractPagesUTF8.java
@@ -109,8 +106,13 @@ merge-stdin-pddocument_information:					\
 		../../common.c						\
 		../../common-ecpg.c
 	ecpg merge-stdin-pddocument_information.pgc
-	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-pddocument_information.c	\
-		-o merge-stdin-pddocument_information -L$(PGLIB) -lecpg
+	$(CC) $(CFLAGS)							\
+		-I$(PGINC)						\
+		-I$(JMSCOTT_ROOT)/include				\
+		merge-stdin-pddocument_information.c			\
+		-o merge-stdin-pddocument_information			\
+		-L$(PGLIB) -lecpg					\
+		-L$(JMSCOTT_ROOT)/lib -ljmscott
 	rm merge-stdin-pddocument_information.c
 
 merge-all-extract_pages_utf8:						\
@@ -118,20 +120,14 @@ merge-all-extract_pages_utf8:						\
 		../../common.c						\
 		../../common-ecpg.c
 	ecpg merge-all-extract_pages_utf8.pgc
-	$(CC) $(CFLAGS) -I$(PGINC) merge-all-extract_pages_utf8.c	\
-		-o merge-all-extract_pages_utf8 -L$(PGLIB) -lecpg
+	$(CC) $(CFLAGS)							\
+		-I$(PGINC) -I$(JMSCOTT_ROOT)/include			\
+		merge-all-extract_pages_utf8.c				\
+		-o merge-all-extract_pages_utf8				\
+		-L$(PGLIB) -lecpg					\
+		-L$(JMSCOTT_ROOT)/lib -ljmscott
 	rm merge-all-extract_pages_utf8.c
 
-merge-stdin-pddocument_information_metadata:				\
-		merge-stdin-pddocument_information_metadata.pgc		\
-		../../common.c						\
-		../../common-ecpg.c
-	ecpg merge-stdin-pddocument_information_metadata.pgc
-	$(CC) $(CFLAGS) -I$(PGINC) 					\
-		merge-stdin-pddocument_information_metadata.c		\
-		-o merge-stdin-pddocument_information_metadata		\
-		-L$(PGLIB) -lecpg
-	rm merge-stdin-pddocument_information_metadata.c
 dev-links:
 	ln -s . lib
 	ln -s . libexec

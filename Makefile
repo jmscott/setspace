@@ -25,6 +25,9 @@ SRCs := $(shell (. ./$(MKMK) && echo $$SRCs))
 BINs := $(shell (. ./$(MKMK) && echo $$BINs))
 COMPILEs := $(shell (. ./$(MKMK) && echo $$COMPILEs))
 
+all: check-local $(COMPILEs) $(CGI)
+	cd schema && $(_MAKE) all
+
 check-local:
 	@test -n "$(PDFBOX_APP2_JAR)"				||	\
 		(echo "make var not defined: PDFBOX_APP2_JAR";  false)
@@ -39,8 +42,6 @@ check-local:
 		(echo "can not find PGHOME dir: $(PGHOME)"; false)
 	@test -d $(GODIST)					||	\
 		(echo "can not find GODIST dir: $(GODIST)"; false)
-all: check-local $(COMPILEs) $(CGI)
-	cd schema && $(_MAKE) all
 ifdef DASH_DNS_VHOST_SUFFIX
 	cd www && $(_MAKE) all
 endif

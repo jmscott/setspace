@@ -39,7 +39,6 @@ Action:
 	help
 
 	ls [udig]	#  list details either recent blobs or particular blob
-	ls service	#  ls blobs in table setcore.service, in no order
 
 Environment:
 	SETSPACE_ROOT	$SETSPACE_ROOT
@@ -69,28 +68,22 @@ ls_recent()
 {
 	$PSQL --expanded <<END || die "ls_recent: psql failed: exit status=$?"
 SELECT
-	s.blob AS "Blob",
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
-                AS "Age",
+	ps.blob AS "Blob",
+	regexp_replace(age(now(), srv.discover_time)::text, '\..*', '')
+		|| ' ago' AS "Age",
 	pg_size_pretty(bc.byte_count) AS "Size",
-	pd.number_of_pages AS "Page Count",
-	CASE
-	  WHEN rum.blob IS NULL THEN
-	  	'No'
-	  ELSE
-	  	'Yes'
-	END AS "Is Rummy"
+	pd.number_of_pages AS "Page Count"
   FROM
-  	setcore.service s
-	  JOIN setcore.byte_count bc ON (bc.blob = s.blob)
-	  LEFT OUTER JOIN setcore.rummy rum ON (rum.blob = s.blob)
-	  JOIN pdfbox.pddocument pd ON (pd.blob = s.blob)
+  	pdfbox.service ps
+	  JOIN setcore.service srv ON (srv.blob = ps.blob)
+	  JOIN setcore.byte_count bc ON (bc.blob = ps.blob)
+	  JOIN pdfbox.pddocument pd ON (pd.blob = srv.blob)
   WHERE
-  	s.discover_time > 'yesterday'
+  	srv.discover_time > 'yesterday'
   ORDER BY
-  	s.discover_time DESC,
+  	srv.discover_time DESC,
 	bc.byte_count DESC,
-	s.blob ASC
+	srv.blob ASC
   LIMIT
   	10
 END
@@ -127,7 +120,7 @@ SELECT
 	  LEFT OUTER JOIN setcore.rummy rum ON (rum.blob = s.blob)
 	  JOIN pdfbox.pddocument pd ON (pd.blob = s.blob)
   WHERE
-	s.blob = "$BLOB"
+	s.blob = '$BLOB'
 END
 	exit 0
 }

@@ -63,6 +63,9 @@ esac
 SCHEMA=$ACTION
 SCHEMA_DIR=schema/$SCHEMA
 test -d $SCHEMA_DIR || die "not a schema: $SCHEMA"
+cd $SCHEMA_DIR || die "cd $SCHEMA_DIR/ failed: exit status=$?"
 
-SCHEMA_EXEC=$SCHEMA_DIR/libexec/ssq-$SCHEMA
-test -x $SCHEMA_EXEC || die "no exec for schema: $SCHEMA"
+SCHEMA_EXEC=libexec/ssq-$SCHEMA
+test -e $SCHEMA_EXEC || die "no exec for schema: $SCHEMA"
+test -x $SCHEMA_EXEC || die "libexec not executable: $SCHEMA_EXEC"
+exec $SCHEMA_EXEC $@

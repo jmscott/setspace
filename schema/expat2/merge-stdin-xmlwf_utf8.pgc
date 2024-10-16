@@ -83,12 +83,6 @@ EXEC SQL END DECLARE SECTION;
 			}
 			if (status == -2)
 				die("read(stdin): unexpected end of file");
-			if (status == -3)
-				die(
-					"read(stdin): unread data: "
-					" blob size may be wrong"
-				);
-			//
 			die("jmscott_read_exact(): impossible return value");
 		} else if (status != 0)
 			die("jmscott_read_exact(): impossible return value");

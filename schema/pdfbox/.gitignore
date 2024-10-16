@@ -5,8 +5,6 @@ libexec
 log
 merge-all-extract_pages_utf8
 merge-stdin-pddocument_information
-merge-stdin-pddocument_information_metadata
 putPDDocument.class
 putPDDocumentInformation.class
-putPDDocumentInformationMetadata.class
 sbin

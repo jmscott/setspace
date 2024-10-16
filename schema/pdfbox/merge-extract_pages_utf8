@@ -3,20 +3,17 @@
 #  Synopsis:
 #	Extract all pages from pdf and merge into tables extract_page_utf8.
 #  Usage:
-#	merge-extract_pages_utf8 english <pdf blob>
 #	merge-extract_pages_utf8 <tsconfig> <pdf blob>
+#	merge-extract_pages_utf8 english sha:9611866f8547cbf7 ...
 #  Exit Status
-#	0	pages merged ok
-#	1	pdf blob not found
-#	2	program invocation or setup error
-#	3	unexpected blobio error
-#	4	java ExtractPagesUTF8.class failed
-#	5	sql error
+#  	0	ok, tuple was merged
+#	1	blob does not exist
+#	2	unexpected error
 #
 #  Environment:
 #	BLOBIO_SERVICE		#  required
 #	BLOBIO_GET_SERVICE
-#	BLOBIO_ALGORITHM
+#	BLOBIO_ALGORITHM	#  required
 #	TMPDIR
 #
 #  Java Classes:
@@ -25,59 +22,49 @@
 #	import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 #	import org.apache.pdfbox.text.PDFTextStripper;
 #  Note:
-#	The error status '0 3' in the loop over pages is not correct.
-#
-#	Page blobs may be orphaned if the transaction if aborted.
+#	Page blobs may be orphaned if the transaction is aborted.
 #	Perhaps a json blob summarizing the transaction should be created.
 #
 
-START_TIME=$(RFC3339Nano)
+START_EPOCH=$(date +%s)
 PROG=merge-extract_pages_utf8
-GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
+
+SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 WORK_DIR=${TMPDIR:=/tmp}/$PROG.$$.d
 ALGORITHM=${BLOBIO_ALGORITHM:=btc20}
-PSQL='psql --quiet --no-psqlrc'
+GET_SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
 
 die()
 {
-	STATUS=$2
-	echo "$PROG: ERROR: $1" >&2
-	exit $STATUS
+	#  merge the error into 
+	if [ -n "$PDF_UDIG" ];  then
+		source $SETSPACE_ROOT/schema/pdfbox/lib/merge-fault.bash
+		die_merge merge_extract_pages_utf8 $@
+	fi
+	echo "$PROG: ERROR: $@" >&2
+	exit 2
 }
 
 leave()
 {
 	STATUS=$?
-	cd .. && rm -rf $WORK_DIR
+	cd .. && rm -rf "$WORK_DIR"
 	exit $STATUS
 }
 trap leave EXIT
+trap '' PIPE
 
-_fault()
-{
-	source $SETSPACE_ROOT/lib/fault-process.sh ||
-			die "source fault-process.sh failed: exit status=$?" 3
-	fault_process							\
-		pdfbox							\
-		extract_pages_utf8					\
-		$PDF_UDIG						\
-		"$TS_CONF: $1"						\
-		STDERR							\
-		$2							\
-		$START_TIME
-}
-
-test $# = 2 || die "wrong number of arguments: got $#, expected 2" 2
+test $# = 2 || die "wrong number of cli args: got $#, need 2"
 TS_CONF=$1
 PDF_UDIG=$2
 
-mkdir -p $WORK_DIR || die "mkdir work $WORK_DIR failed: exit status=$?" 2
-cd $WORK_DIR || die "cd work $WORK_DIR failed: exit status=$?" 2
+mkdir -p $WORK_DIR || die "mkdir work $WORK_DIR failed: exit status=$?"
+cd $WORK_DIR || die "cd work $WORK_DIR failed: exit status=$?"
 
 #  fetch the pdf blob into work directory
 
 PDF=$PDF_UDIG.pdf
-blobio get --udig $PDF_UDIG --output-path $PDF --service $GET_SERVICE
+blobio get --udig $PDF_UDIG --output-path $PDF $GET_SERVICE
 STATUS=$?
 
 case $STATUS in
@@ -87,7 +74,7 @@ case $STATUS in
 	exit 1
 	;;
 *)
-	die "blobio get pdf failed: exit status=$?" 3
+	die "blobio get pdf failed: exit status=$?"
 	;;
 esac
 
@@ -98,16 +85,16 @@ java 									\
 	-server								\
 	-cp $CLASSPATH							\
 	ExtractPagesUTF8						\
-	<$PDF 2>STDERR
+	<$PDF >STDOUT 2>STDERR
 STATUS=$?
+test $STATUS = 0 || die "java ExtractPagesUTF8 failed: exit status=$STATUS"
+test -e STDOUT || die "java write to stdout failed" 
 test -e STDERR || die "java write to stderr failed" 
-
-test $STATUS = 0 ||
-	_fault "java ExtractPagesUTF8 failed: exit status=$STATUS" 4
 
 #  loop through the page files to put the blobs and record udigs in <page>.udig
 
 find . -maxdepth 1 -name '[0-9][0-9][0-9][0-9][0-9][0-9][0-9].txt' -type f   |
+  sort									     |
   while read PAGE_PATH;  do
 
 	#  calculate the digest of the page of text
@@ -117,7 +104,7 @@ find . -maxdepth 1 -name '[0-9][0-9][0-9][0-9][0-9][0-9][0-9].txt' -type f   |
 			--input-path $PAGE_PATH				\
 			--algorithm $ALGORITHM
 	)
-	test $? = 0 || die "blobio eat page text failed: exit status=$?" 3
+	test $? = 0 || die "blobio eat page text failed: exit status=$?"
 
 	#  put the page of text to blob storage
 
@@ -125,28 +112,38 @@ find . -maxdepth 1 -name '[0-9][0-9][0-9][0-9][0-9][0-9][0-9].txt' -type f   |
 		--input-path $PAGE_PATH					\
 		--udig $PAGE_UDIG					\
 		--service $BLOBIO_SERVICE				||
-		die "blobio put page failed: exit status=$?" 3
+		die "blobio put page failed: exit status=$?"
 
 	UDIG_PATH=$(basename $PAGE_PATH .txt).udig
 	echo $PAGE_UDIG >$UDIG_PATH ||
-				die "echo udig > failed: exit status=$?" 2
+				die "echo page udig > failed: exit status=$?"
+
+	#  Note: blob must appear in setcore.service or foreign key fails!
+
+	spin-wait-blob setcore.service blob 32 $PAGE_UDIG
+	STATUS=$?
+	case $STATUS in
+	0)
+		;;		#  blob appeared in table setcore.service
+	1)
+		die 'spin-wait-blob: page txt: blob not in setcore.service'
+		;;
+	*)
+		die "spin-wait-blob failed: exit status=$STATUS"
+		;;
+	esac
+		
 done
 STATUS=${PIPESTATUS[*]}
 case "$STATUS" in
-'0 0')
-	;;
-'0 2')
-	exit 2
-	;;
-'0 3')
-	exit 3		# WTF?
+'0 0 0')
 	;;
 *)
-	die "find | page text failed: exit status=$STATUS" 2
+	die "find | page text failed: exit status=$STATUS"
 	;;
 esac
 
 #  sql merge all pages, text, tsf in database in a single transaction
 
-merge-all-extract_pages_utf8 $PDF_UDIG $TS_CONF 2>STDERR ||
-	_fault "merge-all-extract_pages_utf8 failed: exit status=$?" 5
+merge-all-extract_pages_utf8 "$TS_CONF" $PDF_UDIG 2>STDERR ||
+	die "merge-all-extract_pages_utf8 failed: exit status=$?"

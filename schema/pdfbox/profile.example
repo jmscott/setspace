@@ -3,25 +3,19 @@
 #	Profile for typical pdfbox server
 #  Usage:
 #	. $SETSPACE_ROOT/schema/pdfbox/etc/profile
-#  Note:
-#	Contemplate replacing env variable SCHEMA_ROOT with SETSPACE_SCHEMA
 #
-SCHEMA_ROOT=$SETSPACE_ROOT/schema/pdfbox
-export TMPDIR=$SCHEMA_ROOT/tmp
 
-export PDFBOX_ROOT=${PDFBOX_ROOT:=$SCHEMA_ROOT}
+export SETSPACE_SCHEMA_ROOT=$SETSPACE_ROOT/schema/pdfbox
+export TMPDIR=$SETSPACE_SCHEMA_ROOT/tmp
 
 #  create the spool file so tail doesn't abort.
 #  Note: got to be a better way. perhaps flowd.tail ought to create the file.
-touch $SCHEMA_ROOT/spool/prefixio.brr
-chmod u=rw,g=w,o= $SCHEMA_ROOT/spool/prefixio.brr
+_BRR=$SETSPACE_SCHEMA_ROOT/spool/prefixio.brr
+touch $_BRR
+chmod u=rw,g=w,o= $_BRR
 
-PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH
+PATH=$SETSPACE_SCHEMA_ROOT/sbin:$SETSPACE_SCHEMA_ROOT/bin:$PATH
+PATH=$SETSPACE_ROOT/schema/setops/sbin:$PATH
 
 export PDFBOX_APP_JAR=${PDFBOX_APP_JAR:=/usr/local/lib/pdfbox-app-2.jar}
-export CLASSPATH=$PDFBOX_ROOT/lib:$PDFBOX_APP_JAR:$CLASSPATH
-
-export LD_LIBRARY_PATH=$PGHOME/lib:$LD_LIBRARY_PATH
-
-# for openjdk16, be sure to define
-#export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk16/Contents/Home
+export CLASSPATH=$SETSPACE_SCHEMA_ROOT/lib:$PDFBOX_APP_JAR:$CLASSPATH
