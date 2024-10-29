@@ -7,6 +7,12 @@
 #
 
 PROG=$(basename $0)
+PSQL='psql
+	--quiet
+	--no-psqlrc
+	--tuples-only
+	--no-readline
+'
 
 die()
 {
@@ -14,17 +20,12 @@ die()
 	exit 1
 }
 
-test $# = 0 && exec libexec/ssq-setops-ls-recent
-ACTION="$1"
-shift
+test $# = 0 || die "bad cli arg count: got $#, expected 0"
 
-case "$ACTION" in
-service|ls)
-	;;
-*)
-	die "unknown action: $ACTION"
-	;;
-esac
-
-exec libexec/ssq-setops-$ACTION $@
-exit 0
+$PSQL <<END || die "psql failed: exit status=$?"
+SELECT
+	blob
+  FROM
+  	setops.service
+;
+END

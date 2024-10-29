@@ -1,36 +1,45 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	Merge fault for a flowd call.
+#	Merge fault for a flowd call for a particular coman in a schema.
 #  Usage:
+#	#  blob the command faulted upon
+#	BLOB=sha:7763765cdcbf9cf3f86474556304b49b397b8b45
+#
 #	merge-flowd_call_fault						\
-#		pdfbox							\
-#		merge_pddocument					\
-#		sha:7763765cdcbf9cf3f86474556304b49b397b8b45		\
-#		ERR							\
-#		2
-#		0
-#		/dev/null
-#		-
+#		pdfbox			#  schema			\
+#		merge_pddocument	#  command			\
+#		$BLOB							\
+#		ERR			#  xdr exit class ERR, SIG, NOPS\
+#		2			#  process exit status
+#		0			#  exit signal - 0 implies no signal
+#		/dev/null		#  stdout file of blob
+#		-			#  stderr of blob "-" reads from stdin
 #  Environment:
 #	BLOBIO_ALGORITHM
 #  Exit Status:
 #	0	fault merged into table setops.flowd_call_fault
 #	1	unexpected error (no fault written)
 #  Note:
+#	Consider creating separate table for std{out,err} of blob.
+#
 #	Would be nice to eliminate the spin-wait-blob code.  Without the code
 #	the std{out,err} can not reference setcore.service.
 #
 
-set -x
-
 PROG=$(basename $0)
-PSQL='psql --no-psqlrc --quiet --no-readline'
-export TMP_INPUT_PATH
+PSQL='psql
+	--quiet
+	--no-psqlrc
+	--no-readline
+	--set ON_ERROR_STOP=1
+'
+TMP_INPUT_PATH=${TMPDIR:=/tmp}/$PROG-$$.blob
 
 leave()
 {
-	rm --force "$TMP_INPUT_PATH"
+	rm --force $TMP_INPUT_PATH				||
+		echo "$PROG: ERROR: rm tmp blob failed: exit status=$?" >&2 
 }
 
 die()
@@ -50,9 +59,8 @@ SIGNAL=$6
 STDOUT_PATH=$7
 STDERR_PATH=$8
 
-test "$STDOUT_PATH" = '-' -a "$STDOUT_PATH" = '-'			&&
+test "$STDOUT_PATH" = '-' -a "$STDERR_PATH" = '-'			&&
 	die "both stdout and stderr path can not be - (stdin)"
-
 trap leave EXIT
 
 test -n "$BLOBIO_ALGORITHM" || die 'env not defined: BLOBIO_ALGORITHM'
@@ -63,12 +71,11 @@ test -n "$BLOBIO_ALGORITHM" || die 'env not defined: BLOBIO_ALGORITHM'
 eat() {
 	local WHAT=$1
 	local SRC_PATH=$2
+	local TMP_INPUT_PATH=$3
 
 	#  slurp input from stdin or test for readable file
 	case "$SRC_PATH" in
 	-)
-		TMP_INPUT_PATH=${TMPDIR:=/tmp}/$PROG-$WHAT-$$.blob
-
 		#  slurp stdin for for stderr
 		cat >$TMP_INPUT_PATH || die "cat >$WHAT failed: exit status=$?"
 		SRC_PATH=$TMP_INPUT_PATH
@@ -92,8 +99,8 @@ eat() {
 	echo $UDIG
 }
 
-STDOUT_BLOB=$(eat stdout $STDOUT_PATH)
-STDERR_BLOB=$(eat stderr $STDERR_PATH)
+STDOUT_BLOB=$(eat stdout $STDOUT_PATH $TMP_INPUT_PATH)
+STDERR_BLOB=$(eat stderr $STDERR_PATH $TMP_INPUT_PATH)
 
 #
 #  Note:
@@ -101,31 +108,67 @@ STDERR_BLOB=$(eat stderr $STDERR_PATH)
 #	otherwise, the foreign key reference in flowd_call-fault causes
 #	INSERT to fail.  Seems like a better way should exist.
 #
-spin-wait-blob setcore.service blob 32 $STDOUT_BLOB			||
-			die "spin-wait-blob stdout failed: exit status=$?: $"
-spin-wait-blob setcore.service blob 32 $STDERR_BLOB			||
-			die "spin-wait-blob stderr failed: exit status=$?"
 
-$PSQL <<END || die "psql insert failed: exit status=$?"
+
+$PSQL <<END || die "psql insert fault failed: exit status=$?"
 INSERT INTO setops.flowd_call_fault(
 	schema_name,
 	command_name,
 	blob,
 	exit_class,
 	exit_status,
-	signal,
-	stdout_blob,
-	stderr_blob
+	signal
   ) VALUES (
   	'$SCHEMA_NAME',
 	'$COMMAND_NAME',
 	'$BLOB',
 	'$EXIT_CLASS',
 	$EXIT_STATUS,
-	$SIGNAL,
-	'$STDOUT_BLOB',
-	'$STDERR_BLOB'
+	$SIGNAL
   ) ON CONFLICT
   	DO NOTHING
 ;
 END
+
+#  wait for the output blobs to appear in table setcore.service.
+
+spin-wait-blob setcore.service blob 32 $STDOUT_BLOB			||
+		die "spin-wait-blob stdout failed: exit status=$?: $STDOUT_BLOB"
+
+$PSQL <<END || die "psql insert fault stdout failed: exit status=$?"
+INSERT INTO setops.flowd_call_fault_output(
+	schema_name,
+	command_name,
+	blob,
+	stdout_blob
+  ) VALUES (
+  	'$SCHEMA_NAME',
+	'$COMMAND_NAME',
+	'$BLOB',
+	'$STDOUT_BLOB'
+  ) ON CONFLICT
+  	DO NOTHING
+;
+END
+
+spin-wait-blob setcore.service blob 32 $STDERR_BLOB			||
+		die "spin-wait-blob stderr failed: exit status=$?: $STDERR_BLOB"
+
+#  Note: race condition exists if pdfbox.flowd fires same command twice
+
+$PSQL <<END || die "psql update fault stderr failed: exit status=$?"
+UPDATE setops.flowd_call_fault_output
+  SET
+  	stderr_blob = '$STDERR_BLOB'
+  WHERE
+  	schema_name = '$SCHEMA_NAME'
+	AND
+	command_name = '$COMMAND_NAME'
+	AND
+	blob = '$BLOB'
+	AND
+	stderr_blob IS NULL
+;
+END
+
+exit 0

@@ -24,9 +24,8 @@ WORK_DIR=${TMPDIR:=/tmp}/$PROG-$$.d
 
 leave()
 {
-	true
-	#rm --recursive --force $WORK_DIR				||
-		#echo "$PROG: ERROR: rm work dir failed: exit status=$?" >&2
+	rm --recursive --force $WORK_DIR				||
+		echo "$PROG: ERROR: rm work dir failed: exit status=$?" >&2
 }
 
 trap leave EXIT

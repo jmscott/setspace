@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -x
+#
+#  Synopsis:
+#	Libexec from ssq-setops for most recent blobs in setops.service
+#  Usage:
+#	sql setops
+#
+PROG=$(basename $0)
+
+PSQL='psql
+	--echo-queries
+	--no-psqlrc
+	--tuples-only
+	--no-readline
+'
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&2 
+	exit 1
+}
+
+test $# = 0 && exec libexec/ssq-setops-ls-recent
+test $# = 1 || die "wrong cli arg count: got $#, expected 1 (udig)"
+
+#  need test of udig syntax
+
+BLOB="$1"
+
+$PSQL <<END || die "psql failed: exit status=$?"
+SELECT
+	sop.blob AS "Blob",
+	srv.discover_time AS "Discover Time",
+	flt.schema_name AS "Schema",
+	flt.command_name AS "Command"
+  FROM
+  	setops.service sop
+	  JOIN setcore.service srv ON (
+	  	srv.blob = sop.blob
+	  )
+	  JOIN setops.flowd_call_fault flt ON (
+	  	flt.blob = srv.blob
+	  )
+  WHERE
+  	sop.blob = '$BLOB'
+;
+END

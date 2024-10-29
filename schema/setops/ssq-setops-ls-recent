@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	Libexec from ssq-setops for most recent blobs in setops.service
+#  Usage:
+#	sql setops
+#
+PROG=$(basename $0)
+
+PSQL='psql
+	--quiet
+	--no-psqlrc
+	--tuples-only
+	--no-readline
+	--expanded
+'
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&2 
+	exit 1
+}
+
+$PSQL <<END || die "psql failed: exit status=$?"
+SELECT
+	flt.schema_name AS "Schema",
+	flt.command_name AS "Command Name",
+	flt.blob AS "Blob",
+	flt.exit_class AS "Exit Class",
+	flt.exit_status AS "Exit Status",
+	flt.signal AS "Signal",
+	CASE
+	  WHEN
+	  	fo.stdout_blob IS NULL
+		OR
+		setcore.is_empty(fo.stdout_blob) IS NULL
+	  THEN 'Unknown'
+
+	  WHEN setcore.is_empty(fo.stdout_blob) = true
+	  THEN 'Empty'
+	  ELSE fo.stdout_blob::text
+	  END AS "StdOut Blob",
+	CASE
+	  WHEN
+	  	fo.stderr_blob IS NULL
+		OR
+		setcore.is_empty(fo.stderr_blob) IS NULL
+	  THEN 'Unknown'
+
+	  WHEN setcore.is_empty(fo.stderr_blob) = true
+	  THEN 'Empty'
+	  ELSE fo.stderr_blob::text
+	  END AS "StdErr Blob",
+	srv.discover_time AS "Discover Time"
+  FROM
+  	setops.flowd_call_fault flt
+	  JOIN setcore.service srv ON (
+	  	srv.blob = flt.blob
+	  )
+	  LEFT OUTER JOIN setops.flowd_call_fault_output fo ON (
+	  	fo.schema_name = flt.schema_name
+		AND
+		fo.command_name = flt.command_name
+		AND
+		fo.blob = flt.blob
+	  )
+  ORDER BY
+  	srv.discover_time DESC,
+	flt.blob ASC,
+	flt.schema_name ASC,
+	flt.command_name ASC
+  LIMIT
+  	10
+;
+END

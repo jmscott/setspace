@@ -65,6 +65,14 @@ SCHEMA_DIR=schema/$SCHEMA
 test -d $SCHEMA_DIR || die "not a schema: $SCHEMA"
 cd $SCHEMA_DIR || die "cd $SCHEMA_DIR/ failed: exit status=$?"
 
+#
+#  with no args ssq-<schema> runs ssq-<schema>-ls-recent
+#  schema
+
+if [ $# = 0 -a libexec/ssq-$SCHEMA-ls-recent ];  then
+	LS_RECENT=libexec/ssq-$SCHEMA-ls-recent
+	test -x $LS_RECENT && exec $LS_RECENT
+fi
 SCHEMA_EXEC=libexec/ssq-$SCHEMA
 test -e $SCHEMA_EXEC || die "no exec for schema: $SCHEMA"
 test -x $SCHEMA_EXEC || die "libexec not executable: $SCHEMA_EXEC"

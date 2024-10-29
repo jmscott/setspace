@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -x
 # 
 #  Synopsis:
 #	Merge commands in <schema>/etc/<schema>.flow in table flowd_command
@@ -16,13 +15,14 @@ PSQL='psql --quiet --no-psqlrc --no-readline'
 
 die()
 {
-	FAULT="$(date): ERROR: $@"
+	local MSG="ERROR: $@"
+	FAULT="$(date): $MSG"
 	test -d run && (
 		echo $FAULT >>run/$PROG.fault				||
-			echo "WARN: echo >run/failt failed: exit status=$?" >&2
+			echo "WARN: echo >run/fault failed: exit status=$?" >&2
 	)
 
-	echo  "$PROG: ERROR: $@" >&2
+	echo "$PROG: $FAULT" >&2
 	exit 1
 }
 

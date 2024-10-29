@@ -7,19 +7,19 @@
 #  Update table setops.flowd_call_fault with details of fault
 #
 #  Usage:
+#	#  in script for schema pdfbox
+#
 #	die() {
 #		source $SETSPACE_SCHEMA_ROOT/lib/merge-fault.bash
 #		die_merge <command_name> $@
 #	}
 #
-set -x
-
 die_merge()
 {
 	local CMD=$1
 	shift
 
-	local MSG="$PROG: ERROR: $@"
+	local MSG="$PROG: ERROR: $CMD: $@"
 	echo $MSG >&2
 
 	local RUN=$SETSPACE_SCHEMA_ROOT/run
@@ -42,7 +42,7 @@ die_merge()
 
 	case "$STATUS" in
 	'0 0')
-		;;
+		;;		#  merged fault successfully but still in error
 	*)
 		MSG="merge-flowd_call_fault pdfbox failed: exit status=$STATUS"
 		echo "$PROG: ERROR: $MSG" >&2

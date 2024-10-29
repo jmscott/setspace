@@ -82,10 +82,6 @@ CREATE TABLE flowd_call_fault
 				AND
 				signal <= 127
 			),
-	stdout_blob	udig REFERENCES setcore.service(blob)
-			  ON DELETE SET NULL,
-	stderr_blob	udig REFERENCES setcore.service(blob)
-			  ON DELETE SET NULL,
 
 	insert_time	setcore.inception DEFAULT now() NOT NULL,
 
@@ -95,14 +91,34 @@ CREATE TABLE flowd_call_fault
 );
 CREATE INDEX flowd_call_fault_when ON flowd_call_fault(insert_time);
 CREATE INDEX flowd_call_fault_blob ON flowd_call_fault USING hash(blob);
-
 COMMENT ON TABLE flowd_call_fault IS
   'Fault in flowd process for particular blob and command'
 ;
-COMMENT ON COLUMN flowd_call_fault.stderr_blob IS
+
+DROP TABLE IF EXISTS flowd_call_fault_output CASCADE;
+CREATE TABLE flowd_call_fault_output
+(
+	schema_name	name63,
+	command_name	name63,
+	blob		udig,
+
+	stdout_blob	udig
+				REFERENCES setcore.service(blob)
+				ON DELETE SET NULL,
+	stderr_blob	udig
+				REFERENCES setcore.service(blob)
+				ON DELETE SET NULL,
+
+	PRIMARY KEY	(schema_name, command_name, blob),
+	FOREIGN KEY	(schema_name, command_name, blob)
+				REFERENCES flowd_call_fault
+				ON DELETE CASCADE
+);
+
+COMMENT ON COLUMN flowd_call_fault_output.stderr_blob IS
   'Stderr blob of fault in flowd call for particular blob and command'
 ;
-COMMENT ON COLUMN flowd_call_fault.stdout_blob IS
+COMMENT ON COLUMN flowd_call_fault_output.stdout_blob IS
   'Stdout blob of fault in flowd call for particular blob and command'
 ;
 
@@ -389,19 +405,9 @@ CREATE VIEW service AS
   	blob
       FROM
     	flowd_call_fault
-  UNION
-    SELECT
-  	stdout_blob
-      FROM
-    	flowd_call_fault
-  UNION
-    SELECT
-  	stderr_blob
-      FROM
-    	flowd_call_fault
 ;
 COMMENT ON VIEW service IS
-  'Blobs involved with faults in devops for setspace'
+  'Blobs in fault for any schema in setspace'
 ;
 
 DROP VIEW IF EXISTS rummy CASCADE;
@@ -411,7 +417,7 @@ CREATE VIEW rummy AS
     WHERE
     	false
 ;
-COMMENT ON VIEW IS
+COMMENT ON VIEW rummy IS
   'Unresolved blobs on schema setops'
 ;
 

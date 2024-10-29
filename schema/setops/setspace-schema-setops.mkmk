@@ -105,6 +105,9 @@ LOG="
 #  Uncomment to create directory libexec/
 LIBEXECs="
 	ssq-setops
+	ssq-setops-ls
+	ssq-setops-ls-recent
+	ssq-setops-service
 "
 
 #  Uncomment to create directory include/
