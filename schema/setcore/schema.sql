@@ -236,9 +236,14 @@ CREATE FUNCTION is_empty(udig) RETURNS bool
 	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'
       )
       THEN true
-      ELSE false
+      WHEN $1::text ~ '^(sha|btc20|bc160):[[:ascii:]]{40}'
+      THEN false
+      ELSE NULL
       END
   $$ LANGUAGE SQL
+  IMMUTABLE		--  problematic if new algo added for
+  PARALLEL SAFE
+  RETURNS NULL ON NULL INPUT
 ;
 
 COMMIT TRANSACTION;
