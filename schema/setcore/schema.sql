@@ -226,4 +226,19 @@ COMMENT ON VIEW rummy IS
   'Blobs with attributes not discovered in schema setcore'
 ;
 
+DROP FUNCTION IF EXISTS is_empty(udig) CASCADE;
+CREATE FUNCTION is_empty(udig) RETURNS bool
+  AS $$
+    SELECT CASE
+      WHEN $1 IN (
+      	'sha:da39a3ee5e6b4b0d3255bfef95601890afd80709',
+	'bc160:b472a266d0bd89c13706a4132ccfb16f7c3b9fcb',
+	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'
+      )
+      THEN true
+      ELSE false
+      END
+  $$ LANGUAGE SQL
+;
+
 COMMIT TRANSACTION;
