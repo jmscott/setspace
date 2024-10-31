@@ -559,3 +559,5 @@ Possible Schemas:
 		https://github.com/neonbjb/tortoise-tts
 	PGroonga - multilingual text search
 		https://supabase.com/docs/guides/database/extensions/pgroonga
+	hexapdf - pdf pparsing library
+		https://hexapdf.gettalong.org/index.html
