@@ -10,6 +10,3 @@ export TMPDIR=$SCHEMA_ROOT/tmp
 export SETOPS_ROOT=${PDFBOX_ROOT:=$SCHEMA_ROOT}
 
 PATH=$SCHEMA_ROOT/sbin:$SCHEMA_ROOT/bin:$PATH:$SETSPACE_ROOT/sbin
-
-merge-sql-default							||
-	echo "etc/profile: ERROR: merge-sql-default failed: exit status=$?" >&2
