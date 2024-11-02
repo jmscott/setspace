@@ -121,8 +121,14 @@ slurp(char *what, char *path, void **buf, ssize_t *buf_size)
 		return st.st_size;
 	case -1:
 		die3(what, "read(exact) failed", strerror(errno));
+
+		/*NOT REACHED*/
+		break;
 	case -2:
 		die2(what, "read(exact): unexpected end-of-file");
+
+		/*NOT REACHED*/
+		break;
 	}
 	jmscott_panic2(what, "read(exact): impossible status");
 
