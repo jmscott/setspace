@@ -4,6 +4,14 @@ See:
 	INSTALL.macos
 	http://www.darwinsys.com/file/
 Note:
+	why does the gnu file command get the page count wrong for this pdf
+	blob?
+
+		sha:1e6acc2e43515007117e9128116329eb5f2c2819
+
+	says the page count is zero when pdfbox says 6 pages.
+
+
 	A commercial, statistical file analyzer is here
 
 		http://mark0.net/soft-trid-e.html
