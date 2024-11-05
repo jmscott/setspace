@@ -5,9 +5,6 @@
  *	http://www.darwinsys.com/file/
  *  Note:
  *	Investigate "file" option "--uncompress".
- #
- *	Replace table fffile5.fault with fffile5.fault_process similar to
- *	pdfbox.fault_process.
  */
 
 \set ON_ERROR_STOP on
@@ -83,29 +80,17 @@ CREATE INDEX file_mime_encoding_idx ON file_mime_encoding(mime_encoding);
 /*
  *  Track very rare failures in various file commands defined in flowd.
  */
-DROP TABLE IF EXISTS fault;
-CREATE TABLE fault
-(
-	blob		udig,
-	command_name	text CHECK (
-				command_name in (
-					'file',
-					'file_mime_encoding',
-					'file_mime_type'
-				)
-			),
-	exit_status	smallint CHECK (
-				exit_status > 0
-				and
-				exit_status <= 255
-			) NOT NULL,
-	insert_time	timestamptz
-				DEFAULT now()
-				NOT NULL,
-	PRIMARY KEY	(blob, command_name)
-);
-COMMENT ON TABLE fault IS
-  'Track failures in file commands'
+DROP VIEW IF EXISTS fault CASCADE;
+CREATE VIEW fault AS
+  SELECT
+  	DISTINCT blob
+    FROM
+    	setops.flowd_call_fault flt
+    WHERE
+    	flt.schema_name = 'fffile5'
+;
+COMMENT ON VIEW fault IS
+  'Blobs for which the "file" commands failed (rare)'
 ;
 
 DROP MATERIALIZED VIEW IF EXISTS file_stat CASCADE;
