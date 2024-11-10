@@ -261,7 +261,7 @@ COMMENT ON TRIGGER insert_jsonb_255_key_word_set
   IS 'Add objects keys for trigram search'
 ;
 
-DROP VIEW IF EXISTS service;
+DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS
   SELECT
   	ck.blob
@@ -286,7 +286,6 @@ CREATE VIEW fault AS
     WHERE
     	schema_name = 'jsonorg'
 ;
-
 /*
  *  Synopsis:
  *	Find candidate blobs for json analysis.
@@ -315,7 +314,7 @@ CREATE VIEW rummy AS
 	j.blob IS NULL
 ;
 
-DROP VIEW IF EXISTS detail;
+DROP VIEW IF EXISTS detail CASCADE;
 CREATE VIEW detail AS
   SELECT
   	ck.is_json,
