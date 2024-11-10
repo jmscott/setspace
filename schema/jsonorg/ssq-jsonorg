@@ -59,27 +59,6 @@ SELECT
 END
 }
 
-ls_recent()
-{
-	$PSQL --expanded <<END || die "ls_recent: psql failed: exit status=$?"
-SELECT
-	srv.blob AS "Blob",
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
-                AS "Age",
-	pg_size_pretty(bc.byte_count) AS "Size"
-  FROM
-  	jsonorg.service srv
-	  JOIN setcore.service s ON (s.blob = srv.blob) 
-	  JOIN setcore.byte_count bc ON (bc.blob = srv.blob)
-  ORDER BY
-  	s.discover_time DESC,
-	bc.byte_count DESC,
-	srv.blob ASC
-  LIMIT
-  	10
-END
-}
-
 refresh()
 {
 	$PSQL <<END || die "psql refresh failed: exit status=$?"
@@ -204,10 +183,7 @@ SELECT
 END
 }
 
-if [ $# = 0 ];  then
-	help
-	exit 0
-fi
+test $# = 0 && exec lib/ssq-jsonorg-ls-recent
 
 ACTION="$1";  shift
 

@@ -13,21 +13,22 @@ include ../schema.mk
 
 _MAKE=$(MAKE) $(MFLAGS)
 
-COMPILED=								\
-	JSON_checker							\
-	merge-stdin-jsonb_255
+MKMK=setspace-schema-jsonorg.mkmk
+COMPILEs := $(shell  (. ./$(MKMK) && echo $$COMPILEs))
+SBINs := $(shell  (. ./$(MKMK) && echo $$SBINs))
+BINs := $(shell  (. ./$(MKMK) && echo $$BINs))
+LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
+LIBEXECs := $(shell  (. ./$(MKMK) && echo $$LIBEXECs))
+SRCs := $(shell  (. ./$(MKMK) && echo $$SRCs))
 
-SBINs=  $(COMPILED)							\
-	get-JSON_checker						\
-	merge-jsonb_255
-LIBEXECs=ssq-jsonorg
+all: $(COMPILEs)
 
-all: $(COMPILED)
 clean:
-	rm -f $(COMPILED) merge-stdin-jsonb_255.c
+	rm -f $(COMPILEs) merge-stdin-jsonb_255.c
 
 install: all
 	cd .. && $(_MAKE) install-dirs
+
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
 				-d $(JSONORG_PREFIX)
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) 			\
@@ -87,3 +88,5 @@ distclean:
 	rm -rf $(JSONORG_PREFIX)/src
 	rm -rf $(JSONORG_PREFIX)/sbin
 	rm -rf $(JSONORG_PREFIX)/libexec/
+tar:
+	make-make tar $(MKMK)
