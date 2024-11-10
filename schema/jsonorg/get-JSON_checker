@@ -6,9 +6,7 @@
 #	0	valid json according to the program JSON_checker
 #	1	not valid json according to the program JSON_checker
 #	2	blob does not exist
-#	3	wrong number of command line arguments
-#	4	unknown blobio error
-#	5	unknown JSON_checker error
+#	3	unexpected error
 #  Usage:
 #	get-JSON_checker <blob> <byte count>
 #  Environment

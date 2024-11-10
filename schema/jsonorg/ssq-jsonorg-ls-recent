@@ -49,6 +49,7 @@ WITH recent AS (
 	  WHEN dt.is_json THEN 'Yes'
 	  ELSE 'No'
 	END AS "Is Json",
+	COALESCE(dt.word_set_255, 'Unknown') AS "Word Set <= 255",
 	COALESCE(substring(dt.doc_jsonb_255::text, 1, 32)::text, 'Unknown')
 	  AS "JSONB <= 32",
 	COALESCE(rec.fault_count::text, 'Unknown') AS "Fault Count",

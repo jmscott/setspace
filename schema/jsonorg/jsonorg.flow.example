@@ -149,8 +149,7 @@ command get_JSON_checker
 		0,	#  is valid json
 		1,	#  is not valid json
 		2,	#  blob does not exist
-		3,	#  wrong number of command line arguments
-		4	#  blobio | JSON_checker failed
+		3	#  unexpected error
 	};
 }
 
