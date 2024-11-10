@@ -48,6 +48,7 @@ LIBs="
 #"
 
 SBINs="
+	$COMPILEs
 	get-JSON_checker
 	merge-jsonb_255
 "
@@ -66,7 +67,8 @@ SBINs="
 
 #  Uncomment to create src/ directory
 SRCs="
-	merge-stdin-jsonb_255.pgc
+	JSON_checker.c						\
+	merge-stdin-jsonb_255.pgc				\
 "
 
 #  Uncomment to create attic/ directory

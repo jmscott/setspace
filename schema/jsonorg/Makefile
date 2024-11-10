@@ -23,6 +23,12 @@ SRCs := $(shell  (. ./$(MKMK) && echo $$SRCs))
 
 all: $(COMPILEs)
 
+world:
+	$(_MAKE) clean
+	$(_MAKE) distclean
+	$(_MAKE) all
+	$(_MAKE) install
+
 clean:
 	rm -f $(COMPILEs) merge-stdin-jsonb_255.c
 
@@ -56,16 +62,10 @@ install: all
 		$(LIBEXECs) 						\
 		$(JSONORG_PREFIX)/libexec
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r		\
-		jsonorg.flow.example					\
-		merge-jsonb_255_key.sql					\
-		profile.example						\
-		psqlrc.example						\
-		schema.sql						\
-		select-count-object-key.sql				\
+		$(LIBs)							\
 		$(JSONORG_PREFIX)/lib
 	install -g $(JSONORG_GROUP) -o $(JSONORG_USER) -m a=r		\
-		JSON_checker.c						\
-		merge-stdin-jsonb_255.pgc				\
+		$(SRCs)							\
 		$(JSONORG_PREFIX)/src
 
 JSON_checker: JSON_checker.c

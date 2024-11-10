@@ -10,37 +10,38 @@
 #   Exit Status:
 #   	0	ok, tuple was merged
 #	1	blob does not exist
-#   	2	wrong number of arguments
-#	3	unexpected blobio error
-#	4	unexpected merge error
+#	3	unexpected merge error
 #  Environment
 #	BLOBIO_SERVICE
 #	BLOBIO_GET_SERVICE
 #  
 PROG=merge-jsonb_255
+
 BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
 
 die()
 {
-	STATUS=$2
-	echo "$PROG: ERROR: $1" >&2
-	exit $STATUS
+	source $SETSPACE_ROOT/schema/jsonorg/lib/merge-fault.bash
+
+	die_merge merge_jsonb_255 $@
 }
 
 leave()
 {
 	rm -f $TMP_BLOB
 }
-
 trap leave EXIT
 
 test $# = 2 || die "wrong number of arguments: got $#, expected 2" 2
 
-UDIG=$1
+JSON_UDIG=$1
 SIZE=$2
 
-blobio get --udig $UDIG --output-path $TMP_BLOB --service $BLOBIO_GET_SERVICE
+blobio get								\
+	--udig $JSON_UDIG						\
+	--output-path $TMP_BLOB						\
+	--service $BLOBIO_GET_SERVICE
 STATUS=$?
 
 case $STATUS in
@@ -53,5 +54,5 @@ case $STATUS in
 	die "blobio get failed: exit status=$STATUS" 3
 	;;
 esac
-merge-stdin-jsonb_255 $UDIG $SIZE <$TMP_BLOB				||
+merge-stdin-jsonb_255 $JSON_UDIG $SIZE <$TMP_BLOB			||
 	die "merge-stdin-jsonb_255 failed: exit status=$?" 4

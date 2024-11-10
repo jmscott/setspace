@@ -27,10 +27,8 @@ trap leave EXIT
 
 die()
 {
-	MSG=$1
-	STATUS=$2
-	echo "JSON_checker.sh: ERROR: $MSG" >&2
-	exit $STATUS
+	source $SETSPACE_ROOT/schema/jsonorg/lib/merge-fault.bash
+	die_merge get-JSON_checker #@
 }
 
 test $# = 1 || die "wrong number of command line arguments" 3
@@ -50,6 +48,7 @@ case $STATUS in
 esac
 
 #  is the blob true json
+
 JSON_checker <$TMP_BLOB
 STATUS=$?
 case "$STATUS" in
@@ -57,6 +56,6 @@ case "$STATUS" in
 	exit $STATUS
 	;;
 *)
-	die "JSON_checker failed: exit status=$STATUS" 5
+	die "JSON_checker failed: exit status=$STATUS"
 	;;
 esac
