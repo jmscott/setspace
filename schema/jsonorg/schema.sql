@@ -315,6 +315,30 @@ CREATE VIEW rummy AS
 	j.blob IS NULL
 ;
 
+DROP VIEW IF EXISTS detail;
+CREATE VIEW detail AS
+  SELECT
+  	ck.is_json,
+	jb.doc AS doc_jsonb_255,
+	jw.word_set AS word_set_255,
+	CASE
+	  WHEN rum.blob IS NULL 
+	  THEN false
+	  ELSE true
+	END AS "is_rummy"
+    FROM
+    	checker_255 ck
+	  LEFT OUTER JOIN jsonb_255 jb ON (
+	  	jb.blob = ck.blob
+	  )
+	  LEFT OUTER JOIN jsonb_255_key_word_set jw ON (
+	  	jw.blob = ck.blob
+	  )
+	  LEFT OUTER JOIN rummy rum ON (
+	  	rum.blob = ck.blob
+	  )
+;
+
 REVOKE UPDATE ON ALL TABLES IN SCHEMA jsonorg FROM PUBLIC;
 
 COMMIT TRANSACTION;
