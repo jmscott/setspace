@@ -317,9 +317,20 @@ CREATE VIEW rummy AS
 DROP VIEW IF EXISTS detail CASCADE;
 CREATE VIEW detail AS
   SELECT
+  	ck.blob,
   	ck.is_json,
 	jb.doc AS doc_jsonb_255,
 	jw.word_set AS word_set_255,
+	CASE
+	  WHEN srv.blob IS NULL 
+	  THEN false
+	  ELSE true
+	END AS "in_service",
+	CASE
+	  WHEN flt.blob IS NULL 
+	  THEN false
+	  ELSE true
+	END AS "in_fault",
 	CASE
 	  WHEN rum.blob IS NULL 
 	  THEN false
@@ -333,9 +344,19 @@ CREATE VIEW detail AS
 	  LEFT OUTER JOIN jsonb_255_key_word_set jw ON (
 	  	jw.blob = ck.blob
 	  )
+	  LEFT OUTER JOIN service srv ON (
+	  	srv.blob = ck.blob
+	  )
+	  LEFT OUTER JOIN fault flt ON (
+	  	flt.blob = ck.blob
+	  )
 	  LEFT OUTER JOIN rummy rum ON (
 	  	rum.blob = ck.blob
 	  )
+;
+COMMENT ON VIEW detail
+  IS
+	'All attributes for json blobs, regardless if in service or not'
 ;
 
 REVOKE UPDATE ON ALL TABLES IN SCHEMA jsonorg FROM PUBLIC;
