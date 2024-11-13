@@ -272,7 +272,7 @@ COMMENT ON VIEW rummy IS
   'Blobs with to be discovered attributes'
 ;
 
-DROP VIEW IF EXISTS service;
+DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS
   SELECT
   	pd.blob
@@ -287,6 +287,24 @@ CREATE VIEW service AS
 	  	pdf_blob
 	    FROM
 	    	extract_pages_utf8
+	    WHERE
+	    	pdf_blob = pd.blob
+	)
+	AND
+    	EXISTS (
+	  SELECT
+	  	pdf_blob
+	    FROM
+	    	page_text_utf8
+	    WHERE
+	    	pdf_blob = pd.blob
+	)
+	AND
+    	EXISTS (
+	  SELECT
+	  	pdf_blob
+	    FROM
+	    	page_tsv_utf8
 	    WHERE
 	    	pdf_blob = pd.blob
 	)
