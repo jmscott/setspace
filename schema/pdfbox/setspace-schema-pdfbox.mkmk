@@ -58,7 +58,6 @@ LIBs="
 	plainto_tsquery.sql
 	profile.example	
 	psqlrc.example
-	schema-fault.sql
 	schema.sql
 	setspace-schema-pdfbox.mkmk
 "
