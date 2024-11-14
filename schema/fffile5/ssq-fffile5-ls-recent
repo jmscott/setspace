@@ -30,29 +30,29 @@ SELECT
 	f.blob AS "Blob",
 	f.file_type AS "File Type",
 	mt.mime_type AS "Mime Type",
-	mt.mime_encoding AS "Mime Encoding",
+	me.mime_encoding AS "Mime Encoding",
 	CASE
-	  WHEN srv.blob IS NULL THEN
+	  WHEN fsrv.blob IS NULL THEN
 	  	'No'
 	  ELSE
 	  	'Yes'
-	END AS "Service?"
+	END AS "Service?",
 	CASE
 	  WHEN rum.blob IS NULL THEN
 	  	'No'
 	  ELSE
 	  	'Yes'
-	END AS "Rummy?",'
-	s.discover_time AS "Discover Time"
+	END AS "Rummy?",
+	srv.discover_time AS "Discover Time"
   FROM
-  	fffile5 f
-	  JOIN setcore.service srv ON (src.blob = f.blob)
+  	fffile5.file f
+	  JOIN setcore.service srv ON (f.blob = f.blob)
 	  LEFT OUTER JOIN fffile5.file_mime_type mt ON (mt.blob = f.blob)
 	  LEFT OUTER JOIN fffile5.file_mime_encoding me ON (me.blob = f.blob)
-	  LEFT OUTER JOIN file.service srv ON (srv.blob = f.blob)
-	  LEFT OUTER JOIN file.rummy rum ON (rum.blob = f.blob)
+	  LEFT OUTER JOIN fffile5.service fsrv ON (fsrv.blob = f.blob)
+	  LEFT OUTER JOIN fffile5.rummy rum ON (rum.blob = f.blob)
   ORDER BY
-  	s.discover_time DESC
+  	srv.discover_time DESC
   LIMIT
   	10
 END
