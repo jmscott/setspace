@@ -1,6 +1,6 @@
 #
 #  Synopsis:
-#	Populate PostgreSQL schema for Fine Free File command facts
+#	Populate PostgreSQL schema "fffile5" for the Fine Free File command.
 #  See:
 #	schema.sql
 #  Note:
