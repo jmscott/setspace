@@ -177,39 +177,6 @@ COMMENT ON FUNCTION refresh_stat IS
   'Concurrently Refresh and Analyze All Materialied *_stat Views in fffile5'
 ;
 
-/*
- *  Synopsis:
- *	Find recent blobs in service but not in a table in fffile5.*
- *  Note:
- *	Querying setcore.service is incorrect.  Onstead, need to find all
- *	blobs defined in at least one fffile5.* table but not in all fffile5.*
- *	tables.
- */
-DROP VIEW IF EXISTS rummy CASCADE;
-CREATE VIEW rummy AS
-  SELECT
-	s.blob
-    FROM
-  	setcore.service s
-	  LEFT OUTER JOIN file f ON (f.blob = s.blob)
-	  LEFT OUTER JOIN file_mime_type ft ON (ft.blob = s.blob)
-	  LEFT OUTER JOIN file_mime_encoding fe ON (fe.blob = s.blob)
-	  LEFT OUTER JOIN fault flt ON (flt.blob = s.blob)
-    WHERE
-  	(
-		f.blob IS NULL
-		OR
-		ft.blob IS NULL
-		OR
-		fe.blob IS NULL
-	)
-	AND
-	flt.blob IS NULL
-;
-COMMENT ON VIEW rummy IS
-  'All blobs with undiscover attributes in schema fffile5'
-;
-
 DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS
   SELECT
@@ -221,6 +188,44 @@ CREATE VIEW service AS
 ;
 COMMENT ON VIEW service IS
   'Blobs with file, mime type and encoding known' 
+;
+
+DROP VIEW IF EXISTS rummy CASCADE;
+CREATE VIEW rummy AS
+  WITH all_blob AS (
+    SELECT
+    	blob
+      FROM
+      	file
+    UNION SELECT
+	blob
+      FROM
+  	file_mime_type
+    UNION SELECT
+	blob
+      FROM
+  	file_mime_encoding
+  ) SELECT
+  	a.blob
+      FROM
+      	all_blob a
+      WHERE
+      	NOT EXISTS (
+	  SELECT
+	  	srv.blob
+	    FROM
+	    	service srv
+	    WHERE
+	    	srv.blob = a.blob
+	)
+;
+
+COMMENT ON VIEW rummy IS
+  'All blobs with relations not discovered'
+;
+
+COMMENT ON VIEW rummy IS
+  'All blobs with undiscover attributes in schema fffile5'
 ;
 
 DROP VIEW IF EXISTS detail CASCADE;
