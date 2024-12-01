@@ -561,3 +561,5 @@ Possible Schemas:
 		https://supabase.com/docs/guides/database/extensions/pgroonga
 	hexapdf - pdf pparsing library
 		https://hexapdf.gettalong.org/index.html
+	utrac - Universal Text Recognizer and Converter
+		https://utrac.sourceforge.net/
