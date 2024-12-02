@@ -563,5 +563,6 @@ Possible Schemas:
 		https://hexapdf.gettalong.org/index.html
 	utrac - Universal Text Recognizer and Converter
 		https://utrac.sourceforge.net/
-		for other packages, see
+		for other char packages, see
 			https://utrac.sourceforge.net/links.html
+			https://www.alanwood.net/unicode/
