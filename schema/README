@@ -566,3 +566,5 @@ Possible Schemas:
 		for other char packages, see
 			https://utrac.sourceforge.net/links.html
 			https://www.alanwood.net/unicode/
+	uchardet - java implementation of mozilla detector
+		https://www.freedesktop.org/wiki/Software/uchardet/
