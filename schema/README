@@ -568,3 +568,5 @@ Possible Schemas:
 			https://www.alanwood.net/unicode/
 	uchardet - java implementation of mozilla detector
 		https://www.freedesktop.org/wiki/Software/uchardet/
+	fontawe6 - font awesome schema, works with schemafffile5
+		https://github.com/FortAwesome/Font-Awesome
