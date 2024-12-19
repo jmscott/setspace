@@ -407,7 +407,7 @@ CREATE VIEW service AS
     	flowd_call_fault
 ;
 COMMENT ON VIEW service IS
-  'Blobs in fault for any schema in setspace'
+  'Blobs serviced by setops - probably n fault'
 ;
 
 DROP VIEW IF EXISTS rummy CASCADE;
