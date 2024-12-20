@@ -102,11 +102,13 @@ sql query in_file_or_fault_table row
 	  SELECT
 	  	blob
 	    FROM
-	    	fffile5.fault
+	    	setops.flowd_call_fault
 	    WHERE
-	    	blob = $1::udig
-		and
+	    	schema_name = 'fffile5'
+		AND
 		command_name = 'file'
+		AND
+	    	blob = $1::udig
 	 );
 	`;
 
@@ -177,11 +179,13 @@ sql query in_file_mime_type_or_fault_table row
 	  SELECT
 	  	blob
 	    FROM
-	    	fffile5.fault
+	    	setops.flowd_call_fault
 	    WHERE
-	    	blob = $1::udig
-		and
+	    	schema_name = 'fffile5'
+		AND
 		command_name = 'file_mime_type'
+		AND
+	    	blob = $1::udig
 	 );
 	`;
 
@@ -233,8 +237,10 @@ sql query in_file_mime_encoding_or_fault_table row
 	  SELECT
 	  	blob
 	    FROM
-	    	fffile5.fault
+	    	setops.flowd_call_fault
 	    WHERE
+	    	schema_name = 'fffile5'
+		AND
 	    	blob = $1::udig
 		and
 		command_name = 'file_mime_encoding'
@@ -272,13 +278,15 @@ call merge_file_mime_encoding(brr.udig)
 sql exec insert_file_fault
 {
 	statement = `
-	  INSERT INTO fffile5.fault(
-	  	blob,
+	  INSERT INTO setops.flowd_call_fault(
+	  	schema_name,
 		command_name,
+	  	blob,
 		exit_status
 	  )  VALUES(
-	  	$1::udig,
+		'fffile5',
 		'file',
+	  	$1::udig,
 		$2::smallint
 	  )  ON CONFLICT
 	  	DO NOTHING
@@ -294,13 +302,15 @@ query insert_file_fault(brr.udig, merge_file.exit_status)
 sql exec insert_file_mime_type_fault
 {
 	statement = `
-	  INSERT INTO fffile5.fault(
-	  	blob,
+	  INSERT INTO setops.flowd_call_fault(
+	  	schema_name,
 		command_name,
+	  	blob,
 		exit_status
 	  )  VALUES(
-	  	$1::udig,
+	  	'fffile5',
 		'file_mime_type',
+	  	$1::udig,
 		$2::smallint
 	  )  ON CONFLICT
 	  	DO NOTHING
@@ -317,13 +327,15 @@ query insert_file_mime_type_fault(brr.udig, merge_file_mime_type.exit_status)
 sql exec insert_file_mime_encoding_fault
 {
 	statement = `
-	  INSERT INTO fffile5.fault(
-	  	blob,
+	  INSERT INTO setops.flowd_call_fault(
+	  	schema_name,
 		command_name,
+	  	blob,
 		exit_status
 	  )  VALUES(
-	  	$1::udig,
+	  	'fffile5',
 		'file_mime_encoding',
+	  	$1::udig,
 		$2::smallint
 	  )  ON CONFLICT
 	  	DO NOTHING
