@@ -7,7 +7,7 @@
  *	rum@github/postgrespro
  *  Note:
  *	thunk deeper about table title_tsv with pk(blob, regconfig) versus
- *	pk(blob).
+ *	pk(blob).  triggers do not work because of the regconfig.
  */
 \set ON_ERROR_STOP on
 
@@ -42,7 +42,7 @@ COMMENT ON TABLE title IS
 ;
 CREATE INDEX idx_title ON title USING hash(blob);
 
-DROP TABLE IF EXISTS CASCADE;
+DROP TABLE IF EXISTS title_tsv CASCADE;
 CREATE TABLE title_tsv
 (
 	blob		udig
@@ -62,41 +62,22 @@ COMMENT ON TABLE title_tsv IS
   'Text Search Vector of title of a blob'
 ;
 
-DROP TABLE IF EXISTS jsonorg_merge_request;
-CREATE TABLE jsonorg_merge_request
+DROP TABLE IF EXISTS merge_request_title_json;
+CREATE TABLE merge_request_title_json
 (
-	request_blob	udig
-				REFERENCES jsonorg.jsonb_255(blob)
+	blob	udig
+				REFERENCES jsonorg.jsonb_255
 				ON DELETE CASCADE
 				PRIMARY KEY,
-	core_blob	udig
-				REFERENCES setcore.service(blob)
-				ON DELETE CASCADE,
 	request_time	setcore.inception NOT NULL,
-	insert_time	setcore.inception NOT NULL DEFAULT now()
-);
-COMMENT ON TABLE jsonorg_merge_request IS
-  'JSONORG Request to insert or update title, tags, notes for list of blobs'
-;
 
-/*
- *  A json request to delete the title of a blob.
- */
-DROP TABLE IF EXISTS jsonorg_delete_request;
-CREATE TABLE jsonorg_delete_request
-(
-	request_blob	udig
-				REFERENCES jsonorg.jsonb_255(blob)
-				ON DELETE CASCADE
-				PRIMARY KEY,
-	core_blob	udig
-				REFERENCES setcore.service(blob)
-				ON DELETE CASCADE,
-	request_time	setcore.inception NOT NULL,
 	insert_time	setcore.inception NOT NULL DEFAULT now()
 );
-COMMENT ON TABLE jsonorg_delete_request IS
-  'JSON Request to delete title,tags,notes for list of blobs'
+COMMENT ON TABLE merge_request_title_json IS
+  'JSON Request to merge or delete titles for a list of blobs'
+;
+COMMENT ON COLUMN merge_request_title_json.blob IS
+  'When the request t merge titles was created'
 ;
 
 COMMIT TRANSACTION;

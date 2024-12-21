@@ -51,19 +51,35 @@ tail brr
 #  Has the request been seen before?
 #
 
-sql query merge_request_title_json row
+sql query is_merge_request_title_json row
 {
 	statement = `
-SELECT EXISTS (
-  SELECT
-  	request_blob
-    FROM
-	mycore.merge_request_title_json    	
-    WHERE
-    	request_blob = $1
-)
+SELECT
+  EXISTS (
+    SELECT
+  	blob
+      FROM
+	mycore.merge_request_title_json
+      WHERE
+    	blob = $1
+  ),
+  EXISTS (
+    SELECT
+  	true
+      FROM
+    	jsonorg.jsonb_255
+      WHERE
+        blob = $1
+        AND
+        doc->>'setspace_schema' = 'mycore.schema.setspace.com'
+	AND
+	doc ? 'request_unix_epoch'
+	AND
+	(doc -> 'merge' -> 'title') IS NOT NULL
+  )
 `;
 	result row is (
+		request_exists bool,
 		is_title_request bool
 	);
 }
@@ -73,7 +89,33 @@ call first_flight()
   	sync_brr.LoadOrStore(brr.udig, true).loaded == false
 ;
 
-query merge_request_title_json(brr.udig)
+query is_merge_request_title_json(brr.udig)
   when
   	first_flight.exit_status == 0
+;
+
+sql exec merge_request_title_json
+{
+	statement = `
+INSERT INTO mycore.merge_request_title_json(
+	blob,
+	request_time
+) SELECT
+	$1 AS blob,
+	to_timestamp((doc ->> 'request_unix_epoch')::double precision)
+	  AS request_time
+    FROM
+  	jsonorg.jsonb_255
+    WHERE
+  	blob = $1
+    ON CONFLICT
+  	DO NOTHING
+	`;
+}
+
+query merge_request_title_json(brr.udig)
+  when
+  	is_merge_request_title_json.is_title_request == true
+	and
+	is_merge_request_title_json.request_exists == false
 ;
