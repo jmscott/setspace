@@ -53,7 +53,6 @@ sql database setspace
 	max_open_conns = 2;
 }
 
-
 command first_flight
 {
 	path = "true";
@@ -66,7 +65,8 @@ command byte_bitmap_exists
 
 call first_flight()
   when
-  	seen_udig.LoadOrStore(bio4d.udig, true).loaded == false;
+  	seen_udig.LoadOrStore(bio4d.udig, true).loaded == false
+;
 
 call eat_blob(bio4d.udig)
   when
