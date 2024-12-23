@@ -17,4 +17,4 @@ cat BUG.txt | perl <<END
 	}
 END
 
-the failing char is in the phrase "what went wrong", between the "o and "n" chars.  "yes" when snipping all chars after the "o" and "no" where snipping all chars after the "n".  i have no idea why.  see file BUG.txt.  the number of utf8 chars is 103 and the byte count is 334.  perhaps the regex is only counting bytes, 
+the failing char is in the phrase "what went wrong", between the "o and "n" chars.  "yes" when snipping all chars after the "o" and "no" where snipping all chars after the "n".  the clipped "yes" version is 254 bytes, so i suspect the regex counts bytes.  consider adding "use utf8" in cgi script and  see file BUG.txt.
