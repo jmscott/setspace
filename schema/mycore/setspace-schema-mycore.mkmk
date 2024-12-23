@@ -35,6 +35,7 @@ LIBs="
 	mycore.flow.example
 	profile.example
 	psqlrc.example
+	request-merge.json.example
 	schema.sql
 	select-my_title.sql
 	setspace-schema-mycore.mkmk

@@ -1,0 +1,19 @@
+{
+	"setspace_schema": "mycore.schema.setspace.com",
+	"request_unix_epoch":1734490442,
+	"upsert": {
+	"title": [
+		{
+		 "blob":"bc160:a13318a2516a0c1c82b99f576e2e1eb26429078b",
+		 "title":"Adversarial Attacks on Deep-Learning Based Radio Signal Classification"
+		},
+		{
+		 "blob":"bc160:0b89ec112a49673e5fb4c41cafed380f5719cffc",
+		 "title":"Smooth Tight Frame Wavelets and Image Microanalyis in the Fourier Domain"
+		},
+	  	{
+		 "blob":"bc160:0b89ec112a49673e5fb4c41cafed380f5719cffc",
+		 "title":"Smooth Tight Frame Wavelets and Image Microanalyis in the Fourier Domain*"
+		}
+	]}
+}
