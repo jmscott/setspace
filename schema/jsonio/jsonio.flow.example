@@ -65,9 +65,8 @@ SELECT EXISTS (
     WHERE
     	j.blob = $1
 	AND
-        doc ? 'mycore.schema.setspace.com'
-)
-	`;
+        doc->>'setspace_schema' = 'mycore.schema.setspace.com'
+  )`;
 	result row is (
 		exists bool
 	);
