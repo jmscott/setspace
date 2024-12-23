@@ -62,22 +62,28 @@ COMMENT ON TABLE title_tsv IS
   'Text Search Vector of title of a blob'
 ;
 
-DROP TABLE IF EXISTS merge_request_title_json;
-CREATE TABLE merge_request_title_json
+DROP TABLE IF EXISTS upsert_request_title_json;
+CREATE TABLE upsert_request_title_json
 (
 	blob	udig
 				REFERENCES jsonorg.jsonb_255
 				ON DELETE CASCADE
 				PRIMARY KEY,
+	on_conflict	text CHECK (
+				on_conflict IN (
+					'do_nothing',
+					'do_update'
+				)
+			) DEFAULT  'do_nothing',
 	request_time	setcore.inception NOT NULL,
 
 	insert_time	setcore.inception NOT NULL DEFAULT now()
 );
-COMMENT ON TABLE merge_request_title_json IS
-  'JSON Request to merge or delete titles for a list of blobs'
+COMMENT ON TABLE upsert_request_title_json IS
+  'JSON Request to upsert or delete titles for a list of blobs'
 ;
-COMMENT ON COLUMN merge_request_title_json.blob IS
-  'When the request t merge titles was created'
+COMMENT ON COLUMN upsert_request_title_json.blob IS
+  'When the request t upsert titles was created'
 ;
 
 COMMIT TRANSACTION;
