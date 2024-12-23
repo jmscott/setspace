@@ -6,7 +6,7 @@
 #  See:
 #  	mycore/lib/schema.sql
 #  Note:
-#	Requests are independent, so a delete before a merge may be out of order
+#	Requests are independent, so a delete before a upsert may be out of order
 #
 
 boot
@@ -51,7 +51,7 @@ tail brr
 #  Has the request been seen before?
 #
 
-sql query is_merge_request_title_json row
+sql query is_upsert_request_title_json row
 {
 	statement = `
 SELECT
@@ -59,7 +59,7 @@ SELECT
     SELECT
   	blob
       FROM
-	mycore.merge_request_title_json
+	mycore.upsert_request_title_json
       WHERE
     	blob = $1
   ),
@@ -75,7 +75,7 @@ SELECT
 	AND
 	doc ? 'request_unix_epoch'
 	AND
-	(doc -> 'merge' -> 'title') IS NOT NULL
+	(doc -> 'upsert' -> 'title') IS NOT NULL
   )
 `;
 	result row is (
@@ -89,15 +89,15 @@ call first_flight()
   	sync_brr.LoadOrStore(brr.udig, true).loaded == false
 ;
 
-query is_merge_request_title_json(brr.udig)
+query is_upsert_request_title_json(brr.udig)
   when
   	first_flight.exit_status == 0
 ;
 
-sql exec merge_request_title_json
+sql exec upsert_request_title_json
 {
 	statement = `
-INSERT INTO mycore.merge_request_title_json(
+INSERT INTO mycore.upsert_request_title_json(
 	blob,
 	request_time
 ) SELECT
@@ -110,12 +110,49 @@ INSERT INTO mycore.merge_request_title_json(
   	blob = $1
     ON CONFLICT
   	DO NOTHING
-	`;
+`;
 }
 
-query merge_request_title_json(brr.udig)
+#
+#  Merge all titles in json request.
+#
+sql exec upsert_title_json
+{
+	statement = `
+#
+#  Note:
+#	How to only update when this request after most recent title update
+#	for a particular blob?  Tricky!
+#
+WITH req_doc AS (
+  SELECT
+  	jsonb_array_elements(doc->'upsert'->'title') AS doc
+    FROM
+    	jsonorg.jsonb_255
+    WHERE
+        blob = $1
+), titles AS (
+  SELECT
+  	doc->>'title' AS title,
+  	(doc->>'blob')::udig AS blob
+    FROM
+    	req_doc
+) INSERT INTO mycore.title (
+	blob,
+	title
+  ) SELECT
+	blob,
+  	title
+      FROM
+      	titles
+    ON CONFLICT DO NOTHING
+;
+`;
+}
+
+query upsert_request_title_json(brr.udig)
   when
-  	is_merge_request_title_json.is_title_request == true
+  	is_upsert_request_title_json.is_title_request == true
 	and
-	is_merge_request_title_json.request_exists == false
+	is_upsert_request_title_json.request_exists == false
 ;
