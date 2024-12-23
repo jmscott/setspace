@@ -44,10 +44,10 @@ shift
 	
 $PSQL <<END || die "psql ls blob failed: exit status=$?"
 SELECT
-	f.blob AS "Blob",
-	f.file_type AS "File Type",
-	f.mime_type AS "Mime Type",
-	f.mime_encoding AS "Mime Encoding"
+	dt.blob AS "Blob",
+	dt.file_type AS "File Type",
+	dt.mime_type AS "Mime Type",
+	dt.mime_encoding AS "Mime Encoding"
 	CASE
 	  WHEN flt.blob IS NULL THEN 'No'
 	  ELSE 'Yes'
@@ -57,11 +57,9 @@ SELECT
 	  ELSE 'Yes'
 	END AS "Rummy?"
   FROM
-  	fffile5.service f
-	  LEFT OUTER JOIN fffile5.file_mime_type mt ON (mt.blob = f.blob)
-	  LEFT OUTER JOIN fffile5.file_mime_encoding mt ON (me.blob = f.blob),
-	  LEFT OUTER JOIN fffile5.fault flt ON (flt.blob = f.blob),
-	  LEFT OUTER JOIN fffile5.rummy rum ON (rum.blob = f.blob)
+  	fffile5.detail dt
+	  LEFT OUTER JOIN fffile5.fault flt ON (flt.blob = dt.blob)
+	  LEFT OUTER JOIN fffile5.rummy rum ON (rum.blob = dt.blob)
   WHERE
   	f.blob = '$BLOB'
 END
