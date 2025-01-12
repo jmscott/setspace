@@ -570,3 +570,7 @@ Possible Schemas:
 		https://www.freedesktop.org/wiki/Software/uchardet/
 	fontawe6 - font awesome schema, works with schemafffile5
 		https://github.com/FortAwesome/Font-Awesome
+	tatr - Table Transformer (TATR), via ML/AI
+		https://github.com/microsoft/table-transformer
+	pdfcpu - A PDF processor written in Go.
+		https://pdfcpu.io/
