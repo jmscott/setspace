@@ -584,7 +584,7 @@ command append_fffile5_brr
 
 call append_fffile5_brr(
 	bio4d.start_time,
-	"fs~setcore>>fffile5",
+	"fs~flowd(setcore>>fffile5)",
 	bio4d.verb,
 	bio4d.udig,
 	bio4d.chat_history,
@@ -604,7 +604,7 @@ command append_prefixio_brr
 
 call append_prefixio_brr(
 	bio4d.start_time,
-	"fs~schema=prefixio",
+	"fs~flowd(setcore>>prefixio)",
 	bio4d.verb,
 	bio4d.udig,
 	bio4d.chat_history,
