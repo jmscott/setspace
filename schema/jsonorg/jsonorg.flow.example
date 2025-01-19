@@ -255,7 +255,7 @@ command append_jsonio_brr
 
 call append_jsonio_brr(
        brr.start_time,
-       "fs~schema=jsonio",
+       "fs~jsonorg>>jsonio",
        brr.verb,
        brr.udig,
        brr.chat_history,
