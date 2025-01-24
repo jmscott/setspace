@@ -82,6 +82,8 @@ Possible Schemas:
 	w3valid - w3 validator of flavors of html
 	exiv2 - generale c++ image metadata extractor
 	simdjson - Optimized json verifier from Daniel Lemire
+		also see
+		https://github.com/simdjson/simdjson
 	hypersc - Hyper Scan Fast Regular expression library from Intel
 	scrapy - python web scraping framework
 		https://scrapy.org/
