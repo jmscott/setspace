@@ -128,13 +128,8 @@ distclean:
 ifdef DASH_DNS_VHOST_SUFFIX
 	cd www && $(_MAKE) distclean
 endif
-	rm -rf $(SETSPACE_PREFIX)/bin
-	rm -rf $(SETSPACE_PREFIX)/sbin
-	rm -rf $(SETSPACE_PREFIX)/lib
-	rm -rf $(SETSPACE_PREFIX)/libexec
-	rm -rf $(SETSPACE_PREFIX)/src
-	rm -rf $(SETSPACE_PREFIX)/sbin
-	rm -f $(SETSPACE_PREFIX)/jmscott
+	rm --recursive --force --verbose				\
+		$(SETSPACE_PREFIX)/{bin,sbin,lib,libexec,src,sbin,jmscott}
 
 world:
 	$(_MAKE) clean
