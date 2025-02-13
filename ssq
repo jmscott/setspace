@@ -4,76 +4,40 @@
 #	Command line front end to sql queries for all schemas.
 #  Usage:
 #	ssq			#  help
-#	ssq ls			#  list all schemas
-#	ssq service <udig>	#  check of <schema>.service for udig
-#	ssq setcore help	#  help for "setcore" schema
-#	ssq jsonorg help	#  help for "jsonorg" schema
-#	ssq <schema> help	#  help for <schema>
-#  Note:
-#	In help() why are tabs aligned in vi but not in cat of message?
+#	ssq help		#  help
 #
 PROG=$(basename $0)
-
-die()
-{
-	cat >&2 <<END
-ERROR: $@
-usage: ssq [help | ls | service | [<schema>] [...options]]
-END
-	exit 1
-}
+USAGE="usage: $PROG [help | ls | <schema>"
 
 help()
 {
-	cat <<END
-Usage:
-	$PROG <schema> ...	#  query on a schema
-	$PROG <schema> help	#  help for queries on this schema
-	$PROG ls			#  list queryable schemas
-	$PROG service <udig>	#  trace a blob through schemas service tables
-
-	$PROG [help|--help]	#  ...
-END
+	echo "usage: $PROG [help | [<schema>] [...options]]"
 }
 
-#  help message
-if [ $# = 0 -o \( $# = 1 -a \( "$1" = help -o "$1" = --help \) \) ];  then
+die()
+{
+	echo "$PROG: ERROR: $@" >&2
 	help
-	exit 0
-fi
+	exit 1
+}
+
+ACTION="$1"
+[ $# -eq 0 -o "$ACTION" = help ] && exec echo $USAGE
+shift
 
 test -n "$SETSPACE_ROOT" || die "env not defined: SETSPACE_ROOT"
 cd $SETSPACE_ROOT || die "cd failed: $SETSPACE_ROOT"
-test -r etc/profile && . etc/profile
 
-ACTION="$1"
-shift
+#  list the schemas that support ssq
 
-case "$ACTION" in
-service|ls)
-	exec libexec/ssq-$ACTION $@
-	;;
-[a-z_]*)
-	;;
-*)
-	die "unknown action: $ACTION"
-	;;
-esac
+[ "$ACTION" = ls ] && exec libexec/ssq-ls $@
 
 SCHEMA=$ACTION
-SCHEMA_DIR=schema/$SCHEMA
-test -d $SCHEMA_DIR || die "not a schema: $SCHEMA"
-cd $SCHEMA_DIR || die "cd $SCHEMA_DIR/ failed: exit status=$?"
 
-#
-#  with no args ssq-<schema> runs ssq-<schema>-ls-recent
-#  schema
+test -d "schema/$SCHEMA" || die "unknown schema: $SCHEMA"
+cd schema/$SCHEMA || die "cd schema $SCHEMA failed; exit status=$?"
 
-if [ $# = 0 -a libexec/ssq-$SCHEMA-ls-recent ];  then
-	LS_RECENT=libexec/ssq-$SCHEMA-ls-recent
-	test -x $LS_RECENT && exec $LS_RECENT
-fi
-SCHEMA_EXEC=libexec/ssq-$SCHEMA
-test -e $SCHEMA_EXEC || die "no exec for schema: $SCHEMA"
-test -x $SCHEMA_EXEC || die "libexec not executable: $SCHEMA_EXEC"
-exec $SCHEMA_EXEC $@
+LIBEXEC="libexec/ssq-$SCHEMA"
+test -x $LIBEXEC || die "no ssq for schema: $SCHEMA"
+
+exec $LIBEXEC $@

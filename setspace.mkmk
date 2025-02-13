@@ -142,8 +142,6 @@ ETC="
 #  Uncomment to create directory libexec/
 LIBEXECs="
 	ssq-ls
-	ssq-service
-	ssq-service-udig
 "
 
 SYMLINKs="

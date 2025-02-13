@@ -18,27 +18,12 @@ die()
 	exit 1
 }
 
-if [ $# = 0 ];  then
+ACTION="$1"
+if [ $# = 0 -o "$ACTION" = 'help' ];  then
 	help
 	exit 0
 fi
-ACTION=$1
-shift
+[[ "$ACTION" =~ ^service|ls|rummy$ ]] || die "unknown action: $ACTION"
 
-test -r etc/profile && . etc/profile
-
-case "$ACTION" in
-help|--help)
-	help
-	exit 0
-	;;
-service|ls|rummy)
-	;;
-*)
-	die "unknown action: $ACTION"
-	;;
-esac
-
-SCH_LIBEXEC=libexec/ssq-setcore-$ACTION
-test -x $SCH_LIBEXEC || die "no libexec for action '$ACTION'"
-exec $SCH_LIBEXEC $@
+. etc/profile || die "source etc/profile failed: exit status=$?"
+exec libexec/ssq-setcore-$ACTION $@

@@ -1,9 +1,54 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	List queryable schemas
+#	List queryable schemas, in no particiular order
+#  Usage:
+#	action libexeced by command "ssq ls" 
 #
 
-find-schema | while read SCH;  do
-	test -e schema/$SCH/libexec/ssq-$SCH && echo $SCH
-done | sort
+#  dirs in schema/ never a schema dir.  the usual suspects.
+
+NOT_SCHEMA='
+	archive
+	attic
+	bin
+	cache
+	cgi-bin
+	data
+	etc
+	htdocs
+	include
+	lib
+	libexec
+	log
+	run
+	sbin
+	spool
+	src
+	sync
+	tmp
+	var
+	www
+'
+
+IGNORE_DIRS=$(
+	echo "$NOT_SCHEMA"					|
+	grep -v '^ *$'						|
+	sed 's/.*/ ! -name &/'
+)
+
+#  find schema dirs containing libexec/ssq-$SCHEMA executable
+
+find .								\
+	-maxdepth 1						\
+	-type d							\
+	! -name .						\
+	$IGNORE_DIR						|
+  sed 's@\./@@'							|
+  while read D;  do
+  	if [ -x $D/libexec/ssq-$D ];  then
+		echo $D
+	fi
+  done
+STATUS=${PIPESTATUS[*]}
+test "$STATUS" = '0 0 0'
