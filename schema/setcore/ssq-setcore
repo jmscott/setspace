@@ -23,7 +23,10 @@ if [ $# = 0 -o "$ACTION" = 'help' ];  then
 	help
 	exit 0
 fi
-[[ "$ACTION" =~ ^service|ls|rummy$ ]] || die "unknown action: $ACTION"
+shift
+
+LIBEXEC="libexec/$PROG-$ACTION"
+test -x $LIBEXEC || die "unknown action: $ACTION"
 
 . etc/profile || die "source etc/profile failed: exit status=$?"
-exec libexec/ssq-setcore-$ACTION $@
+exec $LIBEXEC $@

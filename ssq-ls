@@ -31,19 +31,22 @@ NOT_SCHEMA='
 	www
 '
 
-IGNORE_DIRS=$(
+test $# = 0 || die "wrong number of cli args: got $#, need 0"
+cd schema || die "cd schema failed: exit status=$?"
+
+FIND_OPT_IGNORE=$(
 	echo "$NOT_SCHEMA"					|
 	grep -v '^ *$'						|
 	sed 's/.*/ ! -name &/'
 )
 
-#  find schema dirs containing libexec/ssq-$SCHEMA executable
+#  find schema dirs containing <schema>/libexec/ssq-$SCHEMA executable
 
 find .								\
 	-maxdepth 1						\
 	-type d							\
 	! -name .						\
-	$IGNORE_DIR						|
+	$FIND_OPT_IGNORE						|
   sed 's@\./@@'							|
   while read D;  do
   	if [ -x $D/libexec/ssq-$D ];  then
