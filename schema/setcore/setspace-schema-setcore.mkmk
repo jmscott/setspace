@@ -32,6 +32,7 @@ LIBs="
 	schema.sql
 	setcore.flow.example
 	setspace-schema-setcore.mkmk
+	ssq-setcore-ls.sql
 "
 
 LIBEXECs="
