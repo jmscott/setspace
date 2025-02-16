@@ -577,3 +577,5 @@ Possible Schemas:
 		https://github.com/microsoft/table-transformer
 	pdfcpu - A PDF processor written in Go.
 		https://pdfcpu.io/
+	librivox -  readings and recordings  of public domain text
+		https://librivox.org/
