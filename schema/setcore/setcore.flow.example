@@ -21,10 +21,94 @@ boot
 	heartbeat_duration = "10s";
 }
 
-#
-#  Synopsis:
-#	Does the blob exist in storage?
-#
+tail bio4d
+{
+	path = "spool/bio4d.brr";
+}
+
+sql database setspace
+{
+	driver_name = "postgres";
+	data_source_name =
+		"fallback_application_name=flowd.setcore sslmode=disable";
+	max_idle_conns = 0;
+	max_open_conns = 4;
+}
+
+command brr_ok
+{
+	path = "true";
+}
+
+call brr_ok()
+  when
+  	bio4d.chat_history == "ok"
+	or
+	bio4d.chat_history == "ok,ok"
+	or
+	bio4d.chat_history == "ok,ok,ok"
+;
+
+sql exec upsert_eldest_ok
+{
+	statement = `
+INSERT INTO setcore.chat_history_ok (
+	blob,
+	start_time
+) VALUES (
+	$1,
+	$2
+) ON CONFLICT (blob) DO UPDATE
+  SET
+  	start_time = excluded.start_time
+  WHERE
+	chat_history_ok.start_time > excluded.start_time
+;
+	`;
+}
+
+sql query eldest_ok_upsertable row
+{
+	result row is (
+		exists	bool
+	);
+
+	statement = `
+SELECT EXISTS (			--  new chat history seen
+  SELECT
+  	null
+    FROM
+    	setcore.chat_history_ok
+    WHERE
+    	blob = $1
+	AND
+	start_time > $2
+) OR NOT EXISTS (		--  first time chat history exists
+  SELECT
+  	null
+    FROM
+    	setcore.chat_history_ok
+    WHERE
+    	blob = $1
+)`;
+}
+
+query eldest_ok_upsertable(bio4d.udig, bio4d.start_time)
+  when
+	#  only interested in blobs which have existed
+
+  	bio4d.chat_history == "ok"
+	or
+  	bio4d.chat_history == "ok,ok"
+	or
+  	bio4d.chat_history == "ok,ok,ok"
+;
+
+query upsert_eldest_ok(bio4d.udig, bio4d.start_time)
+  when
+  	eldest_ok_upsertable.exists == true
+;
+
 command eat_blob
 {
 	path = "blobio";
@@ -37,579 +121,158 @@ command eat_blob
 	exit_status is OK when in {0, 1};
 }
 
-sync map seen_udig[string]bool;
-
-tail bio4d
+sql query in_chat_history_ok row
 {
-	path = "spool/bio4d.brr";
+	result row is (
+		answer	bool
+	);
+	statement = `
+SELECT EXISTS (
+  SELECT
+	null
+    FROM
+    	setcore.chat_history_ok
+    WHERE
+    	blob = $1
+);`;
 }
 
-sql database setspace
-{
-	driver_name = "postgres";
-	data_source_name =
-		"fallback_application_name=flowd.setcore sslmode=disable";
-	max_idle_conns = 0;
-	max_open_conns = 2;
-}
+query in_chat_history_ok(bio4d.udig);
 
-command first_flight
-{
-	path = "true";
-}
-
-command byte_bitmap_exists
-{
-	path = "true";
-}
-
-call first_flight()
-  when
-  	seen_udig.LoadOrStore(bio4d.udig, true).loaded == false
-;
+sync map in_flight[string]bool;
 
 call eat_blob(bio4d.udig)
   when
-  	first_flight.exit_status == 0
+	in_flight.LoadOrStore(bio4d.udig, true).loaded == false
+
+	#  did we just insert into chat_history_o
+	and
+	(
+		
+		eldest_ok_upsertable.exists == true	#  just upserted
+		or
+		in_chat_history_ok.answer == true	#  already in table
+	)
 ;
 
-#
-#  Synopsis:
-#	Is the blob in the service table
-#
-sql query in_service_table row
+sql query in_service row
 {
 	result row is (
 		answer bool
 	);
-
 	statement = `
-
-	SELECT EXISTS (
-	  SELECT
-		blob
-	    FROM
-		setcore.service
-	    WHERE
-		blob = $1::udig
-	);
-
-	`;
+SELECT EXISTS (
+  SELECT
+  	null
+    FROM
+    	setcore.service
+    WHERE
+    	blob = $1
+);`;
 }
 
-query in_service_table(bio4d.udig)
-  when
-  	first_flight.exit_status == 0
-;
-
-sql exec delete_service
-{
-	statement = `
-
-	DELETE FROM
-	  	setcore.service
-	  WHERE
-	  	blob = $1::udig
-	;
-	
-	`;
-
-}
-
-query delete_service(bio4d.udig)
-  when
-  	eat_blob.exit_status == 1
-	and
-	in_service_table.answer == true
-;
-
-sql exec merge_service
-{
-	statement = `
-
-	INSERT INTO setcore.service(
-		blob
-	  ) VALUES(
-	  	$1::udig
-	  ) ON CONFLICT
-	  	DO NOTHING
-	;
-
-	`;
-}
-
-query merge_service(bio4d.udig)
+query in_service(bio4d.udig)
   when
   	eat_blob.exit_status == 0
-	and
-	in_service_table.answer == false
 ;
 
-command service_sunk
-{
-	path = "true";
-}
-
-call service_sunk(bio4d.udig)
-  when
-	#
-	#  Another process may have just merged this blob into setcore.service,
-	#  in which case sqlstate == "00000" but rows affected == 0.
-	#  The sqlstate code is different for exec versus a query that returns
-	#  tuples.  An exec always returns 00000, regardless if
-	#  rows_affected == 0, which is not true for a query returning tuples,
-	#  which returns sqlstate  "02000".
-	#
-
-  	merge_service.rows_affected == 1
-	or
-	merge_service.sqlstate == "00000"
-	or
-	in_service_table.answer == true
-;
-
-#
-#  Is the blob in the byte_count table?
-#
-sql query in_byte_count_table row
+#  insert into table byte_bitmap
+sql query in_byte_bitmap row
 {
 	result row is (
 		answer bool
 	);
-
 	statement = `
-
-	SELECT EXISTS (
-	  SELECT
-		blob
-	    FROM
-		setcore.byte_count
-	    WHERE
-		blob = $1::udig
-	);
-
-	`;
+SELECT EXISTS (
+  SELECT
+  	null
+    FROM
+    	setcore.byte_bitmap
+    WHERE
+    	blob = $1
+);`;
 }
 
-command merge_byte_count
+command upsert_byte_bitmap
 {
-	path = "sbin/merge-byte_count";
-	exit_status is OK when in {0, 1};
+        path = "sbin/upsert-byte_bitmap";
+        exit_status is OK when in {0, 1};
 }
 
-query in_byte_count_table(bio4d.udig)
+query in_byte_bitmap(bio4d.udig)
   when
-  	service_sunk.exit_status == 0
+  	eat_blob.exit_status == 0
 ;
 
-#  merge an in service blob not in the byte count table
-
-call merge_byte_count(bio4d.udig)
+call upsert_byte_bitmap(bio4d.udig)
   when
-  	in_byte_count_table.answer == false
+  	in_byte_bitmap.answer == false
 ;
 
-#
-#  Is the blob in the byte_bitmap table?
-#
-sql query in_byte_bitmap_table row
+#  insert into table byte_count
+
+sql query in_byte_count row
 {
 	result row is (
 		answer bool
 	);
-
 	statement = `
-
-	SELECT EXISTS (
-	  SELECT
-		blob
-	    FROM
-		setcore.byte_bitmap
-	    WHERE
-		blob = $1::udig
-	);
-
-	`;
+SELECT EXISTS (
+  SELECT
+  	null
+    FROM
+    	setcore.byte_count
+    WHERE
+    	blob = $1
+);`;
 }
 
-command merge_byte_bitmap
+command upsert_byte_count
 {
-	path = "sbin/merge-byte_bitmap";
-	exit_status is OK when in {0, 1};
+        path = "sbin/upsert-byte_count";
+        exit_status is OK when in {0, 1};
 }
 
-query in_byte_bitmap_table(bio4d.udig)
+query in_byte_count(bio4d.udig)
   when
-  	service_sunk.exit_status == 0
+  	eat_blob.exit_status == 0
 ;
 
-#  merge an in service blob not in the byte count table
-
-call merge_byte_bitmap(bio4d.udig)
+call upsert_byte_count(bio4d.udig)
   when
-  	in_byte_bitmap_table.answer == false
+  	in_byte_count.answer == false
 ;
 
-call byte_bitmap_exists(bio4d.udig)
-  when
-  	in_byte_bitmap_table.answer == true
-	or
-	merge_byte_bitmap.exit_status == 0
-;
+#  insert into table byte_prefix_32
 
-command merge_byte_prefix_32
+sql query in_byte_prefix_32 row
 {
-	path = "sbin/merge-byte_prefix_32";
-	exit_status is OK when in {0, 1};
-}
-
-#
-#  Synopsis:
-#	Populate byte_prefix_32 table
-#
-sql query in_byte_prefix_32_table row
-{
-
 	result row is (
 		answer bool
 	);
-
 	statement = `
-
-	SELECT exists (
-	  SELECT
-		blob
-	    FROM
-		setcore.byte_prefix_32
-	    WHERE
-		blob = $1::udig
-	);
-	
-	`;
+SELECT EXISTS (
+  SELECT
+  	null
+    FROM
+    	setcore.byte_prefix_32
+    WHERE
+    	blob = $1
+);`;
 }
 
-query in_byte_prefix_32_table(bio4d.udig)
-  when
-  	service_sunk.exit_status == 0
-;
-
-#  merge an in service blob not in the byte count table
-
-call merge_byte_prefix_32(bio4d.udig)
-  when
-  	in_byte_prefix_32_table.answer == false
-;
-
-command merge_byte_suffix_32
+command upsert_byte_prefix_32
 {
-	path = "sbin/merge-byte_suffix_32";
-	exit_status is OK when in {0, 1};
+        path = "sbin/upsert-byte_prefix_32";
+        exit_status is OK when in {0, 1};
 }
 
-#
-#  Synopsis:
-#	Populate byte_suffix_32 table
-#
-sql query in_byte_suffix_32_table row
-{
-
-	result row is (
-		answer bool
-	);
-
-	statement = `
-
-	SELECT EXISTS (
-	  SELECT
-		blob
-	    FROM
-		setcore.byte_suffix_32
-	    WHERE
-		blob = $1::udig
-	);
-	
-	`;
-}
-
-query in_byte_suffix_32_table(bio4d.udig)
+query in_byte_prefix_32(bio4d.udig)
   when
-  	service_sunk.exit_status == 0
+  	eat_blob.exit_status == 0
 ;
 
-#  merge an in service blob not in the byte count table
-
-call merge_byte_suffix_32(bio4d.udig)
+call upsert_byte_prefix_32(bio4d.udig)
   when
-  	in_byte_suffix_32_table.answer == false
-;
-
-#
-#  Synopsis:
-#	Is in utf8 well formed table.
-#  Note:
-#	Need to first consult byte_bitmap for forbidden utf8 bytes.
-#	is 0xff the only forbidden utf8 byte?
-#
-sql query in_is_utf8wf_table row
-{
-	result row is (
-		answer	bool,
-		is_utf8	bool
-	);
-
-	statement = `
-
-	SELECT EXISTS (
-	  SELECT
-		blob
-	    FROM
-		setcore.is_utf8wf
-	    WHERE
-		blob = $1::udig
-	  ),
-	 (SELECT
-	  	is_utf8
-	    FROM
-	    	setcore.is_utf8wf
-	    WHERE
-	    	blob = $1::udig
-	 );
-
-	  `;
-}
-
-command get_is_utf8wf
-{
-	path = "sbin/get-is-utf8wf";
-	exit_status is OK when in {
-		0,			#  is well formed utf8
-		1,			#  not well formed utf8
-		2,			#  empty blob,
-		3			#  blob does not exist
-	};
-}
-
-sql query merge_is_utf8wf row
-{
-	#  Note: does the insert return a value upon conflict?
-	statement = `
-
-	INSERT INTO setcore.is_utf8wf(
-		blob,
-		is_utf8
-	) SELECT
-		$1::udig,
-		CASE $2 
-	  		WHEN '0' THEN true
-	  		WHEN '1' THEN false
-	  		WHEN '2' THEN false
-		END
-  	  ON CONFLICT
-  		DO NOTHING
-  	  RETURNING
-  		is_utf8
-	;
-
-	`;
-	
-	result row is (
-		is_utf8 bool
-	);
-
-}
-
-query in_is_utf8wf_table(bio4d.udig)
-  when
-  	service_sunk.exit_status == 0
-;
-
-#  does the blob contain the char 0xff?
-
-sql query has_char_0xff row {
-	
-	statement = `
-	
-	SELECT
-		(bm.bitmap & char_0xff) != all_zero
-	  FROM
-	  	setcore.byte_bitmap bm,
-
-		--  all zero bits
-		COALESCE(
-			B'0'::bit(256)
-		) AS all_zero,
-
-		COALESCE(
-			B'1'::bit(256)
-		) AS char_0xff
-	  WHERE
-	  	bm.blob = $1::udig
-	;
-	
-	`;
-	result row is (
-		answer bool
-	);
-}
-
-query has_char_0xff(bio4d.udig)
-  when
-	byte_bitmap_exists.exit_status == 0
-;
-
-call get_is_utf8wf(bio4d.udig)
-  when
-	has_char_0xff.answer == false
-	and
-	in_is_utf8wf_table.answer == false
-;
-
-sql exec merge_is_utf8wf_not
-{
-	statement = `
-
-	INSERT INTO setcore.is_utf8wf(
-		blob,
-		is_utf8
-	) VALUES (
-		$1::udig,
-		false
-	) ON CONFLICT
-		DO NOTHING
-	`;
-
-}
-
-#  blob not utf8 when 0xff char exists
-
-query merge_is_utf8wf_not(bio4d.udig)
-  when
-  	has_char_0xff.answer == true
-	and
-	in_is_utf8wf_table.answer == false
-	and
-	service_sunk.exit_status == 0
-;
-
-query merge_is_utf8wf(bio4d.udig, get_is_utf8wf.exit_status)
-  when
-	(
-		get_is_utf8wf.exit_status == 0
-		or
-		get_is_utf8wf.exit_status == 1
-		or
-		get_is_utf8wf.exit_status == 2		#  merge empty blob
-	)
-	and
-	service_sunk.exit_status == 0
-;
-
-command core_exists
-{
-	path = "true";
-}
-
-#
-#  Do the core tuples exist in the tables
-#
-#	setcore.{byte_bitmap, byte_count, byte_prefix, is_utf8wf}
-#  Note:
-#	core_exists() is not properly spin waiting for existence in all tables,
-#	so request records are not properly appened to
-#	prefixio/spool/setcore.bio4d from time to time.
-#
-call core_exists()
-  when
-	#
-  	#  tuple in table byte_prefix_32 does indeed exist
-	#
-  	(
-		in_byte_prefix_32_table.answer == true
-		or
-		merge_byte_prefix_32.exit_status == 0
-	)
-	and
-	#
-  	#  tuple in table byte_suffix_32 does indeed exist
-	#
-  	(
-		in_byte_suffix_32_table.answer == true
-		or
-		merge_byte_suffix_32.exit_status == 0
-	)
-	and
-	#
-  	#  tuple in table byte_suffix_32 does indeed exist
-	#
-  	(
-		in_byte_bitmap_table.answer == true
-		or
-		merge_byte_bitmap.exit_status == 0
-	)
-
-	# 
-  	#  tuple in table byte_count does indeed exist
-	#
-	and
-	(
-		in_byte_count_table.answer == true
-		or
-		merge_byte_count.exit_status == 0
-	)
-
-	# 
-  	#  tuple in table is_utf8wf does indeed exist
-	#
-	and
-	(
-		(
-			in_is_utf8wf_table.answer == true
-			or
-			merge_is_utf8wf.rows_affected == 1
-			or
-			merge_is_utf8wf.sqlstate == "02000"
-		)
-		or
-		merge_is_utf8wf_not.rows_affected == 1
-	)
-;
-
-command append_fffile5_brr
-{
-	path = "append-brr";
-	argv = (
-		"../fffile5/spool/setcore.brr"
-	);
-}
-
-call append_fffile5_brr(
-	bio4d.start_time,
-	"fs~flowd(setcore>>fffile5)",
-	bio4d.verb,
-	bio4d.udig,
-	bio4d.chat_history,
-	bio4d.blob_size,
-	bio4d.wall_duration
-) when
-  	core_exists.exit_status == 0
-;
-
-command append_prefixio_brr
-{
-	path = "append-brr";
-	argv = (
-		"../prefixio/spool/setcore.brr"
-	);
-}
-
-call append_prefixio_brr(
-	bio4d.start_time,
-	"fs~flowd(setcore>>prefixio)",
-	bio4d.verb,
-	bio4d.udig,
-	bio4d.chat_history,
-	bio4d.blob_size,
-	bio4d.wall_duration
-) when
-  	core_exists.exit_status == 0
+  	in_byte_prefix_32.answer == false
 ;

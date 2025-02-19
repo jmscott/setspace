@@ -11,7 +11,7 @@ SELECT
 	s.blob AS "Blob",
 	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
                 AS "Discovered",
-	pg_size_pretty(bc.byte_count) AS "Size",
+	pg_size_pretty(bc.byte_count) AS "Byte Count",
 	CASE
 	  WHEN u8.is_utf8 IS NULL THEN
 	  	'Unknown'

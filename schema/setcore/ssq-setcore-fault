@@ -18,7 +18,9 @@ PSQL='psql
 	--pset null=Unknown
 	--quiet
 	--no-readline
+	--field-separator=WTF
 '
+
 SQL=lib/$PROG.sql
 
 die()
@@ -27,4 +29,4 @@ die()
 	exit 1
 }
 
-$PSQL --file $SQL || die "psql rummy failed: exit status=$?"
+$PSQL --file $SQL || die "psql fault failed: exit status=$?"

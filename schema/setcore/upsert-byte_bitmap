@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	Merge the 256 bitmap of all bytes into the table setcore.byte_bitmap
+#  Usage:
+#	upsert-byte_bitmap <blob	udig>
+#  Exit Status:
+#  	0	bitmap merged into table byte_bitmap
+#	1	blob does not exist
+#  	2	unknown error
+#
+PROG=upsert-byte_bitmap
+SQL=lib/$PROG.sql
+
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
+PSQL='psql
+	--quiet
+	--no-psqlrc
+	--no-readline
+'
+
+die()
+{
+	echo "$PROG: ERROR: $1" >&2
+	exit 2
+}
+
+leave()
+{
+	rm -f $TMP_BLOB
+	exit
+}
+
+trap leave EXIT INT TERM QUIT
+
+test $# = 1 || die "wrong number of arguments: got $#, expected 1"
+BLOB=$1
+
+#  fetch the blob into temp file
+
+blobio get --service $BLOBIO_GET_SERVICE --udig $BLOB --output-path $TMP_BLOB
+STATUS=$?
+case $STATUS in
+0)
+	;;
+1)
+	exit 1
+	;;
+*)
+	die "blobio get failed: exit status=$STATUS"
+	;;
+esac
+
+HEX=$(byte-bitmap <$TMP_BLOB)
+test $? = 0 || die "byte-bitmap failed: exit status=$?"
+$PSQL --set blob=$BLOB --set hex=$HEX --file $SQL
+test $? = 0 || die "psql upsert failed: exit status=$?"
+
+exit 0

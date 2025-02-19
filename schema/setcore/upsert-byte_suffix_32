@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	Merge the 32 byte suffix of the blob into the table byte_suffix_32
+#  Usage:
+#	merge-byte_suffix_32 <blob udig>
+#  Exit Status:
+#  	0	suffix merged into table byte_suffix_32
+#	1	blob does not exist
+#  	2	unknown error
+#
+
+PROG=upsert-byte_suffix_32
+PSQL='psql
+	--echo-all
+	--quiet
+	--no-psqlrc
+	--no-readline
+'
+SQL=lib/$PROG.sql
+BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
+
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
+
+die()
+{
+	echo "$PROG: ERROR: $1" >&2
+	exit 2
+}
+
+leave()
+{
+	rm -f $TMP_BLOB
+	exit
+}
+
+trap leave EXIT INT TERM QUIT
+
+test $# = 1 || die 'wrong number of arguments'
+BLOB=$1
+
+#  fetch the blob into temp file
+
+blobio get --service $BLOBIO_GET_SERVICE --udig $BLOB --output-path $TMP_BLOB
+STATUS=$?
+case $STATUS in
+0)
+	;;
+1)
+	exit 1
+	;;
+*)
+	die "blobio get failed: exit status=$STATUS"
+	;;
+esac
+
+SUFFIX=$(byte-suffix-32 $TMP_BLOB)
+test $? = 0 || die "byte-suffix-32 failed: exit status=$?"
+
+#  merge new record
+$PSQL --set blob=$BLOB --set suffix=$SUFFIX --file $SQL
+test $? = 0 || die "psql upsert failed: exit status=$?"
+
+exit 0

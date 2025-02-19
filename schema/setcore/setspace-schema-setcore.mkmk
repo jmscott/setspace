@@ -32,14 +32,20 @@ LIBs="
 	schema.sql
 	setcore.flow.example
 	setspace-schema-setcore.mkmk
+	ssq-setcore-fault.sql
 	ssq-setcore-ls.sql
+	ssq-setcore-rummy.sql
+	ssq-setcore-service.sql
+	upsert-byte_bitmap.sql
+	upsert-byte_count.sql
+	upsert-byte_prefix_32.sql
+	upsert-byte_suffix_32.sql
 "
 
 LIBEXECs="
 	ssq-setcore
 	ssq-setcore-ls
-	ssq-setcore-ls-blob
-	ssq-setcore-ls-recent
+	ssq-setcore-fault
 	ssq-setcore-rummy
 	ssq-setcore-service
 "
@@ -48,12 +54,12 @@ SBINs="
 	$COMPILEs
 	get-bool-command
 	get-is-utf8wf
-	merge-byte_bitmap
-	merge-byte_count
-	merge-byte_prefix_32
-	merge-byte_suffix_32
 	service-xor
 	service-xor-yesterday
+	upsert-byte_bitmap
+	upsert-byte_count
+	upsert-byte_prefix_32
+	upsert-byte_suffix_32
 "
 
 #CGIBINs="

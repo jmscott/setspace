@@ -67,7 +67,7 @@ main(int argc, char **argv)
 	unsigned char buf[32];
 	unsigned char hex[32+32+1];		//  no zero termination
 
-	if (argc != 2)
+	if (--argc != 1)
 		diea(argc);
 	(void)argv;
 	jmscott_close(0);

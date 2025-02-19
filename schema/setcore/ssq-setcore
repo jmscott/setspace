@@ -4,12 +4,15 @@
 #	setcore schema querier backend libexeced by front end script "ssq".
 #  Usage:
 #	ssq setcore help
+#  Exit Status:
+#	0	no fail
+#	1	unknown error
 #
 PROG=$(basename $0)
 
 help()
 {
-	echo "usage: $PROG [service|ls|rummy]"
+	echo "usage: $PROG [service|ls|rummy|okay]"
 }
 
 die()
@@ -18,15 +21,15 @@ die()
 	exit 1
 }
 
-ACTION="$1"
-if [ $# = 0 -o "$ACTION" = 'help' ];  then
+. etc/profile || die "source etc/profile failed: exit status=$?"
+
+if [ $# = 0 -o "$1" = help ];  then
 	help
 	exit 0
 fi
-shift
 
+ACTION="$1";  shift
+	
 LIBEXEC="libexec/$PROG-$ACTION"
 test -x $LIBEXEC || die "unknown action: $ACTION"
-
-. etc/profile || die "source etc/profile failed: exit status=$?"
 exec $LIBEXEC $@
