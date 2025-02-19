@@ -310,3 +310,154 @@ call upsert_byte_suffix_32(bio4d.udig)
   when
   	in_byte_suffix_32.answer == false
 ;
+
+#  is utf8 encoded
+sql query in_is_utf8wf_table row
+{
+	result row is (
+		answer	bool,
+		is_utf8	bool
+	);
+
+	statement = `
+
+	SELECT EXISTS (
+	  SELECT
+		blob
+	    FROM
+		setcore.is_utf8wf
+	    WHERE
+		blob = $1::udig
+	  ),
+	 (SELECT
+	  	is_utf8
+	    FROM
+	    	setcore.is_utf8wf
+	    WHERE
+	    	blob = $1::udig
+	 );
+
+	  `;
+}
+
+command get_is_utf8wf
+{
+	path = "sbin/get-is-utf8wf";
+	exit_status is OK when in {
+		0,			#  is well formed utf8
+		1,			#  not well formed utf8
+		2,			#  empty blob,
+		3			#  blob does not exist
+	};
+}
+
+sql query upsert_is_utf8wf row
+{
+	#  Note: does the insert return a value upon conflict?
+	statement = `
+
+	INSERT INTO setcore.is_utf8wf(
+		blob,
+		is_utf8
+	) SELECT
+		$1::udig,
+		CASE $2 
+	  		WHEN '0' THEN true
+	  		WHEN '1' THEN false
+	  		WHEN '2' THEN false
+		END
+  	  ON CONFLICT
+  		DO NOTHING
+  	  RETURNING
+  		is_utf8
+	;
+
+	`;
+	
+	result row is (
+		is_utf8 bool
+	);
+
+}
+
+query in_is_utf8wf_table(bio4d.udig)
+  when
+  	eat_blob.exit_status == 0
+;
+
+#  does the blob contain the char 0xff?
+
+sql query has_char_0xff row {
+	
+	statement = `
+	
+	SELECT
+		(bm.bitmap & char_0xff) != all_zero
+	  FROM
+	  	setcore.byte_bitmap bm,
+
+		--  all zero bits
+		COALESCE(
+			B'0'::bit(256)
+		) AS all_zero,
+
+		COALESCE(
+			B'1'::bit(256)
+		) AS char_0xff
+	  WHERE
+	  	bm.blob = $1::udig
+	;
+	
+	`;
+	result row is (
+		answer bool
+	);
+}
+
+#  Note: opimzation hack to prove not utf8 encoded
+
+query has_char_0xff(bio4d.udig)
+  when
+	in_byte_bitmap.answer == true
+	or
+	upsert_byte_bitmap.exit_status == 0
+;
+
+call get_is_utf8wf(bio4d.udig)
+  when
+	has_char_0xff.answer == false
+	and
+	in_is_utf8wf_table.answer == false
+;
+
+sql exec upsert_is_utf8wf_not
+{
+	statement = `
+
+	INSERT INTO setcore.is_utf8wf(
+		blob,
+		is_utf8
+	) VALUES (
+		$1::udig,
+		false
+	) ON CONFLICT
+		DO NOTHING
+	`;
+
+}
+
+#  blob not utf8 when 0xff char exists
+
+query upsert_is_utf8wf_not(bio4d.udig)
+  when
+  	has_char_0xff.answer == true
+	and
+	in_is_utf8wf_table.answer == false
+;
+
+query upsert_is_utf8wf(bio4d.udig, get_is_utf8wf.exit_status)
+  when
+  	has_char_0xff.answer == false
+	and
+	in_is_utf8wf_table.answer == false
+;
