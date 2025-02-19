@@ -12,7 +12,6 @@
 
 PROG=upsert-byte_suffix_32
 PSQL='psql
-	--echo-all
 	--quiet
 	--no-psqlrc
 	--no-readline
