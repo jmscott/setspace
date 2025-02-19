@@ -276,3 +276,37 @@ call upsert_byte_prefix_32(bio4d.udig)
   when
   	in_byte_prefix_32.answer == false
 ;
+
+#  insert into table byte_suffix_32
+
+sql query in_byte_suffix_32 row
+{
+	result row is (
+		answer bool
+	);
+	statement = `
+SELECT EXISTS (
+  SELECT
+  	null
+    FROM
+    	setcore.byte_suffix_32
+    WHERE
+    	blob = $1
+);`;
+}
+
+command upsert_byte_suffix_32
+{
+        path = "sbin/upsert-byte_suffix_32";
+        exit_status is OK when in {0, 1};
+}
+
+query in_byte_suffix_32(bio4d.udig)
+  when
+  	eat_blob.exit_status == 0
+;
+
+call upsert_byte_suffix_32(bio4d.udig)
+  when
+  	in_byte_suffix_32.answer == false
+;
