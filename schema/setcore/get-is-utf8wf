@@ -9,14 +9,7 @@
 #	1	no, blob is not well formed utf8
 #	2	blob is empty and does not exist
 #	3	blob does not exist
-#  	4	wrong number of command line arguments
-#	5	blobio get failed for unknown reason
-#	6	is-utf8wf failed for unknown reason
-#  Environment:
-#	BLOBIO_SERVICE
-#	BLOBIO_GET_SERVICE
-#	PG* variables
-#	TMPDIR
+#  	4	unexpected error
 #  Note:
 #	Think about rewriting script to pipeline the blob instead of a
 #	temporary file.
@@ -29,18 +22,18 @@ TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
 die()
 {
 	echo "$PROG: ERROR: $1" >&2
-	exit $2
+	exit 4
 }
 
 leave()
 {
-	rm -f $TMP_BLOB
+	rm --force $TMP_BLOB
 	exit
 }
 
 trap leave EXIT INT TERM QUIT
 
-test $# = 1 || die 'wrong number of arguments' 4
+test $# = 1 || die 'wrong number of arguments'
 BLOB=$1
 
 #  fetch the blob into temp file
@@ -55,17 +48,11 @@ case $STATUS in
 	exit 3
 	;;
 *)
-	die "blobio get failed: exit status=$STATUS" 5
+	die "blobio get failed: exit status=$STATUS"
 	;;
 esac
 
 is-utf8wf <$TMP_BLOB
 STATUS=$?
-case $STATUS in
-0|1|2)
-	;;
-*)
-	die "is-utf8wf failed: exit status=$STATUS" 6
-	;;
-esac
+test $STATUS -gt 2 && die "is-utf8wf failed: exit status=$STATUS"
 exit $STATUS
