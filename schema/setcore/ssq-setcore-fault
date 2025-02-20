@@ -18,7 +18,6 @@ PSQL='psql
 	--pset null=Unknown
 	--quiet
 	--no-readline
-	--field-separator=WTF
 '
 
 SQL=lib/$PROG.sql
@@ -29,4 +28,5 @@ die()
 	exit 1
 }
 
-$PSQL --file $SQL || die "psql fault failed: exit status=$?"
+$PSQL --field-separator=$'\t' --file $SQL				||
+	die "psql fault failed: exit status=$?"
