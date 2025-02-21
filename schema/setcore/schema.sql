@@ -21,12 +21,17 @@ COMMENT ON SCHEMA setcore IS
   'Core setspace tables for common facts about blobs'
 ;
 
+CREATE DOMAIN inception AS timestamptz
+  CHECK (
+  	value >= '2008-05-17 10:06:42-05'
+  )
+;
+
+
 CREATE TABLE chat_history_ok
 (
 	blob		udig	PRIMARY KEY,
-	start_time	timestamptz CHECK (
-				start_time >= '2008-05-17 10:06:42-05'
-			) NOT NULL
+	start_time	inception NOT NULL
 );
 COMMENT ON TABLE chat_history_ok IS
   'Oldest "ok" time seen in chat history of a blob request record'
