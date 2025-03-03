@@ -579,3 +579,5 @@ Possible Schemas:
 		https://pdfcpu.io/
 	librivox -  readings and recordings  of public domain text
 		https://librivox.org/
+	olmocr - extract text from pdf, ai style
+		https://olmocr.allenai.org/
