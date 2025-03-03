@@ -581,3 +581,5 @@ Possible Schemas:
 		https://librivox.org/
 	olmocr - extract text from pdf, ai style
 		https://olmocr.allenai.org/
+	mathpix - pdf/uimage converter
+		https://mathpix.com/
