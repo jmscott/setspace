@@ -583,3 +583,6 @@ Possible Schemas:
 		https://olmocr.allenai.org/
 	mathpix - pdf/uimage converter
 		https://mathpix.com/
+	datalab/marker - ai pdf text extractor thingy
+		https://www.datalab.to/
+		https://github.com/VikParuchuri/marker
