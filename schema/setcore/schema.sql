@@ -202,23 +202,4 @@ CREATE FUNCTION is_empty(udig) RETURNS bool
   RETURNS NULL ON NULL INPUT
 ;
 
-DROP VIEW IF EXISTS fault CASCADE;
-CREATE VIEW fault AS
-  SELECT
-	blob,
-	'flowd_call_fault' AS monitor_name,
-	command_name,
-	exit_class,
-	exit_status,
-	signal
-    FROM
-    	setops.flowd_call_fault
-    WHERE
-	schema_name = 'setcore'
-    ORDER BY
-  	blob ASC,
-	monitor_name ASC,
-	command_name ASC
-;
-
 COMMIT TRANSACTION;
