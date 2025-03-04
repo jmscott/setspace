@@ -35,6 +35,7 @@ LIBs="
 	ssq-setcore-fault.sql
 	ssq-setcore-ls.sql
 	ssq-setcore-rummy.sql
+	ssq-setcore-rummy-count.sql
 	ssq-setcore-service.sql
 	upsert-byte_bitmap.sql
 	upsert-byte_count.sql
@@ -47,6 +48,7 @@ LIBEXECs="
 	ssq-setcore-ls
 	ssq-setcore-fault
 	ssq-setcore-rummy
+	ssq-setcore-rummy-count
 	ssq-setcore-service
 "
 
@@ -56,6 +58,7 @@ SBINs="
 	get-is-utf8wf
 	service-xor
 	service-xor-yesterday
+	setcore-fault
 	upsert-byte_bitmap
 	upsert-byte_count
 	upsert-byte_prefix_32

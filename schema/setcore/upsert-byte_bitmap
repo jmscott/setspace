@@ -22,7 +22,8 @@ PSQL='psql
 
 die()
 {
-	echo "$PROG: ERROR: $1" >&2
+	echo "$PROG: ERROR: $@" >&2
+	test -n "$BLOB" && setcore-fault $PROG $BLOB "$@"
 	exit 2
 }
 

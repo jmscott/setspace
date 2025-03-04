@@ -19,12 +19,24 @@ PSQL='psql
 	--quiet
 	--no-readline
 '
-SQL=lib/$PROG.sql
 
 die()
 {
 	echo "$PROG: ERROR: $@" >&2
 	exit 1
 }
+
+case $# in
+0)
+	SQL=lib/$PROG.sql
+	;;
+1)
+	test "$1" = count || die "unknown action: $1"
+	exec libexec/$PROG-count
+	;;
+*)
+	die "wrong cli arg: got $#, need <= 1"
+	;;
+esac
 
 $PSQL --file $SQL || die "psql rummy failed: exit status=$?"

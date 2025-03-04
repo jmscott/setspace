@@ -27,16 +27,15 @@ CREATE DOMAIN inception AS timestamptz
   )
 ;
 
-
-CREATE TABLE chat_history_ok
+CREATE TABLE blob
 (
 	blob		udig	PRIMARY KEY,
-	start_time	inception NOT NULL
+	discover_time	inception NOT NULL
 );
-COMMENT ON TABLE chat_history_ok IS
-  'Oldest "ok" time seen in chat history of a blob request record'
+COMMENT ON TABLE blob IS
+  'All blobs in setcore schema'
 ;
-CREATE INDEX idx_chat_history_ok_time ON chat_history_ok USING brin(start_time);
+CREATE INDEX idx_blob_discover_time ON blob USING brin(discover_time);
 
 /*
  *  First 32 bytes of the blob.
@@ -45,7 +44,8 @@ DROP TABLE IF EXISTS byte_prefix_32 CASCADE;
 CREATE TABLE byte_prefix_32
 (
 	blob		udig
-				REFERENCES chat_history_ok
+				REFERENCES blob
+				ON DELETE CASCADE
 				PRIMARY KEY,
 	prefix		bytea
 				CHECK (
@@ -63,7 +63,7 @@ DROP TABLE IF EXISTS byte_count cascade;
 CREATE TABLE byte_count
 (
 	blob		udig
-				REFERENCES chat_history_ok
+				REFERENCES blob
 				ON DELETE CASCADE
 				PRIMARY KEY,
 	byte_count	bigint
@@ -83,7 +83,7 @@ DROP TABLE IF EXISTS is_utf8wf CASCADE;
 CREATE TABLE is_utf8wf
 (
 	blob		udig
-				REFERENCES chat_history_ok
+				REFERENCES blob
 				ON DELETE CASCADE
 				PRIMARY KEY,
 	is_utf8		boolean
@@ -101,7 +101,7 @@ DROP TABLE IF EXISTS setcore.byte_bitmap CASCADE;
 CREATE TABLE byte_bitmap
 (
 	blob		udig
-				REFERENCES chat_history_ok
+				REFERENCES blob
 				ON DELETE CASCADE
 				PRIMARY KEY,
 
@@ -121,7 +121,7 @@ DROP TABLE IF EXISTS byte_suffix_32 CASCADE;
 CREATE TABLE byte_suffix_32
 (
 	blob		udig
-				REFERENCES chat_history_ok
+				REFERENCES blob
 				ON DELETE CASCADE
 				PRIMARY KEY,
 	suffix		bytea
@@ -141,7 +141,7 @@ CREATE VIEW rummy AS
   SELECT
 	ok.blob
     FROM
-        chat_history_ok ok
+        blob ok
 	  NATURAL LEFT OUTER JOIN byte_prefix_32 bp32
 	  NATURAL LEFT OUTER JOIN byte_count bc
 	  NATURAL LEFT OUTER JOIN byte_suffix_32 bs32
@@ -167,10 +167,10 @@ DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS 
   SELECT
 	ok.blob,
-	ok.start_time AS discover_time
+	ok.discover_time
     FROM
-    	chat_history_ok ok
-  	  NATURAL JOIN byte_prefix_32 bp32
+    	blob ok
+  	  NATURAL JOIN byte_prefix_32
 	  NATURAL JOIN byte_count
 	  NATURAL JOIN byte_bitmap
 	  NATURAL JOIN byte_suffix_32

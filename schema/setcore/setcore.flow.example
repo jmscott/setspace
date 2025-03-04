@@ -49,64 +49,84 @@ call brr_ok()
 	bio4d.chat_history == "ok,ok,ok"
 ;
 
-sql exec upsert_eldest_ok
+sql query blob_state row
+{
+	result row is (
+		in_service bool,
+		is_earlier bool
+	);
+	statement = `
+SELECT
+	(SELECT EXISTS (
+	  SELECT
+		null
+	    FROM
+		setcore.service
+	    WHERE
+		blob = $1
+	  )) AS in_service,
+	COALESCE((SELECT
+		(discover_time > $2)
+	  FROM
+	  	setcore.blob
+	  WHERE
+	  	blob = $1
+	), false) AS is_earlier
+;
+
+;`;
+}
+
+command brr_wrote
+{
+	path = "true";
+}
+
+call brr_wrote()
+  when
+  	brr_ok.exit_status == 0
+	and
+	(
+		bio4d.verb == "put"
+		or
+		bio4d.verb == "take"
+	)
+;
+
+sql exec upsert_blob
 {
 	statement = `
-INSERT INTO setcore.chat_history_ok (
+INSERT INTO setcore.blob (
 	blob,
-	start_time
+	discover_time
 ) VALUES (
 	$1,
 	$2
 ) ON CONFLICT (blob) DO UPDATE
   SET
-  	start_time = excluded.start_time
+  	discover_time = excluded.discover_time
   WHERE
-	chat_history_ok.start_time > excluded.start_time
+	blob.discover_time > excluded.discover_time
 ;
 	`;
 }
 
-sql query eldest_ok_upsertable row
-{
-	result row is (
-		exists	bool
-	);
-
-	statement = `
-SELECT EXISTS (			--  new chat history seen
-  SELECT
-  	null
-    FROM
-    	setcore.chat_history_ok
-    WHERE
-    	blob = $1
-	AND
-	start_time > $2
-) OR NOT EXISTS (		--  first time chat history exists
-  SELECT
-  	null
-    FROM
-    	setcore.chat_history_ok
-    WHERE
-    	blob = $1
-)`;
-}
-
-query eldest_ok_upsertable(bio4d.udig, bio4d.start_time)
+query blob_state(bio4d.udig, bio4d.start_time)
   when
-	#  only interested in blobs which have existed
-
-  	bio4d.chat_history == "ok"
-	or
-  	bio4d.chat_history == "ok,ok"
-	or
-  	bio4d.chat_history == "ok,ok,ok"
+  	brr_ok.exit_status == 0
 ;
 
-query upsert_eldest_ok(bio4d.udig, bio4d.start_time)
+#
+#  might update to earlier start_time.
+#
+#  Note:
+#	ought to be checking on read, as well!
+#
+query upsert_blob(bio4d.udig, bio4d.start_time)
   when
-  	eldest_ok_upsertable.exists == true
+	blob_state.in_service == false
+	or
+	blob_state.is_earlier == true
 ;
 
 command eat_blob
@@ -121,60 +141,22 @@ command eat_blob
 	exit_status is OK when in {0, 1};
 }
 
-sql query in_chat_history_ok row
-{
-	result row is (
-		answer	bool
-	);
-	statement = `
-SELECT EXISTS (
-  SELECT
-	null
-    FROM
-    	setcore.chat_history_ok
-    WHERE
-    	blob = $1
-);`;
-}
-
-query in_chat_history_ok(bio4d.udig);
-
 sync map in_flight[string]bool;
 
 call eat_blob(bio4d.udig)
   when
 	in_flight.LoadOrStore(bio4d.udig, true).loaded == false
 
-	#  did we just insert into chat_history_o
+	#  did we just insert into table setcore.blob
 	and
 	(
 		
-		eldest_ok_upsertable.exists == true	#  just upserted
+		upsert_blob.rows_affected == 1
 		or
-		in_chat_history_ok.answer == true	#  already in table
+		blob_state.in_service == false	#  not all facts found
 	)
 ;
 
-sql query in_service row
-{
-	result row is (
-		answer bool
-	);
-	statement = `
-SELECT EXISTS (
-  SELECT
-  	null
-    FROM
-    	setcore.service
-    WHERE
-    	blob = $1
-);`;
-}
-
-query in_service(bio4d.udig)
-  when
-  	eat_blob.exit_status == 0
-;
 
 #  insert into table byte_bitmap
 sql query in_byte_bitmap row

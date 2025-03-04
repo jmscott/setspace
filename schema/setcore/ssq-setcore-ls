@@ -2,6 +2,10 @@
 #
 #  Synopsis:
 #	script to invoke libexec/ssq-setcore-ls-* scripts
+#  Usage:
+#	BLOB1=btc20:d1a4179e1cd41feeb4a859ce428c7f2bf9f36d9d
+#	BLOB2=btc20:ebcf29d1d8abf97b52447e37bf747bf25c9c0ad0
+#	ssq setcore ls $BLOB1 $BLOB2 ...
 #
 PROG=$(basename $0)
 
@@ -11,6 +15,7 @@ PSQL='psql
 	--set=ON_ERROR_STOP=1
 	--no-psqlrc
 	--no-readline
+	--pset null=Unknown
 '
 SQL=lib/$PROG.sql
 
