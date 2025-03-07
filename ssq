@@ -5,6 +5,9 @@
 #  Usage:
 #	ssq			#  help
 #	ssq help		#  help
+#  Note:
+#	Consider adding action "ssq env <var>" for various global values,
+#	like PSQL.
 #
 PROG=$(basename $0)
 USAGE="usage: $PROG [help | ls | <schema>"
