@@ -10,36 +10,32 @@
 #  	2	unknown error
 #
 PROG=upsert-byte_count
-BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 PSQL='psql
 	--quiet
 	--no-psqlrc
 	--no-readline
 '
-SQL=lib/$PROG.sql
-
-TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
+SQL=$SCHEMA_ROOT/lib/$PROG.sql
+SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
+SETCORE_ROOT=$SETSPACE_ROOT/schema/setcore
 
 die()
 {
-	echo "$PROG: ERROR: $1" >&2
+	setcore-fault upsert_byte_count "$BLOB" "$@"
 	exit 2
 }
 
-leave()
-{
-	rm -f $TMP_BLOB
-	exit
-}
-
-trap leave EXIT INT TERM QUIT
-
 test $# = 1 || die 'wrong number of arguments'
 BLOB=$1
+UDIG="--udig $BLOB"
 
+#  make work dir and change to that directory
+source $SETSPACE_ROOT/lib/work-dir.bash				||
+		die "source work-dir failed: exit status=$?"
+pwd >>/tmp/wtf
 #  fetch the blob into temp file
 
-blobio get --service $BLOBIO_GET_SERVICE --udig $BLOB --output-path $TMP_BLOB
+blobio get $SERVICE $UDIG --output-path BLOB 2>STDERR
 STATUS=$?
 case $STATUS in
 0)
@@ -52,10 +48,10 @@ case $STATUS in
 	;;
 esac
 
-COUNT=$(byte-count <$TMP_BLOB)
+COUNT=$(byte-count <BLOB 2>STDERR)
 test $? = 0 || die "byte-count failed: exit status=$?"
 
-$PSQL --set blob=$BLOB --set count=$COUNT --file $SQL
-test $? = 0 || die "psql upsert failed: exit status=$?"
+$PSQL --set blob=$BLOB --set count=$COUNT --file $SQL			||
+			die "psql upsert failed: exit status=$?"
 
 exit 0

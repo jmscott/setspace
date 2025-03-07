@@ -7,7 +7,7 @@
 #  	jmscott@setspace.com
 #  	setspace@gmail.com
 #
-SCHEMA_ROOT=$SETSPACE_ROOT/schema/setcore
+export SCHEMA_ROOT=$SETSPACE_ROOT/schema/setcore
 cd $SCHEMA_ROOT || exit
 
 export BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}

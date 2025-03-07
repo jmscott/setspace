@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	Setcore fault, writing records into run/$PROG.fault and setops
+#  Usage:
+#	setcore-fault <command> <udig> <msg>
+#
+
+#  do not fault out even with bad error.  do best effort to get
+#  something into database
+
+NOW=$(date '+%Y/%m/%d %H:%M:%S')
+APPEND_FLTX=$SETSPACE_ROOT/schema/setops/sbin/append-fltx
+RUN=$SETSPACE_ROOT/schema/setcore/run
+
+fault_fault()
+{
+	local FAULT=$RUN/setcore-fault.fault
+	echo "$NOW: $MSG" >>$RUN
+
+	test -n "$MSG" && echo "$MSG" >&2
+	exit 2
+}
+
+test $# = 3 || fault_fault "wrong argument count: got $#, need 3"
+
+COMMAND_NAME=$1
+BLOB=$2
+MSG=$3
+
+echo "$NOW: ERROR: $MSG" >>$RUN/$COMMAND_NAME.fault			||
+	fault_fault "echo >>$RUN/$COMMAND_NAME.fault failed: exit status=$?"
+
+echo "ERROR: $COMMAND_NAME: $MSG" >&2
+
+MSG=""		#  cleared so not written to stderr twice
+
+STDOUT=/dev/null
+test -f STDOUT && STDOUT=STDOUT
+
+STDERR=/dev/null
+test -f STDERR && STDERR=STDERR
+cat $STDERR >&2 || fault_fault "cat $STDERR failed: exit status=$?"
+
+$APPEND_FLTX								\
+	pdfbox								\
+	flowd								\
+	$COMMAND_NAME							\
+	$BLOB								\
+	ERR								\
+	2								\
+	0								\
+	$STDOUT								\
+	$STDERR
+STATUS=$?
+test $STATUS = 0 || fault_fault "append-fltx failed: exit status=$STATUS"
+
+exit 0

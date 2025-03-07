@@ -53,6 +53,7 @@ sql query blob_state row
 {
 	result row is (
 		in_service bool,
+		in_fault bool,
 		is_earlier bool
 	);
 	statement = `
@@ -65,6 +66,16 @@ SELECT
 	    WHERE
 		blob = $1
 	  )) AS in_service,
+       (SELECT EXISTS (
+         SELECT
+	 	null
+	   FROM
+	   	setops.flowd_call_fault
+	   WHERE
+	   	blob = $1
+		AND
+		schema_name = 'setcore'
+          )) AS in_fault,
 	COALESCE((SELECT
 		(discover_time > $2)
 	  FROM
@@ -73,7 +84,6 @@ SELECT
 	  	blob = $1
 	), false) AS is_earlier
 ;
-
 ;`;
 }
 
@@ -119,14 +129,15 @@ query blob_state(bio4d.udig, bio4d.start_time)
 #
 #  might update to earlier start_time.
 #
-#  Note:
-#	ought to be checking on read, as well!
-#
 query upsert_blob(bio4d.udig, bio4d.start_time)
   when
-	blob_state.in_service == false
-	or
-	blob_state.is_earlier == true
+  	blob_state.in_fault == false
+	and
+	(
+		blob_state.in_service == false
+		or
+		blob_state.is_earlier == true
+	)
 ;
 
 command eat_blob
