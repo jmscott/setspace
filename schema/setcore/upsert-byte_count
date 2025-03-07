@@ -17,7 +17,6 @@ PSQL='psql
 '
 SQL=$SCHEMA_ROOT/lib/$PROG.sql
 SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
-SETCORE_ROOT=$SETSPACE_ROOT/schema/setcore
 
 die()
 {
