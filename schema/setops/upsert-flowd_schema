@@ -3,11 +3,11 @@
 #  Synopsis:
 #	Merge a schema into table setops.flowd_schema
 #  Usage:
-#	merge-flowd_schema <schema1> <schema2> ...
-#	echo "$SCHEMAs" | merge-flowd_schema
+#	upsert-flowd_schema <schema1> <schema2> ...
+#	echo "$SCHEMAs" | upsert-flowd_schema
 #  Exit Status:
-#	0	all schema merged
-#	1	unexpected error mering schema into db
+#	0	all schemas upserted
+#	1	unexpected error merging schema into table flowd_schema
 #
 
 PROG=$(basename $0)
@@ -30,11 +30,11 @@ cd $SETSPACE_ROOT || die "cd SETSPACE_ROOT failed: exit status=$?"
 
 . etc/profile || die ". etc/profile failed: exit status=$?"
 
-merge_schema()
+upsert_schema()
 {
 	local SCHEMA=$1
 
-	$PSQL <<END || die "psql merge failed: exit status=$?"
+	$PSQL <<END || die "psql upsert failed: exit status=$?"
 INSERT INTO setops.flowd_schema (
 	schema_name
   ) VALUES('$SCHEMA')
@@ -47,12 +47,12 @@ END
 case $# in
 0)
 	while read SCH;  do
-		merge_schema $SCH || die "merge_schema failed: exit status=$?"
+		upsert_schema $SCH || die "upsert_schema failed: exit status=$?"
 	done
 	;;
 *)
 	for SCH in $@;  do
-		merge_schema $SCH || die "merge_schema failed: exit status=$?"
+		upsert_schema $SCH || die "upsert_schema failed: exit status=$?"
 	done
 	;;
 esac

@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	Merge fault for a flowd call for a particular coman in a schema.
+#	Merge fault for a flowd call for a command in a particular schema.
 #  Usage:
 #	#  blob the command faulted upon
 #	BLOB=sha:7763765cdcbf9cf3f86474556304b49b397b8b45
 #
-#	merge-flowd_call_fault						\
+#	upsert-flowd_call_fault						\
 #		pdfbox			#  schema			\
-#		merge_pddocument	#  command			\
+#		upsert_pddocument	#  command			\
 #		$BLOB							\
 #		ERR			#  xdr exit class ERR, SIG, NOPS\
 #		2			#  process exit status
@@ -18,7 +18,7 @@
 #  Environment:
 #	BLOBIO_ALGORITHM
 #  Exit Status:
-#	0	fault merged into table setops.flowd_call_fault
+#	0	fault upserted into table setops.flowd_call_fault
 #	1	unexpected error (no fault written)
 #  Note:
 #	Consider creating separate table for std{out,err} of blob.

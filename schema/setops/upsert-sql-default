@@ -3,9 +3,9 @@
 #  Synopsis:
 #	Merge default sql vlues into tables setops.flowd_*
 #  Usage:
-#	sbin/merge-sql-default
+#	sbin/upsert-sql-default
 #  Exit Status:
-#	0	all defaulyt values merged
+#	0	all default values upserted into tables flowd_*
 #	1	unexpected error
 #
 PROG=$(basename $0)
@@ -22,15 +22,15 @@ PROFILE=schema/setops/etc/profile
 test -r $PROFILE || die "can not read file: $PROFILE"
 . schema/setops/etc/profile
 
-find-schema | merge-flowd_schema
+find-schema | upsert-flowd_schema
 STATUS=${PIPESTATUS[*]}
-test "$STATUS" = '0 0' || die "merge-flowd_schema failed: exit status=$STATUS"
+test "$STATUS" = '0 0' || die "upsert-flowd_schema failed: exit status=$STATUS"
 
-#  merge flowd commands into table setops.flowd_command
+#  upsert flowd commands into table setops.flowd_command
 
 find-schema | while read SCH;  do
-	merge-flowd_command $SCH					||
-		die "merge-flowd_command failed: exit status=$?"
+	upsert-flowd_command $SCH					||
+		die "upsert-flowd_command failed: exit status=$?"
 done
 STATUS=${PIPESTATUS[*]}
-test "$STATUS" = '0 0' || die "merge-flowd_command failed: exit status=$STATUS"
+test "$STATUS" = '0 0' || die "upsert-flowd_command failed: exit status=$STATUS"

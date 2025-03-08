@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	Append a fault description record to setops/spool/<schema>.fltx
+#  Usage:
+#	BLOB=btc20:5216c05f849515ef1abc285b2de3224e5c45232a
+#	append-fltx							\
+#		pdfbox			#  schema			\
+#		[+-]flowd		#  add/delete fault for process
+#		upsert_pddocument	#  command			\
+#		$BLOB			#  faulted blob (pdf)		\
+#		ERR			#  xdr exit class: ERR, SIG, NOPS\
+#		2			#  process exit status
+#		0			#  signal - 0 implies no signal
+#		/dev/null	#  stdout file path, "-" reads from stdin
+#		-		#  stderr file_path, "-" reads from stdin
+#  Exit Status:
+#	0	#  no error, fault append into setops/spool/schema.fltx
+#	1	#  unexpected error, fault probably not appended!
+#  Note:
+#	When $BLOB is empty then use empty blob form $BLOBIO_ALGORITHM
+#
+
+PROG=$(basename $0)
+TMP_INPUT_PATH=${TMPDIR:=/tmp}/$PROG-$$.blob
+
+leave()
+{
+	rm --force $TMP_INPUT_PATH				||
+		echo "$PROG: ERROR: rm tmp blob failed: exit status=$?" >&2 
+}
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&2
+	exit 1
+}
+
+test $# = 9 || die "wrong cli arg count: got $#, expected 8"
+
+SCHEMA_NAME=$1
+PROCESS_CLASS=$2
+COMMAND_NAME=$3
+BLOB=$4
+XDR_EXIT_CLASS=$5
+EXIT_STATUS=$6
+SIGNAL=$7
+STDOUT_PATH=$8
+STDERR_PATH=$9
+
+test -n "$BLOB" || BLOB=$BLOBIO_ALGORITHM:$(
+			blobio empty --algorithm $BLOBIO_ALGORITHM
+		   )
+
+case "$PROCESS_CLASS" in
+flowd)
+	die "missing + or - prefix in process class flowd"
+	;;
+[-+]flowd)
+	;;
+*)
+	die "unknown process class: $PROCESS_CLASS"
+	;;
+esac
+
+case "$XDR_EXIT_CLASS" in
+ERR|SIG|NOPS)
+	;;
+*)
+	die "unknown xdr exit class: $XDR_EXIT_CLASS"
+	;;
+esac
+
+test "$STDOUT_PATH" = '-' -a "$STDERR_PATH" = '-'			&&
+	die "both stdout and stderr path can not be - (stdin)"
+trap leave EXIT
+
+test -n "$BLOBIO_ALGORITHM" || die 'env not defined: BLOBIO_ALGORITHM'
+
+#  eat either stdin "-" or a file path and return the udig
+#  set TMP_INPUT_PATH so leave() can clean up
+
+eat() {
+	local WHAT=$1
+	local SRC_PATH=$2
+	local TMP_INPUT_PATH=$3
+
+	#  slurp input from stdin or test for readable file
+	case "$SRC_PATH" in
+	-)
+		#  slurp stdin for for stderr
+		cat >$TMP_INPUT_PATH || die "cat >$WHAT failed: exit status=$?"
+		SRC_PATH=$TMP_INPUT_PATH
+		;;
+	*)
+		test -r $SRC_PATH || die "$WHAT: can not read: $SRC_PATH"
+		;;
+	esac
+
+	# get the udig of the input
+	local UDIG=$BLOBIO_ALGORITHM:$(
+		blobio eat --algorithm $BLOBIO_ALGORITHM --input-path $SRC_PATH
+	)
+	test $? = 0 || die "blobio eat $WHAT failed: exit status=$?"
+	blobio put 							\
+		--udig $UDIG						\
+		--input-path $SRC_PATH					\
+		--service $BLOBIO_SERVICE				||
+		die "blobio put $WHAT failed: exit status=$?"
+
+	echo $UDIG
+}
+
+STDOUT_BLOB=$(eat stdout $STDOUT_PATH $TMP_INPUT_PATH)			||
+			die "eat stdout failed: exit status=$?"
+STDERR_BLOB=$(eat stderr $STDERR_PATH $TMP_INPUT_PATH)			||
+			die "eat stderr failed: exit status=$?"
+
+SPOOL=$SETSPACE_ROOT/schema/setops/spool/$SCHEMA_NAME.fltx
+
+cat >>$SPOOL <<END
+$(RFC3339Nano)	$PROCESS_CLASS	$COMMAND_NAME	$BLOB	$XDR_EXIT_CLASS	$EXIT_STATUS	$SIGNAL	$STDOUT_BLOB	$STDERR_BLOB
+END
+
+STATUS=$?
+test $STATUS = 0 || die "cat >spool/.fltx failed: exit status=$STATUS"
+
+exit 0

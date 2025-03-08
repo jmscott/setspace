@@ -42,6 +42,8 @@ install-dirs:
 				-m=u=rwx,g=rx,o= -d $(SETOPS_ROOT)/etc
 	install -g $(SETOPS_GROUP) -o $(SETOPS_USER) 		\
 				-m=u=rwx,go= -d $(SETOPS_ROOT)/tmp
+	install -g $(SETOPS_GROUP) -o $(SETOPS_USER) 		\
+				-m=u=rwx,g=rx,o= -d $(SETOPS_ROOT)/spool
 install: all
 
 	cd .. && $(_MAKE) install-dirs
@@ -65,13 +67,7 @@ ifdef SETOPS_PREFIX
 endif
 
 distclean:
-	test ! -e $(SETOPS_ROOT)/lib ||				\
-		(cd $(SETOPS_ROOT)/lib && rm -rf $(LIBs))
-	test ! -e $(SETOPS_ROOT)/libexec ||				\
-		(cd $(SETOPS_ROOT)/libexec && rm -rf $(LIBEXECs))
-	test ! -e $(SETOPS_ROOT)/sbin ||				\
-		(cd $(SETOPS_ROOT)/sbin && rm -rf $(SBINs))
-
+	rm --force --recursive $(SETOPS_ROOT)/{lib,libexec,sbin}
 world:
 	$(_MAKE) clean
 	$(_MAKE) all

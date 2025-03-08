@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Schema for faults generated while processing for blobs for any schema.
+ *	Schema for operations across all schemas in setspace/schema.
  *  Note:
  *	Should faults for a particular blob exist after blob vanishes from
  *	setops.service?  Currently, yes.
@@ -20,6 +20,8 @@ COMMENT ON SCHEMA setops IS
 	'Faults generated while processing blobs for any schema'
 ;
 
+CREATE DOMAIN udig AS public.udig;
+
 DROP DOMAIN IF EXISTS name63 CASCADE;
 CREATE DOMAIN name63 AS text
   CHECK (
@@ -30,13 +32,21 @@ COMMENT ON DOMAIN name63 IS
   '63 character names of schema, command queries, etc'
 ;
 
+DROP TABLE IF EXISTS blob;
+CREATE TABLE blob
+(
+	blob		udig PRIMARY KEY,
+	insert_time	setcore.inception
+				DEFAULT now()
+);
+
 DROP TABLE IF EXISTS flowd_schema CASCADE;
 CREATE TABLE flowd_schema
 (
 	schema_name	name63
 				PRIMARY KEY,
 
-	insert_time	setcore.inception
+	discover_time	setcore.inception
 				DEFAULT now()
 				NOT NULL
 );
@@ -52,11 +62,10 @@ CREATE TABLE flowd_command
 
 	PRIMARY KEY	(schema_name, command_name),
 
-	FOREIGN KEY	(schema_name) REFERENCES flowd_schema,
+	FOREIGN KEY	(schema_name)
+				REFERENCES flowd_schema
+				ON DELETE CASCADE
 
-	insert_time	setcore.inception
-				DEFAULT now()
-				NOT NULL
 );
 COMMENT ON TABLE flowd_command IS
   'Commands in etc/<schema.flow> file'
@@ -67,7 +76,7 @@ CREATE TABLE flowd_call_fault
 (
 	schema_name	name63,
 	command_name	name63,
-	blob		udig REFERENCES setcore.service ON DELETE CASCADE,
+	blob		udig,
 
 	exit_class	text CHECK (
 				exit_class IN ('ERR', 'SIG', 'NOPS')
@@ -87,7 +96,9 @@ CREATE TABLE flowd_call_fault
 
 	PRIMARY KEY	(schema_name, command_name, blob),
 
-	FOREIGN KEY	(schema_name, command_name) REFERENCES flowd_command
+	FOREIGN KEY	(schema_name, command_name)
+			  REFERENCES flowd_command
+			  ON DELETE CASCADE
 );
 CREATE INDEX flowd_call_fault_when ON flowd_call_fault(insert_time);
 CREATE INDEX flowd_call_fault_blob ON flowd_call_fault USING hash(blob);
@@ -103,10 +114,10 @@ CREATE TABLE flowd_call_fault_output
 	blob		udig,
 
 	stdout_blob	udig
-				REFERENCES setcore.service(blob)
+				REFERENCES setcore.blob
 				ON DELETE SET NULL,
 	stderr_blob	udig
-				REFERENCES setcore.service(blob)
+				REFERENCES setcore.blob
 				ON DELETE SET NULL,
 
 	PRIMARY KEY	(schema_name, command_name, blob),
@@ -401,24 +412,28 @@ INSERT INTO pg_sql_error VALUES
 
 DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS
-    SELECT
-  	blob
-      FROM
-    	flowd_call_fault
+  SELECT
+  	DISTINCT blob
+    FROM
+    	blob
+	  NATURAL JOIN flowd_call_fault
 ;
 COMMENT ON VIEW service IS
-  'Blobs serviced by setops - probably n fault'
+  'Blobs serviced by setops - probably in fault'
 ;
 
 DROP VIEW IF EXISTS rummy CASCADE;
 CREATE VIEW rummy AS
   SELECT
-  	null::udig
+  	DISTINCT b.blob
+    FROM
+    	blob b
+	  NATURAL LEFT JOIN flowd_call_fault cf
     WHERE
-    	false
+    	cf.blob IS NULL
 ;
 COMMENT ON VIEW rummy IS
   'Unresolved blobs on schema setops'
 ;
 
-COMMIT;
+COMMIT TRANSACTION;
