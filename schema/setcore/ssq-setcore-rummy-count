@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	list rummy blobs, existing in setcore but not in service
+#  Usage:
+#	ssq setcore rummy | wc -l
+#  Note:
+#	Need to add "rummy ls" to see detail of what is known about a rummied
+#	blob.
+#
+PROG=$(basename $0)
+
+PSQL='psql
+	--quiet
+	--no-align
+	--set=ON_ERROR_STOP=1
+	--no-psqlrc
+	--tuples-only
+	--pset null=Unknown
+	--no-readline
+'
+SQL=lib/$PROG.sql
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&2
+	exit 1
+}
+
+$PSQL --file $SQL || die "psql rummy count failed: exit status=$?"
