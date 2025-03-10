@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	Setcore fault, writing records into run/$PROG.fault and setops
+#	Setcore fault, writing records into run/$COMMAND_NAME.fault and setops
 #  Usage:
 #	setcore-fault <command> <udig> <msg>
 #
@@ -13,12 +13,17 @@ NOW=$(date '+%Y/%m/%d %H:%M:%S')
 APPEND_FLTX=$SETSPACE_ROOT/schema/setops/sbin/append-fltx
 RUN=$SETSPACE_ROOT/schema/setcore/run
 
+#  what happens when this fault script itself faults?
+#  do best attempt to burp out *something*
+
 fault_fault()
 {
+	local MSG="$COMMAND_NAME: $@"
 	local FAULT=$RUN/setcore-fault.fault
+
 	echo "$NOW: $MSG" >>$RUN
 
-	test -n "$MSG" && echo "$MSG" >&2
+	echo "$MSG" >&2
 	exit 2
 }
 
@@ -28,23 +33,34 @@ COMMAND_NAME=$1
 BLOB=$2
 MSG=$3
 
+test -n "$MSG" || fault_fault 'empty message (arg#3)'
+
 echo "$NOW: ERROR: $MSG" >>$RUN/$COMMAND_NAME.fault			||
 	fault_fault "echo >>$RUN/$COMMAND_NAME.fault failed: exit status=$?"
 
 echo "ERROR: $COMMAND_NAME: $MSG" >&2
 
-MSG=""		#  cleared so not written to stderr twice
-
 STDOUT=/dev/null
 test -f STDOUT && STDOUT=STDOUT
 
-STDERR=/dev/null
-test -f STDERR && STDERR=STDERR
-cat $STDERR >&2 || fault_fault "cat $STDERR failed: exit status=$?"
+#  combine MSG and process stderr into single file STDERR
 
+if [ -f STDERR ];  then
+	(
+		echo $MSG;
+		cat STDERR
+	) >STDERR.both || fault_fault "cat STDERR.both failed: exit status=$?"
+
+	STDERR=STDERR.both
+else
+	echo $MSG >STDERR						||
+		fault_fault "echo MSG >STDERR failed: exit status=$?"
+	STDERR=STDERR
+fi
+	
 $APPEND_FLTX								\
 	pdfbox								\
-	flowd								\
+	+flowd								\
 	$COMMAND_NAME							\
 	$BLOB								\
 	ERR								\

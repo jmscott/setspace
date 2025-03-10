@@ -16,31 +16,26 @@ PSQL='psql
 	--no-psqlrc
 	--no-readline
 '
-SQL=lib/$PROG.sql
-BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
-
-TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
+SQL=$SCHEMA_ROOT/lib/$PROG.sql
+SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
 
 die()
 {
-	echo "$PROG: ERROR: $1" >&2
+	setcore-fault upsert_byte_prefix_32 "$BLOB" "$@"
 	exit 2
 }
 
-leave()
-{
-	rm -f $TMP_BLOB
-	exit
-}
-
-trap leave EXIT INT TERM QUIT
-
-test $# = 1 || die 'wrong number of arguments'
+test $# = 1 || die "wrong number of arguments: got $#, expected 1"
 BLOB=$1
+UDIG="--udig $BLOB"
+
+#  make work dir and change to that directory
+source $SETSPACE_ROOT/lib/work-dir.bash				||
+		die "source work-dir failed: exit status=$?"
 
 #  fetch the blob into temp file
 
-blobio get --service $BLOBIO_GET_SERVICE --udig $BLOB --output-path $TMP_BLOB
+blobio get $SERVICE $UDIG --output-path BLOB 2>STDERR
 STATUS=$?
 case $STATUS in
 0)
@@ -53,7 +48,7 @@ case $STATUS in
 	;;
 esac
 
-PREFIX=$(byte-prefix-32 <$TMP_BLOB)
+PREFIX=$(byte-prefix-32 <BLOB 2>STDERR )
 test $? = 0 || die "byte-prefix-32 failed: exit status=$?"
 
 #  merge new record

@@ -31,7 +31,7 @@ UDIG="--udig $BLOB"
 #  make work dir and change to that directory
 source $SETSPACE_ROOT/lib/work-dir.bash				||
 		die "source work-dir failed: exit status=$?"
-pwd >>/tmp/wtf
+
 #  fetch the blob into temp file
 
 blobio get $SERVICE $UDIG --output-path BLOB 2>STDERR
@@ -48,7 +48,8 @@ case $STATUS in
 esac
 
 COUNT=$(byte-count <BLOB 2>STDERR)
-test $? = 0 || die "byte-count failed: exit status=$?"
+STATUS=$?
+test $STATUS = 0 || die "byte-count failed: exit status=$STATUS"
 
 $PSQL --set blob=$BLOB --set count=$COUNT --file $SQL			||
 			die "psql upsert failed: exit status=$?"

@@ -15,44 +15,40 @@
 #	temporary file.
 #
 PROG=get-is-utf8wf
-BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
-
-TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
+SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
+SQL=$SCHEMA_ROOT/lib
 
 die()
 {
-	echo "$PROG: ERROR: $1" >&2
+	echo "$PROG: ERROR: $@" >&2
 	exit 4
 }
 
-leave()
-{
-	rm --force $TMP_BLOB
-	exit
-}
-
-trap leave EXIT INT TERM QUIT
-
-test $# = 1 || die 'wrong number of arguments'
+test $# = 1 || die "wrong number of arguments: got $#, expected 1"
 BLOB=$1
+UDIG="--udig $BLOB"
+
+#  make work dir and change to that directory
+source $SETSPACE_ROOT/lib/work-dir.bash				||
+		die "source work-dir failed: exit status=$?"
 
 #  fetch the blob into temp file
 
-blobio get --service $BLOBIO_GET_SERVICE --udig $BLOB --output-path $TMP_BLOB
+blobio get $SERVICE $UDIG --output-path BLOB 2>STDERR
 STATUS=$?
 case $STATUS in
 0)
 	;;
 1)
-	blobio empty --udig $BLOB && exit 2
-	exit 3
+	exit 1
 	;;
 *)
 	die "blobio get failed: exit status=$STATUS"
 	;;
 esac
 
-is-utf8wf <$TMP_BLOB
+is-utf8wf <BLOB 2>STDERR
 STATUS=$?
 test $STATUS -gt 2 && die "is-utf8wf failed: exit status=$STATUS"
-exit $STATUS
+
+exit 0

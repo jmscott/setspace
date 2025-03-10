@@ -10,10 +10,9 @@
 #  	2	unknown error
 #
 PROG=upsert-byte_bitmap
-SQL=lib/$PROG.sql
+SQL=$SCHEMA_ROOT/lib/$PROG.sql
 
-BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
-TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
+SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
 PSQL='psql
 	--quiet
 	--no-psqlrc
@@ -22,25 +21,21 @@ PSQL='psql
 
 die()
 {
-	echo "$PROG: ERROR: $@" >&2
-	test -n "$BLOB" && setcore-fault $PROG $BLOB "$@"
+	setcore-fault upsert_byte_bitmap "$BLOB" "$@"
 	exit 2
 }
 
-leave()
-{
-	rm -f $TMP_BLOB
-	exit
-}
-
-trap leave EXIT INT TERM QUIT
-
 test $# = 1 || die "wrong number of arguments: got $#, expected 1"
 BLOB=$1
+UDIG="--udig $BLOB"
+
+#  make work dir and change to that directory
+source $SETSPACE_ROOT/lib/work-dir.bash				||
+		die "source work-dir failed: exit status=$?"
 
 #  fetch the blob into temp file
 
-blobio get --service $BLOBIO_GET_SERVICE --udig $BLOB --output-path $TMP_BLOB
+blobio get $SERVICE $UDIG --output-path BLOB 2>STDERR
 STATUS=$?
 case $STATUS in
 0)
@@ -53,9 +48,11 @@ case $STATUS in
 	;;
 esac
 
-HEX=$(byte-bitmap <$TMP_BLOB)
-test $? = 0 || die "byte-bitmap failed: exit status=$?"
-$PSQL --set blob=$BLOB --set hex=$HEX --file $SQL
-test $? = 0 || die "psql upsert failed: exit status=$?"
+HEX=$(byte-bitmap <BLOB 2>STDERR)
+STATUS=$?
+test $STATUS = 0 || die "byte-bitmap failed: exit status=$STATUS"
+
+$PSQL --set blob=$BLOB --set hex=$HEX --file $SQL			||
+			die "psql upsert failed: exit status=$?"
 
 exit 0
