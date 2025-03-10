@@ -14,6 +14,7 @@ PSQL='psql
 	--quiet
 	--no-readline
 '
+SQL=lib/$PROG.sql
 
 die()
 {
@@ -21,10 +22,15 @@ die()
 	exit 1
 }
 
-$PSQL <<END || die "psql setcore.service failed: exit status=$?"
-SELECT
-	blob
-  FROM
-  	setcore.service
-;
-END
+ACTION="$1";  shift;
+case $ACTION in
+'')
+	;;
+*)
+	LIBEXEC=libexec/ssq-setcore-service-$ACTION
+	test -x $LIBEXEC || die "no libexec for action: $ACTION"
+	exec $LIBEXEC #@
+	;;
+esac
+
+$PSQL --file $SQL || die "psql setcore.service failed: exit status=$?"

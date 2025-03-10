@@ -36,6 +36,7 @@ LIBs="
 	ssq-setcore-ls.sql
 	ssq-setcore-rummy.sql
 	ssq-setcore-rummy-count.sql
+	ssq-setcore-service-count.sql
 	ssq-setcore-service.sql
 	upsert-byte_bitmap.sql
 	upsert-byte_count.sql
@@ -50,6 +51,7 @@ LIBEXECs="
 	ssq-setcore-rummy
 	ssq-setcore-rummy-count
 	ssq-setcore-service
+	ssq-setcore-service-count
 "
 
 SBINs="
