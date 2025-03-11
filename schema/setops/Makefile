@@ -44,6 +44,8 @@ install-dirs:
 				-m=u=rwx,go= -d $(SETOPS_ROOT)/tmp
 	install -g $(SETOPS_GROUP) -o $(SETOPS_USER) 		\
 				-m=u=rwx,g=rx,o= -d $(SETOPS_ROOT)/spool
+	install -g $(SETOPS_GROUP) -o $(SETOPS_USER) 		\
+				-m=u=rwx,g=rx,o= -d $(SETOPS_ROOT)/attic
 install: all
 
 	cd .. && $(_MAKE) install-dirs

@@ -91,8 +91,9 @@ CREATE TABLE flowd_call_fault
 				AND
 				signal <= 127
 			),
+	fault_time	setcore.inception NOT NULL,
 
-	insert_time	setcore.inception DEFAULT now() NOT NULL,
+	upsert_time	setcore.inception DEFAULT now() NOT NULL,
 
 	PRIMARY KEY	(schema_name, command_name, blob),
 
@@ -435,5 +436,33 @@ CREATE VIEW rummy AS
 COMMENT ON VIEW rummy IS
   'Unresolved blobs on schema setops'
 ;
+
+CREATE TABLE archive_flowd_call_fault (
+	fault_time	setcore.inception NOT NULL,
+	process_class	text CHECK (
+				process_class IN ('+flowd', '-flowd')
+			) NOT NULL,
+	command_name	name63 NOT NULL,
+
+	blob		udig NOT NULL,
+
+	exit_class	text CHECK ( 
+				exit_class IN ('OK', 'ERR', 'SIG', 'NOPS')
+			) NOT NULL,
+	exit_status	smallint CHECK (
+				exit_status >= 0
+				AND
+				exit_status <= 255
+			) NOT NULL,
+	signal		smallint CHECK (
+				signal >= 0
+				AND
+				signal <= 127
+			) NOT NULL,
+	stdout_blob	udig,
+	stderr_blob	udig,
+
+	PRIMARY KEY	(fault_time, process_class, command_name, blob)
+);
 
 COMMIT TRANSACTION;

@@ -5,8 +5,9 @@
 #  Usage:
 #	BLOB=btc20:5216c05f849515ef1abc285b2de3224e5c45232a
 #	append-fltx							\
+#		fault			#  fault or clear		\
 #		pdfbox			#  schema			\
-#		[+-]flowd		#  add/delete fault for process
+#		flowd			#  process class		\
 #		upsert_pddocument	#  command			\
 #		$BLOB			#  faulted blob (pdf)		\
 #		ERR			#  xdr exit class: ERR, SIG, NOPS\
@@ -36,35 +37,37 @@ die()
 	exit 1
 }
 
-test $# = 9 || die "wrong cli arg count: got $#, expected 8"
+test $# = 10 || die "wrong cli arg count: got $#, expected 10"
 
-SCHEMA_NAME=$1
-PROCESS_CLASS=$2
-COMMAND_NAME=$3
-BLOB=$4
-XDR_EXIT_CLASS=$5
-EXIT_STATUS=$6
-SIGNAL=$7
-STDOUT_PATH=$8
-STDERR_PATH=$9
+ACTION=$1
+SCHEMA_NAME=$2
+PROCESS_CLASS=$3
+COMMAND_NAME=$4
+BLOB=$5
+XDR_EXIT_CLASS=$6
+EXIT_STATUS=$7
+SIGNAL=$8
+STDOUT_PATH=$9
+STDERR_PATH=$10
+
+test $# = 10 || die "bad cli arg count: got $#, want 10"
+
+test "$ACTION" = fault -o "$ACTION" = clear || die "unknown action: $ACTION"
 
 test -n "$BLOB" || BLOB=$BLOBIO_ALGORITHM:$(
 			blobio empty --algorithm $BLOBIO_ALGORITHM
 		   )
+if [[ $BLOB =~ ^[a-z][a-z0-9_]{0,7}:[[:graph:]]{32,128}$ && 
+      $BLOB =~ [[:ascii:]]{32,128}$ ]];  then
+	true
+else
+	die "blob: not a udig: $BLOB"
+fi
 
-case "$PROCESS_CLASS" in
-flowd)
-	die "missing + or - prefix in process class flowd"
-	;;
-[-+]flowd)
-	;;
-*)
-	die "unknown process class: $PROCESS_CLASS"
-	;;
-esac
+test "$PROCESS_CLASS" = flowd || die "unknown process class: $PROCESS_CLASS"
 
 case "$XDR_EXIT_CLASS" in
-ERR|SIG|NOPS)
+OK|ERR|SIG|NOPS)
 	;;
 *)
 	die "unknown xdr exit class: $XDR_EXIT_CLASS"
@@ -119,7 +122,7 @@ STDERR_BLOB=$(eat stderr $STDERR_PATH $TMP_INPUT_PATH)			||
 SPOOL=$SETSPACE_ROOT/schema/setops/spool/$SCHEMA_NAME.fltx
 
 cat >>$SPOOL <<END
-$(RFC3339Nano)	$PROCESS_CLASS	$COMMAND_NAME	$BLOB	$XDR_EXIT_CLASS	$EXIT_STATUS	$SIGNAL	$STDOUT_BLOB	$STDERR_BLOB
+$(RFC3339Nano)	$ACTION	$PROCESS_CLASS	$COMMAND_NAME	$BLOB	$XDR_EXIT_CLASS	$EXIT_STATUS	$SIGNAL	$STDOUT_BLOB	$STDERR_BLOB
 END
 
 STATUS=$?

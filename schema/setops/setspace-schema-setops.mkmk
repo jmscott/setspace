@@ -41,6 +41,7 @@ LIBs="
 	profile.example
 	psqlrc.example
 	schema.sql
+	sync-fltx.sql
 "
 
 #  Uncoment to create bin/ directory
@@ -72,8 +73,8 @@ TMP="
 #"
 
 #  Uncomment to create attic/ directory
-#ATTIC="
-#"
+ATTIC="
+"
 
 #  Uncomment to create archive/ directory
 #ARCHIVE="
