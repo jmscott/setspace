@@ -23,18 +23,18 @@
 #  to, say, foobar-YYYYMMDD_hhmm.tar.bz2
 
 #PRODUCT=foobar
+PRODUCT=setspace-schema
 
 #
-#  Uncomment for compiled programs to be installed i bin/ or sbin/ and
+#  Uncomment for compiled programs to be installed in or sbin/ and
 #  removed in "clean" recipes.
 #
 #COMPILEs="
 #"
 
 LIBs="
-	fault-process.sh
-	schema-fault.sql
 	setspace-schema.mkmk
+	work-dir.bash
 "
 
 #  Uncoment to create bin/ directory
@@ -94,5 +94,6 @@ SBINs="
 #"
 
 #  Uncomment to create libexec/ directory
-#LIBEXECs="
-#"
+LIBEXECs="
+	work-dir.bash
+"
