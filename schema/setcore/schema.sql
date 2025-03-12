@@ -21,6 +21,8 @@ COMMENT ON SCHEMA setcore IS
   'Core setspace tables for common facts about blobs'
 ;
 
+CREATE DOMAIN udig AS public.udig;
+
 CREATE DOMAIN inception AS timestamptz
   CHECK (
   	value >= '2008-05-17 10:06:42-05'
