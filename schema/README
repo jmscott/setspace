@@ -588,3 +588,9 @@ Possible Schemas:
 		https://github.com/VikParuchuri/marker
 	satlogic - satellogic open feed
 		https://tech.marksblogg.com/satellogic-open-data-feed.html
+	wavefnt - Wavefront OBJ is a line-oriented, text format for 3D geometry.
+		https://nullprogram.com/blog/2025/03/02/
+	netpbm - 2d image format
+		https://netpbm.sourceforge.net/
+	vertopal - convert pdf to wikipedia format
+		https://github.com/vertopal/vertopal-cli
