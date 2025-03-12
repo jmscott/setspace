@@ -35,7 +35,8 @@ CREATE TABLE blob
 COMMENT ON TABLE blob IS
   'All blobs in setcore schema'
 ;
-CREATE INDEX idx_blob_discover_time ON blob USING brin(discover_time);
+CREATE INDEX idx_blob_blob ON blob USING hash(blob);
+CREATE INDEX idx_blob_discover_time ON blob(discover_time);
 
 /*
  *  First 32 bytes of the blob.
