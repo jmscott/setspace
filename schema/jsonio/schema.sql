@@ -21,7 +21,17 @@ CREATE VIEW rummy AS
     	false
 ;
 COMMENT ON VIEW rummy IS
-  'Known unknown blobs in schema jsonio'
+  'Known unknown blobs in schema jsonio (always empty)'
+;
+
+CREATE VIEW service AS
+  SELECT
+  	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'::udig AS blob
+    WHERE
+    	false
+;
+COMMENT ON VIEW service IS
+  'Blobs in service in schema jsonio (always empty)'
 ;
 
 COMMIT TRANSACTION;
