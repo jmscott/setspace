@@ -18,64 +18,83 @@ COMMENT ON SCHEMA fffile5 IS
   'Text and metadata extracted by "Find Free File Command", version 5'
 ;
 
+DROP DOMAIN IF EXISTS fffile5.udig;
+CREATE DOMAIN udig AS setcore.udig;
+
+DROP DOMAIN IF EXISTS type1023 CASCADE;
+CREATE DOMAIN type1023 AS text
+  CHECK (
+  	value ~ '[[:graph:]]'
+	AND
+	length(value) < 1024
+  )
+;
+
+DROP TABLE IF EXISTS blob CASCADE;
+CREATE TABLE blob
+(
+	blob		udig
+				REFERENCES blob
+				PRIMARY KEY,
+	discover_time	setcore.inception
+				NOT NULL
+);
+CREATE INDEX idx_blob_discover_time ON blob(discover_time);
+
 /*
  *  Output of 'file --brief' command on blob.
  */
-DROP TABLE IF EXISTS file CASCADE;
-CREATE TABLE file
+DROP TABLE IF EXISTS file_brief CASCADE;
+CREATE TABLE file_brief
 (
 	blob		udig
-				REFERENCES setcore.service(blob)
+				REFERENCES blob
 				ON DELETE CASCADE
 				PRIMARY KEY,
 
-	--  null indicates file produces non-utf8 output and exit status == 0
-	--  trailing new-lines have been trimmed
-	file_type	text
+	file_type	type1023 NOT NULL
 );
-COMMENT ON TABLE file IS
+COMMENT ON TABLE file_brief IS
   'Output of file --brief command on blob'
 ;
-CREATE INDEX file_blob_idx ON file USING hash(blob);
-CREATE INDEX file_type_idx ON file(file_type);
+CREATE INDEX idx_file_brief_blob ON file_brief USING hash(blob);
+CREATE INDEX idx_file_brief_file_type ON file_brief(file_type);
 
 /*
  *  Output of 'file --mime-type --brief' command on blob.
  */
-DROP TABLE IF EXISTS file_mime_type CASCADE;
-CREATE TABLE file_mime_type
+DROP TABLE IF EXISTS file_mime_type_brief CASCADE;
+CREATE TABLE file_mime_type_brief
 (
 	blob		udig
-				REFERENCES setcore.service(blob)
+				REFERENCES blob
 				ON DELETE CASCADE
 				PRIMARY KEY,
-	--  null indicates file produces non-utf8 output and exit status == 0
-	mime_type	text
+	mime_type	type1023	NOT NULL
 );
-COMMENT ON TABLE file_mime_type IS
+COMMENT ON TABLE file_mime_type_brief IS
   'Output of file --mime-type --brief command on blob'
 ;
-CREATE INDEX file_mime_type_blob_idx ON file_mime_type USING hash(blob);
-CREATE INDEX file_mime_type_idx ON file_mime_type(mime_type);
+CREATE INDEX file_mime_type_brief_blob_idx ON file_mime_type_brief USING hash(blob);
+CREATE INDEX file_mime_type_brief_idx ON file_mime_type_brief(mime_type);
 
 /*
  *  Output of 'file --mime-encoding --brief' command on blob.
  */
-DROP TABLE IF EXISTS file_mime_encoding CASCADE;
-CREATE TABLE file_mime_encoding
+DROP TABLE IF EXISTS file_mime_encoding_brief CASCADE;
+CREATE TABLE file_mime_encoding_brief
 (
 	blob		udig
-				REFERENCES setcore.service(blob)
+				REFERENCES blob
 				ON DELETE CASCADE
 				PRIMARY KEY,
-	--  null indicates file produces non-utf8 output and exit status == 0
-	mime_encoding	text
+	mime_encoding	type1023	NOT NULL
 );
-COMMENT ON TABLE file_mime_encoding IS
+COMMENT ON TABLE file_mime_encoding_brief IS
   'Output of file --mime-encoding --brief command on blob'
 ;
-CREATE INDEX file_mime_encoding_blob_idx ON file_mime_encoding USING hash(blob);
-CREATE INDEX file_mime_encoding_idx ON file_mime_encoding(mime_encoding);
+CREATE INDEX file_mime_encoding_brief_blob_idx ON file_mime_encoding_brief USING hash(blob);
+CREATE INDEX file_mime_encoding_brief_idx ON file_mime_encoding_brief(mime_encoding);
 
 /*
  *  Track very rare failures in various file commands defined in flowd.
@@ -93,8 +112,8 @@ COMMENT ON VIEW fault IS
   'Blobs for which the "file" commands failed (rare)'
 ;
 
-DROP MATERIALIZED VIEW IF EXISTS file_stat CASCADE;
-CREATE MATERIALIZED VIEW file_stat (
+DROP MATERIALIZED VIEW IF EXISTS file_brief_stat CASCADE;
+CREATE MATERIALIZED VIEW file_brief_stat (
 	file_type,
 	blob_count
 ) AS
@@ -102,21 +121,21 @@ CREATE MATERIALIZED VIEW file_stat (
   	file_type,
 	count(*)
     FROM
-    	file
+    	file_brief
     GROUP BY
     	file_type
   WITH DATA
 ;
-COMMENT ON MATERIALIZED VIEW file_stat IS
+COMMENT ON MATERIALIZED VIEW file_brief_stat IS
   'Statistics on blob counts per file type'
 ;
 CREATE UNIQUE INDEX file_stat_ft
-  ON file_stat (file_type)
+  ON file_brief_stat (file_type)
 ;
-ANALYZE file_stat;
+ANALYZE file_brief_stat;
 
-DROP MATERIALIZED VIEW IF EXISTS file_mime_type_stat CASCADE;
-CREATE MATERIALIZED VIEW file_mime_type_stat (
+DROP MATERIALIZED VIEW IF EXISTS file_mime_type_brief_stat CASCADE;
+CREATE MATERIALIZED VIEW file_mime_type_brief_stat (
 	mime_type,
 	blob_count
 ) AS
@@ -124,21 +143,21 @@ CREATE MATERIALIZED VIEW file_mime_type_stat (
   	mime_type,
 	count(*)
     FROM
-    	file_mime_type
+    	file_mime_type_brief
     GROUP BY
     	mime_type
   WITH DATA
 ;
-COMMENT ON MATERIALIZED VIEW file_mime_type_stat IS
+COMMENT ON MATERIALIZED VIEW file_mime_type_brief_stat IS
   'Statistics on blob counts per mime type'
 ;
-CREATE UNIQUE INDEX file_mime_type_stat_ft
-  ON file_mime_type_stat (mime_type)
+CREATE UNIQUE INDEX file_mime_type_brief_stat_ft
+  ON file_mime_type_brief_stat (mime_type)
 ;
-ANALYZE file_mime_type_stat;
+ANALYZE file_mime_type_brief_stat;
 
-DROP MATERIALIZED VIEW IF EXISTS file_mime_encoding_stat CASCADE;
-CREATE MATERIALIZED VIEW file_mime_encoding_stat (
+DROP MATERIALIZED VIEW IF EXISTS file_mime_encoding_brief_stat CASCADE;
+CREATE MATERIALIZED VIEW file_mime_encoding_brief_stat (
 	mime_encoding,
 	blob_count
 ) AS
@@ -146,30 +165,30 @@ CREATE MATERIALIZED VIEW file_mime_encoding_stat (
   	mime_encoding,
 	count(*)
     FROM
-    	file_mime_encoding
+    	file_mime_encoding_brief
     GROUP BY
     	mime_encoding
   WITH DATA
 ;
-COMMENT ON MATERIALIZED VIEW file_mime_encoding_stat IS
+COMMENT ON MATERIALIZED VIEW file_mime_encoding_brief_stat IS
   'Statistics on blob counts per mime type'
 ;
-CREATE UNIQUE INDEX file_mime_encoding_stat_ft
-  ON file_mime_encoding_stat (mime_encoding)
+CREATE UNIQUE INDEX file_mime_encoding_brief_stat_ft
+  ON file_mime_encoding_brief_stat (mime_encoding)
 ;
-ANALYZE file_mime_encoding_stat;
+ANALYZE file_mime_encoding_brief_stat;
 
 DROP FUNCTION IF EXISTS refresh_stat();
 CREATE OR REPLACE FUNCTION refresh_stat() RETURNS void
   AS $$
   BEGIN
-  	REFRESH MATERIALIZED VIEW CONCURRENTLY file_stat;
-  	REFRESH MATERIALIZED VIEW CONCURRENTLY file_mime_type_stat;
-  	REFRESH MATERIALIZED VIEW CONCURRENTLY file_mime_encoding_stat;
+  	REFRESH MATERIALIZED VIEW CONCURRENTLY file_brief_stat;
+  	REFRESH MATERIALIZED VIEW CONCURRENTLY file_mime_type_brief_stat;
+  	REFRESH MATERIALIZED VIEW CONCURRENTLY file_mime_encoding_brief_stat;
 
-	ANALYZE file_stat;
-	ANALYZE file_mime_type_stat;
-	ANALYZE file_mime_encoding_stat;
+	ANALYZE file_brief_stat;
+	ANALYZE file_mime_type_brief_stat;
+	ANALYZE file_mime_encoding_brief_stat;
   END $$
   LANGUAGE plpgsql
 ;
@@ -180,11 +199,12 @@ COMMENT ON FUNCTION refresh_stat IS
 DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS
   SELECT
-  	f.blob
+  	b.blob
     FROM
-    	file f
-	  JOIN file_mime_type fm ON (fm.blob = f.blob)
-	  JOIN file_mime_encoding fe ON (fe.blob = f.blob)
+    	blob b
+	  JOIN file_brief f ON (f.blob = b.blob)
+	  JOIN file_mime_type_brief fm ON (fm.blob = f.blob)
+	  JOIN file_mime_encoding_brief fe ON (fe.blob = f.blob)
 ;
 COMMENT ON VIEW service IS
   'Blobs with file, mime type and encoding known' 
@@ -192,40 +212,23 @@ COMMENT ON VIEW service IS
 
 DROP VIEW IF EXISTS rummy CASCADE;
 CREATE VIEW rummy AS
-  WITH all_blob AS (
-    SELECT
-    	blob
-      FROM
-      	file
-    UNION SELECT
-	blob
-      FROM
-  	file_mime_type
-    UNION SELECT
-	blob
-      FROM
-  	file_mime_encoding
-  ) SELECT
-  	a.blob
-      FROM
-      	all_blob a
-      WHERE
-      	NOT EXISTS (
-	  SELECT
-	  	srv.blob
-	    FROM
-	    	service srv
-	    WHERE
-	    	srv.blob = a.blob
-	)
+  SELECT
+  	b.blob
+    FROM
+    	blob b
+	  NATURAL LEFT OUTER JOIN file_brief fb
+	  NATURAL LEFT JOIN file_mime_type_brief fm
+	  NATURAL LEFT JOIN file_mime_encoding_brief fe
+    WHERE
+    	fb.blob IS NULL
+	OR
+	fm.blob IS NULL
+	OR
+	fe.blob IS NULL
 ;
 
 COMMENT ON VIEW rummy IS
-  'All blobs with relations not discovered'
-;
-
-COMMENT ON VIEW rummy IS
-  'All blobs with undiscover attributes in schema fffile5'
+  'All blobs with undiscovered facts, not in service or fault'
 ;
 
 COMMIT TRANSACTION;
