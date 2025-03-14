@@ -243,4 +243,12 @@ COMMENT ON VIEW rummy IS
   'All blobs with undiscovered facts, not in service or fault'
 ;
 
+REVOKE UPDATE ON TABLE
+	file_brief,
+	file_mime_type_brief,
+	file_mime_encoding_brief
+  FROM
+  	PUBLIC
+;
+
 COMMIT TRANSACTION;
