@@ -206,4 +206,14 @@ CREATE FUNCTION is_empty(udig) RETURNS bool
   RETURNS NULL ON NULL INPUT
 ;
 
+REVOKE UPDATE ON TABLE
+	byte_prefix_32,
+	byte_count,
+	is_utf8wf,
+	byte_bitmap,
+	byte_suffix_32
+  FROM
+  	PUBLIC
+;
+
 COMMIT TRANSACTION;
