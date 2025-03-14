@@ -39,6 +39,7 @@ COMMENT ON TABLE blob IS
 ;
 CREATE INDEX idx_blob_blob ON blob USING hash(blob);
 CREATE INDEX idx_blob_discover_time ON blob(discover_time);
+CLUSTER blob USING idx_blob_discover_time;
 
 /*
  *  First 32 bytes of the blob.
