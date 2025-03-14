@@ -61,6 +61,7 @@ COMMENT ON TABLE file_brief IS
 ;
 CREATE INDEX idx_file_brief_blob ON file_brief USING hash(blob);
 CREATE INDEX idx_file_brief_file_type ON file_brief(file_type);
+CLUSTER file_brief USING idx_file_brief_file_type; 
 
 /*
  *  Output of 'file --mime-type --brief' command on blob.
@@ -77,8 +78,10 @@ CREATE TABLE file_mime_type_brief
 COMMENT ON TABLE file_mime_type_brief IS
   'Output of file --mime-type --brief command on blob'
 ;
-CREATE INDEX file_mime_type_brief_blob_idx ON file_mime_type_brief USING hash(blob);
-CREATE INDEX file_mime_type_brief_idx ON file_mime_type_brief(mime_type);
+CREATE INDEX idx_file_mime_type_brief_blob ON
+	file_mime_type_brief USING hash(blob);
+CREATE INDEX idx_file_mime_type_brief ON file_mime_type_brief(mime_type);
+CLUSTER file_mime_type_brief USING idx_file_mime_type_brief;
 
 /*
  *  Output of 'file --mime-encoding --brief' command on blob.
@@ -87,16 +90,23 @@ DROP TABLE IF EXISTS file_mime_encoding_brief CASCADE;
 CREATE TABLE file_mime_encoding_brief
 (
 	blob		udig
-				REFERENCES blob
-				ON DELETE CASCADE
-				PRIMARY KEY,
+					REFERENCES blob
+					ON DELETE CASCADE
+					PRIMARY KEY,
 	mime_encoding	type1023	NOT NULL
 );
 COMMENT ON TABLE file_mime_encoding_brief IS
   'Output of file --mime-encoding --brief command on blob'
 ;
-CREATE INDEX file_mime_encoding_brief_blob_idx ON file_mime_encoding_brief USING hash(blob);
-CREATE INDEX file_mime_encoding_brief_idx ON file_mime_encoding_brief(mime_encoding);
+CREATE INDEX idx_file_mime_encoding_brief_blob
+  ON file_mime_encoding_brief USING hash(blob)
+; 
+CREATE INDEX idx_file_mime_encoding_brief_mime_encoding
+  ON file_mime_encoding_brief(mime_encoding);
+CLUSTER file_mime_encoding_brief
+  USING
+  	idx_file_mime_encoding_brief_mime_encoding
+;
 
 /*
  *  Track very rare failures in various file commands defined in flowd.
@@ -131,7 +141,7 @@ CREATE MATERIALIZED VIEW file_brief_stat (
 COMMENT ON MATERIALIZED VIEW file_brief_stat IS
   'Statistics on blob counts per file type'
 ;
-CREATE UNIQUE INDEX file_stat_ft
+CREATE UNIQUE INDEX idx_file_stat_ft
   ON file_brief_stat (file_type)
 ;
 ANALYZE file_brief_stat;
@@ -153,7 +163,7 @@ CREATE MATERIALIZED VIEW file_mime_type_brief_stat (
 COMMENT ON MATERIALIZED VIEW file_mime_type_brief_stat IS
   'Statistics on blob counts per mime type'
 ;
-CREATE UNIQUE INDEX file_mime_type_brief_stat_ft
+CREATE UNIQUE INDEX idx_file_mime_type_brief_stat_ft
   ON file_mime_type_brief_stat (mime_type)
 ;
 ANALYZE file_mime_type_brief_stat;
@@ -175,7 +185,7 @@ CREATE MATERIALIZED VIEW file_mime_encoding_brief_stat (
 COMMENT ON MATERIALIZED VIEW file_mime_encoding_brief_stat IS
   'Statistics on blob counts per mime type'
 ;
-CREATE UNIQUE INDEX file_mime_encoding_brief_stat_ft
+CREATE UNIQUE INDEX idx_file_mime_encoding_brief_stat_ft
   ON file_mime_encoding_brief_stat (mime_encoding)
 ;
 ANALYZE file_mime_encoding_brief_stat;
