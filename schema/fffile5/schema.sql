@@ -34,12 +34,14 @@ DROP TABLE IF EXISTS blob CASCADE;
 CREATE TABLE blob
 (
 	blob		udig
-				REFERENCES blob
+				REFERENCES setcore.blob
 				PRIMARY KEY,
 	discover_time	setcore.inception
 				NOT NULL
 );
+CREATE INDEX idx_blob ON blob USING hash(blob);
 CREATE INDEX idx_blob_discover_time ON blob(discover_time);
+CLUSTER blob USING idx_blob_discover_time;
 
 /*
  *  Output of 'file --brief' command on blob.
