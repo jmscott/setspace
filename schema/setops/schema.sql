@@ -101,11 +101,12 @@ CREATE TABLE flowd_call_fault
 			  REFERENCES flowd_command
 			  ON DELETE CASCADE
 );
-CREATE INDEX flowd_call_fault_when ON flowd_call_fault(insert_time);
-CREATE INDEX flowd_call_fault_blob ON flowd_call_fault USING hash(blob);
+CREATE INDEX idx_flowd_call_fault_time ON flowd_call_fault(fault_time);
+CREATE INDEX idx_flowd_call_fault_blob ON flowd_call_fault USING hash(blob);
 COMMENT ON TABLE flowd_call_fault IS
   'Fault in flowd process for particular blob and command'
 ;
+CLUSTER flowd_call_fault USING idx_flowd_call_fault_time;
 
 DROP TABLE IF EXISTS flowd_call_fault_output CASCADE;
 CREATE TABLE flowd_call_fault_output
