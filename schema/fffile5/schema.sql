@@ -37,6 +37,7 @@ CREATE TABLE blob
 				REFERENCES setcore.blob
 				PRIMARY KEY,
 	discover_time	setcore.inception
+				DEFAULT now()
 				NOT NULL
 );
 CREATE INDEX idx_blob ON blob USING hash(blob);

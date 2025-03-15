@@ -21,7 +21,9 @@ CREATE TABLE blob
 	blob		udig
 				REFERENCES setcore.blob
 				PRIMARY KEY,
-	discover_time	setcore.inception NOT NULL
+	discover_time	setcore.inception
+				DEFAULT now()
+				NOT NULL
 );
 CREATE INDEX idx_blob ON blob USING hash(blob);
 CREATE INDEX idx_blob_discover_time ON blob(discover_time);

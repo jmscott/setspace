@@ -32,7 +32,9 @@ CREATE DOMAIN inception AS timestamptz
 CREATE TABLE blob
 (
 	blob		udig	PRIMARY KEY,
-	discover_time	inception NOT NULL
+	discover_time	inception
+				DEFAULT now()
+				NOT NULL
 );
 COMMENT ON TABLE blob IS
   'All blobs in setcore schema'
