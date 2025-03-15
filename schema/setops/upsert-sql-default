@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	Merge default sql vlues into tables setops.flowd_*
+#	Upsert default sql values into tables setops.flowd_*
 #  Usage:
 #	sbin/upsert-sql-default
 #  Exit Status:

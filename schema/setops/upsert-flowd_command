@@ -3,11 +3,11 @@
 #  Synopsis:
 #	Merge commands in <schema>/etc/<schema>.flow in table flowd_command
 #  Usage:
-#	upsert-flowd_schema <schema1> <schema2> ...
-#	echo "$SCHEMAs" | upsert-flowd_schema
+#	upsert-flowd_command <schema1> <schema2> ...
+#	echo "$SCHEMAs" | upsert-flowd_command
 #  Exit Status:
-#	0	all schemas upserted into table flowd_schema
-#	1	unexpected error upserting schema into table
+#	0	all schemas upserted into table flowd_command
+#	1	unexpected error upserting command into table
 #
 
 PROG=$(basename $0)
