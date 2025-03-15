@@ -8,12 +8,24 @@
 BEGIN TRANSACTION;
 
 DROP SCHEMA IF EXISTS jsonorg CASCADE;
-CREATE SCHEMA JSONORG;
+CREATE SCHEMA jsonorg;
 COMMENT ON SCHEMA jsonorg IS
-	'JSON blobs parseable by code from the site json.org'
+	'JSON blobs parsable by code from the site json.org'
 ;
 
 SET search_path TO jsonorg,public;
+
+DROP TABLE IF EXISTS blob CASCADE;
+CREATE TABLE blob
+(
+	blob		udig
+				REFERENCES setcore.blob
+				PRIMARY KEY,
+	discover_time	setcore.inception NOT NULL
+);
+CREATE INDEX idx_blob ON blob USING hash(blob);
+CREATE INDEX idx_blob_discover_time ON blob(discover_time);
+CLUSTER blob USING idx_blob_discover_time;
 
 /*
  *  Is the blob valid json, max depth 255, according to the checker at
@@ -24,7 +36,7 @@ DROP TABLE IF EXISTS checker_255 CASCADE;
 CREATE TABLE checker_255
 (
 	blob	udig
-			REFERENCES setcore.service(blob)
+			REFERENCES blob
 			ON DELETE CASCADE
 			PRIMARY KEY,
 	is_json	bool
@@ -52,61 +64,11 @@ CREATE TABLE jsonb_255
 			NOT NULL
 );
 COMMENT ON TABLE jsonb_255 IS
-  'A queryable, jsonb internal version of the blob in table checker_255' 
+  'A queryable, jsonb internal version of the blob'
 ;
 CREATE INDEX idx_jsonb_255 ON jsonb_255 USING hash(blob);
-CREATE INDEX jsonb_255_idx ON jsonb_255 USING GIN (doc);
-CREATE INDEX jsonb_255_idxp ON jsonb_255 USING GIN (doc jsonb_path_ops);
-
-DROP FUNCTION IF EXISTS check_jsonability();
-CREATE OR REPLACE FUNCTION check_jsonability() RETURNS TRIGGER
-  AS $$
-	DECLARE
-		my_blob public.udig;
-	BEGIN
-
-	SELECT
-		blob into my_blob
-	  FROM
-	  	jsonorg.checker_255
-	  WHERE
-	  	blob = new.blob
-		and
-		is_json is true
-	;
-
-	IF FOUND THEN
-		RETURN new;
-	END IF;
-
-	RAISE EXCEPTION
-		'blob is not json: %', new.blob
-	USING
-		ERRCODE = 'cannot_coerce'
-	;
-  	END
-  $$
-  LANGUAGE plpgsql
-;
-COMMENT ON FUNCTION check_jsonability IS
-  'Trigger function to coercability into json: checker_255.is_json == true'
-;
-
-/*
- *  Note:
- *	Bulk copy generates a wierd error:
- *
- *		can not find operator public.udig = public.udic.
- *
- *	To trigger the error, create the trigger and do a copyin.
- *	kinda looks like a bug in postgres.
-CREATE TRIGGER check_jsonability AFTER INSERT
-  ON
-  	jsonb_255
-  FOR EACH ROW EXECUTE PROCEDURE
-  	check_jsonability()
-;
-*/
+CREATE INDEX jsonb_255_idx ON jsonb_255 USING gin(doc);
+CREATE INDEX jsonb_255_idxp ON jsonb_255 USING gin(doc jsonb_path_ops);
 
 CREATE OR REPLACE FUNCTION jsonb_all_keys(_value jsonb)
   RETURNS
@@ -120,7 +82,9 @@ CREATE OR REPLACE FUNCTION jsonb_all_keys(_value jsonb)
 	    WITH typed_values AS (
 	    	SELECT
 			jsonb_typeof(value) as typeof,
-			value FROM _tree
+			value
+		  FROM
+		  	_tree
 	    )  SELECT
 		v.*
 	        FROM
@@ -168,33 +132,15 @@ CREATE MATERIALIZED VIEW jsonb_object_keys_stat(
   WITH
   	DATA
 ;
-CREATE UNIQUE INDEX idx_jsonb_object_keys_key
-  ON jsonb_object_keys_stat(object_key)
+CREATE UNIQUE INDEX idx_jsonb_object_keys_stat_object_key
+  ON
+  	jsonb_object_keys_stat(object_key)
 ;
 COMMENT ON MATERIALIZED VIEW jsonb_object_keys_stat IS
   'Stats for top level json keys'
 ;
 
-DROP FUNCTION IF EXISTS refresh_stat();
-CREATE OR REPLACE FUNCTION refresh_stat() RETURNS void
-  AS $$
-  BEGIN
-  	REFRESH MATERIALIZED VIEW 
-	  CONCURRENTLY
-		  jsonorg.jsonb_object_keys_stat
-	;
-
-	ANALYZE jsonorg.jsonb_object_keys_stat;
-  END $$
-  LANGUAGE plpgsql
-;
-COMMENT ON FUNCTION refresh_stat IS
-  'Concurrently Refresh and Analyze All Materialied *_stat Views in jsonorg'
-;
-
-DROP TABLE IF EXISTS jsonb_255_key_word_set
-  CASCADE
-; 
+DROP TABLE IF EXISTS jsonb_255_key_word_set CASCADE; 
 CREATE TABLE jsonb_255_key_word_set
 (
 	blob		udig
@@ -222,6 +168,7 @@ DROP TRIGGER IF EXISTS insert_jsonb_255_key_word_set
   ON jsonb_255
   CASCADE
 ; 
+
 DROP FUNCTION IF EXISTS trig_insert_jsonb_255_key_word_set();
 CREATE OR REPLACE FUNCTION trig_insert_jsonb_255_key_word_set()
   RETURNS TRIGGER
@@ -235,7 +182,7 @@ CREATE OR REPLACE FUNCTION trig_insert_jsonb_255_key_word_set()
 		jsonorg.jsonb_255 j,
 		  LATERAL jsonorg.jsonb_all_keys(j.doc) AS k(key)
 	    WHERE
-		j.blob = new.blob
+		j.blob = new.blob::udig
 	    GROUP BY
 		j.blob
 	  ON CONFLICT
@@ -264,17 +211,17 @@ COMMENT ON TRIGGER insert_jsonb_255_key_word_set
 DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS
   SELECT
-  	ck.blob
+  	b.blob
     FROM
-    	checker_255 ck
-	  JOIN jsonb_255 j ON (
-	  	j.blob = ck.blob
-	  )
+    	blob b
+    	  NATURAL JOIN checker_255 ck
+    	  NATURAL JOIN jsonb_255
+    	  NATURAL JOIN jsonb_255_key_word_set
     WHERE
     	ck.is_json
 ;
-COMMENT ON VIEW service
-  IS 'JSON blobs in service'
+COMMENT ON VIEW service IS
+  'JSON blobs with attributes discovered'
 ;
 
 DROP VIEW IF EXISTS fault CASCADE; 
@@ -288,19 +235,33 @@ CREATE VIEW fault AS
 ;
 /*
  *  Synopsis:
- *	Find candidate blobs for json analysis.
+ *	Find candidate blobs for further json analysis.
  *  Note:
  *	table jsonb_255_key_word_set is ommited till more stable.
  */
 DROP VIEW IF EXISTS rummy CASCADE;
 CREATE VIEW rummy AS
   SELECT
-	cj.blob
+	b.blob
     FROM
-  	checker_255 cj
-	  LEFT OUTER JOIN jsonb_255 j ON (j.blob = cj.blob)
+    	blob b
+  	  NATURAL LEFT OUTER JOIN checker_255 cj
+  	  NATURAL LEFT OUTER JOIN jsonb_255 jb
+  	  NATURAL LEFT OUTER JOIN jsonb_255_key_word_set jws
     WHERE
-    	cj.is_json 
+	(
+		cj.blob IS NULL
+		OR
+		(
+			(
+				jb.blob IS NULL
+				OR
+				jws.blob IS NULL
+			)
+			AND
+			cj.is_json = true
+		)
+	)
 	AND
 	NOT EXISTS (
 	  SELECT
@@ -308,16 +269,14 @@ CREATE VIEW rummy AS
 	    FROM
 	    	fault flt
 	    WHERE
-	    	flt.blob = cj.blob
+	    	flt.blob = b.blob
 	)
-	AND
-	j.blob IS NULL
 ;
 
 DROP VIEW IF EXISTS detail CASCADE;
 CREATE VIEW detail AS
   SELECT
-  	ck.blob,
+  	b.blob,
   	ck.is_json,
 	jb.doc AS doc_jsonb_255,
 	jw.word_set AS word_set_255,
@@ -337,28 +296,25 @@ CREATE VIEW detail AS
 	  ELSE true
 	END AS "is_rummy"
     FROM
-    	checker_255 ck
-	  LEFT OUTER JOIN jsonb_255 jb ON (
-	  	jb.blob = ck.blob
-	  )
-	  LEFT OUTER JOIN jsonb_255_key_word_set jw ON (
-	  	jw.blob = ck.blob
-	  )
-	  LEFT OUTER JOIN service srv ON (
-	  	srv.blob = ck.blob
-	  )
-	  LEFT OUTER JOIN fault flt ON (
-	  	flt.blob = ck.blob
-	  )
-	  LEFT OUTER JOIN rummy rum ON (
-	  	rum.blob = ck.blob
-	  )
+    	blob b
+    	  NATURAL LEFT OUTER JOIN checker_255 ck
+	  NATURAL LEFT OUTER JOIN jsonb_255 jb
+	  NATURAL LEFT OUTER JOIN jsonb_255_key_word_set jw
+	  NATURAL LEFT OUTER JOIN service srv
+	  NATURAL LEFT OUTER JOIN fault flt
+	  NATURAL LEFT OUTER JOIN rummy rum
 ;
 COMMENT ON VIEW detail
   IS
 	'All attributes for json blobs, regardless if in service or not'
 ;
 
-REVOKE UPDATE ON ALL TABLES IN SCHEMA jsonorg FROM PUBLIC;
+REVOKE UPDATE ON TABLE
+	checker_255,
+	jsonb_255,
+	jsonb_255_key_word_set
+  FROM
+  	PUBLIC
+;
 
 COMMIT TRANSACTION;
