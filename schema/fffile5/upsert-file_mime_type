@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	Run 'file --brief' on blob and write tuple to postgresql.
+#	Run 'file --mime-type --brief' on blob and write tuple to postgresql.
 #  Usage:
 #	upsert-file <blob udig>
 #  Exit Status:
@@ -55,7 +55,7 @@ test $STATUS = 0 || die "blobio get failed: exit status=$STATUS"
 
 #  call 'file --brief' and save output to temp file
 
-file --brief $TMP_BLOB >$TMP_FILE
+file --mime-type --brief $TMP_BLOB >$TMP_FILE
 test $? = 0 || die "file command failed: exit status=$?"
 
 #  insure file output is proper utf8
@@ -78,6 +78,6 @@ esac
 FILE_TYPE_SIZE=$(file-stat-size $TMP_FILE)
 test $? = 0 || die "file-stat-size failed: exit status=$?"
 
-upsert-stdin-file <$TMP_FILE $FILE_UDIG $FILE_TYPE_SIZE			||
-		die "upsert-stdin-file failed: exit status=$?"
+upsert-stdin-file_mime_type <$TMP_FILE $FILE_UDIG $FILE_TYPE_SIZE	||
+		die "upsert-stdin-file_mime_type failed: exit status=$?"
 exit 0
