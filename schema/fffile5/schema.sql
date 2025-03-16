@@ -224,22 +224,72 @@ COMMENT ON VIEW service IS
 ;
 
 DROP VIEW IF EXISTS rummy CASCADE;
+/*
+ *  Find all blobs in an unknown state
+ */
 CREATE VIEW rummy AS
   SELECT
   	b.blob
     FROM
     	blob b
-	  NATURAL LEFT OUTER JOIN file fb
-	  NATURAL LEFT JOIN file_mime_type fm
+	  NATURAL LEFT OUTER JOIN file f
+	  NATURAL LEFT JOIN file_mime_type ft
 	  NATURAL LEFT JOIN file_mime_encoding fe
     WHERE
-    	fb.blob IS NULL
+    	(
+		f.blob IS NULL
+		AND
+		--  not in fault for command upsert-file
+		NOT EXISTS (
+		  SELECT
+		  	true
+		    FROM
+		    	setops.flowd_call_fault flt
+		    WHERE
+		    	flt.schema_name = 'fffile5'
+			AND
+			flt.command_name = 'upsert_file'
+			AND
+			flt.blob = b.blob
+		)
+	)
 	OR
-	fm.blob IS NULL
+    	(
+		ft.blob IS NULL
+		AND
+		--  not in fault for command upsert-file_mime_type
+		NOT EXISTS (
+		  SELECT
+		  	true
+		    FROM
+		    	setops.flowd_call_fault flt
+		    WHERE
+		    	flt.schema_name = 'fffile5'
+			AND
+			flt.command_name = 'upsert_file_mime_type'
+			AND
+			flt.blob = b.blob
+		)
+	)
 	OR
-	fe.blob IS NULL
+    	(
+		fe.blob IS NULL
+		AND
+		--  not in fault for command upsert-file_mime_eencoding
+		NOT EXISTS (
+		  SELECT
+		  	true
+		    FROM
+		    	setops.flowd_call_fault flt
+		    WHERE
+		    	flt.schema_name = 'fffile5'
+			AND
+			flt.command_name = 'upsert_file_mime_encoding'
+			AND
+			flt.blob = b.blob
+		)
+	)
 ;
-
 COMMENT ON VIEW rummy IS
   'All blobs with undiscovered facts, not in service or fault'
 ;
