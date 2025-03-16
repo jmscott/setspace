@@ -40,6 +40,8 @@ LIBs="
 	psqlrc.example
 	schema.sql
 	setspace-schema-fffile5.mkmk
+	ssq-fffile5-blob-count.sql
+	ssq-fffile5-blob.sql
 	ssq-fffile5-ls.sql
 	ssq-fffile5-rummy-count.sql
 	ssq-fffile5-rummy.sql
@@ -112,6 +114,8 @@ SRCs="
 
 LIBEXECs="
 	ssq-fffile5
+	ssq-fffile5-blob
+	ssq-fffile5-blob-count
 	ssq-fffile5-ls
 	ssq-fffile5-ls-blob
 	ssq-fffile5-ls-recent
