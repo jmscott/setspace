@@ -42,6 +42,8 @@ LIBs="
 	setspace-schema-fffile5.mkmk
 	ssq-fffile5-blob-count.sql
 	ssq-fffile5-blob.sql
+	ssq-fffile5-fault-count.sql
+	ssq-fffile5-fault.sql
 	ssq-fffile5-ls.sql
 	ssq-fffile5-rummy-count.sql
 	ssq-fffile5-rummy.sql
@@ -119,6 +121,8 @@ LIBEXECs="
 	ssq-fffile5-ls
 	ssq-fffile5-ls-blob
 	ssq-fffile5-ls-recent
+	ssq-fffile5-fault
+	ssq-fffile5-fault-count
 	ssq-fffile5-rummy
 	ssq-fffile5-rummy-count
 	ssq-fffile5-service
