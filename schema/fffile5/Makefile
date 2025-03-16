@@ -72,32 +72,32 @@ distclean:
 	rm -rf $(FFFILE5_PREFIX)/sbin
 	rm -rf $(FFFILE5_PREFIX)/src
 
-merge-stdin-file:							\
-		merge-stdin-file.pgc					\
+upsert-stdin-file:						\
+		upsert-stdin-file.pgc				\
 		../../common.c						\
 		../../common-ecpg.c
-	ecpg merge-stdin-file.pgc
-	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-file.c 		\
-		-o merge-stdin-file -L$(PGLIB) -lecpg
-	rm merge-stdin-file.c
+	ecpg upsert-stdin-file.pgc
+	$(CC) $(CFLAGS) -I$(PGINC) upsert-stdin-file.c 		\
+		-o upsert-stdin-file -L$(PGLIB) -lecpg
+	rm upsert-stdin-file.c
 
-merge-stdin-file_mime_type:						\
-		merge-stdin-file_mime_type.pgc				\
+upsert-stdin-file_mime_type:					\
+		upsert-stdin-file_mime_type.pgc			\
 		../../common.c						\
 		../../common-ecpg.c
-	ecpg merge-stdin-file_mime_type.pgc
-	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-file_mime_type.c 	\
-		-o merge-stdin-file_mime_type -L$(PGLIB) -lecpg
-	rm merge-stdin-file_mime_type.c
+	ecpg upsert-stdin-file_mime_type.pgc
+	$(CC) $(CFLAGS) -I$(PGINC) upsert-stdin-file_mime_type.c 	\
+		-o upsert-stdin-file_mime_type -L$(PGLIB) -lecpg
+	rm upsert-stdin-file_mime_type.c
 
-merge-stdin-file_mime_encoding:						\
-		merge-stdin-file_mime_encoding.pgc			\
+upsert-stdin-file_mime_encoding:					\
+		upsert-stdin-file_mime_encoding.pgc		\
 		../../common.c						\
 		../../common-ecpg.c
-	ecpg merge-stdin-file_mime_encoding.pgc
-	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-file_mime_encoding.c 	\
-		-o merge-stdin-file_mime_encoding -L$(PGLIB) -lecpg
-	rm merge-stdin-file_mime_encoding.c
+	ecpg upsert-stdin-file_mime_encoding.pgc
+	$(CC) $(CFLAGS) -I$(PGINC) upsert-stdin-file_mime_encoding.c    \
+		-o upsert-stdin-file_mime_encoding -L$(PGLIB) -lecpg
+	rm upsert-stdin-file_mime_encoding.c
 
 world:
 	$(_MAKE) clean

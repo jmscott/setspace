@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	Run 'file --mime-encoding --brief' on blob and answer to PostgreSQL
+#  Usage:
+#	upsert-file_mime_encoding <blob udig>
+#  Exit Status:
+#	0	ok
+#	1	blob does not exist
+#	2	output of "file" command is not UTF-8
+#	3	unexpected error
+#  Environment:
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
+#	TMPDIR
+#  Note:
+#	How to insure "file" always produces UTF-8 output?
+#
+#	Add option flag -E to force exit on first error.  For some reason posix
+#	specifically says not abort upon error.  wierd.
+#
+
+PROG=upsert-file_mime_encoding
+SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG.blob.$$
+TMP_MIME_ENCODING=${TMPDIR:=/tmp}/$PROG.mime.$$
+
+ERROR()
+{
+	echo "$PROG: ERROR: $@" >&2
+}
+
+die()
+{
+	ERROR $@
+	exit 3
+}
+
+leave()
+{
+	rm --force $TMP_BLOB $TMP_MIME_ENCODING				||
+				ERROR "rm tmp failed: exit status=$?"
+}
+trap leave EXIT INT QUIT TERM
+
+test $# = 1 || die 'wrong number of arguments'
+FILE_UDIG=$1
+UDIG="--udig $FILE_UDIG"
+
+#  fetch the blob
+
+blobio get $UDIG $SERVICE --output-path $TMP_BLOB
+
+STATUS=$?
+test $STATUS = 1 && exit 1
+test $STATUS = 0 || die "blobio get failed: exit status=$STATUS"
+
+file --mime-encoding --brief $TMP_BLOB >$TMP_MIME_ENCODING
+test $? = 0 || die "file --mime-encoding command failed: exit status=$?"
+
+#  insure file output is proper utf8
+
+is-utf8wf <$TMP_MIME_ENCODING
+STATUS=$?
+case $STATUS in
+0|1)
+	;;
+2)
+	exit 2
+	;;
+*)
+	die "is-utf8wf failed: exit status=$STATUS"
+	;;
+esac
+
+#  stat the size of the utf8 output file
+
+MIME_ENCODING_SIZE=$(file-stat-size $TMP_MIME_ENCODING)
+test $? = 0 || die "file-stat-size failed: exit status=$?"
+
+#  upsert file output into table fffile5.file_mime_encoding
+
+upsert-stdin-file_mime_encoding <$TMP_MIME_ENCODING			\
+	$FILE_UDIG $MIME_ENCODING_SIZE					||
+	   die "upsert-stdin-file_mime_encoding failed: exit status=$?"
+exit 0

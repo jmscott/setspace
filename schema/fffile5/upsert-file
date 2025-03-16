@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	Run 'file --brief' on blob and write tuple to postgresql.
+#  Usage:
+#	upsert-file <blob udig>
+#  Exit Status:
+#	0	ok
+#	1	blob does not exist
+#	2	file output is not utf8
+#	3	unexpected error
+#  Environment:
+#	BLOBIO_SERVICE
+#	BLOBIO_GET_SERVICE
+#	TMPDIR
+#  Note:
+#	How  to insure output of "file" is coerced to UTF-8
+#
+#	Add option flag -E to force exit on first error.  For some reason posix
+#	specifically says not abort upon error.  wierd.
+#
+
+PROG=upsert-file
+TMP_BLOB=${TMPDIR:=/tmp}/$PROG.blob.$$
+TMP_FILE=${TMPDIR:=/tmp}/$PROG.file.$$
+SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
+
+ERROR()
+{
+	echo "$PROG: ERROR: $@" >&2
+}
+
+die()
+{
+	ERROR "$@" >&2
+	exit 3
+}
+
+leave()
+{
+	rm --force $TMP_BLOB $TMP_FILE || ERROR "rm tmp failed: exit status=$?"
+}
+
+trap leave EXIT
+
+test $# = 1 || die 'wrong number of arguments'
+FILE_UDIG=$1
+UDIG="--udig $FILE_UDIG"
+
+#  fetch the blob into temporary file
+
+blobio get $UDIG $SERVICE --output-path $TMP_BLOB
+STATUS=$?
+test $STATUS = 1 && exit 1
+test $STATUS = 0 || die "blobio get failed: exit status=$STATUS"
+
+#  call 'file --brief' and save output to temp file
+
+file --brief $TMP_BLOB >$TMP_FILE
+test $? = 0 || die "file command failed: exit status=$?"
+
+#  insure file output is proper utf8
+
+is-utf8wf <$TMP_FILE
+STATUS=$?
+
+case $STATUS in
+0|1)
+	;;
+2)
+	exit 2
+	;;
+*)
+	die "is-utf8wf failed: exit status=$STATUS"
+	;;
+esac
+
+FILE_TYPE_SIZE=$(file-stat-size $TMP_FILE)
+test $? = 0 || die "file-stat-size failed: exit status=$?"
+
+upsert-stdin-file <$TMP_FILE $FILE_UDIG $FILE_TYPE_SIZE			||
+		die "upsert-stdin-file failed: exit status=$?"
+exit 0

@@ -3,22 +3,20 @@
 #  Synopsis:
 #	query fffile5 schema for blobs in service
 #  Usage:
-#	BLOB=btc20:b0e889a067b5d4fff15c3d6e646554939a793783
-#
-#	ssq fffile5 help
-#  Note:
-#	Think about adding "Is Rummy".  Does being a rummy imply nt in service?
+#	called by script in libexec/ssq-fffile5
 #
 PROG=$(basename $0)
+SQL="lib/$PROG.sql"
 
 PSQL='psql
 	--no-align
-	--set=ON_ERROR_STOP=1
 	--no-psqlrc
-	--tuples-only
-	--pset null=Unknown
-	--quiet
 	--no-readline
+	--pset null=Unknown
+	--pset=pager=off
+	--quiet
+	--set=ON_ERROR_STOP=true
+	--tuples-only
 '
 
 die()
@@ -27,10 +25,12 @@ die()
 	exit 1
 }
 
-$PSQL <<END || die "psql fffile5.service failed: exit status=$?"
-SELECT
-	blob
-  FROM
-  	fffile5.service
-;
-END
+if [ $# = 0 ];  then
+	$PSQL --file $SQL || die "psql service failed: exit status=$?"
+	exit 0
+fi
+
+ACTION=$1;  shift;
+LIBEXEC=libexec/$PROG-$ACTION
+test -x $LIBEXEC || die "unknown action: $ACTION"
+exec $LIBEXEC $@

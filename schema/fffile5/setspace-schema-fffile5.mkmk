@@ -29,9 +29,9 @@
 #  removed in "clean" recipes.
 #
 COMPILEs="
-	merge-stdin-file
-	merge-stdin-file_mime_encoding
-	merge-stdin-file_mime_type
+	upsert-stdin-file
+	upsert-stdin-file_mime_encoding
+	upsert-stdin-file_mime_type
 "
 
 LIBs="
@@ -40,6 +40,10 @@ LIBs="
 	psqlrc.example
 	schema.sql
 	setspace-schema-fffile5.mkmk
+	ssq-fffile5-rummy.sql
+	ssq-fffile5-rummy-count.sql
+	ssq-fffile5-service.sql
+	ssq-fffile5-service-count.sql
 "
 
 #  Uncoment to create bin/ directory
@@ -49,9 +53,9 @@ LIBs="
 SBINs="
 	$COMPILEs
 	launchd-flowd-init
-	merge-file
-	merge-file_mime_encoding
-	merge-file_mime_type
+	upsert-file
+	upsert-file_mime_encoding
+	upsert-file_mime_type
 "
 
 #  Uncomment to create tmp/ directory
@@ -68,8 +72,9 @@ SBINs="
 
 #  Uncomment to create src/ directory
 SRCs="
-	merge-stdin-file.pgc
-	merge-stdin-file_mime_encoding.pgc
+	upsert-stdin-file.pgc
+	upsert-stdin-file_mime_encoding.pgc
+	upsert-stdin-file_mime_type.pgc
 "
 
 #  Uncomment to create attic/ directory
@@ -110,5 +115,7 @@ LIBEXECs="
 	ssq-fffile5-ls-blob
 	ssq-fffile5-ls-recent
 	ssq-fffile5-rummy
+	ssq-fffile5-rummy-count
 	ssq-fffile5-service
+	ssq-fffile5-service-count
 "

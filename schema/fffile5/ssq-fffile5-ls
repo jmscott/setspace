@@ -16,7 +16,5 @@ die()
 	exit 1
 }
 
-test $# -eq 0 && exec libexec/ssq-fffile5-ls-recent
-
 test $# -eq 1 || die "wrong cli args for ls blob: got $#, want 1"
 exec libexec/ssq-fffile5-ls-blob "$1"

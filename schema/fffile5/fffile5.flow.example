@@ -7,15 +7,7 @@
 #	- User mime_type "message/rfc822" to route to schema p5mail!
 #
 #	- How to refresh materialied views from flow instead of cron?
-#	  If no blobs hit flowd then no need to refresh view, so a cronjob
-#	  is wasting resources.  Maybe add function unix_epoch() which
-#	  does something like
-#
-#		call refresh_view
-#			when unix_epoch() % 60 == 0
-#			and
-#			blob_is_new
-#		;
+#	  Timestamps of refresh are not stored in pg
 #
 #	- How do we know the output of "file" will always be UTF8?
 #
@@ -147,7 +139,12 @@ call blob_ready(brr.udig)
 	upsert_blob.sqlstate == "00000"
 ;
 
-sql query file_brief_state row
+#
+#  Table:
+#	file
+#
+
+sql query file_state row
 {
 	statement = `
 	SELECT
@@ -155,7 +152,7 @@ sql query file_brief_state row
 	    SELECT
 		true
 	      FROM
-		fffile5.file_brief
+		fffile5.file
 	      WHERE
 		blob = $1::udig
 	  ),
@@ -167,7 +164,7 @@ sql query file_brief_state row
 	      WHERE
 		schema_name = 'fffile5'
 		AND
-		command_name = 'upsert_file_brief'
+		command_name = 'upsert_file'
 		AND
 		blob = $1::udig
 	  )
@@ -178,25 +175,25 @@ sql query file_brief_state row
 	);
 }
 
-query file_brief_state(brr.udig)
+query file_state(brr.udig)
   when
   	blob_ready.exit_status == 0
 ;
 
-command upsert_file_brief
+command upsert_file
 {
-	path = "sbin/upsert-file_brief";
+	path = "sbin/upsert-file";
 	exit_status is OK when in {0, 1};
 }
 
-call upsert_file_brief(brr.udig)
+call upsert_file(brr.udig)
   when
-  	file_brief_state.in_table == false
+  	file_state.in_table == false
 	and
-	file_brief_state.in_fault == false
+	file_state.in_fault == false
 ;
 
-sql exec upsert_file_brief_fault
+sql exec upsert_file_fault
 {
 	statement = `
 	INSERT INTO setops.flowd_call_fault(
@@ -209,7 +206,7 @@ sql exec upsert_file_brief_fault
 		fault_time
 	  ) VALUES (
 	  	'fffile5',
-		'upsert_file_brief',
+		'upsert_file',
 		$1,
 		'ERR',
 		$2,
@@ -220,9 +217,182 @@ sql exec upsert_file_brief_fault
 	;`;
 }
 
-query upsert_file_brief_fault(brr.udig, upsert_file_brief.exit_status)
+query upsert_file_fault(brr.udig, upsert_file.exit_status)
   when
-  	upsert_file_brief.exit_status != 0
+  	upsert_file.exit_status != 0
 	and
-  	upsert_file_brief.exit_status != 1
+  	upsert_file.exit_status != 1
+;
+
+#
+#  Table:
+#	file_mime_type
+#
+
+sql query file_mime_type_state row
+{
+	statement = `
+	SELECT
+	  EXISTS (
+	    SELECT
+		true
+	      FROM
+		fffile5.file_mime_type
+	      WHERE
+		blob = $1::udig
+	  ),
+	  EXISTS (
+	    SELECT
+		true
+	      FROM
+		setops.flowd_call_fault
+	      WHERE
+		schema_name = 'fffile5'
+		AND
+		command_name = 'upsert_file_mime_type'
+		AND
+		blob = $1::udig
+	  )
+	`; 
+	result row is (
+		in_table bool,
+		in_fault bool
+	);
+}
+
+query file_mime_type_state(brr.udig)
+  when
+  	blob_ready.exit_status == 0
+;
+
+command upsert_file_mime_type
+{
+	path = "sbin/upsert-file_mime_type";
+	exit_status is OK when in {0, 1};
+}
+
+call upsert_file_mime_type(brr.udig)
+  when
+  	file_mime_type_state.in_table == false
+	and
+	file_mime_type_state.in_fault == false
+;
+
+sql exec upsert_file_mime_type_fault
+{
+	statement = `
+	INSERT INTO setops.flowd_call_fault(
+		schema_name,
+		command_name,
+		blob,
+		exit_class,
+		exit_status,
+		signal,
+		fault_time
+	  ) VALUES (
+	  	'fffile5',
+		'upsert_file_mime_type',
+		$1,
+		'ERR',
+		$2,
+		0,
+		now()
+	  ) ON CONFLICT
+	  	DO NOTHING
+	;`;
+}
+
+query upsert_file_mime_type_fault(
+	brr.udig,
+	upsert_file_mime_type.exit_status
+  ) when
+  	upsert_file_mime_type.exit_status != 0
+	and
+  	upsert_file_mime_type.exit_status != 1
+;
+#
+#  Table:
+#	file_mime_encoding
+#
+
+sql query file_mime_encoding_state row
+{
+	statement = `
+	SELECT
+	  EXISTS (
+	    SELECT
+		true
+	      FROM
+		fffile5.file_mime_encoding
+	      WHERE
+		blob = $1::udig
+	  ),
+	  EXISTS (
+	    SELECT
+		true
+	      FROM
+		setops.flowd_call_fault
+	      WHERE
+		schema_name = 'fffile5'
+		AND
+		command_name = 'upsert_file_mime_encoding'
+		AND
+		blob = $1::udig
+	  )
+	`; 
+	result row is (
+		in_table bool,
+		in_fault bool
+	);
+}
+
+query file_mime_encoding_state(brr.udig)
+  when
+  	blob_ready.exit_status == 0
+;
+
+command upsert_file_mime_encoding
+{
+	path = "sbin/upsert-file_mime_encoding";
+	exit_status is OK when in {0, 1};
+}
+
+call upsert_file_mime_encoding(brr.udig)
+  when
+  	file_mime_encoding_state.in_table == false
+	and
+	file_mime_encoding_state.in_fault == false
+;
+
+sql exec upsert_file_mime_encoding_fault
+{
+	statement = `
+	INSERT INTO setops.flowd_call_fault(
+		schema_name,
+		command_name,
+		blob,
+		exit_class,
+		exit_status,
+		signal,
+		fault_time
+	  ) VALUES (
+	  	'fffile5',
+		'upsert_file_mime_encoding',
+		$1,
+		'ERR',
+		$2,
+		0,
+		now()
+	  ) ON CONFLICT
+	  	DO NOTHING
+	;`;
+}
+
+query upsert_file_mime_encoding_fault(
+	brr.udig,
+	upsert_file_mime_encoding.exit_status
+  ) when
+  	upsert_file_mime_encoding.exit_status != 0
+	and
+  	upsert_file_mime_encoding.exit_status != 1
 ;

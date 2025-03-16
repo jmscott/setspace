@@ -16,17 +16,11 @@ die()
 	exit 1
 }
 
-test $# -eq 0 && exec libexec/ssq-fffile5-ls-recent
+test $# -ge 1 || die "wrong cli arg count: $#, want > 1"
 
-test $# -eq 1 || die "wrong cli args for ls blob: got $#, want 1"
 ACTION=$1; shift
 
-case "$ACTION" in
-ls|service|rummy)
-	;;
-*)
-	die "unknown action: $ACTION"
-	;;
-esac
+LIBEXEC=libexec/ssq-fffile5-$ACTION
+test -x $LIBEXEC || die "no libexec for action: $ACTION"
 
-exec libexec/ssq-fffile5-$ACTION $@
+exec $LIBEXEC $@
