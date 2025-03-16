@@ -40,10 +40,11 @@ LIBs="
 	psqlrc.example
 	schema.sql
 	setspace-schema-fffile5.mkmk
-	ssq-fffile5-rummy.sql
+	ssq-fffile5-ls.sql
 	ssq-fffile5-rummy-count.sql
-	ssq-fffile5-service.sql
+	ssq-fffile5-rummy.sql
 	ssq-fffile5-service-count.sql
+	ssq-fffile5-service.sql
 "
 
 #  Uncoment to create bin/ directory
