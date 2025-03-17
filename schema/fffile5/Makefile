@@ -64,9 +64,6 @@ install: all
 		$(SRCs)							\
 		$(FFFILE5_PREFIX)/src
 
-frisk ff:
-	flowd frisk fffile5.flow.example
-
 distclean:
 	rm -rf $(FFFILE5_PREFIX)/lib
 	rm -rf $(FFFILE5_PREFIX)/libexec
@@ -107,8 +104,7 @@ world:
 	$(_MAKE) install
 tar: all
 	make-make tar $(MKMK)
-
 frisk:
 	make-make tar $(MKMK)
-	rm --verbose $(PRODUCT)-2[01]*_[012][0-9]*.bz2
+	@rm $(PRODUCT)-2[01]*_[012][0-9]*.bz2
 	@echo;  echo frisk OK
