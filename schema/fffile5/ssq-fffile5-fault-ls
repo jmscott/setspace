@@ -20,4 +20,13 @@ die()
 	exit 1
 }
 
-$PSQL --file $SQL || die "psql fault ls failed: exit status=$?"
+if [ $# = 0 ];  then
+	$PSQL --file $SQL || die "psql fault ls failed: exit status=$?"
+	exit 0
+fi
+
+[[ "$1" =~ ^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$ ]]			||
+			die "unknown action: $1"
+LIBEXEC=libexec/ssq-fffile5-fault-ls-blob
+test -x $LIBEXEC || die "no libexec: $LIBEXEC"
+exec $LIBEXEC $@

@@ -17,6 +17,7 @@ SELECT
         setops.flowd_call_fault
   ORDER BY
   	fault_time DESC,
+	"Process Class",
 	blob ASC,
 	command_name ASC
 ;
