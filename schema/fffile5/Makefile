@@ -12,6 +12,7 @@ include ../schema.mk
 _MAKE=$(MAKE) $(MFLAGS)
 
 MKMK=setspace-schema-fffile5.mkmk
+PRODUCT := $(shell  (. ./$(MKMK) && echo $$PRODUCT))
 SBINs := $(shell  (. ./$(MKMK) && echo $$SBINs))
 LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
 LIBEXECs := $(shell  (. ./$(MKMK) && echo $$LIBEXECs))
@@ -106,3 +107,8 @@ world:
 	$(_MAKE) install
 tar: all
 	make-make tar $(MKMK)
+
+frisk:
+	make-make tar $(MKMK)
+	rm --verbose $(PRODUCT)-2[01]*_[012][0-9]*.bz2
+	@echo;  echo frisk OK
