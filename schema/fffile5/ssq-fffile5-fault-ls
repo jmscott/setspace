@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	List blobs in fault in schema fffile5
+#
+PROG=$(basename $0)
+SQL="lib/$PROG.sql"
+
+PSQL='psql
+	--expanded
+	--tuples-only
+	--set=ON_ERROR_STOP=1
+	--no-psqlrc
+	--no-readline
+'
+
+die()
+{
+	echo "$PROG: ERROR: $@" >&2
+	exit 1
+}
+
+$PSQL --file $SQL || die "psql fault ls failed: exit status=$?"
