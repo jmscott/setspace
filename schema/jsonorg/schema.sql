@@ -5,6 +5,8 @@
 \set ON_ERROR_STOP on
 \timing
 
+SET search_path TO jsonorg,setspace,public;
+
 BEGIN TRANSACTION;
 
 DROP SCHEMA IF EXISTS jsonorg CASCADE;
@@ -13,15 +15,13 @@ COMMENT ON SCHEMA jsonorg IS
 	'JSON blobs parsable by code from the site json.org'
 ;
 
-SET search_path TO jsonorg,public;
-
 DROP TABLE IF EXISTS blob CASCADE;
 CREATE TABLE blob
 (
 	blob		udig
 				REFERENCES setcore.blob
 				PRIMARY KEY,
-	discover_time	setcore.inception
+	discover_time	inception
 				DEFAULT now()
 				NOT NULL
 );
@@ -244,34 +244,31 @@ CREATE VIEW fault AS
 DROP VIEW IF EXISTS rummy CASCADE;
 CREATE VIEW rummy AS
   SELECT
-	b.blob
+	DISTINCT b.blob
     FROM
-    	blob b
-  	  NATURAL LEFT OUTER JOIN checker_255 cj
-  	  NATURAL LEFT OUTER JOIN jsonb_255 jb
-  	  NATURAL LEFT OUTER JOIN jsonb_255_key_word_set jws
+    	jsonorg.blob b
+	  LEFT OUTER JOIN setops.flowd_call_fault flt ON (
+	  	flt.schema_name = 'jsonorg'
+		AND
+		flt.blob = b.blob
+	  )
+  	  LEFT OUTER JOIN checker_255 cj ON (
+	  	cj.blob = b.blob
+	  )
+  	  LEFT OUTER JOIN jsonb_255 jb ON (
+	  	jb.blob = b.blob
+	  )
+	  --  Note: no need to test trigger jsonb_255_key_word_set
     WHERE
-	(
-		cj.blob IS NULL
-		OR
-		(
-			(
-				jb.blob IS NULL
-				OR
-				jws.blob IS NULL
-			)
-			AND
-			cj.is_json = true
-		)
-	)
-	AND
-	NOT EXISTS (
-	  SELECT
-	  	flt.blob
-	    FROM
-	    	fault flt
-	    WHERE
-	    	flt.blob = b.blob
+    	('get_JSON_checker', NULL, NULL)
+	  IS NOT DISTINCT FROM 
+	    (flt.command_name, cj.blob, flt.blob)
+	OR (
+		cj.is_json = true
+		AND
+		('upsert_jsonb_255', NULL, NULL)
+		  IS NOT DISTINCT FROM
+		    (flt.command_name, jb.blob, flt.blob)
 	)
 ;
 
