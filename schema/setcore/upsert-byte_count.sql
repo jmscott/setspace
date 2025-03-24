@@ -10,7 +10,7 @@ INSERT INTO setcore.byte_count (
 	blob,
 	byte_count
   ) VALUES ( 
-  	:'blob'::udig,
+  	:'blob'::setspace.udig,
 	:'count'
   ) ON CONFLICT
   	DO NOTHING
