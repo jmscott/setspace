@@ -4,6 +4,8 @@
 #  See:
 #	https://github.com/jmscott/work/blob/master/make-make
 #  Note:
+#	make-make tar is broken!!!
+#
 #	Move most of BINs to SBINs
 #
 #	Makefile variables can be extracted and defined from the the
@@ -43,7 +45,9 @@ LIBs="
 	launchd-flowd.plist.example
 	profile.example
 	psqlrc.example
+	schema.sql
 	setspace.mkmk
+	ssq-common.bash
 	systemd-flowd.service.example
 "
 
@@ -53,31 +57,32 @@ BINs="
 "
 
 SBINs="
-	SETSPACE_ROOT-bash						\
-	brr-flip							\
-	brr-flip-all							\
-	brr-stat							\
-	cron-rummy							\
-	dec2pgbit							\
-	find-brr							\
-	find-rolled-brr							\
-	find-schema							\
-	flip-tail							\
-	launchd-flowd							\
-	ls-start-flowd							\
-	restart-all-flowd						\
-	restart-flowd							\
-	rummy								\
-	run-stat-flowd-tuple						\
-	run-stat-report							\
-	run-stat-tuple							\
-	ssctl								\
+	CREATE-setspace-schema
+	SETSPACE_ROOT-bash
+	brr-flip
+	brr-flip-all
+	brr-stat
+	cron-rummy
+	dec2pgbit
+	find-brr
+	find-rolled-brr
+	find-schema
+	flip-tail
+	launchd-flowd
+	ls-start-flowd
+	restart-all-flowd
+	restart-flowd
+	rummy
+	run-stat-flowd-tuple
+	run-stat-report
+	run-stat-tuple
+	ssctl
 	ssq
-	start-all-flowd							\
-	start-flowd							\
-	stop-all-flowd							\
-	stop-flowd							\
-	tail-flowd							\
+	start-all-flowd
+	start-flowd
+	stop-all-flowd
+	stop-flowd
+	tail-flowd
 "
 
 #  Uncomment to create tmp/ directory
