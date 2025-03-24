@@ -14,19 +14,11 @@ BEGIN TRANSACTION;
 
 DROP SCHEMA IF EXISTS setcore CASCADE;
 
-SET search_path TO setcore,public;
+SET search_path TO setcore,setspace,public;
 
 CREATE SCHEMA setcore;
 COMMENT ON SCHEMA setcore IS
   'Core setspace tables for common facts about blobs'
-;
-
-CREATE DOMAIN udig AS public.udig;
-
-CREATE DOMAIN inception AS timestamptz
-  CHECK (
-  	value >= '2008-05-17 10:06:42-05'
-  )
 ;
 
 CREATE TABLE blob
@@ -139,34 +131,62 @@ CREATE TABLE byte_suffix_32
 COMMENT ON TABLE byte_suffix_32 IS
 	'First 32 bytes in a blob'
 ;
-CREATE INDEX byte_suffix_32_blob ON byte_suffix_32 USING hash(blob);
-CREATE INDEX byte_suffix_32_suffix ON byte_suffix_32(suffix);
+CREATE INDEX idx_byte_suffix_32_blob ON byte_suffix_32 USING hash(blob);
+CREATE INDEX idx_byte_suffix_32_suffix ON byte_suffix_32(suffix);
+CLUSTER byte_suffix_32 USING idx_byte_suffix_32_suffix;
 
 DROP VIEW IF EXISTS rummy CASCADE;
 CREATE VIEW rummy AS 
   SELECT
-	ok.blob
+	DISTINCT b.blob
     FROM
-        blob ok
-	  NATURAL LEFT OUTER JOIN byte_prefix_32 bp32
-	  NATURAL LEFT OUTER JOIN byte_count bc
-	  NATURAL LEFT OUTER JOIN byte_suffix_32 bs32
-	  NATURAL LEFT OUTER JOIN byte_bitmap bm
-	  NATURAL LEFT OUTER JOIN is_utf8wf u8
+        blob b
+	  LEFT OUTER JOIN setops.flowd_call_fault flt ON (
+	  	flt.schema_name = 'setcore'
+		AND
+		flt.blob = b.blob
+	  )
+	  LEFT OUTER JOIN byte_prefix_32 bp32 ON (
+	  	bp32.blob = b.blob
+	  )
+	  LEFT OUTER JOIN byte_count bc ON (
+	  	bc.blob = b.blob
+	  )
+	  LEFT OUTER JOIN byte_suffix_32 bs32 ON (
+	  	bs32.blob = b.blob
+	  )
+	  LEFT OUTER JOIN byte_bitmap bb ON (
+	  	bb.blob = b.blob
+	  )
+	  LEFT OUTER JOIN is_utf8wf u8 ON (
+	  	u8.blob = b.blob 
+	  )
     WHERE
-	bc.blob IS NULL
+	('upsert_byte_prefix_32', NULL, NULL)
+	  IS NOT DISTINCT FROM (
+	  	COALESCE(flt.command_name, 'upsert_byte_prefix_32'),
+			bp32.blob, flt.blob)
 	OR
-	bm.blob IS NULL
+	('upsert_byte_suffix_32', NULL, NULL)
+	  IS NOT DISTINCT FROM (
+	  	COALESCE(flt.command_name, 'upsert_byte_suffix_32'),
+			bs32.blob, flt.blob)
 	OR
-	u8.blob IS NULL
+	('upsert_byte_count', NULL, NULL)
+	  IS NOT DISTINCT FROM (
+	  	COALESCE(flt.command_name, 'upsert_byte_count'),
+			bc.blob, flt.blob)
 	OR
-	bp32.blob IS NULL
+	('upsert_byte_bitmap', NULL, NULL)
+	  IS NOT DISTINCT FROM (
+	  	COALESCE(flt.command_name, 'upsert_byte_bitmap'),
+			bb.blob, flt.blob)
 	OR
-	bs32.blob IS NULL
-;
-
-COMMENT ON VIEW rummy IS
-  'Blobs with attributes not discovered in schema setcore'
+	('get_is_utf8wf', NULL, NULL)
+	  IS NOT DISTINCT FROM (
+	  	COALESCE(flt.command_name, 'get_is_utf8wf'),
+			u8.blob, flt.blob
+	  )
 ;
 
 DROP VIEW IF EXISTS service CASCADE;
