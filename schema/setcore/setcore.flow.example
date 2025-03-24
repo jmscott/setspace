@@ -31,7 +31,7 @@ sql database setspace
 {
 	driver_name = "postgres";
 	data_source_name =
-		"fallback_application_name=flowd.setcore sslmode=disable";
+		"search_path=setcore,setspace,public fallback_application_name=flowd.setcore sslmode=disable";
 	max_idle_conns = 0;
 	max_open_conns = 4;
 }
