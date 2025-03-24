@@ -10,7 +10,7 @@ INSERT INTO setcore.byte_bitmap (
 	blob,
 	bitmap
   ) VALUES ( 
-  	:'blob'::udig,
+  	:'blob'::setspace.udig,
 	X:'hex'
   ) ON CONFLICT
   	DO NOTHING

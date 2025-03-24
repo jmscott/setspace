@@ -4,6 +4,8 @@
  *  Usage:
  *	#  see script ssq-setcore-ls
  */
+SET search_path TO setcore,setspace,public;
+
 SELECT
 	b.blob AS "Blob",
 	regexp_replace(age(now(), b.discover_time)::text, '\..*', '') || ' ago'
