@@ -9,14 +9,11 @@
 #	DIST_ROOT		#  where setspace/ is installed
 #	PDFBOX_APP2_JAR		#  jar file for pdfbox app
 #	PGHOME			#  root of postgresql distro
-#	GODIST			#  golang distobution
 #  Note:
 #	The DASH_DNS_VHOST_SUFFIX and DASH_DNS_VHOST_PREFIX is cumbersome.
 #	The variables need to be collapsed into single variable DASH_DNS_VHOST.
 #
 #	Need to rename example local-*.example with os and arch..
-#
-#	Add comment about why GODIST is set.
 #
 
 ########################  BEGIN SECTION OF VARIABLES TO CHANGE
@@ -43,8 +40,6 @@ PGHOME?=/usr/local/pgsql
 #DASH_DNS_VHOST_SUFFIX=com
 
 #  Location of go language distribution.
-
-GODIST?=/usr/local/go
 
 #  location of libpcap headers and libraries
 PCAPINC=/usr/include
