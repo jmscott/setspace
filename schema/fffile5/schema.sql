@@ -209,7 +209,8 @@ COMMENT ON FUNCTION refresh_stat IS
 DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS
   SELECT
-  	b.blob
+  	b.blob,
+	b.discover_time
     FROM
     	blob b
 	  JOIN file f ON (f.blob = b.blob)
