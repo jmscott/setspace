@@ -8,7 +8,7 @@
  */
 
 \set ON_ERROR_STOP on
-SET search_path TO fffile5,public;
+SET search_path TO fffile5,setspace,public;
 
 BEGIN TRANSACTION;
 
@@ -17,9 +17,6 @@ CREATE SCHEMA fffile5;
 COMMENT ON SCHEMA fffile5 IS
   'Text and metadata extracted by "Find Free File Command", version 5'
 ;
-
-DROP DOMAIN IF EXISTS fffile5.udig;
-CREATE DOMAIN udig AS setcore.udig;
 
 DROP DOMAIN IF EXISTS type1023 CASCADE;
 CREATE DOMAIN type1023 AS text
@@ -36,7 +33,7 @@ CREATE TABLE blob
 	blob		udig
 				REFERENCES setcore.blob
 				PRIMARY KEY,
-	discover_time	setcore.inception
+	discover_time	inception
 				DEFAULT now()
 				NOT NULL
 );
@@ -233,8 +230,8 @@ CREATE VIEW rummy AS
     FROM
     	blob b
 	  NATURAL LEFT OUTER JOIN file f
-	  NATURAL LEFT JOIN file_mime_type ft
-	  NATURAL LEFT JOIN file_mime_encoding fe
+	  NATURAL LEFT OUTER JOIN file_mime_type ft
+	  NATURAL LEFT OUTER JOIN file_mime_encoding fe
     WHERE
     	(
 		f.blob IS NULL

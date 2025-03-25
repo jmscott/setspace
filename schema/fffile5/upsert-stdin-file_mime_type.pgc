@@ -110,7 +110,7 @@ EXEC SQL END DECLARE SECTION;
 		blob,
 		mime_type
 	  ) VALUES (
-		:blob::udig,
+		:blob::setspace.udig,
 		trim(trailing E'\n' from :mime_type)
 	  )
   	  ON CONFLICT

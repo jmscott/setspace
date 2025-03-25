@@ -1,26 +1,13 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	script to invoke libexec/ssq-fffile5-ls-* scripts
+#	script to invoke libexec/ssq-fffile5-* scripts
 #
-PROG=$(basename $0)
+source $SETSPACE_ROOT/lib/ssq-common.bash
 
-help()
-{
-	echo "usage: $PROG ls <udig>"
-}
+USAGE='[blob|fault|service|rummy] ...'
 
-die()
-{
-	echo "$PROG: ERROR: $@" >&2
-	exit 1
-}
+test $# = 0 && usage
 
-test $# -ge 1 || die "wrong cli arg count: $#, want > 1"
-
-ACTION=$1; shift
-
-LIBEXEC=libexec/ssq-fffile5-$ACTION
-test -x $LIBEXEC || die "no libexec for action: $ACTION"
-
-exec $LIBEXEC $@
+exec_udig "$1"
+exec_action $@

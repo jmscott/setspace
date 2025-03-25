@@ -107,7 +107,7 @@ EXEC SQL END DECLARE SECTION;
 		blob,
 		file_type
 	  ) VALUES (
-		:blob::udig,
+		:blob::setspace.udig,
 		trim(trailing E'\n' from :file_type)
 	  )
   	  ON CONFLICT

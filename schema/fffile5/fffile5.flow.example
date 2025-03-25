@@ -4,6 +4,8 @@
 #  See:
 #	schema.sql
 #  Note:
+#	- Is shcmea "public" needed?
+#
 #	- User mime_type "message/rfc822" to route to schema p5mail!
 #
 #	- How to refresh materialied views from flow instead of cron?
@@ -32,7 +34,7 @@ sql database setspace
 {
 	driver_name = "postgres";
 	data_source_name =
-		"fallback_application_name=fffile5.flow sslmode=disable";
+		"search_path=fffile5,setspace,public fallback_application_name=fffile5.flow sslmode=disable";
 	max_idle_conns = 0;
 	max_open_conns = 8;
 }

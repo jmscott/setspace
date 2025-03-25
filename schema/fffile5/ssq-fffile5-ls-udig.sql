@@ -1,12 +1,12 @@
 /*
  *  Synopsis:
- *	List details of blobs in table fffile5.blob, ordered by discover time
+ *	List details of a particular blob in schema fffile5.
  *  Usage:
- *	psql --file ssq-fffile5-ls.sql
+ *	BLOB=btc20:2f022f92c43c519131f3906590d1953a80fea63a
+ *	psql --set blob=$BLOB -f ssq-fffile5-ls.sql;
  *  Note:
- *	- Convert discover duration to more readable english lie
+ *	- Convert discover duration to more readable english like
  *
- *		00:50:29.673986 -> 40m 30s
  *		00:50:29.673986 -> 40m 30s
  */
 SELECT
@@ -17,13 +17,12 @@ SELECT
 	CASE
 	  WHEN flt.blob IS NULL THEN 'No'
 	  ELSE 'Yes'
-	END AS "Is Faulted",
+	END AS "In Fault",
 	CASE
 	  WHEN rum.blob IS NULL THEN 'No'
 	  ELSE 'Yes'
 	END AS "Is Rummy",
-	b.discover_time::text || ' (' || now() - b.discover_time || ')'
-	  AS "Discovered"
+	discover_time AS "Discovered"
   FROM
   	fffile5.blob b
   	  LEFT OUTER JOIN fffile5.file f ON (
@@ -37,7 +36,6 @@ SELECT
 	  )
 	  LEFT OUTER JOIN fffile5.fault flt ON (flt.blob = b.blob)
 	  LEFT OUTER JOIN fffile5.rummy rum ON (rum.blob = b.blob)
-  ORDER BY
-  	b.discover_time DESC,
-	b.blob ASC
+  WHERE
+  	b.blob = :'blob'
 ;

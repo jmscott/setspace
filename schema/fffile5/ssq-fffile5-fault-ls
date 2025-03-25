@@ -27,6 +27,6 @@ fi
 
 [[ "$1" =~ ^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$ ]]			||
 			die "unknown action: $1"
-LIBEXEC=libexec/ssq-fffile5-fault-ls-blob
+LIBEXEC=libexec/ssq-fffile5-fault-ls-udig
 test -x $LIBEXEC || die "no libexec: $LIBEXEC"
 exec $LIBEXEC $@
