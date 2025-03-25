@@ -3,27 +3,21 @@
 #  Synopsis:
 #	List blobs in fault in schema fffile5
 #
-PROG=$(basename $0)
-SQL="lib/$PROG.sql"
+source $SETSPACE_ROOT/lib/ssq-common.bash
 
 PSQL='psql
-	--expanded
-	--tuples-only
-	--set=ON_ERROR_STOP=1
-	--no-psqlrc
-	--no-readline
+       --expanded
+       --tuples-only
+       --set=ON_ERROR_STOP=1
+       --no-psqlrc
+       --no-readline
+       --quiet
 '
 
-die()
-{
-	echo "$PROG: ERROR: $@" >&2
-	exit 1
-}
+SQL="lib/$PROG.sql"
 
 test $# = 1 || die "cli arg count wrong: got $#, want 1"
 BLOB=$1;  shift
-[[ $BLOB =~ ^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$ ]]			||
-				die "not a udig: $#BLOB"
-
+is_udig $BLOB || die "arg not udig: $BLOB"
 $PSQL --set blob=$BLOB --file $SQL					||
 		die "psql fault ls blob failed: exit status=$?"

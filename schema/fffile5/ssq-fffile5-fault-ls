@@ -3,30 +3,23 @@
 #  Synopsis:
 #	List blobs in fault in schema fffile5
 #
-PROG=$(basename $0)
+source $SETSPACE_ROOT/lib/ssq-common.bash
+
 SQL="lib/$PROG.sql"
 
 PSQL='psql
-	--expanded
-	--tuples-only
-	--set=ON_ERROR_STOP=1
-	--no-psqlrc
-	--no-readline
+       --expanded
+       --tuples-only
+       --set=ON_ERROR_STOP=1
+       --no-psqlrc
+       --no-readline
 '
-
-die()
-{
-	echo "$PROG: ERROR: $@" >&2
-	exit 1
-}
 
 if [ $# = 0 ];  then
 	$PSQL --file $SQL || die "psql fault ls failed: exit status=$?"
 	exit 0
 fi
 
-[[ "$1" =~ ^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$ ]]			||
-			die "unknown action: $1"
-LIBEXEC=libexec/ssq-fffile5-fault-ls-udig
-test -x $LIBEXEC || die "no libexec: $LIBEXEC"
-exec $LIBEXEC $@
+exec_udig $@
+
+die "unknown action: $1"

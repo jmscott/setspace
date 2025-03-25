@@ -3,23 +3,10 @@
 #  Synopsis:
 #	Count blobs in fault in schema fffile5
 #
-PROG=$(basename $0)
+source $SETSPACE_ROOT/lib/ssq-common.bash
+
 SQL="lib/$PROG.sql"
 
-PSQL='psql
-	--no-align
-	--set=ON_ERROR_STOP=1
-	--no-psqlrc
-	--tuples-only
-	--pset null=Unknown
-	--quiet
-	--no-readline
-'
-
-die()
-{
-	echo "$PROG: ERROR: $@" >&2
-	exit 1
-}
+PSQL=$SSQ_COMMON_PSQL
 
 $PSQL --file $SQL || die "psql fault count failed: exit status=$?"

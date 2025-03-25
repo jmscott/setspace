@@ -7,8 +7,8 @@
 #
 source $SETSPACE_ROOT/lib/ssq-common.bash
 
-PSQL="$SSQ_PSQL_COMMON"
-SQL="lib/$PROG.sql"
+PSQL="$SSQ_COMMON_PSQL"
+SQL=lib/$PROG.sql
 
 if [ $# = 0 ];  then
 	$PSQL --file $SQL || die "psql service failed: exit status=$?"

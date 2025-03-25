@@ -5,6 +5,8 @@
  *	#  called by script ssq-fffile5-fault-ls
  *	psql --file ssq-fffile5-fault-ls.sql
  */
+SET search_path TO fffile5,setspace,public;
+
 SELECT
 	fault_time::text AS "Fault Time",
 	'flowd' AS "Process Class",
@@ -16,7 +18,7 @@ SELECT
   FROM
         setops.flowd_call_fault
   WHERE
-  	blob = :'blob'
+  	blob = :'blob'::setspace.udig
   ORDER BY
   	fault_time DESC,
 	command_name ASC
