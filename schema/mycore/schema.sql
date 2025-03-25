@@ -18,7 +18,7 @@ CREATE SCHEMA mycore;
 COMMENT ON SCHEMA mycore IS
   'My curated, text searchable metadata (title, tag, note, etc) of core blobs'
 ;
-SET search_path TO mycore,public;
+SET search_path TO mycore,setspace,public;
 
 DROP DOMAIN IF EXISTS title_255 CASCADE;
 CREATE DOMAIN title_255 AS text CHECK (
@@ -75,9 +75,9 @@ CREATE TABLE upsert_request_title_json
 					'do_update'
 				)
 			) DEFAULT  'do_nothing',
-	request_time	setcore.inception NOT NULL,
+	request_time	inception NOT NULL,
 
-	insert_time	setcore.inception NOT NULL DEFAULT now()
+	insert_time	inception NOT NULL DEFAULT now()
 );
 COMMENT ON TABLE upsert_request_title_json IS
   'JSON Request to upsert or delete titles for a list of blobs'

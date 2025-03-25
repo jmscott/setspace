@@ -213,7 +213,8 @@ COMMENT ON TRIGGER insert_jsonb_255_key_word_set
 DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS
   SELECT
-  	b.blob
+  	b.blob,
+	b.discover_time
     FROM
     	blob b
     	  NATURAL JOIN checker_255 ck
@@ -267,8 +268,11 @@ CREATE VIEW rummy AS
 		cj.is_json = true
 		AND
 		('upsert_jsonb_255', NULL, NULL)
-		  IS NOT DISTINCT FROM
-		    (flt.command_name, jb.blob, flt.blob)
+		  IS NOT DISTINCT FROM (
+		  	COALESCE(flt.command_name, 'upsert_jsonb_255'),
+			jb.blob,
+			flt.blob
+		)
 	)
 ;
 

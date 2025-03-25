@@ -13,14 +13,12 @@ BEGIN TRANSACTION;
 
 DROP SCHEMA IF EXISTS setops CASCADE;
 
-SET search_path TO setops,public;
+SET search_path TO setops,setspace,public;
 
 CREATE SCHEMA setops;
 COMMENT ON SCHEMA setops IS
 	'Faults generated while processing blobs for any schema'
 ;
-
-CREATE DOMAIN udig AS public.udig;
 
 DROP DOMAIN IF EXISTS name63 CASCADE;
 CREATE DOMAIN name63 AS text
@@ -32,12 +30,13 @@ COMMENT ON DOMAIN name63 IS
   '63 character names of schema, command queries, etc'
 ;
 
-DROP TABLE IF EXISTS blob;
+DROP TABLE IF EXISTS blob CASCADE;
 CREATE TABLE blob
 (
 	blob		udig PRIMARY KEY,
-	insert_time	setcore.inception
-				DEFAULT now()
+	discover_time	inception
+			NOT NULL
+			DEFAULT now()
 );
 
 DROP TABLE IF EXISTS flowd_schema CASCADE;
@@ -46,7 +45,7 @@ CREATE TABLE flowd_schema
 	schema_name	name63
 				PRIMARY KEY,
 
-	discover_time	setcore.inception
+	discover_time	inception
 				DEFAULT now()
 				NOT NULL
 );
@@ -91,9 +90,12 @@ CREATE TABLE flowd_call_fault
 				AND
 				signal <= 127
 			),
-	fault_time	setcore.inception NOT NULL,
+	stdout_blob	udig,
+	stderr_blob	udig,
 
-	upsert_time	setcore.inception DEFAULT now() NOT NULL,
+	fault_time	inception NOT NULL,
+
+	upsert_time	inception DEFAULT now() NOT NULL,
 
 	PRIMARY KEY	(schema_name, command_name, blob),
 
@@ -107,33 +109,6 @@ COMMENT ON TABLE flowd_call_fault IS
   'Fault in flowd process for particular blob and command'
 ;
 CLUSTER flowd_call_fault USING idx_flowd_call_fault_time;
-
-DROP TABLE IF EXISTS flowd_call_fault_output CASCADE;
-CREATE TABLE flowd_call_fault_output
-(
-	schema_name	name63,
-	command_name	name63,
-	blob		udig,
-
-	stdout_blob	udig
-				REFERENCES setcore.blob
-				ON DELETE SET NULL,
-	stderr_blob	udig
-				REFERENCES setcore.blob
-				ON DELETE SET NULL,
-
-	PRIMARY KEY	(schema_name, command_name, blob),
-	FOREIGN KEY	(schema_name, command_name, blob)
-				REFERENCES flowd_call_fault
-				ON DELETE CASCADE
-);
-
-COMMENT ON COLUMN flowd_call_fault_output.stderr_blob IS
-  'Stderr blob of fault in flowd call for particular blob and command'
-;
-COMMENT ON COLUMN flowd_call_fault_output.stdout_blob IS
-  'Stdout blob of fault in flowd call for particular blob and command'
-;
 
 DROP TABLE IF EXISTS pg_sql_error CASCADE;
 CREATE TABLE pg_sql_error
@@ -415,10 +390,13 @@ INSERT INTO pg_sql_error VALUES
 DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS
   SELECT
-  	DISTINCT blob
+  	blob,
+	min(fault_time) AS discover_time
     FROM
     	blob
 	  NATURAL JOIN flowd_call_fault
+    GROUP BY
+    	blob
 ;
 COMMENT ON VIEW service IS
   'Blobs serviced by setops - probably in fault'
@@ -439,7 +417,7 @@ COMMENT ON VIEW rummy IS
 ;
 
 CREATE TABLE archive_flowd_call_fault (
-	fault_time	setcore.inception NOT NULL,
+	fault_time	inception NOT NULL,
 	process_class	text CHECK (
 				process_class IN ('+flowd', '-flowd')
 			) NOT NULL,

@@ -4,7 +4,7 @@
  */
 
 \set ON_ERROR_STOP 1
-SET search_path to mydash,public;
+SET search_path to mydash,setspace,public;
 
 BEGIN TRANSACTION;
 
@@ -31,7 +31,7 @@ CREATE TABLE tag_http
 					lower(substring(url, 1,8)) = 'https://'
 				)
 			) NOT NULL,
-	discover_time	setcore.inception
+	discover_time	inception
 				NOT NULL
 );
 COMMENT ON TABLE tag_http IS
@@ -78,7 +78,7 @@ CREATE TABLE trace_fdr
 (
 	schema_name	name
 				NOT NULL,
-	start_time	setcore.inception
+	start_time	inception
 				NOT NULL,
 	blob		udig
 				NOT NULL,
@@ -131,7 +131,7 @@ CREATE TABLE trace_xdr
 (
 	schema_name		name
 					NOT NULL,
-	start_time		setcore.inception
+	start_time		inception
 					NOT NULL,
 	log_sequence		bigint CHECK (
 					log_sequence >= 0
@@ -203,7 +203,7 @@ CREATE TABLE trace_qdr
 (
 	schema_name		name
 					NOT NULL,
-	start_time		setcore.inception
+	start_time		inception
 					NOT NULL,
 	log_sequence		bigint CHECK (
 					log_sequence >= 0

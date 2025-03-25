@@ -21,6 +21,7 @@ COMMENT ON SCHEMA setcore IS
   'Core setspace tables for common facts about blobs'
 ;
 
+DROP TABLE IF EXISTS blob CASCADE;
 CREATE TABLE blob
 (
 	blob		udig	PRIMARY KEY,

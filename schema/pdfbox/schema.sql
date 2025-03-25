@@ -30,7 +30,18 @@ COMMENT ON SCHEMA pdfbox IS
   'Text and metadata extracted by java classes of pdfbox.apache.org, version 2'
 ;
 
-SET search_path to pdfbox,public;
+SET search_path to pdfbox,setspace,public;
+
+DROP TABLE IF EXISTS blob;
+CREATE TABLE blob
+(
+	blob	udig
+			REFERENCES setcore.blob
+			PRIMARY KEY,
+	discover_time	inception
+				DEFAULT now()
+				NOT NULL
+);
 
 /*
  *  PDDocument scalar fields from Java Object
@@ -39,7 +50,7 @@ DROP TABLE IF EXISTS pddocument CASCADE;
 CREATE TABLE pddocument
 (
 	blob		udig
-				REFERENCES setcore.service(blob)
+				REFERENCES blob
 				ON DELETE CASCADE
 				PRIMARY KEY,
 	/*
