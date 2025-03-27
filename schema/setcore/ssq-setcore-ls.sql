@@ -8,8 +8,8 @@ SET search_path TO setcore,setspace,public;
 
 SELECT
 	b.blob AS "Blob",
-	regexp_replace(age(now(), b.discover_time)::text, '\..*', '') || ' ago'
-                AS "Discovered",
+	interval_terse_english(age(now(), b.discover_time)) || ' ago @ ' ||
+		b.discover_time AS "Discovered",
 	pg_size_pretty(byte_count) AS "Byte Count",
 	CASE
 	  WHEN is_utf8 THEN

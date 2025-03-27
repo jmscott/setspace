@@ -7,37 +7,25 @@
 #	BLOB2=btc20:ebcf29d1d8abf97b52447e37bf747bf25c9c0ad0
 #	ssq setcore ls $BLOB1 $BLOB2 ...
 #
-PROG=$(basename $0)
+source $SETSPACE_ROOT/lib/ssq-common.bash
 
 PSQL='psql
-	--expanded
-	--tuples-only
-	--set=ON_ERROR_STOP=1
-	--no-psqlrc
-	--no-readline
-	--pset null=Unknown
+	--quiet
+        --expanded
+        --pset null=Unknown
+        --tuples-only
+        --no-psqlrc
+        --pset format=wrapped
 '
 SQL=lib/$PROG.sql
-
-help()
-{
-	echo "usage: $PROG [service|ls]"
-}
-
-die()
-{
-	echo "$PROG: ERROR: $@" >&2
-	exit 1
-}
 
 test $# -eq  0 && die "bad cli arg count:  got 0, want > 0"
 
 while [ -n "$1" ];  do
-	UDIG="$1"
-	[[ $UDIG =~ ^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$ ]]		||
-					die "not a udig: $UDIG"
-	shift
+	BLOB="$1"; shift
 
-	$PSQL --set "blob=$UDIG" --file $SQL				||
+	frisk_udig "$BLOB"
+
+	$PSQL --set "blob=$BLOB" --file $SQL				||
 			die "psql ls failed: exit status=$?"
 done
