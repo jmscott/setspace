@@ -44,6 +44,7 @@ COMMENT ON TYPE inception IS
   'Timestamp after birthday of blobio'
 ;
 
+
 DROP FUNCTION IF EXISTS interval_terse_english(interval) CASCADE;
 CREATE OR REPLACE FUNCTION interval_terse_english(duration interval)
   RETURNS text AS $$
@@ -159,19 +160,27 @@ CREATE OR REPLACE FUNCTION interval_terse_english(duration interval)
 		min || min_unit ||
 		sec || sec_unit
 	;
-	english = regexp_replace(english, ' *0 *', '', 'g');
-	english = regexp_replace(english, '^( *0)+', '');
-	english = regexp_replace(english, '( *0 *)+$', '');
-	if english = '' then
-		english = '0sec';
-	end if;
 
-	return english;
+	--  compress white space
+	LOOP
+		english = regexp_replace(english, '( +0 +)', ' ', 'g');
+		english = regexp_replace(english, '^(0 )+', '');
+		english = regexp_replace(english, '( *0 *)+$', 'g');
+		if regexp_count(english, '  ') = 0 then
+			return trim(english);
+		end if;
+
+		english = regexp_replace(english, '( +)', ' ', 'g');
+
+		if english = '' then
+			return '0sec';
+		end if;
+	END LOOP;
+	--  Note: not reached
 
   END $$ LANGUAGE plpgsql IMMUTABLE STRICT
 ;
 COMMENT ON FUNCTION interval_terse_english(interval) IS
   'Convert time interval to full precision, terse english, e.g. 3hr12min5sec'
 ;
-
 END TRANSACTION;
