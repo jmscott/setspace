@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	exec psql for typical unix tuples of tab separated, new line records
+#  Usage:
+#	PSQL=$SSQ_COMMON_PSQL_TSV
+#	$PSQL --file abc.sql || die "psql abc failed: exit status=$?"
+#
+
+exec psql								\
+	--no-align							\
+	--no-psqlrc							\
+	--no-readline							\
+	--pset null=Unknown						\
+	--quiet								\
+	--tuples-only							\
+	--pset fieldsep='	'					\
+	$@

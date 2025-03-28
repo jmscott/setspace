@@ -143,9 +143,10 @@ ETC="
 #CACHE="
 #"
 
-#  Uncomment to create directory libexec/
 LIBEXECs="
 	ssq-ls
+	ssq-common-psql-expand
+	ssq-common-psql-tsv
 "
 
 SYMLINKs="

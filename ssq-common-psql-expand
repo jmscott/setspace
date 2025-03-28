@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+exec psql								\
+	--quiet								\
+        --expanded							\
+        --pset null=Unknown						\
+        --tuples-only							\
+        --no-psqlrc							\
+        --pset format=wrapped						\
+	$@
