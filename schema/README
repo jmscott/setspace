@@ -599,3 +599,5 @@ Possible Schemas:
 		https://news.ycombinator.com/item?id=43464320
 	MapBench - llm read maps
 		https://arxiv.org/abs/2503.14607
+	xan - xan, the CSV magician
+		https://github.com/medialab/xan#readme
