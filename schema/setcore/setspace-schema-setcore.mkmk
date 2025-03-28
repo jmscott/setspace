@@ -33,11 +33,11 @@ LIBs="
 	setcore.flow.example
 	setspace-schema-setcore.mkmk
 	ssq-setcore-fault.sql
-	ssq-setcore-ls.sql
-	ssq-setcore-rummy.sql
 	ssq-setcore-rummy-count.sql
+	ssq-setcore-rummy.sql
 	ssq-setcore-service-count.sql
 	ssq-setcore-service.sql
+	ssq-setcore-udig.sql
 	upsert-byte_bitmap.sql
 	upsert-byte_count.sql
 	upsert-byte_prefix_32.sql
@@ -46,12 +46,13 @@ LIBs="
 
 LIBEXECs="
 	ssq-setcore
-	ssq-setcore-ls
 	ssq-setcore-fault
+	ssq-setcore-ls
 	ssq-setcore-rummy
 	ssq-setcore-rummy-count
 	ssq-setcore-service
 	ssq-setcore-service-count
+	ssq-setcore-udig
 "
 
 SBINs="

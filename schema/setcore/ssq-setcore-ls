@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	script to invoke libexec/ssq-setcore-ls-* scripts
+#	List details for multiple udigs on command line
 #  Usage:
 #	BLOB1=btc20:d1a4179e1cd41feeb4a859ce428c7f2bf9f36d9d
 #	BLOB2=btc20:ebcf29d1d8abf97b52447e37bf747bf25c9c0ad0
@@ -11,6 +11,7 @@
 #	0		no error
 #	1		unexpected error
 #
+USAGE='<udig> <udig> ...'
 source $SETSPACE_ROOT/lib/ssq-common.bash
 
 PSQL=$SSQ_COMMON_PSQL_EXPAND
@@ -23,9 +24,7 @@ while [ -n "$1" ];  do
 	BLOB="$1"; shift
 
 	frisk_udig "$BLOB"
-
-	$PSQL --set "blob=$BLOB" --file $SQL				||
-			die "psql ls failed: exit status=$?"
+	ssq setcore udig $BLOB  || die "ssq setcore udig failed: exit status=$?"
 done
 
 exit 0
