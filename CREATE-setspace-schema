@@ -7,6 +7,11 @@
 #	The current role of caller must have super user permission to
 #	install the udig in setspace.udig in a particular database.  Also,
 #	the schema.sql must be readable in the current directory oif invocation.
+#
+#	Warning: dropping the schema "setspace" also drops columns in tables
+#	in other schemas like "setcore" and "fffile5".  Use this script with
+#	caution.
+#
 #  Exit Status:
 #	0	ok, schema setspace and udig types installed in db $1
 #	1	unexpected failure
