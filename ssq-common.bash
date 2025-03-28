@@ -4,7 +4,7 @@
 #  Usage:
 #	source $SETSPACE_ROOT/lib/ssq-common.bash
 #
-export PROG=$(basename $0)
+PROG=$(basename $0)
 
 die()
 {
@@ -51,11 +51,16 @@ frisk_udig()
 
 exec_udig()
 {
-	[[ "$1" =~ ^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$ ]] || return
+	is_udig "$1" || return
 
 	LIBEXEC=libexec/$PROG-udig 
 	test -x $LIBEXEC || die 'no libexec udig'
 	exec $LIBEXEC $@
+}
+
+exec_help()
+{
+	[ $# = 0 -o "$1" = help ] && usage
 }
 
 exec_action()
