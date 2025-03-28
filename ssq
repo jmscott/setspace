@@ -3,8 +3,9 @@
 #  Synopsis:
 #	Command line front end to sql queries for all schemas.
 #  Usage:
-#	ssq			#  help
-#	ssq help		#  help
+#	ssq		#  help
+#	ssq hel		#  help
+#	ssq ls		#  list schemas qith ssq support
 #  Note:
 #	Consider adding action "ssq env <var>" for various global values,
 #	like PSQL.
@@ -14,7 +15,7 @@ USAGE="usage: $PROG [help | ls | <schema>"
 
 usage()
 {
-	echo "usage: $PROG [help | [<schema>] [...options]]"
+	echo "usage: $PROG [ls | help | <schema> ...options]"
 }
 
 die()
@@ -39,6 +40,8 @@ SCHEMA=$ACTION
 
 test -d "schema/$SCHEMA" || die "unknown schema: $SCHEMA"
 cd schema/$SCHEMA || die "cd schema $SCHEMA failed; exit status=$?"
+
+source etc/profile || die "$SCHEMA: source etc/profile failed"
 
 LIBEXEC="libexec/ssq-$SCHEMA"
 test -x $LIBEXEC || die "no ssq for schema: $SCHEMA"
