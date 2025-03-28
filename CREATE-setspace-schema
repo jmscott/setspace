@@ -11,14 +11,16 @@
 #	0	ok, schema setspace and udig types installed in db $1
 #	1	unexpected failure
 #
-
 PROG=$(basename $0)
 
 PSQL='psql
-	--tuples-only
+	--no-align
+	--no-psqlrc
+	--no-readline
+	--pset null=Unknown
 	--quiet
-	--set ON_ERROR_STOP=1
-	--pset format=unaligned
+	--set=ON_ERROR_STOP=true
+	--tuples-only
 '
 
 ROLE_SQL='
@@ -80,7 +82,7 @@ log "current role: $ROLE"
 log get role super perms ...
 IS_SUPER=$($PSQL --command "$IS_SUPER_SQL") || exit 1
 log "is super: $IS_SUPER"
-test $IS_SUPER = t || die 'must be super user to create udig type'
+test "$IS_SUPER" = t || die 'must be super user to create udig type'
 
 log get database owner ...
 DATABASE_OWNER=$($PSQL --command "$DATABASE_OWNER_SQL") || exit 1
