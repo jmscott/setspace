@@ -12,6 +12,7 @@ exec psql								\
 	--no-psqlrc							\
 	--no-readline							\
 	--pset null=Unknown						\
+	--pset pager=off						\
 	--quiet								\
 	--tuples-only							\
 	--pset fieldsep='	'					\
