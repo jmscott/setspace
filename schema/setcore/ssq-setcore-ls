@@ -6,20 +6,18 @@
 #	BLOB1=btc20:d1a4179e1cd41feeb4a859ce428c7f2bf9f36d9d
 #	BLOB2=btc20:ebcf29d1d8abf97b52447e37bf747bf25c9c0ad0
 #	ssq setcore ls $BLOB1 $BLOB2 ...
+#	ssq setcore service | xargs ssq setcore ls
+#  Exit Status:
+#	0		no error
+#	1		unexpected error
 #
 source $SETSPACE_ROOT/lib/ssq-common.bash
 
-PSQL='psql
-	--quiet
-        --expanded
-        --pset null=Unknown
-        --tuples-only
-        --no-psqlrc
-        --pset format=wrapped
-'
+PSQL=$SSQ_COMMON_PSQL_EXPAND
+
 SQL=lib/$PROG.sql
 
-test $# -eq  0 && die "bad cli arg count:  got 0, want > 0"
+test $# -eq  0 && die 'bad cli arg count:  got 0, want > 0'
 
 while [ -n "$1" ];  do
 	BLOB="$1"; shift
@@ -29,3 +27,5 @@ while [ -n "$1" ];  do
 	$PSQL --set "blob=$BLOB" --file $SQL				||
 			die "psql ls failed: exit status=$?"
 done
+
+exit 0

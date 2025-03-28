@@ -3,34 +3,20 @@
 #  Synopsis:
 #	query setcore schema for blobs in service
 #
-PROG=$(basename $0)
+source $SETSPACE_ROOT/lib/ssq-common.bash
 
-PSQL='psql
-	--no-align
-	--set=ON_ERROR_STOP=1
-	--no-psqlrc
-	--tuples-only
-	--pset null=Unknown
-	--quiet
-	--no-readline
-'
+PSQL=$SSQ_COMMON_PSQL_TSV
 SQL=lib/$PROG.sql
+USAGE='[count|help]'
 
-die()
-{
-	echo "$PROG: ERROR: $@" >&2
-	exit 1
-}
-
-ACTION="$1";  shift;
-case $ACTION in
+case "$1" in
 '')
+	$PSQL --file $SQL || die "psql service failed: exit status=$?"
+	;;
+help)
+	exec_help
 	;;
 *)
-	LIBEXEC=libexec/ssq-setcore-service-$ACTION
-	test -x $LIBEXEC || die "no libexec for action: $ACTION"
-	exec $LIBEXEC #@
+	exec_action $@
 	;;
 esac
-
-$PSQL --file $SQL || die "psql setcore.service failed: exit status=$?"

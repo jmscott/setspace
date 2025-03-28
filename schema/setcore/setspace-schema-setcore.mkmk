@@ -17,7 +17,7 @@
 #  Define PRODUCT to change name of tar file from $(basename $(pwd))
 #  to, say, foobar-YYYYMMDD_hhmmss.tar.bz2
 
-#PRODUCT=foobar
+PRODUCT=setspace-schema-setcore
 
 COMPILEs="
 	byte-bitmap

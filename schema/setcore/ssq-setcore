@@ -3,33 +3,15 @@
 #  Synopsis:
 #	setcore schema querier backend libexeced by front end script "ssq".
 #  Usage:
-#	ssq setcore help
+#	ssq setcore service
 #  Exit Status:
 #	0	no fail
 #	1	unknown error
 #
-PROG=$(basename $0)
+USAGE="[service | rummy | blob | ls | <udig>... | help]"
 
-help()
-{
-	echo "usage: $PROG [service|ls|rummy|fault]"
-}
+source $SETSPACE_ROOT/lib/ssq-common.bash
 
-die()
-{
-	echo "$PROG: ERROR: $@" >&2
-	exit 1
-}
-
-. etc/profile || die "source etc/profile failed: exit status=$?"
-
-if [ $# = 0 -o "$1" = help ];  then
-	help
-	exit 0
-fi
-
-ACTION="$1";  shift
-	
-LIBEXEC="libexec/$PROG-$ACTION"
-test -x $LIBEXEC || die "unknown action: $ACTION"
-exec $LIBEXEC $@
+exec_help $@
+exec_udig $@
+exec_action $@

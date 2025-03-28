@@ -86,7 +86,7 @@ byte-prefix-32: byte-prefix-32.c ../../common.c
 byte-suffix-32: byte-suffix-32.c ../../common.c
 	cc -o byte-suffix-32						\
 		-I$(JMSCOTT_ROOT)/include				\
-		-L$(JMSCOTT_ROOT)/lib				\
+		-L$(JMSCOTT_ROOT)/lib					\
 		$(CFLAGS) byte-suffix-32.c -ljmscott
 
 world:
