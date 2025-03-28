@@ -21,6 +21,7 @@ SBINs := $(shell (. $(MKMK) && echo $$SBINs))
 LIBEXECs := $(shell (. $(MKMK) && echo $$LIBEXECs))
 LIBs := $(shell (. $(MKMK) && echo $$LIBs))
 SRCs := $(shell (. $(MKMK) && echo $$SRCs))
+PRODUCT := $(shell (. $(MKMK) && echo $$PRODUCT))
 
 all: $(COMPILEs)
 
@@ -99,3 +100,7 @@ dev-links:
 	test -e lib || ln -s . lib
 clean-links:
 	rm -f lib
+frisk:
+	make-make tar $(MKMK)
+	rm $(PRODUCT)-2[012]*_[012]*.tar.bz2
+	@echo;  echo;  echo OK frisk passed
