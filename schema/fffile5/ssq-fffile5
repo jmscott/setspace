@@ -5,9 +5,10 @@
 #
 source $SETSPACE_ROOT/lib/ssq-common.bash
 
-USAGE='[blob|fault|service|rummy] ...'
+USAGE='[blob|fault|service|rummy] | <udig> ...'
 
 test $# = 0 && usage
 
-exec_udig "$1"
+exec_help $@
+exec_udig $@
 exec_action $@

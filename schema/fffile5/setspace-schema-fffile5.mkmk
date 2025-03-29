@@ -43,11 +43,8 @@ LIBs="
 	ssq-fffile5-blob-count.sql
 	ssq-fffile5-blob.sql
 	ssq-fffile5-fault-count.sql
-	ssq-fffile5-fault-ls-udig.sql
-	ssq-fffile5-fault-ls.sql
 	ssq-fffile5-fault.sql
-	ssq-fffile5-ls-udig.sql
-	ssq-fffile5-ls.sql
+	ssq-fffile5-udig.sql
 	ssq-fffile5-rummy-count.sql
 	ssq-fffile5-rummy.sql
 	ssq-fffile5-service-count.sql
@@ -124,9 +121,7 @@ LIBEXECs="
 	ssq-fffile5-fault
 	ssq-fffile5-fault-count
 	ssq-fffile5-fault-ls
-	ssq-fffile5-fault-ls-udig
 	ssq-fffile5-ls
-	ssq-fffile5-ls-udig
 	ssq-fffile5-rummy
 	ssq-fffile5-rummy-count
 	ssq-fffile5-service

@@ -5,13 +5,9 @@
 #
 source $SETSPACE_ROOT/lib/ssq-common.bash
 
-SQL="lib/$PROG.sql"
-PSQL=$SSQ_COMMON_PSQL
+USAGE=
 
-die()
-{
-	echo "$PROG: ERROR: $@" >&2
-	exit 1
-}
+SQL="lib/$PROG.sql"
+PSQL=$SSQ_COMMON_PSQL_TSV
 
 $PSQL --file $SQL || die "psql blob count failed: exit status=$?"

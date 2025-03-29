@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	List blobs in fault in schema fffile5
+#
+source $SETSPACE_ROOT/lib/ssq-common.bash
+USAGE='<udig>'
+
+PSQL=$SSQ_COMMON_PSQL_EXPAND
+
+SQL="lib/$PROG.sql"
+
+test $# = 1 || die "cli arg count wrong: got $#, want 1"
+frisk_udig $@
+BLOB=$1
+$PSQL --set blob=$BLOB --file $SQL					||
+	die "psql fault udig failed: exit status=$?"

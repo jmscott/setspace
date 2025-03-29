@@ -1,41 +1,17 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	script to invoke libexec/ssq-fffile5-ls-* scripts
-#  Exit Status:
-#	0	query ok, blob may of may not exists
-#  Note:
-#	Add duration to discover time!
+#	Detail listing of blobs
 #
-PROG=$(basename $0)
-SQL=lib/$PROG.sql
-SQL_UDIG=lib/$PROG-udig.sql
-PSQL='psql
-	--expanded
-	--pset null=Unknown
-	--tuples-only
-	--no-psqlrc
-	--pset format=wrapped
-'
+source $SETSPACE_ROOT/lib/ssq-common.bash
 
-die()
-{
-	echo "$PROG: ERROR: $@" >&2
-	exit 1
-}
+USAGE='<udig> ...'
 
-if [ $# = 0 ];  then
-	$PSQL --file $SQL || die "psql ls failed: exit status=$?"
-	exit 0
-fi
+test $# = 0 && usage
 
-if [[ "$1" =~ ^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$ ]];  then
-	LIBEXEC=libexec/$PROG-udig
-	test -x $LIBEXEC || die "no libexec: $LIBEXEC"
-	exec $LIBEXEC $@
-fi
+while [ "$1" ];  do
+	BLOB="$1";  shift
 
-ACTION=$1;  shift;
-LIBEXEC=$PROG-$ACTION
-test -x $LIBEXEC || die "unknown action: $ACTION"
-exec $LIBEXEC $@
+	frisk_udig "$BLOB"
+	ssq fffile5 udig $BLOB || die "ssq fffile5 udig failed: exit status=$?"
+done

@@ -6,23 +6,13 @@
 #  Note:
 #	Think about adding "Is Rummy".  Does being a rummy imply nt in service?
 #
-PROG=$(basename $0)
+source $SETSPACE_ROOT/lib/ssq-common.bash
+
+USAGE=''
 SQL="lib/$PROG.sql"
 
-PSQL='psql
-	--no-align
-	--set=ON_ERROR_STOP=1
-	--no-psqlrc
-	--tuples-only
-	--pset null=Unknown
-	--quiet
-	--no-readline
-'
-
-die()
-{
-	echo "$PROG: ERROR: $@" >&2
-	exit 1
-}
+PSQL=$SSQ_COMMON_PSQL_TSV
 
 $PSQL --file $SQL || die "psql service count failed: exit status=$?"
+
+exit 0

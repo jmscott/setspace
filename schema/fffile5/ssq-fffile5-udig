@@ -1,3 +1,14 @@
 #!/usr/bin/env bash
 
-exec ssq fffile5 ls $@
+source $SETSPACE_ROOT/lib/ssq-common.bash
+
+USAGE='<udig>'
+SQL=lib/$PROG.sql
+
+PSQL=$SSQ_COMMON_PSQL_EXPAND
+
+test $# = 1 || die "wqrong cli arg count: got $#, want 1"
+BLOB="$1"
+frisk_udig "$1"
+
+$PSQL --set blob=$BLOB --file $SQL || die "psql udig failed: exit status=$?"

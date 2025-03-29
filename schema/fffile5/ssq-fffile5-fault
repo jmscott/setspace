@@ -5,9 +5,10 @@
 #  Usage:
 #	called by script in libexec/ssq-fffile
 #
+USAGE='[count]'
 source $SETSPACE_ROOT/lib/ssq-common.bash
 
-PSQL=$SSQ_COMMON_PSQL
+PSQL=$SSQ_COMMON_PSQL_TSV
 SQL="lib/$PROG.sql"
 
 if [ $# = 0 ];  then

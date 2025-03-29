@@ -6,8 +6,9 @@
 #	called by script in libexec/ssq-fffile5
 #
 source $SETSPACE_ROOT/lib/ssq-common.bash
+USAGE='[count]'
 
-PSQL=$SSQ_COMMON_PSQL
+PSQL=$SSQ_COMMON_PSQL_TSV
 SQL=lib/$PROG.sql
 
 if [ $# = 0 ];  then

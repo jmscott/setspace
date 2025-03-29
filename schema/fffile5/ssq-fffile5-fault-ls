@@ -5,21 +5,14 @@
 #
 source $SETSPACE_ROOT/lib/ssq-common.bash
 
-SQL="lib/$PROG.sql"
+USAGE='<udig> ...'
 
-PSQL='psql
-       --expanded
-       --tuples-only
-       --set=ON_ERROR_STOP=1
-       --no-psqlrc
-       --no-readline
-'
+test $# -gt 0 || die 'bad cli arg count: got 0, want > 0'
 
-if [ $# = 0 ];  then
-	$PSQL --file $SQL || die "psql fault ls failed: exit status=$?"
-	exit 0
-fi
+while [ "$1" ];  do
+	BLOB="$1";  shift
 
-exec_udig $@
-
-die "unknown action: $1"
+	frisk_udig "$BLOB"
+	ssq fffile5 fault udig $BLOB					||
+			die "ssq fffile5 fault udig failed: exit status=$?"
+done

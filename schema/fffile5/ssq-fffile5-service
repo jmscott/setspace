@@ -7,7 +7,9 @@
 #
 source $SETSPACE_ROOT/lib/ssq-common.bash
 
-PSQL="$SSQ_COMMON_PSQL"
+USAGE="[count]"
+
+PSQL=$SSQ_COMMON_PSQL_TSV
 SQL=lib/$PROG.sql
 
 if [ $# = 0 ];  then
@@ -15,4 +17,6 @@ if [ $# = 0 ];  then
 	exit 0
 fi
 
+exec_help $@
+exec_udig $@
 exec_action $@

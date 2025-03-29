@@ -5,32 +5,17 @@
 #  Usage:
 #	called by script in libexec/ssq-fffile5
 #
-PROG=$(basename $0)
+source $SETSPACE_ROOT/lib/ssq-common.bash
+
+USAGE='[count]'
 SQL="lib/$PROG.sql"
 
-PSQL='psql
-	--no-align
-	--no-psqlrc
-	--no-readline
-	--pset null=Unknown
-	--pset=pager=off
-	--quiet
-	--set=ON_ERROR_STOP=true
-	--tuples-only
-'
-
-die()
-{
-	echo "$PROG: ERROR: $@" >&2
-	exit 1
-}
+PSQL=$SSQ_COMMON_PSQL_TSV
 
 if [ $# = 0 ];  then
 	$PSQL --file $SQL || die "psql rummy failed: exit status=$?"
 	exit 0
 fi
 
-ACTION=$1;  shift;
-LIBEXEC=libexec/$PROG-$ACTION
-test -x $LIBEXEC || die "unknown action: $ACTION"
-exec $LIBEXEC $@
+exec_help $@
+exec_action $@
