@@ -101,32 +101,32 @@ install: all
 frisk ff:
 	flowd frisk pdfbox.flow.example
 
-merge-stdin-pddocument_information:					\
-		merge-stdin-pddocument_information.pgc			\
+upsert-stdin-pddocument_information:					\
+		upsert-stdin-pddocument_information.pgc			\
 		../../common.c						\
 		../../common-ecpg.c
-	ecpg merge-stdin-pddocument_information.pgc
+	ecpg upsert-stdin-pddocument_information.pgc
 	$(CC) $(CFLAGS)							\
 		-I$(PGINC)						\
 		-I$(JMSCOTT_ROOT)/include				\
-		merge-stdin-pddocument_information.c			\
-		-o merge-stdin-pddocument_information			\
+		upsert-stdin-pddocument_information.c			\
+		-o upsert-stdin-pddocument_information			\
 		-L$(PGLIB) -lecpg					\
 		-L$(JMSCOTT_ROOT)/lib -ljmscott
-	rm merge-stdin-pddocument_information.c
+	rm upsert-stdin-pddocument_information.c
 
-merge-all-extract_pages_utf8:						\
-		merge-all-extract_pages_utf8.pgc			\
+upsert-all-extract_pages_utf8:						\
+		upsert-all-extract_pages_utf8.pgc			\
 		../../common.c						\
 		../../common-ecpg.c
-	ecpg merge-all-extract_pages_utf8.pgc
+	ecpg upsert-all-extract_pages_utf8.pgc
 	$(CC) $(CFLAGS)							\
 		-I$(PGINC) -I$(JMSCOTT_ROOT)/include			\
-		merge-all-extract_pages_utf8.c				\
-		-o merge-all-extract_pages_utf8				\
+		upsert-all-extract_pages_utf8.c				\
+		-o upsert-all-extract_pages_utf8			\
 		-L$(PGLIB) -lecpg					\
 		-L$(JMSCOTT_ROOT)/lib -ljmscott
-	rm merge-all-extract_pages_utf8.c
+	rm upsert-all-extract_pages_utf8.c
 
 dev-links:
 	ln -s . lib

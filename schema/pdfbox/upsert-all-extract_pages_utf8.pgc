@@ -4,12 +4,12 @@
  *  Description:
  *
  *  Usage:
- *	merge-all-extract_pages_utf8 <ts_conf> <pdf-udig>
+ *	upsert-all-extract_pages_utf8 <ts_conf> <pdf-udig>
  *  Arguments:
  *  	1	udig of the pdf blob
  *	2	tsv vector configuration
  *  Exit Status:
- *  	0	ok, all pages were merged
+ *  	0	ok, all pages were upsertd
  *	1	unexpected error
  *  Note:
  *	Should WARN be logged but no cause an abort.  In particluar
@@ -31,9 +31,9 @@
 
 #include "jmscott/libjmscott.h"
 
-char *jmscott_progname = "merge-all-extract_pages_utf8";
+char *jmscott_progname = "upsert-all-extract_pages_utf8";
 static char *usage =
-	"merge-all-extract_pages_utf8 <tsvector config> <pdf-udig>"
+	"upsert-all-extract_pages_utf8 <tsvector config> <pdf-udig>"
 ;
 
 #define EXIT_OK		0

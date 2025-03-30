@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	Extract all pages from pdf and merge into tables extract_page_utf8.
+#	Extract all pages from pdf and upsert into tables extract_page_utf8.
 #  Usage:
-#	merge-extract_pages_utf8 <tsconfig> <pdf blob>
-#	merge-extract_pages_utf8 english sha:9611866f8547cbf7 ...
+#	upsert-extract_pages_utf8 <tsconfig> <pdf blob>
+#	upsert-extract_pages_utf8 english sha:9611866f8547cbf7 ...
 #  Exit Status
-#  	0	ok, tuple was merged
+#  	0	ok, tuple was upsertd
 #	1	blob does not exist
 #	2	unexpected error
 #
@@ -27,7 +27,7 @@
 #
 
 START_EPOCH=$(date +%s)
-PROG=merge-extract_pages_utf8
+PROG=upsert-extract_pages_utf8
 
 SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 WORK_DIR=${TMPDIR:=/tmp}/$PROG.$$.d
@@ -36,10 +36,10 @@ GET_SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
 
 die()
 {
-	#  merge the error into 
+	#  upsert the error into 
 	if [ -n "$PDF_UDIG" ];  then
-		source $SETSPACE_ROOT/schema/pdfbox/lib/merge-fault.bash
-		die_merge merge_extract_pages_utf8 $@
+		source $SETSPACE_ROOT/schema/pdfbox/lib/upsert-fault.bash
+		die_upsert upsert_extract_pages_utf8 $@
 	fi
 	echo "$PROG: ERROR: $@" >&2
 	exit 2
@@ -143,7 +143,7 @@ case "$STATUS" in
 	;;
 esac
 
-#  sql merge all pages, text, tsf in database in a single transaction
+#  sql upsert all pages, text, tsf in database in a single transaction
 
-merge-all-extract_pages_utf8 "$TS_CONF" $PDF_UDIG 2>STDERR ||
-	die "merge-all-extract_pages_utf8 failed: exit status=$?"
+upsert-all-extract_pages_utf8 "$TS_CONF" $PDF_UDIG 2>STDERR ||
+	die "upsert-all-extract_pages_utf8 failed: exit status=$?"

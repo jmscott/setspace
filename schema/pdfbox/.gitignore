@@ -1,10 +1,10 @@
-ExtractPagesUTF8.class
+ExtraCtPagesUTF8.class
 etc
 lib
 libexec
 log
-merge-all-extract_pages_utf8
-merge-stdin-pddocument_information
+upsert-all-extract_pages_utf8
+upsert-stdin-pddocument_information
 putPDDocument.class
 putPDDocumentInformation.class
 sbin

@@ -12,7 +12,7 @@
 #  See:
 #	pdfbox/lib/schema.sql
 #  Note:
-#	Faulting needs to be merged into this flow and not in bash scripts!
+#	Faulting needs to be upsertd into this flow and not in bash scripts!
 #
 
 boot
@@ -113,7 +113,7 @@ sql query in_pddocs row
 		    	blob = $1::udig
 		),
 
-		--  is blob in fault for call to merge-pddocument?
+		--  is blob in fault for call to upsert-pddocument?
 
 		EXISTS (
 		  SELECT
@@ -123,7 +123,7 @@ sql query in_pddocs row
 		    WHERE
 		    	schema_name = 'pdfbox'
 			AND
-		    	command_name = 'merge_pddocument'
+		    	command_name = 'upsert_pddocument'
 			AND
 		    	blob = $1::udig
 		),
@@ -139,7 +139,7 @@ sql query in_pddocs row
 		    	blob = $1::udig
 		),
 
-		--  is blob in fault for call to merge-pddocument_information?
+		--  is blob in fault for call to upsert-pddocument_information?
 
 		EXISTS (
 		  SELECT
@@ -149,7 +149,7 @@ sql query in_pddocs row
 		    WHERE
 		    	schema_name = 'pdfbox'
 			AND
-		    	command_name = 'merge_pddocument_information'
+		    	command_name = 'upsert_pddocument_information'
 			AND
 		    	blob = $1::udig
 		)
@@ -175,9 +175,9 @@ query in_pddocs(brr.udig)
 #  PDDocument
 #
 ###
-command merge_pddocument
+command upsert_pddocument
 {
-	path = "merge-pddocument";
+	path = "upsert-pddocument";
 
 	exit_status is OK when in {
                 0,      #  ok, extracted pddocument info and stored into db
@@ -185,7 +185,7 @@ command merge_pddocument
         };
 }
 
-call merge_pddocument(brr.udig)
+call upsert_pddocument(brr.udig)
   when
   	in_pddocs.ok_doc == false
 	and
@@ -197,16 +197,16 @@ call merge_pddocument(brr.udig)
 #  PDDocumentInformation
 #
 ###
-command merge_pddocument_information
+command upsert_pddocument_information
 {
-	path = "merge-pddocument_information";
+	path = "upsert-pddocument_information";
 	exit_status is OK when in {
                 0,      #  ok, extracted pddocument info and stored into PG
                 1       #  blob does not exist
         };
 }
 
-call merge_pddocument_information(brr.udig)
+call upsert_pddocument_information(brr.udig)
   when
   	in_pddocs.ok_info == false
 	and
@@ -218,9 +218,9 @@ call merge_pddocument_information(brr.udig)
 #  ExtractPagesUTF8
 #
 ###
-command merge_extract_pages_utf8
+command upsert_extract_pages_utf8
 {
-	path = "merge-extract_pages_utf8";
+	path = "upsert-extract_pages_utf8";
 	argv = (
 		"english"
 	);
@@ -255,7 +255,7 @@ sql query in_extract row
 		    WHERE
 		    	schema_name = 'pdfbox'
 			and
-		    	command_name = 'merge_extract_pages_utf8'
+		    	command_name = 'upsert_extract_pages_utf8'
 			AND
 		    	blob = $1::udig
 		)
@@ -275,9 +275,9 @@ query in_extract(brr.udig)
 	in_pddocs.flt_doc == true
 ;
 
-call merge_extract_pages_utf8(brr.udig)
+call upsert_extract_pages_utf8(brr.udig)
   when
   	in_extract.ok == false
 	or
-	merge_pddocument.exit_status == 0
+	upsert_pddocument.exit_status == 0
 ;

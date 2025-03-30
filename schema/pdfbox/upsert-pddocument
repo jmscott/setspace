@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	Extract the PDDocument scalars from PDF and merge into PostgreSQL
+#	Extract the PDDocument scalars from PDF and upsert into PostgreSQL
 #  Usage:
-#	merge-pddocument <udig>
+#	upsert-pddocument <udig>
 #  Exit Status:
 #	0	ok, extracted pddocument info and stored into PostgreSQL
 #	1	pdf blob does not exist
@@ -15,10 +15,10 @@
 #  Note:
 #	Need to insure putPDDocument always writes utf8 and not utf16!
 #
-#	Need to merge fault into flow file, instead of in this script.
+#	Need to upsert fault into flow file, instead of in this script.
 #
 
-PROG=merge-pddocument
+PROG=upsert-pddocument
 PSQL='psql --no-psqlrc --quiet --no-readline --set=ON_ERROR_STOP=1'
 SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
 WORK_DIR=${TMPDIR:=/tmp}/$PROG-$$.d
@@ -31,8 +31,8 @@ leave()
 
 die()
 {
-	source $SETSPACE_SCHEMA_ROOT/lib/merge-fault.bash
-	die_merge merge_pddocument $@
+	source $SETSPACE_SCHEMA_ROOT/lib/upsert-fault.bash
+	die_upsert upsert_pddocument $@
 }
 
 jdie()

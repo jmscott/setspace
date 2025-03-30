@@ -2,12 +2,12 @@
  *  Synopsis:
  *  	Merge the output of putPDDocumentInformation.class into the database
  *  Usage:
- *	merge-stdin-pddocument_information 
+ *	upsert-stdin-pddocument_information 
  *  Arguments:
  *  	1	udig of the blob that file command analyzed
  *  	2	number of bytes of extracted pdfinfo on stdin
  *  Exit Status:
- *  	0	ok, tuple was merged
+ *  	0	ok, tuple was upsertd
  *	1	unexpected error
  *  See:
  *	putPDDocumentInformation.java
@@ -37,7 +37,7 @@
 
 #include "jmscott/libjmscott.h"
 
-char *jmscott_progname = "merge-stdin-pddocument_information";
+char *jmscott_progname = "upsert-stdin-pddocument_information";
 
 #define EXIT_OK		0
 #define EXIT_BAD	1
@@ -53,7 +53,7 @@ static struct jmscott_ecpg_state_fault no_warn[] =
 };
 
 static char *usage =
-	"merge-stdin-pddocument_information blob <stdin-byte-count>"
+	"upsert-stdin-pddocument_information blob <stdin-byte-count>"
 ;
 
 static char *input = NULL;

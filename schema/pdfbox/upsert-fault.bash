@@ -10,11 +10,11 @@
 #	#  in script for schema pdfbox
 #
 #	die() {
-#		source $SETSPACE_SCHEMA_ROOT/lib/merge-fault.bash
-#		die_merge <command_name> $@
+#		source $SETSPACE_SCHEMA_ROOT/lib/upsert-fault.bash
+#		die_upsert <command_name> $@
 #	}
 #
-die_merge()
+die_upsert()
 {
 	local CMD=$1
 	shift
@@ -37,14 +37,14 @@ die_merge()
 			cat STDERR >&2
 			cat STDERR
 		fi
-	) | merge-flowd_call_fault pdfbox $CMD $PDF_UDIG ERR 2 0 /dev/null -
+	) | upsert-flowd_call_fault pdfbox $CMD $PDF_UDIG ERR 2 0 /dev/null -
 	STATUS="${PIPESTATUS[*]}"
 
 	case "$STATUS" in
 	'0 0')
-		;;		#  merged fault successfully but still in error
+		;;		#  upsertd fault successfully but still in error
 	*)
-		MSG="merge-flowd_call_fault pdfbox failed: exit status=$STATUS"
+		MSG="upsert-flowd_call_fault pdfbox failed: exit status=$STATUS"
 		echo "$PROG: ERROR: $MSG" >&2
 		;;
 	esac

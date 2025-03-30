@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	Extract and merge the PDDocumentInformation scalars from PDF.
+#	Extract and upsert the PDDocumentInformation scalars from PDF.
 #  Usage:
-#	merge-pddocument_information <udig>
+#	upsert-pddocument_information <udig>
 #  Exit Status:
 #	0	ok, extracted pddocument info and stored into PostgreSQL
 #	1	blob does not exist
@@ -16,7 +16,7 @@
 #	How do we know the output of putPDDocumentInformation is always UTF-8?
 #
 
-PROG=merge-pddocument_information
+PROG=upsert-pddocument_information
 PSQL='psql --no-psqlrc --quiet --no-readline'
 SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
 
@@ -33,8 +33,8 @@ trap '' PIPE
 
 die()
 {
-	source $SETSPACE_SCHEMA_ROOT/lib/merge-fault.bash
-	die_merge merge_pddocument_information $@
+	source $SETSPACE_SCHEMA_ROOT/lib/upsert-fault.bash
+	die_upsert upsert_pddocument_information $@
 }
 
 jdie()
@@ -94,8 +94,8 @@ case $STATUS in
 	;;
 esac
 
-merge-stdin-pddocument_information					\
+upsert-stdin-pddocument_information					\
 	$PDF_UDIG							\
 	$(file-stat-size ROW) <ROW					||
-	die "merge-stdin-pddocument_information failed: exit status=$?"
+	die "upsert-stdin-pddocument_information failed: exit status=$?"
 exit 0

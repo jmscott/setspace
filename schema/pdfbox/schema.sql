@@ -42,6 +42,10 @@ CREATE TABLE blob
 				DEFAULT now()
 				NOT NULL
 );
+CREATE INDEX idx_blob ON blob USING hash(blob);
+CREATE INDEX idx_blob_discover_time ON blob(discover_time);
+CLUSTER blob USING idx_blob_discover_time;
+COMMENT ON TABLE blob IS 'All candidate pdf blobs';
 
 /*
  *  PDDocument scalar fields from Java Object
@@ -76,9 +80,6 @@ COMMENT ON TABLE pddocument IS
   'PDDocument scalar fields from Java Object'
 ;
 CREATE INDEX idx_pddocument ON pddocument USING hash(blob);
-REVOKE UPDATE ON pddocument FROM public;
-
---  this script must be invoked in directory $SETSPACE_ROOT/schema/pdfbox
 
 DROP DOMAIN IF EXISTS dval32 CASCADE;
 CREATE DOMAIN dval32 AS text 
@@ -101,7 +102,7 @@ DROP TABLE IF EXISTS pddocument_information CASCADE;
 CREATE TABLE pddocument_information
 (
 	blob			udig
-					REFERENCES setcore.service(blob)
+					REFERENCES pddocument
 					ON DELETE CASCADE
 					PRIMARY KEY,
 	title			dval32,
@@ -119,20 +120,19 @@ CREATE TABLE pddocument_information
 	trapped			dval32
 );
 COMMENT ON TABLE pddocument_information IS
-  'PDDocumentInformation scalar fields from Java Object'
+  'PDDocumentInformation scalar fields from valid PDF Java Object'
 ;
 CREATE INDEX idx_pddocument_information ON pddocument_information
   USING
   	hash(blob)
 ;
-REVOKE UPDATE ON TABLE pddocument_information FROM public;
 
 /*
- *  Track individual pages in a pdf blob.
+ *  Extracted pages in a pdf blob.
  *
  *  Note:
  *	Consider constraint to insure pddocument.page_count matches
- *	extracted pages.  Also need a constraint to insure
+ *	extracted pages.
  */
 DROP TABLE IF EXISTS extract_pages_utf8 CASCADE;
 CREATE TABLE extract_pages_utf8
@@ -140,9 +140,6 @@ CREATE TABLE extract_pages_utf8
 	pdf_blob	udig
 				REFERENCES pddocument(blob)
 				ON DELETE CASCADE,
-	page_blob	udig
-				NOT NULL,
-
 	page_number	int CHECK (
 				page_number > 0
 				AND
@@ -152,6 +149,8 @@ CREATE TABLE extract_pages_utf8
 
 				page_number <= 2603538
 			) NOT NULL,
+	page_blob	udig
+				NOT NULL,
 	CONSTRAINT not_quine CHECK (
 		pdf_blob != page_blob
 	),
@@ -247,23 +246,22 @@ COMMENT ON VIEW fault IS
 /*
  *  Synopsis:
  *	Find unresolved pddocument and extract_pages_ut8 blobs
- */
 DROP VIEW IF EXISTS rummy CASCADE;
 CREATE VIEW rummy AS
   SELECT
-  	pd.blob
+  	DISTINCT b.blob
     FROM
-    	pdfbox.pddocument pd
-	  JOIN setcore.service s ON (
-	  	s.blob = pd.blob
-	  )
-	  LEFT OUTER JOIN pdfbox.pddocument_information pdi ON (
-	  	pdi.blob = pd.blob
-	  )
-	  LEFT OUTER JOIN fault flt ON (
-	  	flt.blob = pd.blob
+    	blob b
+    	  NATURAL LEFT OUTER JOIN pddocument pd
+	  NATURAL LEFT OUTER JOIN pddocument_information pdi
+	  NATURAL LEFT OUTER JOIN fault flt ON (
+	  	flt.schema_name = 'pdfbox'
+		AND
+	  	flt.blob = b.blob
 	  )
     WHERE
+    	pd.document IS NULL
+	OR
         flt.blob IS NULL
 	AND (
 		pdi.blob IS NULL
@@ -278,20 +276,20 @@ CREATE VIEW rummy AS
 		)
 	)
 ;
-
 COMMENT ON VIEW rummy IS
   'Blobs with to be discovered attributes'
 ;
+ */
 
 DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS
   SELECT
-  	pd.blob
+  	b.blob,
+	b.discover_time
     FROM
-    	pddocument pd
-	  JOIN pddocument_information pi ON (
-	  	pi.blob = pd.blob
-	  )
+    	blob b
+	  NATURAL JOIN pddocument pd
+	  NATURAL JOIN pddocument_information pi
     WHERE
     	EXISTS (
 	  SELECT
@@ -299,7 +297,7 @@ CREATE VIEW service AS
 	    FROM
 	    	extract_pages_utf8
 	    WHERE
-	    	pdf_blob = pd.blob
+	    	pdf_blob = b.blob
 	)
 	AND
     	EXISTS (
@@ -308,7 +306,7 @@ CREATE VIEW service AS
 	    FROM
 	    	page_text_utf8
 	    WHERE
-	    	pdf_blob = pd.blob
+	    	pdf_blob = b.blob
 	)
 	AND
     	EXISTS (
@@ -317,7 +315,7 @@ CREATE VIEW service AS
 	    FROM
 	    	page_tsv_utf8
 	    WHERE
-	    	pdf_blob = pd.blob
+	    	pdf_blob = b.blob
 	)
 ;
 COMMENT ON VIEW service IS
