@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	List table jsonorg.service
+#
+source $SETSPACE_ROOT/lib/ssq-common.bash
+
+USAGE='[count]'
+
+PSQL=$SSQ_COMMON_PSQL_TSV
+SQL=lib/$PROG.sql
+
+test $# = 0 || die "bad cli arg count: got $#, need 0"
+
+$PSQL --file $SQL || die "psql service failed: exit status=$?"
