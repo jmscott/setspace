@@ -30,7 +30,7 @@ world:
 	$(_MAKE) install
 
 clean:
-	rm -f $(COMPILEs) merge-stdin-jsonb_255.c
+	rm -f $(COMPILEs) upsert-stdin-jsonb_255.c
 
 install: all
 	cd .. && $(_MAKE) install-dirs
@@ -71,17 +71,14 @@ install: all
 JSON_checker: JSON_checker.c
 	$(CC) -o JSON_checker $(CFLAGS) JSON_checker.c
 
-merge-stdin-jsonb_255:							\
-		merge-stdin-jsonb_255.pgc				\
+upsert-stdin-jsonb_255:							\
+		upsert-stdin-jsonb_255.pgc				\
 		../../common.c						\
 		../../common-ecpg.c
-	ecpg merge-stdin-jsonb_255.pgc
-	$(CC) $(CFLAGS) -I$(PGINC) merge-stdin-jsonb_255.c		\
-		-o merge-stdin-jsonb_255 -L$(PGLIB) -lecpg
-	rm merge-stdin-jsonb_255.c
-
-frisk ff:
-	flowd frisk jsonorg.flow.example
+	ecpg upsert-stdin-jsonb_255.pgc
+	$(CC) $(CFLAGS) -I$(PGINC) upsert-stdin-jsonb_255.c		\
+		-o upsert-stdin-jsonb_255 -L$(PGLIB) -lecpg
+	rm upsert-stdin-jsonb_255.c
 
 distclean:
 	rm -rf $(JSONORG_PREFIX)/lib
@@ -90,3 +87,7 @@ distclean:
 	rm -rf $(JSONORG_PREFIX)/libexec/
 tar:
 	make-make tar $(MKMK)
+frisk:
+	make-make tar $(MKMK)
+	rm setspace-schema-jsonorg-2*.bz2
+	@echo;  echo;  echo "OK frisk passed"

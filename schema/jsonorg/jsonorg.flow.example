@@ -37,7 +37,7 @@ sql database setspace
 {
 	driver_name = "postgres";
 	data_source_name =
-		"fallback_application_name=jsonorg.flow sslmode=disable";
+		"search_path=jsonorg,setspace,public  fallback_application_name=jsonorg.flow sslmode=disable";
 	max_idle_conns = 0;
 	max_open_conns = 8;
 }
@@ -161,7 +161,7 @@ call get_JSON_checker(brr.udig)
 #
 #  Merge the tuple into the table jsonorg.checker_255
 #
-sql query merge_checker_255 row
+sql query upsert_checker_255 row
 {
 	statement = `
 
@@ -187,7 +187,7 @@ sql query merge_checker_255 row
 	);
 }
 
-query merge_checker_255 (brr.udig, get_JSON_checker.exit_status)
+query upsert_checker_255 (brr.udig, get_JSON_checker.exit_status)
   when
   	get_JSON_checker.exit_status == 0
 	or
@@ -216,29 +216,29 @@ query in_jsonb_255_table (brr.udig)
   when
   	is_in_checker_255_table.is_json == true
 	or
-	merge_checker_255.is_json == true
+	upsert_checker_255.is_json == true
 	or
 
 	#
 	#  insert on conflict do nothing.
 	#
 	(
-		merge_checker_255.sqlstate == "02000"
+		upsert_checker_255.sqlstate == "02000"
 		and
 		get_JSON_checker.exit_status == 0
 	)
 ;
 
-command merge_jsonb_255
+command upsert_jsonb_255
 {
-	path = "sbin/merge-jsonb_255";
+	path = "sbin/upsert-jsonb_255";
 	exit_status is OK when in {
-		0,	#  merged or already exists
+		0,	#  upserted or already exists
 		1	#  blob does not exist
 	};
 }
 
-call merge_jsonb_255 (brr.udig, brr.blob_size)
+call upsert_jsonb_255 (brr.udig, brr.blob_size)
   when
   	in_jsonb_255_table.exists == false
 	and
@@ -262,7 +262,7 @@ call append_jsonio_brr(
        brr.blob_size,
        brr.wall_duration
 ) when
-	merge_jsonb_255.exit_status == 0
+	upsert_jsonb_255.exit_status == 0
 	or
 	in_jsonb_255_table.exists == true
 ;

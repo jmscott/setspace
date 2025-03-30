@@ -10,20 +10,19 @@
 #	#  in script for schema jsonorg
 #
 #	die() {
-#		source $SETSPACE_ROOT/schema/jsonorg/lib/merge-fault.bash
-#		die_merge <command_name> $@
+#		source $SETSPACE_ROOT/schema/jsonorg/lib/upsert-fault.bash
+#		die_upsert <command_name> $@
 #	}
 #
-die_merge()
+die_upsert()
 {
-echo "WTF: $@" >>/tmp/x
 	local CMD=$1
 	shift
 
 	local MSG="$PROG: ERROR: $CMD: $@"
 	echo $MSG >&2
 
-	local RUN=$SETSPACE_ROOT/schema/jsonorg/lib/merge-fault.bash/run
+	local RUN=$SETSPACE_ROOT/schema/jsonorg/lib/upsert-fault.bash/run
 	local FAULT=$RUN/$PROG.fault
 	local NOW=$(date '+%Y/%m/%d %H:%M:S')
 
@@ -38,15 +37,15 @@ echo "WTF: $@" >>/tmp/x
 			cat STDERR >&2
 			cat STDERR
 		fi
-	) | merge-flowd_call_fault jsonorg $CMD $JSON_UDIG ERR 2 0 /dev/null -
+	) | upsert-flowd_call_fault jsonorg $CMD $JSON_UDIG ERR 2 0 /dev/null -
 	STATUS="${PIPESTATUS[*]}"
 
 	case "$STATUS" in
 	'0 0')
-		;;		#  merged fault successfully but still in error
+		;;		#  upsert fault successfully but still in error
 	*)
-		MSG="merge-flowd_call_fault jsonorg failed: exit status=$STATUS"
-		echo "$PROG: ERROR: $MSG" >&2
+		M="upsert-flowd_call_fault jsonorg failed: exit status=$STATUS"
+		echo "$PROG: ERROR: $M" >&2
 		;;
 	esac
 	exit 3

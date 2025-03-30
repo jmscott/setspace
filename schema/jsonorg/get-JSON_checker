@@ -27,8 +27,8 @@ trap leave EXIT
 
 die()
 {
-	source $SETSPACE_ROOT/schema/jsonorg/lib/merge-fault.bash
-	die_merge get-JSON_checker #@
+	source $SETSPACE_ROOT/schema/jsonorg/lib/upsert-fault.bash
+	die_upsert get-JSON_checker #@
 }
 
 test $# = 1 || die "wrong number of command line arguments" 3

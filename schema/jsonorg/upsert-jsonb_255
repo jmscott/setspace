@@ -3,28 +3,28 @@
 #   Synopsis:
 #   	Merge a json blob read on standard input into table jsonorg.jsonb_255.
 #   Usage:
-# 	 merge-jsonb_255 <udig> <blob_size>
+# 	 upsert-jsonb_255 <udig> <blob_size>
 #   Arguments:
 #   	1	udig of the blob
 #   	2	size of the blob in bytes
 #   Exit Status:
-#   	0	ok, tuple was merged
+#   	0	ok, tuple was upserted
 #	1	blob does not exist
-#	3	unexpected merge error
+#	3	unexpected error
 #  Environment
 #	BLOBIO_SERVICE
 #	BLOBIO_GET_SERVICE
 #  
-PROG=merge-jsonb_255
+PROG=upsert-jsonb_255
 
 BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
 
 die()
 {
-	source $SETSPACE_ROOT/schema/jsonorg/lib/merge-fault.bash
+	source $SETSPACE_ROOT/schema/jsonorg/lib/upsert-fault.bash
 
-	die_merge merge_jsonb_255 $@
+	die_upsert upsert_jsonb_255 $@
 }
 
 leave()
@@ -54,5 +54,5 @@ case $STATUS in
 	die "blobio get failed: exit status=$STATUS" 3
 	;;
 esac
-merge-stdin-jsonb_255 $JSON_UDIG $SIZE <$TMP_BLOB			||
-	die "merge-stdin-jsonb_255 failed: exit status=$?" 4
+upsert-stdin-jsonb_255 $JSON_UDIG $SIZE <$TMP_BLOB			||
+	die "upsert-stdin-jsonb_255 failed: exit status=$?" 4

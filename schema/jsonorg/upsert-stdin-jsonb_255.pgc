@@ -2,12 +2,12 @@
  *  Synopsis:
  *  	Merge a json blob read on standard input into table jsonorg.jsonb_255.
  *  Usage:
- *	merge-stdin-jsonb_255 
+ *	upsert-stdin-jsonb_255 
  *  Arguments:
  *  	1	udig of the blob
  *  	2	number of bytes to read on the standard input
  *  Exit Status:
- *  	0	ok, tuple was merged
+ *  	0	ok, tuple was upsertd
  *  	1	Wrong number of arguments
  *  	2	Incorrect blob size
  *  	3	malloc() of utf8 buffer failed
@@ -21,7 +21,7 @@
  *  	jmscott@setspace.com
  */
 
-static char progname[] = "merge-stdin-jsonb_255";
+static char progname[] = "upsert-stdin-jsonb_255";
 
 #define EXIT_OK		0
 #define EXIT_BAD_ARGC	1
