@@ -601,3 +601,6 @@ Possible Schemas:
 		https://arxiv.org/abs/2503.14607
 	xan - xan, the CSV magician
 		https://github.com/medialab/xan#readme
+	jsonorg 
+		add programs utf8_decode and utf8_to_utf16 to schema jsonorg.
+		https://www.json.org/JSON_checker/
