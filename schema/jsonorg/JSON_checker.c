@@ -4,8 +4,7 @@
  *  Exit Status
  *	0	is valid json
  *	1	is not valid json
- *	2	wrong number of arguments
- *	3	malloc() failed (out of memory)
+ *	2	unexpected error
  *  Usage:
  *	JSON_checker <test/pass1.json && echo 'yes, passes JSON_checker'
  *  See:
@@ -25,7 +24,7 @@
 #include <string.h>
 
 static void
-die(int status, char *msg)
+die(char *msg)
 {
 	static char ERROR[] = "ERROR: ";
 	static char nl[] = "\n";
@@ -34,12 +33,12 @@ die(int status, char *msg)
 	write(2, msg, strlen(msg));
 	write(2, nl, sizeof nl - 1);
 
-	exit(status);
+	exit(2);
 }
 
 /* JSON_checker.c */
 
-/* 2007-08-24 */
+/* 2016-11-11 */
 
 /*
 Copyright (c) 2005 JSON.org
@@ -68,6 +67,14 @@ SOFTWARE.
 /* JSON_checker.h */
 
 typedef struct JSON_checker_struct {
+    /*
+     *  Note:
+     *		Change "int valid" to "unsigned valid" cause JSON_checker.c
+     *		compiles with warnings on darwin 24 (sequoia) and clang.
+     *		->valid is just glorified flag.  the pain never ends.
+     */
+
+    unsigned valid;
     int state;
     int depth;
     int top;
@@ -79,8 +86,9 @@ extern JSON_checker new_JSON_checker(int depth);
 extern int  JSON_checker_char(JSON_checker jc, int next_char);
 extern int  JSON_checker_done(JSON_checker jc);
 
-#define true  1
-#define false 0
+#define TRUE  1
+#define FALSE 0
+#define GOOD 0xBABAB00E
 #define __   -1     /* the universal error code */
 
 /*
@@ -172,6 +180,7 @@ enum states {
     ZE,  /* zero     */
     IN,  /* integer  */
     FR,  /* fraction */
+    FS,  /* fraction */
     E1,  /* e        */
     E2,  /* ex       */
     E3,  /* exp      */
@@ -212,9 +221,10 @@ static int state_transition_table[NR_STATES][NR_CLASSES] = {
 /*u3     U3*/ {__,__,__,__,__,__,__,__,__,__,__,__,__,__,U4,U4,U4,U4,U4,U4,U4,U4,__,__,__,__,__,__,U4,U4,__},
 /*u4     U4*/ {__,__,__,__,__,__,__,__,__,__,__,__,__,__,ST,ST,ST,ST,ST,ST,ST,ST,__,__,__,__,__,__,ST,ST,__},
 /*minus  MI*/ {__,__,__,__,__,__,__,__,__,__,__,__,__,__,ZE,IN,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__},
-/*zero   ZE*/ {OK,OK,__,-8,__,-7,__,-3,__,__,__,__,__,FR,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__},
+/*zero   ZE*/ {OK,OK,__,-8,__,-7,__,-3,__,__,__,__,__,FR,__,__,__,__,__,__,E1,__,__,__,__,__,__,__,__,E1,__},
 /*int    IN*/ {OK,OK,__,-8,__,-7,__,-3,__,__,__,__,__,FR,IN,IN,__,__,__,__,E1,__,__,__,__,__,__,__,__,E1,__},
-/*frac   FR*/ {OK,OK,__,-8,__,-7,__,-3,__,__,__,__,__,__,FR,FR,__,__,__,__,E1,__,__,__,__,__,__,__,__,E1,__},
+/*frac   FR*/ {__,__,__,__,__,__,__,__,__,__,__,__,__,__,FS,FS,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__},
+/*fracs  FS*/ {OK,OK,__,-8,__,-7,__,-3,__,__,__,__,__,__,FS,FS,__,__,__,__,E1,__,__,__,__,__,__,__,__,E1,__},
 /*e      E1*/ {__,__,__,__,__,__,__,__,__,__,__,E2,E2,__,E3,E3,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__},
 /*ex     E2*/ {__,__,__,__,__,__,__,__,__,__,__,__,__,__,E3,E3,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__},
 /*exp    E3*/ {OK,OK,__,-8,__,-7,__,-3,__,__,__,__,__,__,E3,E3,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__},
@@ -227,7 +237,7 @@ static int state_transition_table[NR_STATES][NR_CLASSES] = {
 /*false  F4*/ {__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,OK,__,__,__,__,__,__,__,__,__,__},
 /*nu     N1*/ {__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,N2,__,__,__},
 /*nul    N2*/ {__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,N3,__,__,__,__,__,__,__,__},
-/*null   N3*/ {__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,OK,__,__,__,__,__,__,__,__},
+/*null   N3*/ {__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,OK,__,__,__,__,__,__,__,__}
 };
 
 
@@ -235,11 +245,23 @@ static int state_transition_table[NR_STATES][NR_CLASSES] = {
     These modes can be pushed on the stack.
 */
 enum modes {
-    MODE_ARRAY, 
-    MODE_DONE,  
-    MODE_KEY,   
-    MODE_OBJECT,
+    MODE_ARRAY,
+    MODE_DONE,
+    MODE_KEY,
+    MODE_OBJECT
 };
+
+static void
+destroy(JSON_checker jc)
+{
+/*
+    Delete the JSON_checker object.
+*/
+    jc->valid = 0;
+    free((void*)jc->stack);
+    free((void*)jc);
+}
+
 
 static int
 reject(JSON_checker jc)
@@ -247,9 +269,8 @@ reject(JSON_checker jc)
 /*
     Delete the JSON_checker object.
 */
-    free((void*)jc->stack);
-    free((void*)jc);
-    return false;
+    destroy(jc);
+    return FALSE;
 }
 
 
@@ -261,10 +282,10 @@ push(JSON_checker jc, int mode)
 */
     jc->top += 1;
     if (jc->top >= jc->depth) {
-        return false;
+        return FALSE;
     }
     jc->stack[jc->top] = mode;
-    return true;
+    return TRUE;
 }
 
 
@@ -276,10 +297,10 @@ pop(JSON_checker jc, int mode)
     Return false if there is underflow or if the modes mismatch.
 */
     if (jc->top < 0 || jc->stack[jc->top] != mode) {
-        return false;
+        return FALSE;
     }
     jc->top -= 1;
-    return true;
+    return TRUE;
 }
 
 
@@ -299,14 +320,11 @@ new_JSON_checker(int depth)
     JSON_checker_char will delete the JSON_checker object if it sees an error.
 */
     JSON_checker jc = (JSON_checker)malloc(sizeof(struct JSON_checker_struct));
-    if (jc == NULL)
-    	die(3, "malloc() failed");
+    jc->valid = GOOD;
     jc->state = GO;
     jc->depth = depth;
     jc->top = -1;
     jc->stack = (int*)calloc(depth, sizeof(int));
-    if (jc->stack == NULL)
-    	die(3, "calloc() failed");
     push(jc, MODE_DONE);
     return jc;
 }
@@ -318,13 +336,16 @@ JSON_checker_char(JSON_checker jc, int next_char)
 /*
     After calling new_JSON_checker, call this function for each character (or
     partial character) in your JSON text. It can accept UTF-8, UTF-16, or
-    UTF-32. It returns true if things are looking ok so far. If it rejects the
+    UTF-32. It returns TRUE if things are looking ok so far. If it rejects the
     text, it deletes the JSON_checker object and returns false.
 */
     int next_class, next_state;
 /*
     Determine the character's class.
 */
+    if (jc->valid != GOOD) {
+        return FALSE;
+    }
     if (next_char < 0) {
         return reject(jc);
     }
@@ -345,10 +366,10 @@ JSON_checker_char(JSON_checker jc, int next_char)
     Change the state.
 */
         jc->state = next_state;
-    } else {
 /*
     Or perform one of the actions.
 */
+    } else {
         switch (next_state) {
 /* empty } */
         case -9:
@@ -435,7 +456,7 @@ JSON_checker_char(JSON_checker jc, int next_char)
             return reject(jc);
         }
     }
-    return true;
+    return TRUE;
 }
 
 
@@ -445,26 +466,34 @@ JSON_checker_done(JSON_checker jc)
 /*
     The JSON_checker_done function should be called after all of the characters
     have been processed, but only if every call to JSON_checker_char returned
-    true. This function deletes the JSON_checker and returns true if the JSON
+    TRUE. This function deletes the JSON_checker and returns TRUE if the JSON
     text was accepted.
 */
+    if (jc->valid != GOOD) {
+        return FALSE;
+    }
     int result = jc->state == OK && pop(jc, MODE_DONE);
-    reject(jc);
+    destroy(jc);
     return result;
 }
 
 int main(int argc, char ** argv)
 {
-	int c;
-	JSON_checker jc = new_JSON_checker(255);
-
 	(void)argv;
 	if (argc != 1)
-		die(2, "wrong number of arguments");
+		die("wrong number of arguments");
 
-	for (c = getchar();  c > 0;  c = getchar())
-		if (!JSON_checker_char(jc, c))
+	JSON_checker jc = new_JSON_checker(20);
+	if (!jc->stack)
+		die("new_JSON_checker() failed: probably out of RAM");
+
+	for (;;) {
+		int next_char = getchar();
+		if (next_char <= 0)
+			break;
+		if (!JSON_checker_char(jc, next_char))
 			exit(1);
+        }
 	if (!JSON_checker_done(jc))
 		exit(1);
 	exit(0);
