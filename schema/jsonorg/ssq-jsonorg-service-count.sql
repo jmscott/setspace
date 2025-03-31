@@ -1,9 +1,9 @@
 /*
  *  Synopsis:
- *	List blobs of jsonorg.service, in no order
+ *	Count blobs in table jsonorg.service.
  */
 SELECT
-	blob
+	count(*)
   FROM
   	jsonorg.service
 ;

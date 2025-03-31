@@ -44,7 +44,12 @@ LIBs="
 	upsert-fault.bash
 	psqlrc.example
 	schema.sql
+	ssq-jsonorg-fault.sql
+	ssq-jsonorg-fault-count.sql
+	ssq-jsonorg-rummy.sql
+	ssq-jsonorg-rummy-count.sql
 	ssq-jsonorg-service.sql
+	ssq-jsonorg-service-count.sql
 "
 
 #  Uncoment to create bin/ directory
@@ -110,7 +115,12 @@ LOG="
 #  Uncomment to create directory libexec/
 LIBEXECs="
 	ssq-jsonorg
+	ssq-jsonorg-fault
+	ssq-jsonorg-fault-count
+	ssq-jsonorg-rummy
+	ssq-jsonorg-rummy-count
 	ssq-jsonorg-service
+	ssq-jsonorg-service-count
 	ssq-jsonorg-ls-recent
 "
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	List table jsonorg.service
+#	List table jsonorg.rummy, in no particular order
 #
 source $SETSPACE_ROOT/lib/ssq-common.bash
 
@@ -11,7 +11,7 @@ PSQL=$SSQ_COMMON_PSQL_TSV
 SQL=lib/$PROG.sql
 
 if [ $# = 0 ];  then
-	$PSQL --file $SQL || die "psql service failed: exit status=$?"
+	$PSQL --file $SQL || die "psql rummy failed: exit status=$?"
 	exit 0
 fi
 exec_help $@

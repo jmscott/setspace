@@ -206,3 +206,31 @@ call upsert_jsonb_255(brr.udig)
 	or
 	blob_state.in_jsonb_255 == false
 ;
+
+sql exec upsert_jsonb_255_fault
+{
+	statement = `
+	INSERT INTO setops.flowd_call_fault(
+		schema_name,
+		command_name,
+		blob,
+		exit_class,
+		exit_status,
+		signal
+	  ) VALUES (
+	  	'jsonorg',
+		'upsert_jsonb_255',
+		$1::udig,
+		'ERR',
+		$2::smallint,
+		0
+	  ) ON CONFLICT DO NOTHING
+	;`;
+}
+
+query upsert_jsonb_255_fault(brr.udig, upsert_jsonb_255.exit_status)
+  when
+  	upsert_jsonb_255.exit_status != 0
+	and
+	upsert_jsonb_255.exit_status != 1
+;

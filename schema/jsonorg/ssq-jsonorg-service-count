@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	Count blobs in table jsonoeg.service
+#  Usage:
+#	ssq jsonorg service count
+#
+source $SETSPACE_ROOT/lib/ssq-common.bash
+USAGE='count'
+
+PSQL=$SSQ_COMMON_PSQL_TSV
+SQL=lib/$PROG.sql
+
+$PSQL --file $SQL || die "psql service count failed: exit status=$?"
