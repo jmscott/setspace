@@ -100,8 +100,9 @@ EXEC SQL END DECLARE SECTION;
 	 *  Merge blob into jsonorg.jsonb_255 table.
 	 */
 	EXEC SQL BEGIN TRANSACTION;
+	EXEC SQL SET search_path TO jsonorg,setspace,public;
 	EXEC SQL
-	  INSERT INTO jsonorg.jsonb_255(
+	  INSERT INTO jsonb_255(
 		blob,
 		doc
 	  ) VALUES (

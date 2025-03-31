@@ -28,11 +28,6 @@ boot
 
 sync map first_seen_blob[string]bool;
 
-command first_seen
-{
-	path = "true";
-}
-
 sql database setspace
 {
 	driver_name = "postgres";
@@ -47,222 +42,167 @@ tail brr
 	path = "spool/prefixio.brr";
 }
 
-call first_seen(brr.udig)
-  when
-  	first_seen_blob.LoadOrStore(brr.udig, true).loaded == false
-;
-
-#
-#  Synopsis:
-#	Is the blob in the service table
-#
-sql query in_service_table row
+sql query blob_state row
 {
-
 	result row is (
-		answer bool
+		in_blob bool,
+		in_checker_255 bool,
+		is_json bool,
+		in_jsonb_255 bool
 	);
-
 	statement = `
+	SELECT
+		EXISTS (
+		  SELECT
+			true
+		    FROM
+			blob b
+		    WHERE
+			b.blob = $1::udig
+		),
+		EXISTS (
+		  SELECT
+			true
+		    FROM
+			checker_255
+		    WHERE
+			blob = $1::udig
+		),
 
-	SELECT EXISTS (
-	  SELECT
-		blob
-	    FROM
-		setcore.service
-	    WHERE
-		blob = $1::udig
-	);
+		--  flowd does not support null, so consult existence first
 
-	`;
-}
+		COALESCE((SELECT
+			is_json
+		    FROM
+			checker_255
+		    WHERE
+			blob = $1::udig
+		), false),
 
-sql query is_in_checker_255_table row
-{
-	statement = `
-
-	 SELECT
-	  EXISTS (
-	    SELECT
-	    	blob
-	      FROM
-	      	jsonorg.checker_255
-	      WHERE
-	      	blob = $1::udig
-	  ),
-	  (SELECT
-	    	is_json
-	    FROM
-	      	jsonorg.checker_255
-	      WHERE
-	      	blob = $1::udig
-	  )
+		EXISTS (
+		  SELECT
+			true
+		    FROM
+			jsonb_255
+		    WHERE
+			blob = $1::udig
+		  )
 	;`;
-	result row is (
-		exists bool,
-		is_json bool
-	);
 }
 
-command brr_has_size
+command brr_ok
 {
 	path = "true";
 }
 
-call brr_has_size()
+call brr_ok()
   when
-  first_seen.exit_status == 0
-  and (
-  (
-	brr.verb == "get"
-	and
-	brr.chat_history == "ok"
-  )
-  or
-  (
-	brr.verb == "put"
-	and
+  	brr.chat_history == "ok"
+	or
 	brr.chat_history == "ok,ok"
-  )
-  or
-  (
-	brr.verb == "give"
-	and
+	or
 	brr.chat_history == "ok,ok,ok"
-  ))
 ;
 
-query in_service_table(brr.udig)
+query blob_state(brr.udig)
   when
-  	first_seen.exit_status == 0
+  	brr_ok.exit_status == 0
+	and
+	first_seen_blob.LoadOrStore(brr.udig, true).loaded == false
 ;
 
-query is_in_checker_255_table(brr.udig)
+command blob_exists
+{
+	path = "blobio";
+	argv = (
+		"eat",
+		"--service",
+		"fs:${BLOBIO_ROOT}",
+		"--udig"
+	);
+	exit_status is OK when in {
+		0,	#  blob exists
+		1	#  blobio does not exists
+	};
+}
+
+call blob_exists(brr.udig)
   when
-  	in_service_table.answer == true
+  	brr_ok.exit_status == 0
+;
+
+sql exec upsert_blob
+{
+	statement = `
+	INSERT INTO blob(
+		blob,
+		discover_time
+	  ) VALUES (
+	  	$1::udig,
+		$2::inception
+	  ) ON CONFLICT(blob) DO UPDATE SET
+	    	discover_time = $2::inception
+	    WHERE
+	    	EXCLUDED.discover_time < blob.discover_time
+	`;
+}
+
+query upsert_blob(brr.udig, brr.start_time)
+  when
+  	blob_exists.exit_status == 0
+	and
+	blob_state.in_blob == false
 ;
 
 command get_JSON_checker
 {
 	path = "sbin/get-JSON_checker";
 	exit_status is OK when in {
-		0,	#  is valid json
-		1,	#  is not valid json
-		2,	#  blob does not exist
-		3	#  unexpected error
+		0,			#  is valid JSON
+		1			#  is not valid json
 	};
 }
 
 call get_JSON_checker(brr.udig)
   when
-  	is_in_checker_255_table.exists == false
+  	blob_state.in_checker_255 == false
+	and
+	blob_exists.exit_status == 0
 ;
 
-#
-#  Merge the tuple into the table jsonorg.checker_255
-#
-sql query upsert_checker_255 row
+sql exec upsert_checker_255
 {
 	statement = `
-
-	INSERT into jsonorg.checker_255 (
+	INSERT INTO checker_255 (
 		blob,
 		is_json
-	  ) SELECT
-		$1::udig,
-		case $2 
-	  		when '0' then true
-	  		when '1' then false
-		end
-  	  ON CONFLICT
-  		do nothing
-	  RETURNING
-	  	is_json
-	;
-
+	  ) VALUES(
+	  	$1::udig,
+		$2::int = 0 
+	  ) ON CONFLICT
+	  	DO NOTHING
 	`;
-
-	result row is (
-		is_json bool
-	);
 }
 
-query upsert_checker_255 (brr.udig, get_JSON_checker.exit_status)
+query upsert_checker_255(brr.udig, get_JSON_checker.exit_status)
   when
   	get_JSON_checker.exit_status == 0
 	or
-  	get_JSON_checker.exit_status == 1
-;
-
-sql query in_jsonb_255_table row
-{
-	statement = `
-
-	SELECT EXISTS (
-	  SELECT
-	  	blob
-	    FROM
-	    	jsonorg.jsonb_255
-	    WHERE
-	    	blob = $1::udig
-	);`;
-
-	result row is (
-		exists bool
-	);
-}
-
-query in_jsonb_255_table (brr.udig)
-  when
-  	is_in_checker_255_table.is_json == true
-	or
-	upsert_checker_255.is_json == true
-	or
-
-	#
-	#  insert on conflict do nothing.
-	#
-	(
-		upsert_checker_255.sqlstate == "02000"
-		and
-		get_JSON_checker.exit_status == 0
-	)
+	get_JSON_checker.exit_status == 1
 ;
 
 command upsert_jsonb_255
 {
 	path = "sbin/upsert-jsonb_255";
 	exit_status is OK when in {
-		0,	#  upserted or already exists
-		1	#  blob does not exist
+		0,			#  upserted
+		1			#  blob no exist
 	};
 }
 
-call upsert_jsonb_255 (brr.udig, brr.blob_size)
+call upsert_jsonb_255(brr.udig)
   when
-  	in_jsonb_255_table.exists == false
-	and
-	brr_has_size.exit_status == 0
-;
-
-command append_jsonio_brr
-{
-       path = "append-brr";
-       argv = (
-               "../jsonio/spool/jsonorg.brr"
-       );
-}
-
-call append_jsonio_brr(
-       brr.start_time,
-       "fs~flowd(jsonorg>>jsonio)",
-       brr.verb,
-       brr.udig,
-       brr.chat_history,
-       brr.blob_size,
-       brr.wall_duration
-) when
-	upsert_jsonb_255.exit_status == 0
+  	upsert_checker_255.sqlstate == "00000"
 	or
-	in_jsonb_255_table.exists == true
+	blob_state.in_jsonb_255 == false
 ;
