@@ -6,6 +6,9 @@
 #  See:
 #  	schema/setcore/schema.sql
 #	Investigate why 
+#  Note:
+#	Any fault skips all tables.  Instead should only skip particular
+#	commands.  This is a bug.
 #
 
 boot
@@ -127,9 +130,6 @@ query blob_state(bio4d.udig, bio4d.start_time)
   	brr_ok.exit_status == 0
 ;
 
-#
-#  might update to earlier start_time.
-#
 query upsert_blob(bio4d.udig, bio4d.start_time)
   when
   	blob_state.in_fault == false
