@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	Count blobs in table jsonoeg.blob
+#  Usage:
+#	ssq jsonorg blob count
+#
+source $SETSPACE_ROOT/lib/ssq-common.bash
+USAGE='count'
+
+PSQL=$SSQ_COMMON_PSQL_TSV
+SQL=lib/$PROG.sql
+
+$PSQL --file $SQL || die "psql blob count failed: exit status=$?"

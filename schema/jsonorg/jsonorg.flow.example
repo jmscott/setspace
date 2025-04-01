@@ -26,7 +26,7 @@ boot
 	heartbeat_duration = "10s";
 }
 
-sync map first_seen_blob[string]bool;
+sync map first_blob_ok[string]bool;
 
 sql database setspace
 {
@@ -108,7 +108,7 @@ query blob_state(brr.udig)
   when
   	brr_ok.exit_status == 0
 	and
-	first_seen_blob.LoadOrStore(brr.udig, true).loaded == false
+	first_blob_ok.LoadOrStore(brr.udig, true).loaded == false
 ;
 
 command blob_exists
@@ -207,30 +207,31 @@ call upsert_jsonb_255(brr.udig)
 	blob_state.in_jsonb_255 == false
 ;
 
+
 sql exec upsert_jsonb_255_fault
 {
-	statement = `
-	INSERT INTO setops.flowd_call_fault(
-		schema_name,
-		command_name,
-		blob,
-		exit_class,
-		exit_status,
-		signal
-	  ) VALUES (
-	  	'jsonorg',
-		'upsert_jsonb_255',
-		$1::udig,
-		'ERR',
-		$2::smallint,
-		0
-	  ) ON CONFLICT DO NOTHING
-	;`;
+       statement = `
+       INSERT INTO setops.flowd_call_fault(
+               schema_name,
+               command_name,
+               blob,
+               exit_class,
+               exit_status,
+               signal
+         ) VALUES (
+               'jsonorg',
+               'upsert_jsonb_255',
+               $1::udig,
+               'ERR',
+               $2::smallint,
+               0
+         ) ON CONFLICT DO NOTHING
+       ;`;
 }
 
 query upsert_jsonb_255_fault(brr.udig, upsert_jsonb_255.exit_status)
   when
-  	upsert_jsonb_255.exit_status != 0
-	and
-	upsert_jsonb_255.exit_status != 1
+       upsert_jsonb_255.exit_status != 0
+       and
+       upsert_jsonb_255.exit_status != 1
 ;

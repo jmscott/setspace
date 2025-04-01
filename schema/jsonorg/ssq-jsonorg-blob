@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	List table jsonorg.blob
+#
+source $SETSPACE_ROOT/lib/ssq-common.bash
+
+USAGE='[count]'
+
+PSQL=$SSQ_COMMON_PSQL_TSV
+SQL=lib/$PROG.sql
+
+if [ $# = 0 ];  then
+	$PSQL --file $SQL || die "psql blob failed: exit status=$?"
+	exit 0
+fi
+exec_help $@
+exec_action $@

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	List details of json blob
+#
+
+source $SETSPACE_ROOT/lib/ssq-common.bash
+
+USAGE='<udig>'
+SQL=lib/$PROG.sql
+
+PSQL=$SSQ_COMMON_PSQL_EXPAND
+
+test $# = 1 || die "wrong cli arg count: got $#, want 1"
+frisk_udig "$1"
+BLOB="$1"
+
+$PSQL --set blob=$BLOB --file $SQL || die "psql udig failed: exit status=$?"

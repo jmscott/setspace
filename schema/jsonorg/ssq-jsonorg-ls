@@ -1,42 +1,17 @@
+#!/usr/bin/env bash
 #
 #  Synopsis:
-#	Libexeced by command "ssq-jsonorg ls <udig>"
-#  Exit Status:
-#	0	successful success
-#	1	unexpected error
+#	Detail listing of blobs
 #
+source $SETSPACE_ROOT/lib/ssq-common.bash
 
-PSQL='psql
-	--set=ON_ERROR_STOP=1
-	--no-psqlrc
-	--tuples-only
-	--pset null=Unknown
-	--quiet
-'
+USAGE='<udig> ...'
 
-die()
-{
-	echo "$(basename $0): ERROR: $@"
-	exit 1
-}
+test $# = 0 && usage
 
-test $# = 1 || die "wrong arg count: got $#, need 1"
-BLOB="$1"
-[[ $BLOB =~ ^[a-z][a-z0-9]{0,7}:[[:graph:]]{32,128}$ ]]			||
-		die "not a udig: $BLOB"
-	
-$PSQL --expanded <<END
-\\pset tuples_only off
+while [ "$1" ];  do
+	BLOB="$1";  shift
 
-SELECT
-	s.blob AS "Blob",
-	regexp_replace(age(now(), s.discover_time)::text, '\..*', '') || ' ago'
-                AS "Age",
-	pg_size_pretty(bc.byte_count) AS "Size"
-  FROM
-  	jsonorg.service srv
-	  JOIN setcore.service s ON (s.blob = srv.blob) 
-	  JOIN setcore.byte_count bc ON (bc.blob = srv.blob)
-  WHERE
-  	srv.blob = '$BLOB'
-END
+	frisk_udig "$BLOB"
+	ssq jsonorg udig $BLOB || die "ssq jsonorg udig failed: exit status=$?"
+done

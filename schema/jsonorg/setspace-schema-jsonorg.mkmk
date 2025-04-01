@@ -41,15 +41,18 @@ COMPILEs="
 
 LIBs="
 	jsonorg.flow.example
-	upsert-fault.bash
 	psqlrc.example
 	schema.sql
-	ssq-jsonorg-fault.sql
+	ssq-jsonorg-blob-count.sql
+	ssq-jsonorg-blob.sql
 	ssq-jsonorg-fault-count.sql
-	ssq-jsonorg-rummy.sql
+	ssq-jsonorg-fault.sql
 	ssq-jsonorg-rummy-count.sql
-	ssq-jsonorg-service.sql
+	ssq-jsonorg-rummy.sql
 	ssq-jsonorg-service-count.sql
+	ssq-jsonorg-service.sql
+	ssq-jsonorg-udig.sql
+	upsert-fault.bash
 "
 
 #  Uncoment to create bin/ directory
@@ -115,13 +118,16 @@ LOG="
 #  Uncomment to create directory libexec/
 LIBEXECs="
 	ssq-jsonorg
+	ssq-jsonorg-blob
+	ssq-jsonorg-blob-count
 	ssq-jsonorg-fault
 	ssq-jsonorg-fault-count
+	ssq-jsonorg-ls
 	ssq-jsonorg-rummy
 	ssq-jsonorg-rummy-count
 	ssq-jsonorg-service
 	ssq-jsonorg-service-count
-	ssq-jsonorg-ls-recent
+	ssq-jsonorg-udig
 "
 
 #  Uncomment to create directory include/

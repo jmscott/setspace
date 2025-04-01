@@ -8,4 +8,6 @@ USAGE='[service|rummy|fault]'
 
 test $# = 0 && die 'wrong cli count: need > 0'
 
+exec_help $@
+exec_udig $@
 exec_action $@

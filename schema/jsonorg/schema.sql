@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Classifiy json as defined by programs at json.org.
+ *	Classifiy json as defined by the checker at json.org.
  */
 \set ON_ERROR_STOP on
 \timing
@@ -12,13 +12,14 @@ BEGIN TRANSACTION;
 DROP SCHEMA IF EXISTS jsonorg CASCADE;
 CREATE SCHEMA jsonorg;
 COMMENT ON SCHEMA jsonorg IS
-  'JSON blobs parsable by code from the site json.org'
+	'JSON blobs parsable by code from the site json.org'
 ;
 
 DROP TABLE IF EXISTS blob CASCADE;
 CREATE TABLE blob
 (
 	blob		udig
+				REFERENCES setcore.blob
 				PRIMARY KEY,
 	discover_time	inception
 				DEFAULT now()
@@ -53,9 +54,6 @@ CREATE INDEX idx_checker_255 ON checker_255 USING hash(blob);
  *
  *  If you want the exact text of the json document
  *  then just fetch the immutable blob.
- *
- *  Note:
- *	Need to add a triger
  */
 DROP TABLE IF EXISTS jsonb_255 CASCADE;
 CREATE TABLE jsonb_255
@@ -71,8 +69,8 @@ COMMENT ON TABLE jsonb_255 IS
   'A queryable, jsonb internal version of the blob'
 ;
 CREATE INDEX idx_jsonb_255 ON jsonb_255 USING hash(blob);
-CREATE INDEX idx_jsonb_255_doc ON jsonb_255 USING gin(doc);
-CREATE INDEX idx_jsonb_255_pops ON jsonb_255 USING gin(doc jsonb_path_ops);
+CREATE INDEX jsonb_255_idx ON jsonb_255 USING gin(doc);
+CREATE INDEX jsonb_255_idxp ON jsonb_255 USING gin(doc jsonb_path_ops);
 
 CREATE OR REPLACE FUNCTION jsonb_all_keys(_value jsonb)
   RETURNS
