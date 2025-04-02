@@ -4,6 +4,10 @@
 #  See:
 #	schema.sql
 #  Note:
+#	Not handling flap of "no" -> "ok" correctly!
+#	the sync map ought to be cleared when blob does not exists AND
+#	is not in service!
+#
 #	Investigate if the first two characters of a json document are
 #	always ascii:
 #
@@ -26,7 +30,7 @@ boot
 	heartbeat_duration = "10s";
 }
 
-sync map first_blob_ok[string]bool;
+sync map first_blob[string]bool;
 
 sql database setspace
 {
@@ -90,25 +94,20 @@ sql query blob_state row
 	;`;
 }
 
-command brr_ok
+command first_seen
 {
 	path = "true";
+	exit_status is OK when in {0, 1};
 }
 
-call brr_ok()
+call first_seen()
   when
-  	brr.chat_history == "ok"
-	or
-	brr.chat_history == "ok,ok"
-	or
-	brr.chat_history == "ok,ok,ok"
+	first_blob.LoadOrStore(brr.udig, true).loaded == false
 ;
 
 query blob_state(brr.udig)
   when
-  	brr_ok.exit_status == 0
-	and
-	first_blob_ok.LoadOrStore(brr.udig, true).loaded == false
+  	first_seen.exit_status == 0
 ;
 
 command blob_exists
@@ -128,7 +127,11 @@ command blob_exists
 
 call blob_exists(brr.udig)
   when
-  	brr_ok.exit_status == 0
+  	blob_state.in_blob == false
+	or
+  	blob_state.in_checker_255 == false
+	or
+  	blob_state.in_jsonb_255 == false
 ;
 
 sql exec upsert_blob
@@ -204,7 +207,11 @@ call upsert_jsonb_255(brr.udig)
   when
   	upsert_checker_255.sqlstate == "00000"
 	or
-	blob_state.in_jsonb_255 == false
+	(
+		blob_state.in_jsonb_255 == false
+		and
+		blob_state.in_checker_255 == true
+	)
 ;
 
 
