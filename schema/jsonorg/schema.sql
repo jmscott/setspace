@@ -199,7 +199,7 @@ COMMENT ON FUNCTION trig_insert_jsonb_255_key_word_set
 ;
 
 CREATE TRIGGER insert_jsonb_255_key_word_set
-  AFTER INSERT
+  AFTER INSERT  --  no UPDATE needed
   ON
   	jsonb_255
   FOR EACH ROW EXECUTE PROCEDURE
@@ -236,6 +236,7 @@ CREATE VIEW fault AS
     WHERE
     	schema_name = 'jsonorg'
 ;
+
 /*
  *  Synopsis:
  *	Find candidate blobs for further json analysis.
@@ -247,77 +248,39 @@ CREATE VIEW rummy AS
   SELECT
 	DISTINCT b.blob
     FROM
-    	jsonorg.blob b
-	  LEFT OUTER JOIN setops.flowd_call_fault flt ON (
-	  	flt.schema_name = 'jsonorg'
-		AND
-		flt.blob = b.blob
-	  )
-  	  LEFT OUTER JOIN checker_255 cj ON (
-	  	cj.blob = b.blob
-	  )
-  	  LEFT OUTER JOIN jsonb_255 jb ON (
-	  	jb.blob = b.blob
-	  )
+    	blob b
+  	  NATURAL LEFT OUTER JOIN checker_255 cj
+  	  NATURAL LEFT OUTER JOIN jsonb_255 jb
 	  --  Note: no need to test trigger jsonb_255_key_word_set
     WHERE
-    	('get_JSON_checker', NULL, NULL)
-	  IS NOT DISTINCT FROM 
-	    (flt.command_name, cj.blob, flt.blob)
-	OR (
-		cj.is_json = true
+    	(cj.blob IS NULL
+	 AND
+	 NOT EXISTS (  		-- blob not in fault for checker_255
+	  SELECT
+	  	flt.blob
+	    FROM
+	    	setops.flowd_call_fault flt
+	    WHERE
+		flt.schema_name = 'jsonorg'
 		AND
-		('upsert_jsonb_255', NULL, NULL)
-		  IS NOT DISTINCT FROM (
-		  	COALESCE(flt.command_name, 'upsert_jsonb_255'),
-			jb.blob,
-			flt.blob
-		)
-	)
-;
-
-DROP VIEW IF EXISTS detail CASCADE;
-CREATE VIEW detail AS
-  SELECT
-  	b.blob,
-  	ck.is_json,
-	jb.doc AS doc_jsonb_255,
-	jw.word_set AS word_set_255,
-	CASE
-	  WHEN srv.blob IS NULL 
-	  THEN false
-	  ELSE true
-	END AS "in_service",
-	CASE
-	  WHEN flt.blob IS NULL 
-	  THEN false
-	  ELSE true
-	END AS "in_fault",
-	CASE
-	  WHEN rum.blob IS NULL 
-	  THEN false
-	  ELSE true
-	END AS "is_rummy"
-    FROM
-    	blob b
-    	  NATURAL LEFT OUTER JOIN checker_255 ck
-	  NATURAL LEFT OUTER JOIN jsonb_255 jb
-	  NATURAL LEFT OUTER JOIN jsonb_255_key_word_set jw
-	  NATURAL LEFT OUTER JOIN service srv
-	  NATURAL LEFT OUTER JOIN fault flt
-	  NATURAL LEFT OUTER JOIN rummy rum
-;
-COMMENT ON VIEW detail
-  IS
-	'All attributes for json blobs, regardless if in service or not'
-;
-
-REVOKE UPDATE ON TABLE
-	checker_255,
-	jsonb_255,
-	jsonb_255_key_word_set
-  FROM
-  	PUBLIC
+		flt.command_name = 'get_JSON_checker'
+		AND
+		flt.blob = b.blob
+	))
+	OR (jb.blob IS NULL
+	 AND
+	 NOT EXISTS (		--  blob not in fault for upsert_jsonb_255
+	  SELECT
+	  	flt.blob
+	    FROM
+	    	setops.flowd_call_fault flt
+	    WHERE
+		flt.schema_name = 'jsonorg'
+		AND
+		flt.command_name = 'upsert_jsonb_255'
+		AND
+		flt.blob = b.blob
+	))
 ;
 
 COMMIT TRANSACTION;
