@@ -283,4 +283,12 @@ CREATE VIEW rummy AS
 	))
 ;
 
+REVOKE UPDATE ON TABLE
+	checker_255,
+	jsonb_255,
+	jsonb_255_key_word_set
+  FROM
+  	PUBLIC
+;
+
 COMMIT TRANSACTION;

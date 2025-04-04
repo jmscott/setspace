@@ -32,7 +32,7 @@ CREATE TABLE blob
 COMMENT ON TABLE blob IS
   'All blobs in setcore schema'
 ;
-CREATE INDEX idx_blob_blob ON blob USING hash(blob);
+CREATE INDEX idx_blob_hash ON blob USING hash(blob);
 CREATE INDEX idx_blob_discover_time ON blob(discover_time);
 CLUSTER blob USING idx_blob_discover_time;
 
@@ -55,8 +55,7 @@ CREATE TABLE byte_prefix_32
 COMMENT ON TABLE byte_prefix_32 IS
 	'First 32 Bytes of a Blob'
 ;
-CREATE INDEX byte_prefix_32_blob ON byte_prefix_32 USING hash(blob);
-CREATE INDEX byte_prefix_32_prefix ON byte_prefix_32(prefix);
+CREATE INDEX idx_byte_prefix_32_hash ON byte_prefix_32 USING hash(blob);
 
 DROP TABLE IF EXISTS byte_count cascade;
 CREATE TABLE byte_count
@@ -72,7 +71,9 @@ CREATE TABLE byte_count
 				NOT NULL
 );
 COMMENT ON TABLE byte_count IS 'How many bytes comprise the Blob';
-CREATE INDEX byte_count_blob ON byte_count USING hash(blob);
+CREATE INDEX idx_byte_count_hash ON byte_count USING hash(blob);
+CREATE INDEX idx_byte_count_count ON byte_count(byte_count);
+CLUSTER byte_count USING idx_byte_count_count;
 
 /*
  *  Is the blob a well formed UTF-8 sequence?
@@ -91,7 +92,7 @@ CREATE TABLE is_utf8wf
 COMMENT ON TABLE is_utf8wf IS
 	'Is the Blob Entirely Well Formed UTF8 Encoded Bytes'
 ;
-CREATE INDEX is_utf8wf_blob ON is_utf8wf USING hash(blob);
+CREATE INDEX idx_is_utf8wf_hash ON is_utf8wf USING hash(blob);
 
 /*
  *  256 Bitmap of existing bytes in blob.
@@ -110,11 +111,12 @@ CREATE TABLE byte_bitmap
 COMMENT ON TABLE byte_bitmap IS
 	'A Bitmap of Existing Bytes in the Blob'
 ;
-CREATE INDEX byte_bitmap_blob ON byte_bitmap USING hash(blob);
-
+CREATE INDEX idx_byte_bitmap_hash ON byte_bitmap USING hash(blob);
 
 /*
  *  Final 32 bytes of the blob.
+ *
+ *  Note: consider using a gin index on suffix.
  */
 DROP TABLE IF EXISTS byte_suffix_32 CASCADE;
 CREATE TABLE byte_suffix_32
@@ -132,9 +134,7 @@ CREATE TABLE byte_suffix_32
 COMMENT ON TABLE byte_suffix_32 IS
 	'First 32 bytes in a blob'
 ;
-CREATE INDEX idx_byte_suffix_32_blob ON byte_suffix_32 USING hash(blob);
-CREATE INDEX idx_byte_suffix_32_suffix ON byte_suffix_32(suffix);
-CLUSTER byte_suffix_32 USING idx_byte_suffix_32_suffix;
+CREATE INDEX idx_byte_suffix_32_hash ON byte_suffix_32 USING hash(blob);
 
 DROP VIEW IF EXISTS rummy CASCADE;
 CREATE VIEW rummy AS 

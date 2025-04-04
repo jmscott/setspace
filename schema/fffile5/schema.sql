@@ -37,7 +37,7 @@ CREATE TABLE blob
 				DEFAULT now()
 				NOT NULL
 );
-CREATE INDEX idx_blob ON blob USING hash(blob);
+CREATE INDEX idx_blob_hash ON blob USING hash(blob);
 CREATE INDEX idx_blob_discover_time ON blob(discover_time);
 CLUSTER blob USING idx_blob_discover_time;
 
@@ -57,7 +57,7 @@ CREATE TABLE file
 COMMENT ON TABLE file IS
   'Output of file --brief command on blob'
 ;
-CREATE INDEX idx_file_blob ON file USING hash(blob);
+CREATE INDEX idx_file_hash ON file USING hash(blob);
 CREATE INDEX idx_file_type ON file(file_type);
 CLUSTER file USING idx_file_type; 
 
@@ -76,7 +76,7 @@ CREATE TABLE file_mime_type
 COMMENT ON TABLE file_mime_type IS
   'Output of file --mime-type --brief command on blob'
 ;
-CREATE INDEX idx_file_mime_type_blob ON
+CREATE INDEX idx_file_mime_type_hash ON
 	file_mime_type USING hash(blob);
 CREATE INDEX idx_file_mime_type ON file_mime_type(mime_type);
 CLUSTER file_mime_type USING idx_file_mime_type;
@@ -96,7 +96,7 @@ CREATE TABLE file_mime_encoding
 COMMENT ON TABLE file_mime_encoding IS
   'Output of file --mime-encoding --brief command on blob'
 ;
-CREATE INDEX idx_file_mime_encoding_blob
+CREATE INDEX idx_file_mime_encoding_hash
   ON file_mime_encoding USING hash(blob)
 ; 
 CREATE INDEX idx_file_mime_encoding_mime_encoding

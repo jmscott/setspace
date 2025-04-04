@@ -23,14 +23,25 @@
 
 BEGIN;
 
-DROP SCHEMA IF EXISTS pdfbox CASCADE;
+\echo get owner of current database
+SELECT
+	datdba::regrole AS db_owner
+  FROM
+  	pg_database
+  WHERE
+  	datname = current_database()
+;
+\gset
 
+DROP SCHEMA IF EXISTS pdfbox CASCADE;
 CREATE SCHEMA pdfbox;
 COMMENT ON SCHEMA pdfbox IS
   'Text and metadata extracted by java classes of pdfbox.apache.org, version 2'
 ;
+ALTER SCHEMA pdfbox OWNER TO :db_owner;
+CREATE EXTENSION rum SCHEMA pdfbox;
 
-SET search_path to pdfbox,setspace,public;
+SET search_path TO pdfbox,setspace,public;
 
 DROP TABLE IF EXISTS blob;
 CREATE TABLE blob
@@ -42,10 +53,11 @@ CREATE TABLE blob
 				DEFAULT now()
 				NOT NULL
 );
-CREATE INDEX idx_blob ON blob USING hash(blob);
+CREATE INDEX idx_blob_hash ON blob USING hash(blob);
 CREATE INDEX idx_blob_discover_time ON blob(discover_time);
 CLUSTER blob USING idx_blob_discover_time;
 COMMENT ON TABLE blob IS 'All candidate pdf blobs';
+ALTER TABLE blob OWNER TO :db_owner; 
 
 /*
  *  PDDocument scalar fields from Java Object
@@ -79,7 +91,8 @@ CREATE TABLE pddocument
 COMMENT ON TABLE pddocument IS
   'PDDocument scalar fields from Java Object'
 ;
-CREATE INDEX idx_pddocument ON pddocument USING hash(blob);
+CREATE INDEX idx_pddocument_hash ON pddocument USING hash(blob);
+ALTER TABLE pddocument OWNER TO :db_owner; 
 
 DROP DOMAIN IF EXISTS dval32 CASCADE;
 CREATE DOMAIN dval32 AS text 
@@ -94,6 +107,7 @@ CREATE DOMAIN dval32 AS text
 COMMENT ON DOMAIN dval32 IS
   'PDF Dictionary value < 32768 chars, with no carriage-return or line-feed'
 ;
+ALTER DOMAIN dval32 OWNER TO :db_owner; 
 
 /*
  *  PDDocumentInformation scalar fields from Java Object
@@ -122,10 +136,11 @@ CREATE TABLE pddocument_information
 COMMENT ON TABLE pddocument_information IS
   'PDDocumentInformation scalar fields from valid PDF Java Object'
 ;
-CREATE INDEX idx_pddocument_information ON pddocument_information
+CREATE INDEX idx_pddocument_information_hash ON pddocument_information
   USING
   	hash(blob)
 ;
+ALTER TABLE pddocument_information OWNER TO :db_owner; 
 
 /*
  *  Extracted pages in a pdf blob.
@@ -160,6 +175,7 @@ CREATE TABLE extract_pages_utf8
 COMMENT ON TABLE extract_pages_utf8 IS
   'Pages of UTF8 Text extracted by java class ExtractPagesUTF8'
 ;
+ALTER TABLE extract_pages_utf8 OWNER TO :db_owner; 
 
 /*
  *  Text of individual pages of a pdf blob
@@ -192,6 +208,7 @@ CREATE TABLE page_text_utf8
 COMMENT ON TABLE page_text_utf8 IS
   'Individual Pages of UTF8 Text extracted from a pdf blob'
 ;
+ALTER TABLE page_text_utf8 OWNER TO :db_owner; 
 
 /*
  *  Text Search Vector of individual pages of a pdf blob
@@ -229,6 +246,7 @@ CREATE INDEX page_tsv_utf8_rumidx ON page_tsv_utf8
 COMMENT ON TABLE page_tsv_utf8 IS
   'Text search vectors for Pages of UTF8 Text extracted from a pdf blob'
 ;
+ALTER TABLE page_tsv_utf8 OWNER TO :db_owner; 
 
 DROP VIEW IF EXISTS fault CASCADE;
 CREATE VIEW fault AS
@@ -242,10 +260,9 @@ CREATE VIEW fault AS
 COMMENT ON VIEW fault IS
   'Candidate PDF blobs with a fault of any sort'
 ;
+ALTER VIEW fault OWNER TO :db_owner; 
 
 /*
- *  Synopsis:
- *	Find unresolved pddocument and extract_pages_ut8 blobs
 DROP VIEW IF EXISTS rummy CASCADE;
 CREATE VIEW rummy AS
   SELECT
@@ -279,6 +296,7 @@ CREATE VIEW rummy AS
 COMMENT ON VIEW rummy IS
   'Blobs with to be discovered attributes'
 ;
+ALTER VIEW rummy OWNER TO :db_owner; 
  */
 
 DROP VIEW IF EXISTS service CASCADE;
@@ -320,6 +338,17 @@ CREATE VIEW service AS
 ;
 COMMENT ON VIEW service IS
   'Proven PDF blobs according to apache pdfbox'
+;
+ALTER VIEW service OWNER TO :db_owner; 
+
+REVOKE UPDATE ON TABLE
+	pddocument,
+	pddocument_information,
+	extract_pages_utf8,
+	page_text_utf8,
+	page_tsv_utf8
+  FROM
+  	PUBLIC
 ;
 
 COMMIT;
