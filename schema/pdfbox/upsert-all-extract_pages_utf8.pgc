@@ -168,7 +168,6 @@ EXEC SQL END DECLARE SECTION;
 	if ((err = jmscott_frisk_udig(pdf_blob)))
 		die2("can not parse pdf udig", pdf_blob);
 
-
 	EXEC SQL WHENEVER SQLERROR CALL jmscott_ecpg_error(
 		(struct jmscott_ecpg_state_fault *)0
 	);

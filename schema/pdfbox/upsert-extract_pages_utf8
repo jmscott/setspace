@@ -22,6 +22,9 @@
 #	import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 #	import org.apache.pdfbox.text.PDFTextStripper;
 #  Note:
+s	Waiting for page blobs to exist in setcore.blob is broken.  pdfbox3
+#	will fix this.
+#
 #	Page blobs may be orphaned if the transaction is aborted.
 #	Perhaps a json blob summarizing the transaction should be created.
 #
@@ -78,8 +81,13 @@ case $STATUS in
 	;;
 esac
 
+#
 #  let pdfbox extract individual pages into files 0000001.txt, 0000002.txt ...
 #  write digest for page in 0000001.udig, 0000002.udig
+#
+#  Note:
+#	Orphan page blob could exist if this script faults!
+#
 
 java 									\
 	-server								\
