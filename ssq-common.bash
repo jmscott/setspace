@@ -26,7 +26,7 @@ SSQ_COMMON_PSQL_TSV=$SETSPACE_ROOT/libexec/ssq-common-psql-tsv
 #
 #  Usage:
 #	PSQL=$SSQ_COMMON_PSQL_EXPAND
-#	$PSQL --file lib/sql-setcore-ls-blob.sql <udig>
+#	$PSQL --file lib/sql-setcore-udig.sql <udig> --set blob=$BLOB
 #
 SSQ_COMMON_PSQL_EXPAND=$SETSPACE_ROOT/libexec/ssq-common-psql-expand
 
