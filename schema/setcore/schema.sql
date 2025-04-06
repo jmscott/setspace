@@ -2,7 +2,7 @@
  *  Synopsis:
  *	Core setspace tables for common blob facts.
  *  Usage:
- *	psql -f schema.sql
+ *	psql --file schema.sql
  *  Note:
  *	Should function setcore.is_empty(udig) be in schema blobio?
  *	Perhaps "is_empty" should be a table?
@@ -14,7 +14,7 @@ BEGIN TRANSACTION;
 
 DROP SCHEMA IF EXISTS setcore CASCADE;
 
-SET search_path TO setcore,setspace,public;
+SET search_path TO setcore,setspace;
 
 CREATE SCHEMA setcore;
 COMMENT ON SCHEMA setcore IS
