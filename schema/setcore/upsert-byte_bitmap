@@ -3,9 +3,9 @@
 #  Synopsis:
 #	Merge the 256 bitmap of all bytes into the table setcore.byte_bitmap
 #  Usage:
-#	upsert-byte_bitmap <blob	udig>
+#	upsert-byte_bitmap <udig>
 #  Exit Status:
-#  	0	bitmap merged into table byte_bitmap
+#  	0	bitmap upserted into table byte_bitmap
 #	1	blob does not exist
 #  	2	unknown error
 #
@@ -21,7 +21,7 @@ PSQL='psql
 
 die()
 {
-	setcore-fault upsert_byte_bitmap "$BLOB" "$@"
+	echo "$PROG: ERROR: $@" >72
 	exit 2
 }
 

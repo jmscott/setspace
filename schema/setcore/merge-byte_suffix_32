@@ -1,16 +1,13 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	Merge the 32 byte suffix of the blob into the table byte_suffix_32
+#	Upsert the 32 byte suffix of the blob into the table byte_suffix_32
 #  Usage:
-#	merge-byte_suffix_32 <blob udig>
+#	upsert-byte_suffix_32 <blob udig>
 #  Exit Status:
-#  	0	suffix merged into table byte_suffix_32
+#  	0	suffix upserted into table byte_suffix_32
 #	1	blob does not exist
-#  	2	wrong number of command line arguments
-#	3	blobio get failed for unknown reason
-#	4	byte-suffix-32 failed for unknown reason
-#	5	sql merge failed for unknown reason
+#	2	unknown error
 #  Environment:
 #	BLOBIO_SERVICE
 #	BLOBIO_GET_SERVICE
@@ -20,18 +17,15 @@
 #	Consider pipelining blobs to eliminate dependence on TMPDIR.
 #
 
-PROG=merge-byte_suffix_32
+PROG=upsert-byte_suffix_32
 BLOBIO_GET_SERVICE=${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}
 
 TMP_BLOB=${TMPDIR:=/tmp}/$PROG.$$
 
 die()
 {
-	STATUS=$1
-	shift
-
 	echo "$PROG: ERROR: $@" >&2
-	exit $STATUS
+	exit 2
 }
 
 leave()
@@ -42,7 +36,7 @@ leave()
 
 trap leave EXIT INT TERM QUIT
 
-test $# = 1 || die 2 'wrong number of arguments'
+test $# = 1 || die 'wrong number of arguments'
 BLOB=$1
 
 #  fetch the blob into temp file
@@ -56,25 +50,25 @@ case $STATUS in
 	exit 1
 	;;
 *)
-	die 3 "blobio get failed: exit status=$STATUS"
+	die "blobio get failed: exit status=$STATUS"
 	;;
 esac
 
 PREFIX=$(byte-suffix-32 $TMP_BLOB)
-test $? = 0 || die 4 "byte-suffix-32 failed: exit status=$?"
+test $? = 0 || die "byte-suffix-32 failed: exit status=$?"
 
-#  merge new record
-psql --quiet --no-psqlrc <<END
+#  upsert new record
+psql --quiet --no-psqlrc --set blob=$BLOB <<END
 INSERT INTO setcore.byte_suffix_32 (
 	blob,
 	suffix
   ) VALUES (
-  	'$BLOB'::udig,
+  	:'blob'::udig,
 	E'\\\\x$PREFIX'
   ) ON CONFLICT
   	DO NOTHING
 ;
 END
-test $? = 0 || die 5 "psql insert failed: exit status=$?"
+test $? = 0 || die "psql insert failed: exit status=$?"
 
 exit 0

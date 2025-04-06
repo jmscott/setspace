@@ -3,9 +3,9 @@
 #  Synopsis:
 #	Merge the 32 byte prefix of the blob into the table byte_prefix_32
 #  Usage:
-#	merge-byte_prefix_32 <blob udig>
+#	upsert-byte_prefix_32 <udig>
 #  Exit Status:
-#  	0	prefix merged into table byte_prefix_32
+#  	0	prefix upsert into table byte_prefix_32
 #	1	blob does not exist
 #  	2	unknown error
 #
@@ -21,7 +21,7 @@ SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
 
 die()
 {
-	setcore-fault upsert_byte_prefix_32 "$BLOB" "$@"
+	echo "$PROG: ERROR: $@" >&2
 	exit 2
 }
 
@@ -51,7 +51,7 @@ esac
 PREFIX=$(byte-prefix-32 <BLOB 2>STDERR )
 test $? = 0 || die "byte-prefix-32 failed: exit status=$?"
 
-#  merge new record
+#  upsert new record
 $PSQL --set blob=$BLOB --set prefix=$PREFIX --file $SQL
 test $? = 0 || die "psql upsert failed: exit status=$?"
 

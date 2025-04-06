@@ -25,7 +25,7 @@ boot
 	heartbeat_duration = "10s";
 }
 
-tail bio4d
+tail brr
 {
 	path = "spool/bio4d.brr";
 }
@@ -34,111 +34,102 @@ sql database setspace
 {
 	driver_name = "postgres";
 	data_source_name =
-		"search_path=setcore,setspace,public fallback_application_name=flowd.setcore sslmode=disable";
+		"search_path=setcore,setspace fallback_application_name=flowd.setcore sslmode=disable";
 	max_idle_conns = 0;
 	max_open_conns = 4;
 }
 
-command brr_ok
-{
-	path = "true";
-}
-
-call brr_ok()
-  when
-  	bio4d.chat_history == "ok"
-	or
-	bio4d.chat_history == "ok,ok"
-	or
-	bio4d.chat_history == "ok,ok,ok"
-;
-
 sql query blob_state row
 {
 	result row is (
-		in_service bool,
-		in_fault bool,
-		is_earlier bool
+		in_blob			bool,
+		in_byte_prefix_32	bool,
+		in_byte_count		bool,
+		in_is_utf8wf		bool,
+		in_byte_bitmap		bool,
+		in_byte_suffix_32	bool,
+		is_empty		bool
 	);
 	statement = `
-SELECT
-	(SELECT EXISTS (
-	  SELECT
-		null
-	    FROM
-		setcore.service
-	    WHERE
-		blob = $1
-	  )) AS in_service,
-       (SELECT EXISTS (
-         SELECT
-	 	null
-	   FROM
-	   	setops.flowd_call_fault
-	   WHERE
-	   	blob = $1
-		AND
-		schema_name = 'setcore'
-          )) AS in_fault,
-	COALESCE((SELECT
-		(discover_time > $2)
-	  FROM
-	  	setcore.blob
-	  WHERE
-	  	blob = $1
-	), false) AS is_earlier
-;
-;`;
+	SELECT
+		EXISTS (
+		  SELECT
+			true
+		    FROM
+			blob
+		    WHERE
+			blob = $1::udig
+		),
+		EXISTS (
+		  SELECT
+			true
+		    FROM
+			byte_prefix_32
+		    WHERE
+			blob = $1::udig
+		),
+		EXISTS (
+		  SELECT
+			true
+		    FROM
+			byte_count
+		    WHERE
+			blob = $1::udig
+		),
+		EXISTS (
+		  SELECT
+			true
+		    FROM
+			is_utf8wf
+		    WHERE
+			blob = $1::udig
+		),
+		EXISTS (
+		  SELECT
+			true
+		    FROM
+			byte_bitmap
+		    WHERE
+			blob = $1::udig
+		),
+		EXISTS (
+		  SELECT
+			true
+		    FROM
+			byte_suffix_32
+		    WHERE
+			blob = $1::udig
+		),
+		setcore.is_empty($1::udig)
+	;`;
 }
 
-command brr_wrote
-{
-	path = "true";
-}
+sync map in_flight[string]bool;
 
-call brr_wrote()
+query blob_state(brr.udig)
   when
-  	brr_ok.exit_status == 0
-	and
-	(
-		bio4d.verb == "put"
-		or
-		bio4d.verb == "take"
-	)
+	in_flight.LoadOrStore(brr.udig, true).loaded == false
 ;
 
 sql exec upsert_blob
 {
 	statement = `
-INSERT INTO setcore.blob (
-	blob,
-	discover_time
-) VALUES (
-	$1,
-	$2
-) ON CONFLICT (blob) DO UPDATE
-  SET
-  	discover_time = excluded.discover_time
-  WHERE
-	blob.discover_time > excluded.discover_time
-;
-	`;
+	INSERT INTO blob (
+		blob,
+		discover_time
+	  ) VALUES (
+	  	$1::udig,
+		$2::inception
+	  ) ON CONFLICT (blob) DO UPDATE SET
+	  	discover_time = $2::inception
+	    WHERE
+	    	blob.discover_time > EXCLUDED.discover_time
+	;`;
 }
 
-query blob_state(bio4d.udig, bio4d.start_time)
+query upsert_blob(brr.udig, brr.start_time)
   when
-  	brr_ok.exit_status == 0
-;
-
-query upsert_blob(bio4d.udig, bio4d.start_time)
-  when
-  	blob_state.in_fault == false
-	and
-	(
-		blob_state.in_service == false
-		or
-		blob_state.is_earlier == true
-	)
+  	blob_state.in_blob == false
 ;
 
 command eat_blob
@@ -150,110 +141,24 @@ command eat_blob
 		"fs:${BLOBIO_ROOT}",
 		"--udig"
 	);
-	exit_status is OK when in {0, 1};
+	exit_status is OK when in {
+		0,			#  blob exists
+		1			#  blob does not exit
+	};
 }
 
-sync map in_flight[string]bool;
+#  see if blob exists physically when blob table or is not empty
 
-call eat_blob(bio4d.udig)
+call eat_blob(brr.udig)
   when
-	in_flight.LoadOrStore(bio4d.udig, true).loaded == false
-
-	#  did we just insert into table setcore.blob
-	and
 	(
-		
-		upsert_blob.rows_affected == 1
+		blob_state.in_blob == true
 		or
-		blob_state.in_service == false	#  not all facts found
+		upsert_blob.sqlstate == "00000"
 	)
+	and
+	blob_state.is_empty == false
 ;
-
-
-#  insert into table byte_bitmap
-sql query in_byte_bitmap row
-{
-	result row is (
-		answer bool
-	);
-	statement = `
-SELECT EXISTS (
-  SELECT
-  	null
-    FROM
-    	setcore.byte_bitmap
-    WHERE
-    	blob = $1
-);`;
-}
-
-command upsert_byte_bitmap
-{
-        path = "sbin/upsert-byte_bitmap";
-        exit_status is OK when in {0, 1};
-}
-
-query in_byte_bitmap(bio4d.udig)
-  when
-  	eat_blob.exit_status == 0
-;
-
-call upsert_byte_bitmap(bio4d.udig)
-  when
-  	in_byte_bitmap.answer == false
-;
-
-#  insert into table byte_count
-
-sql query in_byte_count row
-{
-	result row is (
-		answer bool
-	);
-	statement = `
-SELECT EXISTS (
-  SELECT
-  	null
-    FROM
-    	setcore.byte_count
-    WHERE
-    	blob = $1
-);`;
-}
-
-command upsert_byte_count
-{
-        path = "sbin/upsert-byte_count";
-        exit_status is OK when in {0, 1};
-}
-
-query in_byte_count(bio4d.udig)
-  when
-  	eat_blob.exit_status == 0
-;
-
-call upsert_byte_count(bio4d.udig)
-  when
-  	in_byte_count.answer == false
-;
-
-#  insert into table byte_prefix_32
-
-sql query in_byte_prefix_32 row
-{
-	result row is (
-		answer bool
-	);
-	statement = `
-SELECT EXISTS (
-  SELECT
-  	null
-    FROM
-    	setcore.byte_prefix_32
-    WHERE
-    	blob = $1
-);`;
-}
 
 command upsert_byte_prefix_32
 {
@@ -261,33 +166,38 @@ command upsert_byte_prefix_32
         exit_status is OK when in {0, 1};
 }
 
-query in_byte_prefix_32(bio4d.udig)
+call upsert_byte_prefix_32(brr.udig)
   when
   	eat_blob.exit_status == 0
+	and
+	blob_state.in_byte_prefix_32 == false
 ;
 
-call upsert_byte_prefix_32(bio4d.udig)
-  when
-  	in_byte_prefix_32.answer == false
-;
-
-#  insert into table byte_suffix_32
-
-sql query in_byte_suffix_32 row
+command upsert_byte_count
 {
-	result row is (
-		answer bool
-	);
-	statement = `
-SELECT EXISTS (
-  SELECT
-  	null
-    FROM
-    	setcore.byte_suffix_32
-    WHERE
-    	blob = $1
-);`;
+        path = "sbin/upsert-byte_count";
+        exit_status is OK when in {0, 1};
 }
+
+call upsert_byte_count(brr.udig)
+  when
+  	eat_blob.exit_status == 0
+	and
+	blob_state.in_byte_count == false
+;
+
+command upsert_byte_bitmap
+{
+	path = "sbin/upsert-byte_bitmap";
+	exit_status is OK when in {0, 1};
+}
+
+call upsert_byte_bitmap(brr.udig)
+  when
+  	eat_blob.exit_status == 0
+	and
+	blob_state.in_byte_bitmap == false
+;
 
 command upsert_byte_suffix_32
 {
@@ -295,44 +205,12 @@ command upsert_byte_suffix_32
         exit_status is OK when in {0, 1};
 }
 
-query in_byte_suffix_32(bio4d.udig)
+call upsert_byte_suffix_32(brr.udig)
   when
   	eat_blob.exit_status == 0
+	and
+	blob_state.in_byte_suffix_32 == false
 ;
-
-call upsert_byte_suffix_32(bio4d.udig)
-  when
-  	in_byte_suffix_32.answer == false
-;
-
-#  is utf8 encoded
-sql query in_is_utf8wf_table row
-{
-	result row is (
-		answer	bool,
-		is_utf8	bool
-	);
-
-	statement = `
-
-	SELECT EXISTS (
-	  SELECT
-		blob
-	    FROM
-		setcore.is_utf8wf
-	    WHERE
-		blob = $1::udig
-	  ),
-	 (SELECT
-	  	is_utf8
-	    FROM
-	    	setcore.is_utf8wf
-	    WHERE
-	    	blob = $1::udig
-	 );
-
-	  `;
-}
 
 command get_is_utf8wf
 {
@@ -345,9 +223,8 @@ command get_is_utf8wf
 	};
 }
 
-sql query upsert_is_utf8wf row
+sql exec upsert_is_utf8wf
 {
-	#  Note: does the insert return a value upon conflict?
 	statement = `
 
 	INSERT INTO setcore.is_utf8wf(
@@ -362,96 +239,205 @@ sql query upsert_is_utf8wf row
 		END
   	  ON CONFLICT
   		DO NOTHING
-  	  RETURNING
-  		is_utf8
-	;
-
-	`;
-	
-	result row is (
-		is_utf8 bool
-	);
-
+	;`;
 }
 
-query in_is_utf8wf_table(bio4d.udig)
+call get_is_utf8wf(brr.udig)
   when
-  	eat_blob.exit_status == 0
-;
-
-#  does the blob contain the char 0xff?
-
-sql query has_char_0xff row {
-	
-	statement = `
-	
-	SELECT
-		(bm.bitmap & char_0xff) != all_zero
-	  FROM
-	  	setcore.byte_bitmap bm,
-
-		--  all zero bits
-		COALESCE(
-			B'0'::bit(256)
-		) AS all_zero,
-
-		COALESCE(
-			B'1'::bit(256)
-		) AS char_0xff
-	  WHERE
-	  	bm.blob = $1::udig
-	;
-	
-	`;
-	result row is (
-		answer bool
-	);
-}
-
-#  Note: opimzation hack to prove not utf8 encoded
-
-query has_char_0xff(bio4d.udig)
-  when
-	in_byte_bitmap.answer == true
-	or
-	upsert_byte_bitmap.exit_status == 0
-;
-
-call get_is_utf8wf(bio4d.udig)
-  when
-	has_char_0xff.answer == false
+  	blob_state.in_is_utf8wf == false
 	and
-	in_is_utf8wf_table.answer == false
+	eat_blob.exit_status == 0
 ;
 
-sql exec upsert_is_utf8wf_not
+query upsert_is_utf8wf(brr.udig, get_is_utf8wf.exit_status)
+  when
+  	get_is_utf8wf.exit_status == 0
+	or
+  	get_is_utf8wf.exit_status == 1
+;
+
+#
+#  Note:
+#	if fault insert fails then append tuple to ../setops/spool/setcore.fltq
+#
+sql exec upsert_fault_eat_blob
 {
 	statement = `
-
-	INSERT INTO setcore.is_utf8wf(
+	INSERT INTO setops.flowd_call_fault (
+		schema_name,
+		command_name,
 		blob,
-		is_utf8
+		exit_class,
+		exit_status,
+		fault_time
 	) VALUES (
+		'setcore',
+		'eat_blob',
 		$1::udig,
-		false
-	) ON CONFLICT
-		DO NOTHING
+		'ERR',
+		$2::smallint,
+		now()
+	) ON CONFLICT DO NOTHING
 	`;
-
 }
 
-#  blob not utf8 when 0xff char exists
-
-query upsert_is_utf8wf_not(bio4d.udig)
+query upsert_fault_eat_blob(brr.udig, eat_blob.exit_status)
   when
-  	has_char_0xff.answer == true
+ 	eat_blob.exit_status != 0
 	and
-	in_is_utf8wf_table.answer == false
+	eat_blob.exit_status != 1
 ;
 
-query upsert_is_utf8wf(bio4d.udig, get_is_utf8wf.exit_status)
-  when
-  	has_char_0xff.answer == false
+sql exec upsert_fault_upsert_byte_prefix_32
+{
+	statement = `
+	INSERT INTO setops.flowd_call_fault (
+		schema_name,
+		command_name,
+		blob,
+		exit_class,
+		exit_status,
+		fault_time
+	) VALUES (
+		'setcore',
+		'upsert_byte_prefix_32',
+		$1::udig,
+		'ERR',
+		$2::smallint,
+		now()
+	) ON CONFLICT DO NOTHING
+	`;
+}
+
+query upsert_fault_upsert_byte_prefix_32(
+	brr.udig,
+	upsert_byte_prefix_32.exit_status
+  ) when
+ 	upsert_byte_prefix_32.exit_status != 0
 	and
-	in_is_utf8wf_table.answer == false
+	upsert_byte_prefix_32.exit_status != 1
+;
+
+sql exec upsert_fault_upsert_byte_count
+{
+	statement = `
+	INSERT INTO setops.flowd_call_fault (
+		schema_name,
+		command_name,
+		blob,
+		exit_class,
+		exit_status,
+		fault_time
+	) VALUES (
+		'setcore',
+		'upsert_byte_count',
+		$1::udig,
+		'ERR',
+		$2::smallint,
+		now()
+	) ON CONFLICT DO NOTHING
+	`;
+}
+
+query upsert_fault_upsert_byte_count(
+	brr.udig,
+	upsert_byte_count.exit_status
+  ) when
+ 	upsert_byte_count.exit_status != 0
+	and
+	upsert_byte_count.exit_status != 1
+;
+
+sql exec upsert_fault_upsert_byte_bitmap
+{
+	statement = `
+	INSERT INTO setops.flowd_call_fault (
+		schema_name,
+		command_name,
+		blob,
+		exit_class,
+		exit_status,
+		fault_time
+	) VALUES (
+		'setcore',
+		'upsert_byte_bitmap',
+		$1::udig,
+		'ERR',
+		$2::smallint,
+		now()
+	) ON CONFLICT DO NOTHING
+	`;
+}
+
+query upsert_fault_upsert_byte_bitmap(
+	brr.udig,
+	upsert_byte_bitmap.exit_status
+  ) when
+ 	upsert_byte_bitmap.exit_status != 0
+	and
+	upsert_byte_bitmap.exit_status != 1
+;
+
+sql exec upsert_fault_upsert_byte_suffix_32
+{
+	statement = `
+	INSERT INTO setops.flowd_call_fault (
+		schema_name,
+		command_name,
+		blob,
+		exit_class,
+		exit_status,
+		fault_time
+	) VALUES (
+		'setcore',
+		'upsert_byte_suffix_32',
+		$1::udig,
+		'ERR',
+		$2::smallint,
+		now()
+	) ON CONFLICT DO NOTHING
+	`;
+}
+
+query upsert_fault_upsert_byte_suffix_32(
+	brr.udig,
+	upsert_byte_suffix_32.exit_status
+  ) when
+ 	upsert_byte_suffix_32.exit_status != 0
+	and
+	upsert_byte_suffix_32.exit_status != 1
+;
+
+sql exec upsert_fault_get_is_utf8wf
+{
+	statement = `
+	INSERT INTO setops.flowd_call_fault (
+		schema_name,
+		command_name,
+		blob,
+		exit_class,
+		exit_status,
+		fault_time
+	) VALUES (
+		'setcore',
+		'get_is_utf8wf',
+		$1::udig,
+		'ERR',
+		$2::smallint,
+		now()
+	) ON CONFLICT DO NOTHING
+	`;
+}
+
+query upsert_fault_get_is_utf8wf(
+	brr.udig,
+	get_is_utf8wf.exit_status
+  ) when
+ 	get_is_utf8wf.exit_status != 0
+	and
+	get_is_utf8wf.exit_status != 1
+	and
+ 	get_is_utf8wf.exit_status != 2
+	and
+	get_is_utf8wf.exit_status != 3
 ;

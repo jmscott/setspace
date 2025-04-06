@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	Merge the 32 byte suffix of the blob into the table byte_suffix_32
+#	Upserted the 32 byte suffix of the blob into the table byte_suffix_32
 #  Usage:
-#	merge-byte_suffix_32 <blob udig>
+#	upsert-byte_suffix_32 <blob udig>
 #  Exit Status:
-#  	0	suffix merged into table byte_suffix_32
+#  	0	suffix upserted into table byte_suffix_32
 #	1	blob does not exist
 #  	2	unknown error
 #
@@ -21,7 +21,7 @@ SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
 
 die()
 {
-	setcore-fault upsert_byte_suffix_32 "$BLOB" "$@"
+	echo "$PROG: ERROR: $@" >&2
 	exit 2
 }
 
@@ -52,7 +52,7 @@ SUFFIX=$(byte-suffix-32 BLOB 2>STDERR)
 STATUS=$?
 test $STATUS = 0 || die "byte-suffix-32 failed: exit status=$STATUS"
 
-#  merge new record
+#  upsert new record
 $PSQL --set blob=$BLOB --set suffix=$SUFFIX --file $SQL			||
 			die "psql upsert failed: exit status=$?"
 

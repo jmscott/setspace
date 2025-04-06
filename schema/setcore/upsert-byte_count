@@ -3,9 +3,9 @@
 #  Synopsis:
 #	Merge the byte count of a blob into the table byte_count
 #  Usage:
-#	upsert-byte_count <blob udig>
+#	upsert-byte_count <udig>
 #  Exit Status:
-#  	0	count merged into table byte_count
+#  	0	count upserted into table byte_count
 #	1	blob does not exist
 #  	2	unknown error
 #
@@ -20,7 +20,7 @@ SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
 
 die()
 {
-	setcore-fault upsert_byte_count "$BLOB" "$@"
+	echo "$PROG: ERROR: $@" >&2
 	exit 2
 }
 

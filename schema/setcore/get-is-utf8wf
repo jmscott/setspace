@@ -3,7 +3,7 @@
 #  Synopsis:
 #	Invoke is-utf8wf on a fetched blob
 #  Usage:
-#	get-is-utf8wf <blob udig>
+#	get-is-utf8wf <udig>
 #  Exit Status:
 #  	0	yes, blob is a well formed utf8
 #	1	no, blob is not well formed utf8
