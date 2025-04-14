@@ -7,8 +7,6 @@
 #  	schema/setcore/schema.sql
 #	Investigate why 
 #  Note:
-#	Any fault skips all tables.  Instead should only skip particular
-#	commands.  This is a bug.
 #
 
 boot
@@ -48,7 +46,12 @@ sql query blob_state row
 		in_is_utf8wf		bool,
 		in_byte_bitmap		bool,
 		in_byte_suffix_32	bool,
-		is_empty		bool
+		is_empty		bool,
+		flt_byte_prefix_32	bool,
+		flt_byte_count		bool,
+		flt_is_utf8wf		bool,
+		flt_byte_bitmap		bool,
+		flt_byte_suffix_32	bool
 	);
 	statement = `
 	SELECT
@@ -100,15 +103,96 @@ sql query blob_state row
 		    WHERE
 			blob = $1::udig
 		),
-		setcore.is_empty($1::udig)
+		setcore.is_empty($1::udig),
+		EXISTS (
+		  SELECT
+		  	true
+		    FROM
+		    	setops.flowd_call_fault
+		    WHERE
+		    	schema_name = 'setcore'
+			AND
+			command_name = 'upsert_byte_prefix_32'
+			AND
+			blob = $1::udig
+		),
+		EXISTS (
+		  SELECT
+		  	true
+		    FROM
+		    	setops.flowd_call_fault
+		    WHERE
+		    	schema_name = 'setcore'
+			AND
+			command_name = 'upsert_byte_count'
+			AND
+			blob = $1::udig
+		),
+		EXISTS (
+		  SELECT
+		  	true
+		    FROM
+		    	setops.flowd_call_fault
+		    WHERE
+		    	schema_name = 'setcore'
+			AND
+			command_name = 'get_is_utf8wf'
+			AND
+			blob = $1::udig
+		),
+		EXISTS (
+		  SELECT
+		  	true
+		    FROM
+		    	setops.flowd_call_fault
+		    WHERE
+		    	schema_name = 'setcore'
+			AND
+			command_name = 'upsert_byte_bitmap'
+			AND
+			blob = $1::udig
+		),
+		EXISTS (
+		  SELECT
+		  	true
+		    FROM
+		    	setops.flowd_call_fault
+		    WHERE
+		    	schema_name = 'setcore'
+			AND
+			command_name = 'upsert_byte_suffix_32'
+			AND
+			blob = $1::udig
+		)
 	;`;
 }
 
 sync map in_flight[string]bool;
 
+sql query in_service row
+{
+	result row is (
+		answer	bool
+	);
+	statement = `
+	SELECT EXISTS (
+	  SELECT
+	  	true
+	    FROM
+	    	service
+	    WHERE
+	    	blob = $1::udig
+	)`;
+}
+
+query in_service(brr.udig)
+  when
+  	in_flight.LoadOrStore(brr.udig, true).loaded == false
+;
+
 query blob_state(brr.udig)
   when
-	in_flight.LoadOrStore(brr.udig, true).loaded == false
+	in_service.answer == false
 ;
 
 sql exec upsert_blob
@@ -171,6 +255,8 @@ call upsert_byte_prefix_32(brr.udig)
   	eat_blob.exit_status == 0
 	and
 	blob_state.in_byte_prefix_32 == false
+	and
+	blob_state.flt_byte_prefix_32 == false
 ;
 
 command upsert_byte_count
@@ -184,6 +270,8 @@ call upsert_byte_count(brr.udig)
   	eat_blob.exit_status == 0
 	and
 	blob_state.in_byte_count == false
+	and
+	blob_state.flt_byte_count == false
 ;
 
 command upsert_byte_bitmap
@@ -197,6 +285,8 @@ call upsert_byte_bitmap(brr.udig)
   	eat_blob.exit_status == 0
 	and
 	blob_state.in_byte_bitmap == false
+	and
+	blob_state.flt_byte_bitmap == false
 ;
 
 command upsert_byte_suffix_32
@@ -210,6 +300,8 @@ call upsert_byte_suffix_32(brr.udig)
   	eat_blob.exit_status == 0
 	and
 	blob_state.in_byte_suffix_32 == false
+	and
+	blob_state.flt_byte_suffix_32 == false
 ;
 
 command get_is_utf8wf
@@ -245,6 +337,8 @@ sql exec upsert_is_utf8wf
 call get_is_utf8wf(brr.udig)
   when
   	blob_state.in_is_utf8wf == false
+	and
+	blob_state.flt_is_utf8wf == false
 	and
 	eat_blob.exit_status == 0
 ;
