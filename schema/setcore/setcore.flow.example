@@ -536,12 +536,12 @@ query upsert_fault_get_is_utf8wf(
 	get_is_utf8wf.exit_status != 3
 ;
 
-command seen_wrap_roll
+command Clear_in_flight
 {
 	path = "true";
 }
 
-call seen_wrap_roll()
+call Clear_in_flight()
   when
   	brr.verb == "wrap"
 	or
@@ -550,5 +550,5 @@ call seen_wrap_roll()
 
 Clear in_flight
   when
-  	seen_wrap_roll.exit_status == 1
+  	Clear_in_flight.exit_status == 1
 ;
