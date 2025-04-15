@@ -42,6 +42,8 @@ LIBs="
 	psqlrc.example
 	schema.sql
 	sync-fltx.sql
+	upsert-flowd_call_fault.sql
+	upsert-flowd_command.sql
 "
 
 #  Uncoment to create bin/ directory
