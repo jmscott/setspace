@@ -33,7 +33,7 @@ sql database setspace
 {
 	driver_name = "postgres";
 	data_source_name =
-		"fallback_application_name=pdfbox.flow sslmode=disable";
+		"search_path=pdfbox,setspace fallback_application_name=pdfbox.flow sslmode=disable";
 	max_idle_conns = 0;
 	max_open_conns = 8;
 }
@@ -44,240 +44,221 @@ tail brr
 	path = "spool/prefixio.brr";
 }
 
-sync map first_seen_map[string]bool;
-
-command first_seen
-{
-	path = "true";
-}
+sync map first_seen[string]bool;
 
 sql query in_service row
 {
-	statement = `
-
-	SELECT EXISTS (
-	  SELECT
-	  	blob
-	    FROM
-	    	setcore.service
-	    WHERE
-	    	blob = $1::udig
-	);
-	`;
-
 	result row is (
-		ok bool
+		exists		bool
 	);
-}
-
-call first_seen(brr.udig)
-  when
-  	first_seen_map.LoadOrStore(brr.udig, true).loaded == false
-	and
-	#  is not an empty blob
-	(
-		brr.udig != "btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15"
-		and
-		brr.udig != "sha:da39a3ee5e6b4b0d3255bfef95601890afd80709"
-		and
-		brr.udig != "bc160:b472a266d0bd89c13706a4132ccfb16f7c3b9fcb"
-	)
-;
-
-query in_service(brr.udig)
-  when
-  	first_seen.exit_status == 0
-;
-
-#
-#  determine if the pdf exists in either pddocument or pddocument_information
-#  tables or is in fault.
-#
-#  if either pddocument{_information} fault, then we do not attempt to
-#  extract pages.
-#
-
-sql query in_pddocs row
-{
 	statement = `
 
 	SELECT
-		--  does row exist in table pddocument?
-
-		EXISTS (
-		  SELECT
-		  	blob
-		    FROM
-		    	pdfbox.pddocument
-		    WHERE
-		    	blob = $1::udig
-		),
-
-		--  is blob in fault for call to upsert-pddocument?
-
-		EXISTS (
-		  SELECT
-		  	blob
-		    FROM
-		    	setops.flowd_call_fault
-		    WHERE
-		    	schema_name = 'pdfbox'
-			AND
-		    	command_name = 'upsert_pddocument'
-			AND
-		    	blob = $1::udig
-		),
-
-		--  does row exist in table pddocument_information?
-
-		EXISTS (
-		  SELECT
-		  	blob
-		    FROM
-		    	pdfbox.pddocument_information
-		    WHERE
-		    	blob = $1::udig
-		),
-
-		--  is blob in fault for call to upsert-pddocument_information?
-
-		EXISTS (
-		  SELECT
-		  	blob
-		    FROM
-		    	setops.flowd_call_fault
-		    WHERE
-		    	schema_name = 'pdfbox'
-			AND
-		    	command_name = 'upsert_pddocument_information'
-			AND
-		    	blob = $1::udig
-		)
-	;
+	  EXISTS (
+	    SELECT
+	  	true
+	      FROM
+	    	pdfbox.service
+	      WHERE
+	    	blob = $1::udig
+	  )
 	`;
-
-	result row is (
-		ok_doc		bool,
-		flt_doc		bool,
-
-		ok_info		bool,
-		flt_info	bool
-	);
 }
 
-query in_pddocs(brr.udig)
+query in_service(brr.udig)
   when
-  	in_service.ok == true
+  	first_seen.LoadOrStore(brr.udig, true).loaded == false
 ;
 
-###
-#
-#  PDDocument
-#
-###
+command eat_blob
+{
+	path = "blobio";
+	argv = (
+		"eat",
+		"--service",
+		"fs:${BLOBIO_ROOT}",
+		"--udig"
+	);
+	exit_status is OK when in {
+		0,			#  blob exists
+		1			#  blob does not exist
+	};
+}
+
+call eat_blob(brr.udig)
+  when
+  	in_service.exists == false
+;
+
+sql query blob_state row
+{
+	result row is (
+		exists	bool
+	);
+	statement = `
+	SELECT EXISTS (
+	  SELECT
+	  	true
+	    FROM
+	    	pdfbox.blob
+	    WHERE
+	    	blob = $1::udig
+	);`;
+}
+
+query blob_state(brr.udig)
+  when
+  	eat_blob.exit_status == 0
+;
+
+sql exec upsert_blob
+{
+	statement = `
+	INSERT INTO pdfbox.blob(
+		blob,
+		discover_time
+	  ) VALUES (
+	    	$1::udig,
+		$2::inception
+	  ) ON CONFLICT (blob) DO UPDATE SET
+	    	discover_time = $2::inception
+	    WHERE
+	      	blob.discover_time > EXCLUDED.discover_time
+	 ;
+	`;
+}
+
+query upsert_blob(brr.udig, brr.start_time)
+  when
+  	blob_state.exists == false
+;
+
+sql query pddocument_state row
+{
+	result row is (
+		exists		bool,
+		in_fault	bool
+	);
+	statement = `
+	  SELECT
+	    EXISTS (
+	    	SELECT
+			true
+		  FROM
+		  	pddocument
+		  WHERE
+		  	blob = $1::udig
+	   ),
+	   EXISTS (
+	     SELECT
+	     	true
+	      FROM
+	      	setops.flowd_call_fault
+	      WHERE
+	      	schema_name = 'pdfbox'
+		AND
+		command_name = 'upsert_pddocument'
+		AND
+		blob = $1::udig
+	  )
+	`;
+}
+
+query pddocument_state(brr.udig)
+  when
+  	upsert_blob.sqlstate == "00000"
+	or
+	blob_state.exists == true
+;
+
 command upsert_pddocument
 {
-	path = "upsert-pddocument";
-
-	exit_status is OK when in {
-                0,      #  ok, extracted pddocument info and stored into db
-                1       #  blob does not exist
-        };
+	path = "sbin/upsert-pddocument";
 }
 
 call upsert_pddocument(brr.udig)
   when
-  	in_pddocs.ok_doc == false
+  	pddocument_state.exists == false
 	and
-  	in_pddocs.flt_doc == false
+	pddocument_state.in_fault == false
 ;
 
-###
-#
-#  PDDocumentInformation
-#
-###
+sql exec upsert_pddocument_fault
+{
+	statement = `
+	INSERT INTO setops.flowd_call_fault(
+		schema_name,
+		command_name,
+		blob,
+		exit_class,
+		exit_status,
+		signal,
+		fault_time
+	) VALUES (
+		'pdfbox',
+		'upsert_pddocument',
+		$1::udig,
+		'ERR',
+		$2::smallint,
+		0,
+		now()
+	)
+	`;
+}
+
+query upsert_pddocument_fault(brr.udig, upsert_pddocument.exit_status)
+  when
+  	upsert_pddocument.exit_status != 0
+;
+
+sql query pddocument_information_state row
+{
+	result row is (
+		exists		bool,
+		in_fault	bool
+	);
+	statement = `
+	SELECT
+	  EXISTS (
+	    SELECT
+	    	true
+	      FROM
+	      	pddocument_information
+	      WHERE
+	      	blob = $1::udig
+	  ),
+	  EXISTS (
+	    SELECT
+	    	true
+	      FROM
+	      	setops.flowd_call_fault
+	      WHERE
+	      	schema_name = 'pdfbox'
+		AND
+		command_name = 'upsert_pddocument_information'
+		AND
+		blob = $1::udig
+	  )`;
+}
+
+query pddocument_information_state(brr.udig)
+  when
+	#
+	#  either already in table pddocument or was just upserted
+	#
+  	pddocument_state.exists == true
+	or
+	upsert_pddocument.exit_status == 0
+;
+
 command upsert_pddocument_information
 {
-	path = "upsert-pddocument_information";
-	exit_status is OK when in {
-                0,      #  ok, extracted pddocument info and stored into PG
-                1       #  blob does not exist
-        };
+	path = "sbin/upsert-pddocument_information";
 }
 
 call upsert_pddocument_information(brr.udig)
   when
-  	in_pddocs.ok_info == false
+  	pddocument_information_state.exists == false
 	and
-  	in_pddocs.flt_info == false
-;
-
-###
-#
-#  ExtractPagesUTF8
-#
-###
-command upsert_extract_pages_utf8
-{
-	path = "upsert-extract_pages_utf8";
-	argv = (
-		"english"
-	);
-	exit_status is OK when in {
-                0      #  ok, extracted pddocument info and stored into PG
-        };
-}
-
-#  determine if the pages of the pdf have been extracted.
-
-sql query in_extract row
-{
-	statement = `
-
-	SELECT
-		--  extract_pages_utf8: does row exist in table
-
-		EXISTS (
-		  SELECT
-		  	pdf_blob
-		    FROM
-		    	pdfbox.extract_pages_utf8
-		    WHERE
-		    	pdf_blob = $1::udig
-		)
-		OR
-		EXISTS (
-		  SELECT
-		  	blob
-		    FROM
-		    	setops.flowd_call_fault
-		    WHERE
-		    	schema_name = 'pdfbox'
-			and
-		    	command_name = 'upsert_extract_pages_utf8'
-			AND
-		    	blob = $1::udig
-		)
-	;
-	`;
-
-	result row is (
-		ok		bool
-	);
-}
-
-query in_extract(brr.udig)
-  when
-  	#  extract tables depend reference pddocument 
-  	in_pddocs.ok_doc == true
-	or
-	in_pddocs.flt_doc == true
-;
-
-call upsert_extract_pages_utf8(brr.udig)
-  when
-  	in_extract.ok == false
-	or
-	upsert_pddocument.exit_status == 0
+	pddocument_information_state.in_fault == false
 ;

@@ -47,7 +47,6 @@ DROP TABLE IF EXISTS blob;
 CREATE TABLE blob
 (
 	blob	udig
-			REFERENCES setcore.blob
 			PRIMARY KEY,
 	discover_time	inception
 				DEFAULT now()
@@ -66,7 +65,7 @@ DROP TABLE IF EXISTS pddocument CASCADE;
 CREATE TABLE pddocument
 (
 	blob		udig
-				REFERENCES blob
+				REFERENCES setcore.blob
 				ON DELETE CASCADE
 				PRIMARY KEY,
 	/*
