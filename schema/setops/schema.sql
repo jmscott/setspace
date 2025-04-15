@@ -84,7 +84,7 @@ CREATE TABLE flowd_call_fault
 				exit_status >= 0
 				AND
 				exit_status <= 255
-			) DEFAULT 0 NOT NULL,
+			),
 	signal		smallint CHECK (
 				signal >= 0
 				AND
@@ -101,7 +101,28 @@ CREATE TABLE flowd_call_fault
 
 	FOREIGN KEY	(schema_name, command_name)
 			  REFERENCES flowd_command
-			  ON DELETE CASCADE
+			  ON DELETE CASCADE,
+
+	CONSTRAINT exit_signal CHECK (
+			(
+				exit_class = 'ERR'
+				AND
+			  	exit_status IS NOT NULL
+				AND
+				signal IS NULL
+			) OR (
+				exit_class = 'SIG'
+				AND
+				signal IS NOT NULL
+				AND
+				exit_status IS NULL
+			) OR (
+				exit_class = 'OPS'
+				AND
+				exit_status IS NULL
+				AND
+				signal IS NULL
+			))
 );
 CREATE INDEX idx_flowd_call_fault_time ON flowd_call_fault(fault_time);
 CREATE INDEX idx_flowd_call_fault_blob ON flowd_call_fault USING hash(blob);
