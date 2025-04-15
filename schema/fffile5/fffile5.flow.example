@@ -34,7 +34,7 @@ sql database setspace
 {
 	driver_name = "postgres";
 	data_source_name =
-		"search_path=fffile5,setspace,public fallback_application_name=fffile5.flow sslmode=disable";
+		"search_path=fffile5,setspace fallback_application_name=fffile5.flow sslmode=disable";
 	max_idle_conns = 0;
 	max_open_conns = 8;
 }
@@ -54,7 +54,22 @@ call first_seen(brr.udig)
   	first_seen_blob.LoadOrStore(brr.udig, true).loaded == false
 ;
 
-sql query in_service_table row
+command blob_exists
+{
+	path = "blobio";
+	argv = (
+		"eat",
+		"--service",
+		"fs:${BLOBIO_ROOT}",
+		"--udig"
+	);
+	exit_status is OK when in {
+		0,			#  blob exists
+		1			#  blob does not exist
+	};
+}
+
+sql query in_service row
 {
 	statement = `
 
@@ -66,26 +81,22 @@ sql query in_service_table row
 	    	fffile5.service
 	      WHERE
 	    	blob = $1::udig
-	  ),
-	  EXISTS (
-	    SELECT
-	    	true
-	      FROM
-	      	setcore.service
-	      WHERE
-	      	blob = $1::udig
-	  );
+	  )
 	`;
 
 	result row is (
-		in_fffile5 bool,
-		in_setcore bool
+		answer bool
 	);
 }
 
-query in_service_table(brr.udig)
+query in_service(brr.udig)
   when
   	first_seen.exit_status == 0
+;
+
+call blob_exists(brr.udig)
+  when
+  	in_service.answer == false
 ;
 
 sql query in_blob_table row
@@ -105,11 +116,10 @@ sql query in_blob_table row
 		answer bool
 	);
 }
+
 query in_blob_table(brr.udig)
   when
-  	in_service_table.in_fffile5 == false
-	and
-	in_service_table.in_setcore == true
+  	blob_exists.exit_status == 0
 ;
 
 sql exec upsert_blob
