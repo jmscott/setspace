@@ -31,7 +31,6 @@ DROP TABLE IF EXISTS blob CASCADE;
 CREATE TABLE blob
 (
 	blob		udig
-				REFERENCES setcore.blob
 				PRIMARY KEY,
 	discover_time	inception
 				DEFAULT now()
