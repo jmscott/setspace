@@ -535,3 +535,20 @@ query upsert_fault_get_is_utf8wf(
 	and
 	get_is_utf8wf.exit_status != 3
 ;
+
+command seen_wrap_roll
+{
+	path = "true";
+}
+
+call seen_wrap_roll()
+  when
+  	brr.verb == "wrap"
+	or
+	brr.verb == "roll"
+;
+
+Clear in_flight
+  when
+  	seen_wrap_roll.exit_status == 1
+;
