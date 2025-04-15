@@ -77,3 +77,7 @@ world:
 	$(_MAKE) install
 tar:
 	make-make tar $(MKMK)
+frisk:
+	make-make tar $(MKMK)
+	@echo;  echo frisk OK
+	@rm --force --verbose setops-2*.tar.bz2
