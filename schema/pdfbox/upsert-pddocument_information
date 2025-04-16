@@ -33,8 +33,9 @@ trap '' PIPE
 
 die()
 {
-	source $SETSPACE_SCHEMA_ROOT/lib/upsert-fault.bash
-	die_upsert upsert_pddocument_information $@
+	test -s STDERR && cat STDERR >&2
+	echo "$PROG: ERROR: $@" >&2
+	exit 2
 }
 
 jdie()
