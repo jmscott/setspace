@@ -18,19 +18,23 @@ SELECT
 	pi.producer AS "Producer",
 	pi.subject AS "Subject",
 	pi.trapped AS "Trapped",
-	pd.number_of_pages AS "PD Page Count",
-	pd.document_id AS "PD Document Id",
-	pd.version AS "PD Version",
+	pd.number_of_pages AS "Page Count",
+	pd.document_id AS "Document Id",
+	pd.version AS "Version",
 	CASE
 	  WHEN pd.is_all_security_to_be_removed
 	  THEN 'Yes'
-	  ELSE 'No'
-	END AS "PD Is All Security
+	  WHEN NOT pd.is_all_security_to_be_removed
+	  THEN 'No'
+	  ELSE pd.is_all_security_to_be_removed
+	END AS "Is All Security
      to be Removed",
         CASE
 	  WHEN pd.is_encrypted
 	  THEN 'Yes'
-	  ELSE 'No'
+	  WHEN NOT pd.is_encrypted
+	  THEN 'No'
+	  ELSE pd.is_encrypted
 	END AS "Is Encrypted",
 	  
 	(SELECT

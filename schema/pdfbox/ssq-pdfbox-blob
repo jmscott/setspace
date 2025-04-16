@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	List blobs in table pdfbox.blob
+#
+source $SETSPACE_ROOT/lib/ssq-common.bash
+
+USAGE=''
+SQL=lib/$PROG.sql
+
+PSQL=$SSQ_COMMON_PSQL_TSV
+
+$PSQL --file $SQL || die "psql blob failed: exit status=$?"

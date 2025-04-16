@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+#  Subject:
+#	Detailed listing of blobs on command line.
+#
+source $SETSPACE_ROOT/lib/ssq-common.bash
+
+USAGE='<udig> ...'
+
+test $# = 0 && usage
+
+while [ "$1" ];  do
+	BLOB="$1";  shift
+
+	frisk_udig "$BLOB"
+	ssq pdfbox udig $BLOB || die "ssq pdfbox udig failed: exit status=$?"
+done

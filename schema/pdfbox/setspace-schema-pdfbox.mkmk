@@ -59,6 +59,10 @@ LIBs="
 	psqlrc.example
 	schema.sql
 	setspace-schema-pdfbox.mkmk
+	ssq-pdfbox-blob.sql
+	ssq-pdfbox-fault.sql
+	ssq-pdfbox-rummy.sql
+	ssq-pdfbox-service.sql
 	ssq-pdfbox-udig.sql
 	upsert-fault.bash
 "
@@ -132,5 +136,10 @@ LOG="
 #  Uncomment to create directory libexec/
 LIBEXECs="
 	ssq-pdfbox
+	ssq-pdfbox-blob
+	ssq-pdfbox-fault
+	ssq-pdfbox-ls
+	ssq-pdfbox-rummy
+	ssq-pdfbox-service
 	ssq-pdfbox-udig
 "

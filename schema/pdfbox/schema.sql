@@ -1,13 +1,12 @@
 /*
  *  Synopsis:
- *	Schema of the pdfbox.apache.org version 2 api
+ *	Schema of the pdfbox.apache.org version 2 api, with rum extension
  *  Usage:
  *	cd $SETSPACE_ROOT
  *	psql -f schema/pdfbox/lib/schema.sql
  *  See:
  *	https://pdfbox.apache.org
  *  Note:
- *	Tue Apr 12 17:27:58 CDT 2022
  *	Create int domain pdf_page_number where limit < 2603538.
  *
  *	Need to create tsv on colums pddocument_information.{title,author}

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	List blobs in view pdfbox.rummy
+#
+source $SETSPACE_ROOT/lib/ssq-common.bash
+
+USAGE=''
+SQL=lib/$PROG.sql
+
+PSQL=$SSQ_COMMON_PSQL_TSV
+
+$PSQL --file $SQL || die "psql rummy failed: exit status=$?"
