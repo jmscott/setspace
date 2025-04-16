@@ -60,11 +60,14 @@ LIBs="
 	schema.sql
 	setspace-schema-pdfbox.mkmk
 	ssq-pdfbox-blob.sql
+	ssq-pdfbox-blob-count.sql
 	ssq-pdfbox-fault.sql
+	ssq-pdfbox-fault-count.sql
 	ssq-pdfbox-rummy.sql
+	ssq-pdfbox-rummy-count.sql
 	ssq-pdfbox-service.sql
+	ssq-pdfbox-service-count.sql
 	ssq-pdfbox-udig.sql
-	upsert-fault.bash
 "
 
 BINs="
@@ -137,9 +140,13 @@ LOG="
 LIBEXECs="
 	ssq-pdfbox
 	ssq-pdfbox-blob
+	ssq-pdfbox-blob-count
 	ssq-pdfbox-fault
+	ssq-pdfbox-fault-count
 	ssq-pdfbox-ls
 	ssq-pdfbox-rummy
+	ssq-pdfbox-rummy-count
 	ssq-pdfbox-service
+	ssq-pdfbox-service-count
 	ssq-pdfbox-udig
 "

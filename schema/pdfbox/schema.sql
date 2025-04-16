@@ -266,79 +266,72 @@ ALTER VIEW fault OWNER TO :db_owner;
  */
 DROP VIEW IF EXISTS rummy CASCADE;
 CREATE VIEW rummy AS
-  WITH blobs AS (
-    SELECT
-  	blob
-      FROM
-    	blob
-  ), pd_state AS (	--  table pddocument unresolved state
-    SELECT
-  	pd.blob,
-	EXISTS (
-	  SELECT
-	  	true
-	    FROM
-	    	setops.flowd_call_fault flt
-	    WHERE
-	    	flt.schema_name = 'pdfbox'
-		AND
-		flt.command_name = 'upsert_pddocument'
-		AND
-		flt.blob = b.blob
-	) AS in_fault
-      FROM
-        blobs b
-      	  NATURAL LEFT OUTER JOIN pddocument pd
-  ), pi_state AS (	--  table pddocument_information unresolved state
-    SELECT
-  	pi.blob,
-	EXISTS (
-	  SELECT
-	  	true
-	    FROM
-	    	setops.flowd_call_fault flt
-	    WHERE
-	    	flt.schema_name = 'pdfbox'
-		AND
-		flt.command_name = 'upsert_pddocument_information'
-		AND
-		flt.blob = b.blob
-	) AS in_fault
-      FROM
-        blobs b
-      	  NATURAL LEFT OUTER JOIN pddocument_information pi
-  ), exp_state AS (	--  table extract_pages_utf8 unresolved state
-    SELECT DISTINCT
-  	ep.pdf_blob AS blob,
-	EXISTS (
-	  SELECT
-	  	true
-	    FROM
-	    	setops.flowd_call_fault flt
-	    WHERE
-	    	flt.schema_name = 'pdfbox'
-		AND
-		flt.command_name = 'upsert_extract_pages_utf8'
-		AND
-		flt.blob = b.blob
-	) AS in_fault
-      FROM
-        blobs b
-      	  NATURAL LEFT OUTER JOIN extract_pages_utf8 ep
-  )
   SELECT
-  	b.blob
+  	DISTINCT b.blob
     FROM
     	blob b
-    	  NATURAL LEFT OUTER JOIN pd_state pd
-    	  NATURAL LEFT OUTER JOIN pi_state pi
-    	  NATURAL LEFT OUTER JOIN exp_state exp
+    	  NATURAL LEFT OUTER JOIN pddocument pd
+    	  NATURAL LEFT OUTER JOIN pddocument_information pi
     WHERE
-    	pd.blob IS NULL AND NOT pd.in_fault
-	OR
-    	pi.blob IS NULL AND NOT pi.in_fault
-	OR
-	exp.blob  IS NULL AND NOT exp.in_fault
+    	(
+		--  not in table pddocument and process not in fault
+
+		pd.blob IS NULL
+		AND
+		NOT EXISTS (
+		  SELECT
+		  	true
+		    FROM
+		    	setops.flowd_call_fault flt
+		    WHERE
+		    	flt.schema_name = 'pdfbox'
+			AND
+			flt.command_name = 'upsert_pddocument'
+			AND
+			flt.blob = b.blob
+		)
+	)
+	OR (
+		--  not in table pddocument_information and process not in fault
+
+    		pi.blob IS NULL
+		AND
+		NOT EXISTS (
+		  SELECT
+		  	true
+		    FROM
+		    	setops.flowd_call_fault flt
+		    WHERE
+		    	flt.schema_name = 'pdfbox'
+			AND
+			flt.command_name = 'upsert_pddocument_information'
+			AND
+			flt.blob = b.blob	
+		)
+	)
+	OR (
+		--  no extracted pages and process not in fault
+
+		NOT EXISTS (
+		  SELECT
+			DISTINCT true
+		    FROM
+			extract_pages_utf8 exp
+		    WHERE
+			exp.pdf_blob = b.blob
+		) AND NOT EXISTS (
+		  SELECT
+		  	true
+		    FROM
+		    	setops.flowd_call_fault flt
+		    WHERE
+		    	flt.schema_name = 'pdfbox'
+			AND
+			flt.command_name = 'upsert_extract_pages_utf8'
+			AND
+			flt.blob = b.blob
+		)
+	)
 ;
 COMMENT ON VIEW rummy IS
   'Blobs with to be discovered attributes'

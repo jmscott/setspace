@@ -15,8 +15,6 @@
 #  Note:
 #	Need to insure putPDDocument always writes utf8 and not utf16!
 #
-#	Need to upsert fault into flow file, instead of in this script.
-#
 
 PROG=upsert-pddocument
 PSQL='psql --no-psqlrc --quiet --no-readline --set=ON_ERROR_STOP=1'
@@ -31,8 +29,8 @@ leave()
 
 die()
 {
-	source $SETSPACE_SCHEMA_ROOT/lib/upsert-fault.bash
-	die_upsert upsert_pddocument $@
+	echo "$PROG: ERROR: $@" >&2
+	exit 2
 }
 
 jdie()
@@ -93,8 +91,7 @@ case $STATUS in
 	;;
 esac
 
-test $STATUS = 0							||
-	die "putPDDocument failed: exit status=$STATUS"
+test $STATUS = 0 || die "putPDDocument failed: exit status=$STATUS"
 test -s ROW || die 'ROW of putPDDocument is empty'
 
 #

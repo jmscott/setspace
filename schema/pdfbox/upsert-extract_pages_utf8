@@ -22,9 +22,6 @@
 #	import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 #	import org.apache.pdfbox.text.PDFTextStripper;
 #  Note:
-s	Waiting for page blobs to exist in setcore.blob is broken.  pdfbox3
-#	will fix this.
-#
 #	Page blobs may be orphaned if the transaction is aborted.
 #	Perhaps a json blob summarizing the transaction should be created.
 #
@@ -39,11 +36,7 @@ GET_SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
 
 die()
 {
-	#  upsert the error into 
-	if [ -n "$PDF_UDIG" ];  then
-		source $SETSPACE_ROOT/schema/pdfbox/lib/upsert-fault.bash
-		die_upsert upsert_extract_pages_utf8 $@
-	fi
+	test -s STDERR && cat STDERR
 	echo "$PROG: ERROR: $@" >&2
 	exit 2
 }
@@ -85,9 +78,6 @@ esac
 #  let pdfbox extract individual pages into files 0000001.txt, 0000002.txt ...
 #  write digest for page in 0000001.udig, 0000002.udig
 #
-#  Note:
-#	Orphan page blob could exist if this script faults!
-#
 
 java 									\
 	-server								\
@@ -125,22 +115,6 @@ find . -maxdepth 1 -name '[0-9][0-9][0-9][0-9][0-9][0-9][0-9].txt' -type f   |
 	UDIG_PATH=$(basename $PAGE_PATH .txt).udig
 	echo $PAGE_UDIG >$UDIG_PATH ||
 				die "echo page udig > failed: exit status=$?"
-
-	#  Note: blob must appear in setcore.service or foreign key fails!
-
-	spin-wait-blob setcore.service blob 32 $PAGE_UDIG
-	STATUS=$?
-	case $STATUS in
-	0)
-		;;		#  blob appeared in table setcore.service
-	1)
-		die 'spin-wait-blob: page txt: blob not in setcore.service'
-		;;
-	*)
-		die "spin-wait-blob failed: exit status=$STATUS"
-		;;
-	esac
-		
 done
 STATUS=${PIPESTATUS[*]}
 case "$STATUS" in

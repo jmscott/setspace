@@ -10,4 +10,9 @@ SQL=lib/$PROG.sql
 
 PSQL=$SSQ_COMMON_PSQL_TSV
 
-$PSQL --file $SQL || die "psql service failed: exit status=$?"
+if [ $# = 0 ];  then
+	$PSQL --file $SQL || die "psql service failed: exit status=$?"
+	exit 0
+fi
+
+exec_action $@

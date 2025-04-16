@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	List blobs in table pdfbox.blob
+#	Count blobs in view pdfbox.service
 #
 source $SETSPACE_ROOT/lib/ssq-common.bash
 
@@ -11,7 +11,8 @@ SQL=lib/$PROG.sql
 PSQL=$SSQ_COMMON_PSQL_TSV
 
 if [ $# = 0 ];  then
-	$PSQL --file $SQL || die "psql blob failed: exit status=$?"
+	$PSQL --file $SQL || die "psql service count failed: exit status=$?"
 	exit 0
 fi
+
 exec_action $@

@@ -5,9 +5,12 @@
 #
 source $SETSPACE_ROOT/lib/ssq-common.bash
 
-USAGE=''
+USAGE='[count]'
 SQL=lib/$PROG.sql
-
 PSQL=$SSQ_COMMON_PSQL_TSV
 
-$PSQL --file $SQL || die "psql fault failed: exit status=$?"
+if [ $# = 0 ];  then
+	$PSQL --file $SQL || die "psql fault failed: exit status=$?"
+	exit 0
+fi
+exec_action $@

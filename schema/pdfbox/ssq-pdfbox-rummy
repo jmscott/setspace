@@ -7,7 +7,11 @@ source $SETSPACE_ROOT/lib/ssq-common.bash
 
 USAGE=''
 SQL=lib/$PROG.sql
+	PSQL=$SSQ_COMMON_PSQL_TSV
 
-PSQL=$SSQ_COMMON_PSQL_TSV
+if [ $# = 0 ];  then
+	$PSQL --file $SQL || die "psql rummy failed: exit status=$?"
+	exit 0
+fi
 
-$PSQL --file $SQL || die "psql rummy failed: exit status=$?"
+exec_action $@
