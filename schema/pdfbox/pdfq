@@ -71,7 +71,7 @@ PSQL_OPTS='--quiet --no-psqlrc'
 
 die()
 {
-	echo "$PROG: ERROR: $1" >&2
+	echo "$PROG: ERROR: $@" >&2
 	exit $2
 }
 
