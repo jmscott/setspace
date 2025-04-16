@@ -44,7 +44,6 @@ COMPILEs="
 
 LIBs="
 	$JCOMPILEs
-	upsert-fault.bash
 	page-count-fts.sql
 	page-count-keyword.sql
 	page-count-phrase.sql
@@ -60,6 +59,8 @@ LIBs="
 	psqlrc.example
 	schema.sql
 	setspace-schema-pdfbox.mkmk
+	ssq-pdfbox-udig.sql
+	upsert-fault.bash
 "
 
 BINs="
@@ -131,4 +132,5 @@ LOG="
 #  Uncomment to create directory libexec/
 LIBEXECs="
 	ssq-pdfbox
+	ssq-pdfbox-udig
 "

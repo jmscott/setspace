@@ -262,41 +262,90 @@ COMMENT ON VIEW fault IS
 ALTER VIEW fault OWNER TO :db_owner; 
 
 /*
+ *  Synopsis:
+ *	Find blobs with unresolved attributes.
+ */
 DROP VIEW IF EXISTS rummy CASCADE;
 CREATE VIEW rummy AS
+  WITH blobs AS (
+    SELECT
+  	blob
+      FROM
+    	blob
+  ), pd_state AS (	--  table pddocument unresolved state
+    SELECT
+  	pd.blob,
+	EXISTS (
+	  SELECT
+	  	true
+	    FROM
+	    	setops.flowd_call_fault flt
+	    WHERE
+	    	flt.schema_name = 'pdfbox'
+		AND
+		flt.command_name = 'upsert_pddocument'
+		AND
+		flt.blob = b.blob
+	) AS in_fault
+      FROM
+        blobs b
+      	  NATURAL LEFT OUTER JOIN pddocument pd
+  ), pi_state AS (	--  table pddocument_information unresolved state
+    SELECT
+  	pi.blob,
+	EXISTS (
+	  SELECT
+	  	true
+	    FROM
+	    	setops.flowd_call_fault flt
+	    WHERE
+	    	flt.schema_name = 'pdfbox'
+		AND
+		flt.command_name = 'upsert_pddocument_information'
+		AND
+		flt.blob = b.blob
+	) AS in_fault
+      FROM
+        blobs b
+      	  NATURAL LEFT OUTER JOIN pddocument_information pi
+  ), exp_state AS (	--  table extract_pages_utf8 unresolved state
+    SELECT DISTINCT
+  	ep.pdf_blob AS blob,
+	EXISTS (
+	  SELECT
+	  	true
+	    FROM
+	    	setops.flowd_call_fault flt
+	    WHERE
+	    	flt.schema_name = 'pdfbox'
+		AND
+		flt.command_name = 'upsert_extract_pages_utf8'
+		AND
+		flt.blob = b.blob
+	) AS in_fault
+      FROM
+        blobs b
+      	  NATURAL LEFT OUTER JOIN extract_pages_utf8 ep
+  )
   SELECT
-  	DISTINCT b.blob
+  	b.blob
     FROM
     	blob b
-    	  NATURAL LEFT OUTER JOIN pddocument pd
-	  NATURAL LEFT OUTER JOIN pddocument_information pdi
-	  NATURAL LEFT OUTER JOIN fault flt ON (
-	  	flt.schema_name = 'pdfbox'
-		AND
-	  	flt.blob = b.blob
-	  )
+    	  NATURAL LEFT OUTER JOIN pd_state pd
+    	  NATURAL LEFT OUTER JOIN pi_state pi
+    	  NATURAL LEFT OUTER JOIN exp_state exp
     WHERE
-    	pd.document IS NULL
+    	pd.blob IS NULL AND NOT pd.in_fault
 	OR
-        flt.blob IS NULL
-	AND (
-		pdi.blob IS NULL
-		OR
-		NOT EXISTS (
-		  SELECT
-			ex.pdf_blob
-		    FROM
-			pdfbox.extract_pages_utf8 ex
-		    WHERE
-			ex.pdf_blob = pd.blob
-		)
-	)
+    	pi.blob IS NULL AND NOT pi.in_fault
+	OR
+	exp.blob  IS NULL AND NOT exp.in_fault
 ;
 COMMENT ON VIEW rummy IS
   'Blobs with to be discovered attributes'
 ;
+
 ALTER VIEW rummy OWNER TO :db_owner; 
- */
 
 DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS

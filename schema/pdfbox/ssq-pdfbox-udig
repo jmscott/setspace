@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	Detailed list of pdfbox blob.
+#
+
+source $SETSPACE_ROOT/lib/ssq-common.bash
+USAGE='[service|rummy|fault] | <udig>...'
+
+SQL=lib/ssq-pdfbox-udig.sql
+PSQL=$SSQ_COMMON_PSQL_EXPAND
+
+test $# = 1 || die "wrong cli arg count: got $#, want 1"
+BLOB="$1"
+
+$PSQL --set blob=$BLOB --file $SQL || die "psql udig failed: exit status=$?"
