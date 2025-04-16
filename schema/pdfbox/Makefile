@@ -98,9 +98,6 @@ install: all
 		$(SRCs)							\
 		$(PDFBOX_PREFIX)/src
 
-frisk ff:
-	flowd frisk pdfbox.flow.example
-
 upsert-stdin-pddocument_information:					\
 		upsert-stdin-pddocument_information.pgc			\
 		../../common.c						\
@@ -134,3 +131,8 @@ dev-links:
 
 tar:
 	make-make tar $(MKMK)
+frisk:
+	rm --force --verbose setspace-schema-pdfbox-2*.tar.bz2
+	make-make tar $(MKMK)
+	rm --verbose setspace-schema-pdfbox-2*.tar.bz2
+	@echo;  echo;  echo frisk OK
