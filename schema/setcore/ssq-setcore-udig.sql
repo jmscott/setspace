@@ -4,7 +4,7 @@
  *  Usage:
  *	#  see script ssq-setcore-ls
  */
-SET search_path TO setcore,setspace,public;
+SET search_path TO pdfbox,setspace;
 
 SELECT
 	b.blob AS "Blob",
