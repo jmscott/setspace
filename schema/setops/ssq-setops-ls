@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-set -x
 #
 #  Synopsis:
 #	Libexec from ssq-setops for most recent blobs in setops.service
 #  Usage:
 #	sql setops
 #
-PROG=$(basename $0)
+source $SETSPACE_OOT/lib/ssq-common.bash
 
 PSQL='psql
 	--echo-queries
@@ -14,12 +13,6 @@ PSQL='psql
 	--tuples-only
 	--no-readline
 '
-
-die()
-{
-	echo "$PROG: ERROR: $@" >&2 
-	exit 1
-}
 
 test $# = 0 && exec libexec/ssq-setops-ls-recent
 test $# = 1 || die "wrong cli arg count: got $#, expected 1 (udig)"

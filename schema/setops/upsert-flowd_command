@@ -11,7 +11,13 @@
 #
 
 PROG=$(basename $0)
-PSQL='psql --quiet --no-psqlrc --no-readline'
+PSQL='psql
+	--quiet
+	--no-psqlrc
+	--no-readline
+
+'
+SQL=schema/setops/lib/upsert-flowd_command.sql
 
 die()
 {
@@ -46,14 +52,8 @@ upsert_schema_command()
 			;;
 		esac
 
-		$PSQL <<END || die "psql upsert failed: exit status=$?"
-INSERT INTO setops.flowd_command (
-	schema_name,
-	command_name
-  ) VALUES('$SCHEMA', '$CMD')
-      ON CONFLICT DO NOTHING
-; 
-END
+		$PSQL --file $SQL --set sch=$SCHEMA --set cmd=$CMD 	||
+			die "psql upsert failed: exit status=$?"
 	done
 }
 

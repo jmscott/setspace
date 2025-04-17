@@ -69,6 +69,8 @@ INSERT INTO flowd_call_fault(
 	exit_class,
 	exit_status,
 	signal,
+	stdout_blob,
+	stderr_blob,
 	fault_time
 ) SELECT
 	:'schema',
@@ -77,6 +79,8 @@ INSERT INTO flowd_call_fault(
 	exit_class,
 	exit_status,
 	signal,
+	stdout_blob,
+	stderr_blob,
 	fault_time
     FROM
     	load_fltx

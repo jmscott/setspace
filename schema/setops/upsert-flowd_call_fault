@@ -110,65 +110,6 @@ STDERR_BLOB=$(eat stderr $STDERR_PATH $TMP_INPUT_PATH)
 #
 
 
-$PSQL <<END || die "psql insert fault failed: exit status=$?"
-INSERT INTO setops.flowd_call_fault(
-	schema_name,
-	command_name,
-	blob,
-	exit_class,
-	exit_status,
-	signal
-  ) VALUES (
-  	'$SCHEMA_NAME',
-	'$COMMAND_NAME',
-	'$BLOB',
-	'$EXIT_CLASS',
-	$EXIT_STATUS,
-	$SIGNAL
-  ) ON CONFLICT
-  	DO NOTHING
-;
-END
-
-#  wait for the output blobs to appear in table setcore.service.
-
-spin-wait-blob setcore.service blob 32 $STDOUT_BLOB			||
-		die "spin-wait-blob stdout failed: exit status=$?: $STDOUT_BLOB"
-
-$PSQL <<END || die "psql insert fault stdout failed: exit status=$?"
-INSERT INTO setops.flowd_call_fault_output(
-	schema_name,
-	command_name,
-	blob,
-	stdout_blob
-  ) VALUES (
-  	'$SCHEMA_NAME',
-	'$COMMAND_NAME',
-	'$BLOB',
-	'$STDOUT_BLOB'
-  ) ON CONFLICT
-  	DO NOTHING
-;
-END
-
-spin-wait-blob setcore.service blob 32 $STDERR_BLOB			||
-		die "spin-wait-blob stderr failed: exit status=$?: $STDERR_BLOB"
-
-#  Note: race condition exists if pdfbox.flowd fires same command twice
-
-$PSQL <<END || die "psql update fault stderr failed: exit status=$?"
-UPDATE setops.flowd_call_fault_output
-  SET
-  	stderr_blob = '$STDERR_BLOB'
-  WHERE
-  	schema_name = '$SCHEMA_NAME'
-	AND
-	command_name = '$COMMAND_NAME'
-	AND
-	blob = '$BLOB'
-	AND
-	stderr_blob IS NULL
-;
-END
+$PSQL --file $SQL || die "psql insert fault failed: exit status=$?"
 
 exit 0
