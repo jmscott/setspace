@@ -1,12 +1,12 @@
 /*
  *  Synopsis:
- *	Create schema "setspace" with udig type "setspace.udig"
+ *	Create schema "setspace" for extension rum and "setspace.udig"
  *  Usage:
- *	#  first, before creating schemas in schema/ * /lib/schema.sql
+ *	#  create first, before creating schemas in schema/ * /lib/schema.sql
  *
  *	UDIG_SQL=/usr/local/pgsql/share/contrib/udig.sql
- *	DBOWNER=jmscott
- *	psql --set UDIG_SQL=$UDIG_SQL --set DBOWNER=$DBOWNER		\
+ *	db_owner=jmscott
+ *	psql --set UDIG_SQL=$UDIG_SQL --set db_owner=$db_owner		\
  *		--file $SETSPACE_ROOT/lib/schema.sql
  *  Note:
  *	See script CREATE-setspace-schema
@@ -14,26 +14,52 @@
 \set ON_ERROR_STOP 1
 
 \echo UDIG SQL: :UDIG_PATH
-\echo DATABASE OWNER: :DBOWNER
+\echo DATABASE OWNER: :db_owner
 
 BEGIN TRANSACTION;
+
+\echo get owner of current database
+SELECT
+	datdba::regrole AS db_owner
+  FROM
+  	pg_database
+  WHERE
+  	datname = current_database()
+;
+\gset
 
 DROP SCHEMA IF EXISTS setspace CASCADE;
 CREATE SCHEMA setspace;
 COMMENT ON SCHEMA setspace IS
   'Data types, functions, etc used by all schemas in schema/*/lib/schema.sql'
 ;
-ALTER SCHEMA setspace OWNER TO :DBOWNER;
+ALTER SCHEMA setspace OWNER TO :db_owner;
 
-\echo create udig type in schema setspace
-\echo include :UDIG_PATH
-SET search_path to setspace,public;
-\include :UDIG_PATH
+SET search_path to setspace;
 
-ALTER TYPE udig SET SCHEMA setspace;
+CREATE EXTENSION rum SCHEMA setspace;
+
+DROP TYPE IF EXISTS udig CASCADE;
+DROP TYPE IF EXISTS udig_sha CASCADE;
+DROP TYPE IF EXISTS udig_bc160 CASCADE;
+DROP TYPE IF EXISTS udig_btc20 CASCADE;
+DROP OPERATOR FAMILY IF EXISTS udig_clan USING btree CASCADE;
+
+\echo getting path to udig.sql using pg_config
+\set udig_sql_path `pg_config --sharedir`/contrib/udig.sql
+\echo udig sql path  :udig_sql_path
+\include :udig_sql_path
+
+--  Note: move to udig.sql
 COMMENT ON TYPE udig IS
-  'Uniform Digest'
+  'Uniform Hash Digest as defined in blobio'
 ;
+
+ALTER TYPE udig OWNER TO :db_owner;
+ALTER TYPE udig_sha OWNER TO :db_owner;
+ALTER TYPE udig_bc160 OWNER TO :db_owner;
+ALTER TYPE udig_btc20 OWNER TO :db_owner;
+ALTER OPERATOR FAMILY udig_clan USING btree OWNER TO :db_owner;
 
 CREATE DOMAIN inception AS timestamptz
   CHECK (
@@ -43,7 +69,6 @@ CREATE DOMAIN inception AS timestamptz
 COMMENT ON TYPE inception IS
   'Timestamp after birthday of blobio'
 ;
-
 
 DROP FUNCTION IF EXISTS interval_terse_english(interval) CASCADE;
 CREATE OR REPLACE FUNCTION interval_terse_english(duration interval)
@@ -165,7 +190,7 @@ CREATE OR REPLACE FUNCTION interval_terse_english(duration interval)
 	LOOP
 		english = regexp_replace(english, '( +0 +)', ' ', 'g');
 		english = regexp_replace(english, '^(0 )+', '');
-		english = regexp_replace(english, '( *0 *)+$', 'g');
+		english = regexp_replace(english, '( *0 *)+$', '');
 		if regexp_count(english, '  ') = 0 then
 			return trim(english);
 		end if;
@@ -183,4 +208,7 @@ CREATE OR REPLACE FUNCTION interval_terse_english(duration interval)
 COMMENT ON FUNCTION interval_terse_english(interval) IS
   'Convert time interval to full precision, terse english, e.g. 3hr12min5sec'
 ;
+
+ALTER FUNCTION interval_terse_english(interval) OWNER TO :db_owner;
+
 END TRANSACTION;

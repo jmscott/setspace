@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Schema of the pdfbox.apache.org version 2 api, with rum extension
+ *	Schema of the pdfbox.apache.org version 2 api
  *  Usage:
  *	cd $SETSPACE_ROOT
  *	psql -f schema/pdfbox/lib/schema.sql
@@ -10,9 +10,6 @@
  *	Create int domain pdf_page_number where limit < 2603538.
  *
  *	Need to create tsv on colums pddocument_information.{title,author}
- *
- *	Is the rum index implicitly dependent on on the default ts_config,
- *	as the gin index on jsonb?
  *
  *	Think about disjointness for extract_pages_utf8 when multiple langauges
  *	are described via ts_conf
@@ -38,7 +35,6 @@ COMMENT ON SCHEMA pdfbox IS
   'Text and metadata extracted by java classes of pdfbox.apache.org, version 2'
 ;
 ALTER SCHEMA pdfbox OWNER TO :db_owner;
-CREATE EXTENSION rum SCHEMA pdfbox;
 
 SET search_path TO pdfbox,setspace,public;
 
@@ -64,7 +60,7 @@ DROP TABLE IF EXISTS pddocument CASCADE;
 CREATE TABLE pddocument
 (
 	blob		udig
-				REFERENCES setcore.blob
+				REFERENCES blob
 				ON DELETE CASCADE
 				PRIMARY KEY,
 	/*
