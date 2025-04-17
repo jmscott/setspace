@@ -227,7 +227,7 @@ command eat_blob
 	);
 	exit_status is OK when in {
 		0,			#  blob exists
-		1			#  blob does not exit
+		1			#  blob does not exist
 	};
 }
 
@@ -534,21 +534,4 @@ query upsert_fault_get_is_utf8wf(
  	get_is_utf8wf.exit_status != 2
 	and
 	get_is_utf8wf.exit_status != 3
-;
-
-command Clear_in_flight
-{
-	path = "true";
-}
-
-call Clear_in_flight()
-  when
-  	brr.verb == "wrap"
-	or
-	brr.verb == "roll"
-;
-
-Clear in_flight
-  when
-  	Clear_in_flight.exit_status == 1
 ;
