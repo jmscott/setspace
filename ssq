@@ -7,6 +7,8 @@
 #	ssq hel		#  help
 #	ssq ls		#  list schemas qith ssq support
 #  Note:
+#	A schema of "." indicates using $(basename $(pwd)) 
+#
 #	Consider adding action "ssq env <var>" for various global values,
 #	like PSQL.
 #
