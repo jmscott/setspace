@@ -59,7 +59,7 @@ else
 fi
 	
 $APPEND_FLTX								\
-	pdfbox								\
+	setcore								\
 	+flowd								\
 	$COMMAND_NAME							\
 	$BLOB								\
