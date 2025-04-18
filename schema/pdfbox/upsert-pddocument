@@ -30,6 +30,7 @@ leave()
 die()
 {
 	test -s STDERR && cat STDERR >&2
+	test -s STDOUT && echo "$PROG: WARN: stdout is not empty" >&2
 	echo "$PROG: ERROR: $@" >&2
 	exit 2
 }
