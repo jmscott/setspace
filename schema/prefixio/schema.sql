@@ -4,7 +4,7 @@
  */
 
 \set ON_ERROR_STOP true
-SET search_path TO prefixio,public;
+SET search_path TO prefixio,setspace;
 
 BEGIN TRANSACTION;
 
