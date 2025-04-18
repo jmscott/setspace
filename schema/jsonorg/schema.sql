@@ -5,7 +5,7 @@
 \set ON_ERROR_STOP on
 \timing
 
-SET search_path TO jsonorg,setspace,public;
+SET search_path TO jsonorg,setspace;
 
 BEGIN TRANSACTION;
 

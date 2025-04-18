@@ -36,7 +36,7 @@ sql database setspace
 {
 	driver_name = "postgres";
 	data_source_name =
-		"search_path=jsonorg,setspace,public  fallback_application_name=jsonorg.flow sslmode=disable";
+		"search_path=jsonorg,setspace  fallback_application_name=jsonorg.flow sslmode=disable";
 	max_idle_conns = 0;
 	max_open_conns = 8;
 }

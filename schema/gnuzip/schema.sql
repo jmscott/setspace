@@ -37,7 +37,7 @@ COMMENT ON TABLE gunzip_test_quiet IS
 DROP FUNCTION IF EXISTS gunzip_test_exit_status(udig)
   CASCADE
 ; 
-CREATE FUNCTION gunzip_test_exit_status(blob udig)
+CREATE OR REPLACE FUNCTION gunzip_test_exit_status(blob udig)
   RETURNS setcore.uni_xstatus
   AS $$
   	SELECT
