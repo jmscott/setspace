@@ -41,6 +41,7 @@ COMPILEs="
 
 LIBs="
 	jsonorg.flow.example
+	profile.example
 	psqlrc.example
 	schema.sql
 	ssq-jsonorg-blob-count.sql
