@@ -38,6 +38,7 @@ ALTER SCHEMA setspace OWNER TO :db_owner;
 SET search_path to setspace;
 
 CREATE EXTENSION rum SCHEMA setspace;
+CREATE EXTENSION pg_trgm SCHEMA setspace;
 
 DROP TYPE IF EXISTS udig CASCADE;
 DROP TYPE IF EXISTS udig_sha CASCADE;
