@@ -9,7 +9,7 @@
  *	psql --set UDIG_SQL=$UDIG_SQL --set db_owner=$db_owner		\
  *		--file $SETSPACE_ROOT/lib/schema.sql
  *  Note:
- *	See script CREATE-setspace-schema
+ *	Consider adding "CREATE STATISTICS" to all tables.
  */
 \set ON_ERROR_STOP 1
 
