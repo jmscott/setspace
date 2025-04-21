@@ -11,16 +11,16 @@
 
 boot
 {
-	brr_capacity = 24;
-	flow_worker_count = 16;
-	os_exec_worker_count = 8;
-	os_exec_capacity = 4;
+	brr_capacity = 256;
+	flow_worker_count = 32;
+	os_exec_worker_count = 16;
+	os_exec_capacity = 8;
 
-	xdr_roll_duration = "24h";
-	fdr_roll_duration = "24h";
-	qdr_roll_duration = "24h";
+	xdr_roll_duration = "168h";
+	fdr_roll_duration = "168h";
+	qdr_roll_duration = "168h";
 
-	heartbeat_duration = "10s";
+	heartbeat_duration = "1m";
 }
 
 tail brr
