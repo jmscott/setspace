@@ -23,9 +23,6 @@
 #  Note:
 #	Consider creating separate table for std{out,err} of blob.
 #
-#	Would be nice to eliminate the spin-wait-blob code.  Without the code
-#	the std{out,err} can not reference setcore.service.
-#
 
 PROG=$(basename $0)
 PSQL='psql
