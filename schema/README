@@ -604,3 +604,6 @@ Possible Schemas:
 	jsonorg 
 		add programs utf8_decode and utf8_to_utf16 to schema jsonorg.
 		https://www.json.org/JSON_checker/
+	ironpdf
+		https://ironpdf.com/troubleshooting/ironpdf-linux/
+		seems to run under .net
