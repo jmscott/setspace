@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Extract utf8 pages into files from a loadable pdf on read on stdin.
+ *	Extract utf8 pages into files from a loadable pdf read on stdin.
  *  Usage:
  *	java -cp $CLASSPATH ExtractPagesUTF8 <hamlet.pdf
  *	cat 0*.txt | shasum
