@@ -3,7 +3,7 @@
  *	Convert a list of byte decimal values into postgres bit(256) cast.
  *  Usage:
  *	echo 10 | dec2pgbitmap
- *	dec2pgbitmap <<END
+ *	dec2pgbit <<END
  *	11
  *	12
  *	13
@@ -14,6 +14,8 @@
  *  	jmscott@setspace.com
  *  	setspace@gmail.com
  *  Note:
+ *	Remove dependency on stdio and stdlib!
+ *
  *  	Error handling code is atrocious.
  */
 
