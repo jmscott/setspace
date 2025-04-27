@@ -5,13 +5,11 @@
 #  Usage:
 #	brr-flip <schema>
 #	brr-flip setcore
-#  See:
-#	flip-tail.c
 #  Exit Status:
 #	0	all active brr files have been flipped
 #	1	unknown error
-#  See:
-#	flip-tail.c
+#  Note:
+#	 This script is by deprecated "blobio wrap fs:$BLOBIO_ROOT"!
 #
 
 PROG=$(basename $0)
@@ -72,7 +70,6 @@ find . -maxdepth 1 -name '*.brr' -type f 				|
 	while read BRR;  do
 	NEW_BRR=$(basename $BRR .brr)-$(date +%s).brr
 	log "flip $BRR -> $NEW_BRR"
-	flip-tail file $BRR $NEW_BRR ||
-		die "flip-tail file $BRR $NEW_BRR failed: exit status=$?"
+	flip-tail $BRR $NEW_BRR || die "flip-tail failed: exit status=$?"
 	log "$NEW_BRR: $(wc -l $NEW_BRR | awk '{print $1}') records"
 done
