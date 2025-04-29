@@ -95,11 +95,21 @@ ifdef DASH_DNS_VHOST_SUFFIX
 	cd www && $(_MAKE) install
 endif
 
-append-brr: append-brr.c common.c
-	cc $(CFLAGS) -o append-brr append-brr.c
+append-brr: append-brr.c
+	cc $(CFLAGS)							\
+		-I$(JMSCOTT_ROOT)/include				\
+		append-brr.c						\
+		-o append-brr						\
+		-L$(JMSCOTT_ROOT)/lib					\
+		-ljmscott
 
-flip-tail: flip-tail.c common.c
-	cc -o flip-tail $(CFLAGS) flip-tail.c
+flip-tail: flip-tail.c
+	cc $(CFLAGS)							\
+		-I$(JMSCOTT_ROOT)/include				\
+		flip-tail.c						\
+		-o flip-tail						\
+		-L$(JMSCOTT_ROOT)/lib					\
+		-ljmscott
 
 file-stat-size: file-stat-size.c common.c
 	cc -o file-stat-size $(CFLAGS) file-stat-size.c

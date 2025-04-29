@@ -12,12 +12,8 @@
  *		blob_size						\
  *		wall_duration						\
  *  Exit Status:
- *	0	ok
- *	1	wrong number of arguments
- *	2	a brr field is too big in the argument list
- *	3	the open() failed
- *	4	the write() failed
- *	5	the close() failed
+ *	0	ok, blob request record appended to file
+ *	1	unexpected error
  *  Blame:
  *	jmscott@setspace.com
  *	setspace@gmail.com
@@ -36,26 +32,33 @@
  *
  *	Consider replacing write() with writev().
  */
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
 
-#define EXIT_BAD_ARGC	1
-#define EXIT_BAD_BRR	2
-#define EXIT_BAD_OPEN	3
-#define EXIT_BAD_WRITE	4
-#define EXIT_BAD_CLOSE	5
+#include "jmscott/libjmscott.h"
 
-static char	progname[] = "append-brr";
+char		*jmscott_progname = "append-brr";
+static char	usage[] =
+		"append-brr "						\
+		"<path/to/file> "					\
+		"<start_time> "						\
+		"<transport> "						\
+		"<verb> "						\
+		"<udig> "						\
+		"<chat_history> "					\
+		"<blob_size> "						\
+		"<wall_duration>"
+;
 
-#define COMMON_NEED_OPEN
-#define COMMON_NEED_WRITE
-#define COMMON_NEED_CLOSE
-#include "common.c"
+#define MAX_BRR		137
 
-#define MAX_BRR		365
+static void
+die2(char *msg1, char *msg2)
+{
+	jmscott_die2(1, msg1, msg2);
+	/*NOTREACHED*/
+}
 
 /*
  *  Build the brr record from a command line argument.
@@ -77,9 +80,35 @@ arg2brr(char *name, char *arg, int size, char **brr)
 	while (*src && n++ < size)
 		*tgt++ = *src++;
 	if (n == size && *src)
-		die2(EXIT_BAD_BRR, "arg too big for brr field", name); 
+		die2("arg too big for brr field", name); 
 	*tgt++ = '\t';
 	*brr = tgt;
+}
+
+static int
+_open(char *path)
+{
+	int fd = jmscott_open(path,
+		   O_WRONLY | O_APPEND | O_CREAT,
+		   S_IRUSR | S_IWUSR | S_IRGRP
+	);
+	if (fd < 0)
+		die2("open(append) failed", strerror(errno));
+	return fd;
+}
+
+static void
+_write(int fd, char *buf, size_t nbytes)
+{
+	if (jmscott_write(fd, buf, nbytes))
+		die2("write(brr) failed", strerror(errno));
+}
+
+static void
+_close(int fd)
+{
+	if (jmscott_close(fd))
+		die2("close(brr) failed", strerror(errno));
 }
 
 int
@@ -91,14 +120,14 @@ main(int argc, char **argv)
 	int fd;
 
 	if (argc != 9)
-		die(EXIT_BAD_ARGC, "wrong number arguments");
+		jmscott_die_argc(1, argc, 9, usage);
 	path = argv[1];
 
 	/*
 	 *  Build the blob request record from command line arguments
 	 */
 	b = brr;
-	arg2brr("start request time", argv[2], 10+1+8+1+9+1+6, &b);
+	arg2brr("start time", argv[2], 10+1+8+1+9+1+6, &b);
 	arg2brr("transport", argv[3], 8+1+128, &b);
 	arg2brr("verb", argv[4], 8, &b);
 	arg2brr("udig", argv[5], 8+1+128, &b);
@@ -108,10 +137,7 @@ main(int argc, char **argv)
 
 	b[-1] = '\n';		//  zap trailing tab
 
-	fd = _open(path,
-		   O_WRONLY | O_APPEND | O_CREAT,
-		   S_IRUSR | S_IWUSR | S_IRGRP
-	);
+	fd = _open(path);
 
 	// atomically write exactly the number bytes in the blob request record
 	_write(fd, brr, b - brr);
