@@ -1,42 +1,23 @@
 /*
  *  Synopsis:
- *	Atomatically flip either a fifo->regular or regular->fifo files
+ *	Roll an active file being tailed to archive and then reopen active.
  *  Usage:
- *	SRC=spool/route/file_mime_pdf
- *	TGT=spool/route/file_mime_pdf-$(date +'%Y%m%d_%H%M%S')
- *  	flip-tail file $SRC $TGT
- *  	flip-tail fifo $SRC $TGT
- *
- *  Description:
- *	Occasionally for a fifo we want to restart the reader process without
- *	blocking the writer process.  Consider two coordinating processes
- *	connected over a one-way fifo.  If we stop the reader then the writer
- *	blocks until the reader restarts. In high traffic environments such
- *	blockage can be	problematic.  flip-tail will atomatically transform
- *	the fifo into a	regular file, where the inbound writes will accumlate
- *	in the new file	and not block the writer.  After rebooting the reader,
- *	then flip back to fifo.
+ *	ACTIVE=spool/fffile5.brr
+ *	ARCHIVE=spool/fffile5--$(date +'%Y%m%d_%H%M%S').brr
+ *  	roll-tail $SRC $TGT
  *
  *  Arguments:
- *  	new-type	fifo or file
- *  	path		path to active file/fifo that will be rolled
- *  	rename-path	rename active file to this path
+ *  	active path	path to active file
+ *  	archive path	archive path of rolled file
  *
  *  Exit Status:
  *  	0	success, the new file was created and was of the requested type
- *  	1	new file already exists
- *  	2	new file exists but was not the requested type
- *	3	wrong number of arguments
- *	4	unexpected file type, expected "file" or "fifo" 
- *	5	file open() failed
- *	6	file rename() failed
- *	7	file creat() failed
- *	8	file mkfifo() failed
- *	9	file fstat() failed
- *	10	file close() failed
- *	11	file fchmod(new) failed
+ *  	1	new active file already exists (ok) and is regular file
+ *	2	unexpected error
+ *  See:
+ *	script brr-flip
  *  Note:
- *	Move to https://github.com/jmscott/work
+ *	Rename to "roll-tail-file".
  */
 
 #include <sys/types.h>
@@ -47,129 +28,101 @@
 #include <string.h>
 #include <stdio.h>
 
-static char	progname[] = "flip-tail";
+#include "jmscott/libjmscott.h"
 
-#define EXIT_SUCCESS	0
-#define EXIT_NEW_EXIST	1
-#define EXIT_NEW_DIFF	2
-#define EXIT_BAD_ARGC	3
-#define EXIT_BAD_FILETYPE	4
-#define EXIT_BAD_OPEN	5
-#define EXIT_BAD_RENAME	6
-#define EXIT_BAD_CREAT	7
-#define EXIT_BAD_MKFIFO	8
-#define EXIT_BAD_FSTAT	9
-#define EXIT_BAD_CLOSE	10
-#define EXIT_BAD_FCHMOD	11
+#define EXIT_OK		0
+#define EXIT_NEW_EXISTS	1
+#define EXIT_ERROR	2
 
-#define COMMON_NEED_DIE2
-#define COMMON_NEED_OPEN
-#define COMMON_NEED_CLOSE
-#define COMMON_NEED_FCHMOD
+char *jmscott_progname = "flip-tail";
+static char *usage = "flip-tail [active path] [archive path]";
 
-#include "common.c"
+static void
+die(char *msg)
+{
+	jmscott_die(EXIT_ERROR, msg);
+}
+
+static void
+die2(char *msg1, char *msg2)
+{
+	jmscott_die2(EXIT_ERROR, msg1, msg2);
+}
 
 int
 main(int argc, char **argv)
 {
-	char *path, *rename_path;
-	int fd_old, fd_new;
-	int exit_status = EXIT_SUCCESS;
-	char *type;
+	char *active_path, *archive_path;
+	int fd_active = -1;
+	int exit_status = EXIT_OK;
 	struct stat st;
 
-	if (argc != 4)
-		die2(EXIT_BAD_ARGC, "wrong number of arguments", "expected 3");
+	if (argc != 3)
+		jmscott_die_argc(EXIT_ERROR, argc, 3, usage);
 
-	type = argv[1];
-	if (strcmp(type, "file") != 0 && strcmp(type, "fifo") != 0)
-		die2(EXIT_BAD_FILETYPE, "unknown file type", type);
-
-	path = argv[2];
-	rename_path = argv[3];
+	active_path = argv[1];
+	archive_path = argv[2];
 
 	/*
-	 *  Open an existing, active file, preventing deletion of the underlying
-	 *  inode.
+	 *  Open an existing, active file, holding open to prevent deletion of
+	 *  the underlying inode by another process.
 	 */
-	fd_old = _open(path, O_WRONLY, 0);
+	fd_active = jmscott_open(active_path, O_WRONLY, 0);
+	if (fd_active < 0)
+		die2("open(active) failed", strerror(errno));
 
 	/*
-	 *  Rename the old path, effectively hiding the inode (not the path)
-	 *  from further writes.  Remember what ever is reading the file
-	 *  (usually flowd) won't actually flip until the inode - not the
-	 *  path - changes.
+	 *  Rename the active path to the archive path, effectively hiding the
+	 *  inode from further writes.  Remember what ever is reading the file
+	 *  (usually flowd) won't actually flip until the inode - not the path -
+	 *  changes.
 	 */
-	if (rename(path, rename_path) < 0)
-		die2(EXIT_BAD_RENAME, "rename(old, new) failed",
-					strerror(errno));
-	/*
-	 *  Get the mode of old file to set for the new file.
-	 */
-	if (fstat(fd_old, &st) < 0)
-		die2(EXIT_BAD_FSTAT, "fstat(old) failed", strerror(errno));
+	if (jmscott_rename(active_path, archive_path) < 0)
+		die2("rename(active->archive) failed", strerror(errno));
+	int fd_archive = fd_active;
+	fd_active = -1;
 
 	/*
-	 *  Recreate a new, tailable file that is either a regular file or
-	 *  a fifo.  type[2] == 'l' => type=="file";  otherwise type == "fifo".
+	 *  Get the mode of the now archived file to set for the new active.
 	 */
-	if (type[2] == 'l') {
-		fd_new = creat(path, st.st_mode);
-		if (fd_new < 0) {
-			if (errno != EEXIST)
-				die2(EXIT_BAD_CREAT, "creat(new) failed",
-								strerror(errno)
-				);
-			exit_status = EXIT_NEW_EXIST;
-		}
-	} else {
-		fd_new = mkfifo(path, st.st_mode);
-		if (fd_new < 0) {
-			if (errno != EEXIST)
-				die2(EXIT_BAD_MKFIFO,
-					"mkfifo(new) failed",
-					strerror(errno)
-				);
-			exit_status = EXIT_NEW_EXIST;
-		}
-	}
-	_fchmod(fd_new, st.st_mode);
+	if (jmscott_fstat(fd_archive, &st) < 0)
+		die2("fstat(archive) failed", strerror(errno));
 
 	/*
-	 *  Insure that the new file is of the requested type, since another
-	 *  process, like append-brr, also opens with O_CREAT, creating a race
-	 *  condition.
+	 *  Recreate new active file
 	 */
-	if (exit_status == EXIT_NEW_EXIST) {
+	fd_active = jmscott_open(
+			active_path,
+			O_CREAT | O_TRUNC | O_WRONLY,
+			st.st_mode
+	);
+	if (fd_active < 0) {
+		if (errno != EEXIST)
+			die2("open(new active) failed", strerror(errno));
 		/*
-		 *   Is the new file not the same type as the old
+		 *  The new active was created by another process, so insure
+		 *  new active still regular.
 		 */
-		if (fstat(fd_new, &st) == 0) {
-			mode_t m = st.st_mode;
-
+		if (jmscott_fstat(fd_active, &st) == 0) {
 			/*
-			 *  A panicy situation the caller needs to know about.
+			 *  Another process created new active of different file
+			 *  type.
 			 */
-			if (!S_ISREG(m) && !S_ISFIFO(m))
-				die2(EXIT_BAD_FILETYPE,
-					"new file is neither fifo nor regular",
-					path
-				);
-
-			if ((type[2] == 'l' && !S_ISREG(m)) ||
-			    (type[2] == 'f' && !S_ISREG(m)))
-				exit_status = EXIT_NEW_DIFF;
+			if (!S_ISREG(st.st_mode))
+				die("new active not regular file");
 		} else
-			die2(EXIT_BAD_FSTAT, "fstat(new) failed",
-						strerror(errno)
-			);
+			die2("fstat(new active) failed", strerror(errno));
+		exit_status = EXIT_NEW_EXISTS;
 	}
-	/*
-	 *  Close files
-	 */
-	if (fd_old > -1)
-		_close(fd_old);
-	if (fd_new > -1)
-		_close(fd_new);
+
+	//  reset mode of new active to mode of original active
+
+	if (jmscott_fchmod(fd_active, st.st_mode))
+		die2("fchmod(active) failed", strerror(errno));
+
+	if (jmscott_close(fd_archive))
+		die2("close(archive) failed", strerror(errno));
+	if (jmscott_close(fd_active))
+		die2("close(active) failed", strerror(errno));
 	_exit(exit_status);
 }
