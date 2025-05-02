@@ -229,6 +229,16 @@ CREATE FUNCTION is_empty(udig) RETURNS bool
   RETURNS NULL ON NULL INPUT
 ;
 
+DROP VIEW IF EXISTS fault;
+CREATE VIEW fault AS
+  SELECT DISTINCT
+	blob
+    FROM
+    	setops.flowd_call_fault
+    WHERE
+    	schema_name = 'setcore'
+;
+
 REVOKE UPDATE ON TABLE
 	byte_prefix_32,
 	byte_count,
