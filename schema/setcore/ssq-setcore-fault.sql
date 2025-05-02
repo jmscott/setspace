@@ -1,19 +1,12 @@
 /*
  *  Synopsis:
- *	List states of blobs in fault.
+ *	List blobs in fault, in no particular order.
+ *  See:
+ *	script ssq-setcore-fault
  */
 
 SELECT
-	blob,
-	monitor_name,
-	command_name,
-	exit_class,
-	exit_status,
-	signal
+	blob
   FROM
 	setcore.fault
-  ORDER BY
-  	blob ASC,
-	monitor_name,
-	command_name
 ;

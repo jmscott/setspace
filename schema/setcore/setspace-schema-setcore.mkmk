@@ -32,6 +32,9 @@ LIBs="
 	schema.sql
 	setcore.flow.example
 	setspace-schema-setcore.mkmk
+	ssq-setcore-blob-count.sql
+	ssq-setcore-blob.sql
+	ssq-setcore-fault-count.sql
 	ssq-setcore-fault.sql
 	ssq-setcore-rummy-count.sql
 	ssq-setcore-rummy.sql
@@ -46,7 +49,10 @@ LIBs="
 
 LIBEXECs="
 	ssq-setcore
+	ssq-setcore-blob
+	ssq-setcore-blob-count
 	ssq-setcore-fault
+	ssq-setcore-fault-count
 	ssq-setcore-ls
 	ssq-setcore-rummy
 	ssq-setcore-rummy-count

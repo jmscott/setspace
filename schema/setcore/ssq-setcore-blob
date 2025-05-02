@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	list fault blobs
+#	list blobs in table setcore.blob, in no particular order
 #  Usage:
-#	ssq setcore fault
+#	ssq setcore blob
 #
 source $SETSPACE_ROOT/lib/ssq-common.bash
 
@@ -12,7 +12,7 @@ if [ $# = 0 ];  then
 	SQL=lib/$PROG.sql
 
 	$PSQL --field-separator=$'\t' --file $SQL			||
-		die "psql fault failed: exit status=$?"
+		die "psql setcore failed: exit status=$?"
 	exit 0
 fi
 

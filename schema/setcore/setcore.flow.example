@@ -103,7 +103,7 @@ sql query blob_state row
 		    WHERE
 			blob = $1::udig
 		),
-		setcore.is_empty($1::udig),
+		udig_is_empty($1::udig),
 		EXISTS (
 		  SELECT
 		  	true
@@ -168,6 +168,8 @@ sql query blob_state row
 }
 
 sync map in_flight[string]bool;
+sync map appended_fffile5[string]bool;
+sync map appended_prefixio[string]bool;
 
 sql query in_service row
 {
@@ -534,4 +536,62 @@ query upsert_fault_get_is_utf8wf(
  	get_is_utf8wf.exit_status != 2
 	and
 	get_is_utf8wf.exit_status != 3
+;
+
+command is_appendable
+{
+	path = "true";
+}
+
+call is_appendable()
+  when
+  	brr.chat_history == "ok"
+	or
+  	brr.chat_history == "ok,ok"
+	or
+  	brr.chat_history == "ok,ok,ok"
+;
+
+command append_fffile5
+{
+	path = "append-brr";
+	argv = (
+		"../fffile5/spool/setcore.brr"
+	);
+}
+
+call append_fffile5(
+		brr.start_time,
+ 		brr.transport,
+ 		brr.verb,
+		brr.udig,
+		brr.chat_history,
+		brr.blob_size,
+		brr.wall_duration
+) when
+	is_appendable.exit_status == 0
+	and
+	appended_fffile5.LoadOrStore(brr.udig, true).loaded == false
+;
+
+command append_prefixio
+{
+	path = "append-brr";
+	argv = (
+		"../prefixio/spool/setcore.brr"
+	);
+}
+
+call append_prefixio(
+		brr.start_time,
+ 		brr.transport,
+ 		brr.verb,
+		brr.udig,
+		brr.chat_history,
+		brr.blob_size,
+		brr.wall_duration
+) when
+	is_appendable.exit_status == 0
+	and
+	appended_prefixio.LoadOrStore(brr.udig, true).loaded == false
 ;
