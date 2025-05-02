@@ -53,6 +53,10 @@ DATABASE=$1
 log "database: $DATABASE"
 export PGDATABASE=$1
 
+test -n "$SETSPACE_ROOT" || die "env not defined: SETSPACE_ROOT"
+log "SETSPACE_ROOT=$SETSPACE_ROOT"
+cd $SETSPACE_ROOT || die "cd SETSPACE_ROOT failed: exit status=$?"
+
 log "PGHOST=$PGHOST"
 log "PGPORT=$PGPORT"
 log "PGUSER=$PGUSER"
@@ -69,7 +73,7 @@ IS_SUPER=$($PSQL --command "$IS_SUPER_SQL") || exit 1
 log "is super: $IS_SUPER"
 test "$IS_SUPER" = t || die 'current role is not super user'
 
-SCHEMA_PATH=schema.sql
+SCHEMA_PATH=lib/schema.sql
 log "schema path: $SCHEMA_PATH"
 test -r $SCHEMA_PATH || die "can not read schema.sql"
 psql --file $SCHEMA_PATH || die "psql schema failed: exit status=$?"
