@@ -3,9 +3,6 @@
  *	Core setspace tables for common blob facts.
  *  Usage:
  *	psql --file schema.sql
- *  Note:
- *	Should function setcore.is_empty(udig) be in schema blobio?
- *	Perhaps "is_empty" should be a table?
  */
 \set ON_ERROR_STOP on
 \timing on
@@ -205,28 +202,6 @@ CREATE VIEW service AS
 ;
 COMMENT ON VIEW service IS
   'Blobs with attributes all attributes discovered'
-;
-
---  Note: should this function be in schema blobio?
-
-DROP FUNCTION IF EXISTS is_empty(udig) CASCADE;
-CREATE FUNCTION is_empty(udig) RETURNS bool
-  AS $$
-    SELECT CASE
-      WHEN $1 IN (
-      	'sha:da39a3ee5e6b4b0d3255bfef95601890afd80709',
-	'bc160:b472a266d0bd89c13706a4132ccfb16f7c3b9fcb',
-	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'
-      )
-      THEN true
-      WHEN $1::text ~ '^(sha|btc20|bc160):[[:ascii:]]{40}'
-      THEN false
-      ELSE NULL
-      END
-  $$ LANGUAGE SQL
-  IMMUTABLE		--  problematic if new algo added for
-  PARALLEL SAFE
-  RETURNS NULL ON NULL INPUT
 ;
 
 DROP VIEW IF EXISTS fault;
