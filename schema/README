@@ -619,3 +619,6 @@ Possible Schemas:
 		https://sourceforge.net/projects/clown/
 		#  fork of pdfclown
 		https://github.com/XoriantOpenSource/PDFClown
+	tika	Tika Auto Detect
+		https://tika.apache.org/
+			1.25/api/org/apache/tika/detect/AutoDetectReader.html
