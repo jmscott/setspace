@@ -1,20 +1,16 @@
 /*
  *  Synopsis:
- *	Create schema "setspace" for extension rum and "setspace.udig"
+ *	Create schema "setspace" with udig type and various extensions.
  *  Usage:
- *	#  create first, before creating schemas in schema/ * /lib/schema.sql
+ *	#  create schema setspace before any schema in dir setspace/schema/.
  *
- *	UDIG_SQL=/usr/local/pgsql/share/contrib/udig.sql
- *	db_owner=jmscott
- *	psql --set UDIG_SQL=$UDIG_SQL --set db_owner=$db_owner		\
- *		--file $SETSPACE_ROOT/lib/schema.sql
+ *	psql --file $SETSPACE_ROOT/lib/schema.sql
  *  Note:
+ *	Should function is_empty() be a table?
+ *
  *	Consider adding "CREATE STATISTICS" to all tables.
  */
 \set ON_ERROR_STOP 1
-
-\echo UDIG SQL: :UDIG_PATH
-\echo DATABASE OWNER: :db_owner
 
 BEGIN TRANSACTION;
 
@@ -27,6 +23,7 @@ SELECT
   	datname = current_database()
 ;
 \gset
+\echo db_owner: :db_owner
 
 DROP SCHEMA IF EXISTS setspace CASCADE;
 CREATE SCHEMA setspace;
@@ -209,7 +206,30 @@ CREATE OR REPLACE FUNCTION interval_terse_english(duration interval)
 COMMENT ON FUNCTION interval_terse_english(interval) IS
   'Convert time interval to full precision, terse english, e.g. 3hr12min5sec'
 ;
-
 ALTER FUNCTION interval_terse_english(interval) OWNER TO :db_owner;
+
+DROP FUNCTION IF EXISTS is_empty(udig) CASCADE;
+CREATE FUNCTION is_empty(udig) RETURNS bool
+  AS $$
+    SELECT CASE
+      WHEN $1 IN (
+      	'sha:da39a3ee5e6b4b0d3255bfef95601890afd80709',
+	'bc160:b472a266d0bd89c13706a4132ccfb16f7c3b9fcb',
+	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'
+      )
+      THEN true
+      --  matches no udig, just not known udig.
+      WHEN $1::text ~ '^(sha|btc20|bc160):[[:ascii:]]{40}'
+      THEN false
+      ELSE NULL
+      END
+  $$ LANGUAGE SQL
+  STRICT
+  PARALLEL SAFE
+;
+COMMENT ON FUNCTION is_empty(udig) IS
+  'Is a udig the empty udig for algorithm?'
+;
+ALTER FUNCTION is_empty(udig) OWNER TO :db_owner;
 
 END TRANSACTION;

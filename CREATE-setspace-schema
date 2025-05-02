@@ -28,11 +28,6 @@ PSQL='psql
 	--tuples-only
 '
 
-ROLE_SQL='
-  SELECT
-  	current_user
-'
-
 IS_SUPER_SQL='
   SELECT
 	rolsuper
@@ -40,15 +35,6 @@ IS_SUPER_SQL='
     	pg_roles
     WHERE
     	rolname = current_role
-'
-
-DATABASE_OWNER_SQL='
-  SELECT
-  	datdba::regrole
-    FROM
-    	pg_database
-    WHERE
-    	datname = current_database()
 '
 
 log()
@@ -62,14 +48,6 @@ die()
 	exit 1
 }
 
-xsql()
-{
-	local WHAT=$1
-	local SQL=$2
-
-	$PSQL --command "$SQL" || die "psql $WHAT failed: exit status=$?"
-}
-
 test $# = 1 || die "bad cli arg count: got $#, want 1"
 DATABASE=$1
 log "database: $DATABASE"
@@ -80,31 +58,18 @@ log "PGPORT=$PGPORT"
 log "PGUSER=$PGUSER"
 log "PGDATABASE=$PGDATABASE"
 
-log get current role ...
-ROLE=$(xsql role "$ROLE_SQL") || exit 1
-log "current role: $ROLE"
+log "PATH=$PATH"
+log 'insure pg_config in PATH ...'
+PG_CONFIG=$(which pg_config)
+test -x "$PG_CONFIG" || die 'pg_config not in PATH'
+log "pg_config path: $PG_CONFIG"
 
 log get role super perms ...
 IS_SUPER=$($PSQL --command "$IS_SUPER_SQL") || exit 1
 log "is super: $IS_SUPER"
-test "$IS_SUPER" = t || die 'must be super user to create udig type'
-
-log get database owner ...
-DATABASE_OWNER=$($PSQL --command "$DATABASE_OWNER_SQL") || exit 1
-log "database owner: $DATABASE_OWNER"
-
-log get SHAREDIR via pg_config ...
-SHAREDIR=$(pg_config --sharedir) || die "pg_config failed: exit status=$?"
-
-UDIG_PATH=$SHAREDIR/contrib/udig.sql
-log "udig path: $UDIG_PATH"
-test -r $UDIG_PATH || die "can not read udig.sql: $UDIG_PATH"
+test "$IS_SUPER" = t || die 'current role is not super user'
 
 SCHEMA_PATH=schema.sql
 log "schema path: $SCHEMA_PATH"
 test -r $SCHEMA_PATH || die "can not read schema.sql"
-psql									\
-	--set "DBOWNER=$DATABASE_OWNER"					\
-	--set "UDIG_PATH=$UDIG_PATH"					\
-	--file $SCHEMA_PATH						||
-	  die "psql schema failed: exit status=$?"
+psql --file $SCHEMA_PATH || die "psql schema failed: exit status=$?"
