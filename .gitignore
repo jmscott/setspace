@@ -1,9 +1,10 @@
 append-brr
 dec2pgbit
+dedup
 escape-json-utf8
 flip-tail
 local.mk
 macosx.o
-run
+run/
 spin-wait-blob
-tmp
+tmp/

@@ -102,6 +102,13 @@ append-brr: append-brr.c
 		-o append-brr						\
 		-L$(JMSCOTT_ROOT)/lib					\
 		-ljmscott
+dedup: dedup.c
+	cc $(CFLAGS)							\
+		-I$(JMSCOTT_ROOT)/include				\
+		dedup.c							\
+		-o dedup						\
+		-L$(JMSCOTT_ROOT)/lib					\
+		-ljmscott
 
 flip-tail: flip-tail.c
 	cc $(CFLAGS)							\
