@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *  	Atomic append of a blob request record to a fifo or file.
+ *  	Atomic append of a blob request record to a file.,
  *  Usage:
  *  	append-brr							\
  *		/path/to/file
@@ -100,7 +100,7 @@ _open(char *path)
 static void
 _write(int fd, char *buf, size_t nbytes)
 {
-	if (jmscott_write(fd, buf, nbytes))
+	if (jmscott_write(fd, buf, nbytes) < 0)
 		die2("write(brr) failed", strerror(errno));
 }
 
