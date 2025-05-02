@@ -6,8 +6,6 @@
  *
  *	psql --file $SETSPACE_ROOT/lib/schema.sql
  *  Note:
- *	Should function is_empty() be a table?
- *
  *	Consider adding "CREATE STATISTICS" to all tables.
  */
 \set ON_ERROR_STOP 1
@@ -53,11 +51,17 @@ COMMENT ON TYPE udig IS
   'Uniform Hash Digest as defined in blobio'
 ;
 
+/*
+ *  Note:
+ *	Cannot user REASSIGN until schema option added or script written
+ *	to explicity reassign ownership per object.
+ */
 ALTER TYPE udig OWNER TO :db_owner;
 ALTER TYPE udig_sha OWNER TO :db_owner;
 ALTER TYPE udig_bc160 OWNER TO :db_owner;
 ALTER TYPE udig_btc20 OWNER TO :db_owner;
 ALTER OPERATOR FAMILY udig_clan USING btree OWNER TO :db_owner;
+ALTER FUNCTION udig_is_empty(udig) OWNER TO :db_owner;
 
 CREATE DOMAIN inception AS timestamptz
   CHECK (
@@ -207,29 +211,5 @@ COMMENT ON FUNCTION interval_terse_english(interval) IS
   'Convert time interval to full precision, terse english, e.g. 3hr12min5sec'
 ;
 ALTER FUNCTION interval_terse_english(interval) OWNER TO :db_owner;
-
-DROP FUNCTION IF EXISTS is_empty(udig) CASCADE;
-CREATE FUNCTION is_empty(udig) RETURNS bool
-  AS $$
-    SELECT CASE
-      WHEN $1 IN (
-      	'sha:da39a3ee5e6b4b0d3255bfef95601890afd80709',
-	'bc160:b472a266d0bd89c13706a4132ccfb16f7c3b9fcb',
-	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'
-      )
-      THEN true
-      --  matches no udig, just not known udig.
-      WHEN $1::text ~ '^(sha|btc20|bc160):[[:ascii:]]{40}'
-      THEN false
-      ELSE NULL
-      END
-  $$ LANGUAGE SQL
-  STRICT
-  PARALLEL SAFE
-;
-COMMENT ON FUNCTION is_empty(udig) IS
-  'Is a udig the empty udig for algorithm?'
-;
-ALTER FUNCTION is_empty(udig) OWNER TO :db_owner;
 
 END TRANSACTION;
