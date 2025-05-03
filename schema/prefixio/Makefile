@@ -9,6 +9,7 @@ include ../schema.mk
 _MAKE=$(MAKE) $(MFLAGS)
 
 MKMK=setspace-schema-prefixio.mkmk
+PRODUCT := $(shell (. $(MKMK) && echo $$PRODUCT))
 LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
 
 install:
@@ -39,3 +40,7 @@ world:
 	$(_MAKE) install
 tar:
 	make-make tar $(MKMK)
+frisk:
+	make-make tar $(MKMK)
+	rm $(PRODUCT)-2[012]*_[012]*.tar.bz2
+	@echo;  echo;  echo OK frisk passed
