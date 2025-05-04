@@ -3,7 +3,7 @@
 #  Synopsis:
 #	Kill a flowd process for a schema, possibly going nuclear
 #  Usage:
-#	kill-flowd <schema>
+#	stop-flowd [<schema>|.]
 #  Exit Status:
 #	0	running flowd probably killed and files run/flowd.* removed.
 #	1	unexpected error
@@ -37,6 +37,7 @@ leave()
 
 test $# = 1 || die 'wrong number of arguments'
 SCHEMA=$1
+test "$SCHEMA" = . && SCHEMA=$(basename $(pwd))
 
 log 'hello, world'
 trap leave EXIT

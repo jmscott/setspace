@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 #
 #  Synopsis:
-#	Tail (gnu) all the schema/*/log/flowd-<Dow>.log files
+#	Tail (gnu) multiple schema/*/log/flowd-<Dow>.log files
 #  Usage:
 #	tail-flowd
+#	tail-flowd .
 #	tail-flowd jsonorg prefixio 
 #  Note:
 #	Only works up until midnight of local day.
@@ -17,24 +18,33 @@ die()
 	exit 1
 }
 
-test -n "$SETSPACE_ROOT" || die "env var not defined: SETSPACE_ROOT"
+test -n "$SETSPACE_ROOT" || die 'env var not defined: SETSPACE_ROOT'
 
 SCHEMA=$SETSPACE_ROOT/schema
 
 test -e $SCHEMA || die "directory does not exist: $SCHEMA"
+START_DIR=$(pwd)
 cd $SCHEMA || die "cd $SCHEMA failed: exit status=$?"
 
-if [ $# = 0 ];  then
+case $# in
+0)
 	DIRs=.
 	DEPTH=1
-else
+	;;
+1)
+	#  special case when script started in schema dir
+	if [ "$1" = . ];  then
+		LOG=$START_DIR/log/flowd-$(date +'%a').log
+		test -r $LOG && exec tail -f $LOG
+	fi
+
 	#  insure all schema directories exist
 	for D in $@;  do
 		test -d $D || die "schema directory does not exist: $(pwd)/$D"
 	done
 	DIRs=$@
 	DEPTH=0
-fi
+esac
 
 SCHEMAS=$(
 	find $DIRs -mindepth $DEPTH -maxdepth $DEPTH -type d -print	|

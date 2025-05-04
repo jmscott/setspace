@@ -34,6 +34,7 @@ leave()
 
 test $# = 1 || die "wrong number of arguments, got $#, expected 1"
 SCHEMA=$1
+test "$SCHEMA" = . && SCHEMA=$(basename $(pwd))
 FLOW=etc/$SCHEMA.flow
 
 log 'hello, world'
