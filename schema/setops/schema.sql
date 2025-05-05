@@ -13,7 +13,7 @@ BEGIN TRANSACTION;
 
 DROP SCHEMA IF EXISTS setops CASCADE;
 
-SET search_path TO setops,setspace,public;
+SET search_path TO setops,setspace;
 
 CREATE SCHEMA setops;
 COMMENT ON SCHEMA setops IS
@@ -93,7 +93,7 @@ CREATE TABLE flowd_call_fault
 	stdout_blob	udig,
 	stderr_blob	udig,
 
-	fault_time	inception NOT NULL,
+	fault_time	inception DEFAULT now() NOT NULL,
 
 	upsert_time	inception DEFAULT now() NOT NULL,
 
