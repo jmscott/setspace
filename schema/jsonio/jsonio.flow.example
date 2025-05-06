@@ -34,7 +34,7 @@ sql database setspace
 {
 	driver_name = "postgres";
 	data_source_name =
-		"fallback_application_name=jsonio.flow sslmode=disable";
+		"search_path=jsonio,setspace fallback_application_name=jsonio.flow sslmode=disable";
 	max_idle_conns = 0;
 	max_open_conns = 16;
 }
