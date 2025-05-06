@@ -17,7 +17,14 @@
 #
 
 PROG=upsert-pddocument
-PSQL='psql --no-psqlrc --quiet --no-readline --set=ON_ERROR_STOP=1'
+PSQL='psql
+	--no-psqlrc							
+	--quiet								
+	--no-readline							
+	--set=ON_ERROR_STOP=1
+	--pset null=null
+'
+SQL=$SETSPACE_SCHEMA_ROOT/lib/$PROG.sql
 SERVICE="--service ${BLOBIO_GET_SERVICE:=$BLOBIO_SERVICE}"
 WORK_DIR=${TMPDIR:=/tmp}/$PROG-$$.d
 
@@ -111,27 +118,15 @@ read								\
 	IS_ENCRYPTED						\
 <ROW
 
-$PSQL <<EOF || die "psql insert failed: exit status=$?"
+test $DOCUMENT_ID = null && DOCUMENT_ID=-1 
 
-INSERT INTO
-  pdfbox.pddocument(
-  	blob,
-	number_of_pages,
-	document_id,
-	version,
-	is_all_security_to_be_removed,
-	is_encrypted
-    ) VALUES (
-    	'$PDF_UDIG',
-	$NUMBER_OF_PAGES,
-	$DOCUMENT_ID,
-	$VERSION,
-	$IS_ALL_SECURITY_TO_BE_REMOVED,
-	$IS_ENCRYPTED
-    ) ON CONFLICT
-    	DO NOTHING
-;
-
-EOF
+$PSQL --file $SQL						\
+	--set blob=$PDF_UDIG					\
+	--set np=$NUMBER_OF_PAGES				\
+	--set did=$DOCUMENT_ID					\
+	--set ver=$VERSION					\
+	--set secrm=$IS_ALL_SECURITY_TO_BE_REMOVED		\
+	--set ienc=$IS_ENCRYPTED					||
+		die "psql upsert failed: exit status=$?"
 
 exit 0

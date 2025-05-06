@@ -59,15 +59,16 @@ LIBs="
 	psqlrc.example
 	schema.sql
 	setspace-schema-pdfbox.mkmk
-	ssq-pdfbox-blob.sql
 	ssq-pdfbox-blob-count.sql
-	ssq-pdfbox-fault.sql
+	ssq-pdfbox-blob.sql
 	ssq-pdfbox-fault-count.sql
-	ssq-pdfbox-rummy.sql
+	ssq-pdfbox-fault.sql
 	ssq-pdfbox-rummy-count.sql
-	ssq-pdfbox-service.sql
+	ssq-pdfbox-rummy.sql
 	ssq-pdfbox-service-count.sql
+	ssq-pdfbox-service.sql
 	ssq-pdfbox-udig.sql
+	upsert-pddocument.sql
 "
 
 BINs="
