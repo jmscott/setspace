@@ -40,7 +40,18 @@ cd $SETSPACE_ROOT || die "cd failed: $SETSPACE_ROOT"
 
 SCHEMA=$ACTION
 
-test -d "schema/$SCHEMA" || die "unknown schema: $SCHEMA"
+#
+#  Schema "." means use directory the script started in;
+#  otherwise, use schema on the command line.
+#
+if [ "$SCHEMA" = '.' ]; then
+	#  use starting directory as schema name
+	SCHEMA=$(basename $OLDPWD)
+	test -d schema/$SCHEMA || die "current dir not a schema: $SCHEMA"
+else
+	test -d "schema/$SCHEMA" || die "unknown schema: $SCHEMA"
+fi
+
 cd schema/$SCHEMA || die "cd schema $SCHEMA failed; exit status=$?"
 
 source etc/profile || die "$SCHEMA: source etc/profile failed"
