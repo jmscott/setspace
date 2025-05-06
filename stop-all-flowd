@@ -47,7 +47,7 @@ cd $SETSPACE_ROOT || die "cd $SETSPACE_ROOT failed"
 
 run-stat-report								|
   grep '^[a-z][a-z0-9_]* '						|
-  cut -f1,2								|
+  awk '{print $1, $2}'							|
   grep -F -wv 'DOWN'							|
   grep -F -wv 'OFFL'							|
   sort									|
