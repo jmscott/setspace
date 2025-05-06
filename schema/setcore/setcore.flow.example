@@ -545,11 +545,17 @@ command is_appendable
 
 call is_appendable()
   when
-  	brr.chat_history == "ok"
-	or
-  	brr.chat_history == "ok,ok"
-	or
-  	brr.chat_history == "ok,ok,ok"
+	(
+		brr.chat_history == "ok"
+		or
+		brr.chat_history == "ok,ok"
+		or
+		brr.chat_history == "ok,ok,ok"
+	)
+	and
+	brr.verb != "wrap"
+	and
+	brr.verb != "roll"
 ;
 
 command append_fffile5
