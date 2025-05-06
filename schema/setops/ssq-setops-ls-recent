@@ -33,10 +33,10 @@ SELECT
 	  WHEN
 	  	fo.stdout_blob IS NULL
 		OR
-		setcore.is_empty(fo.stdout_blob) IS NULL
+		setspace.is_empty(fo.stdout_blob) IS NULL
 	  THEN 'Unknown'
 
-	  WHEN setcore.is_empty(fo.stdout_blob) = true
+	  WHEN setspace.is_empty(fo.stdout_blob) = true
 	  THEN 'Empty'
 	  ELSE fo.stdout_blob::text
 	  END AS "StdOut Blob",
@@ -44,10 +44,10 @@ SELECT
 	  WHEN
 	  	fo.stderr_blob IS NULL
 		OR
-		setcore.is_empty(fo.stderr_blob) IS NULL
+		setspace.is_empty(fo.stderr_blob) IS NULL
 	  THEN 'Unknown'
 
-	  WHEN setcore.is_empty(fo.stderr_blob) = true
+	  WHEN setspace.is_empty(fo.stderr_blob) = true
 	  THEN 'Empty'
 	  ELSE fo.stderr_blob::text
 	  END AS "StdErr Blob",
