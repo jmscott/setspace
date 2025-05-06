@@ -34,8 +34,10 @@ case $# in
 1)
 	#  special case when script started in schema dir
 	if [ "$1" = . ];  then
-		LOG=$START_DIR/log/flowd-$(date +'%a').log
-		test -r $LOG && exec tail -f $LOG
+		LOG=$START_DIR/log
+		test -d $LOG || die "log dir does not exist: $LOG"
+		LOG=$LOG/flowd-$(date +'%a').log
+		exec tail -F $LOG
 	fi
 
 	#  insure all schema directories exist
