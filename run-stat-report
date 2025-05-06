@@ -6,6 +6,7 @@
 #	run-stat-report
 #  See:
 #	setspace/sbin/run-stat-tuple
+#	setspace/sbin/run-stat-tuple .	#  limit stats to schema in current dir/
 #  Note:
 #	Replace "column" command with gnuversion in util-linux macports
 #	or write replacement in https://github.com/jmscott/work.
@@ -20,7 +21,21 @@ die()
 	exit 1
 }
 
-test $# = 0 || die "wrong number of arguments: got $#, expected 0"
+case $# in
+0)
+	LIMIT_SCHEMA=
+	;;
+1)
+	test $1 = . || die "unknown limit schema: $1"
+	LIMIT_SCHEMA=$(basename $(pwd))
+	test -d "../../schema/$LIMIT_SCHEMA"				||
+				die "no schema dir: $LIMIT_SCHEMA"
+	;;
+*)
+	die "wrong nmumber of cli args: got $#, need 0 or 1"
+	;;
+esac
+
 test -n "$SETSPACE_ROOT" || die 'env not defined: SETSPACE_ROOT'
 cd $SETSPACE_ROOT || die "cd SETSPACE_ROOT failed: exit status=$?"
 
@@ -38,7 +53,7 @@ END
 Schema	State	Boot	Green,Yellow,Red	Recent	Green,Yellow,Red
 -------	-----	-----	----------------	------	----------------
 END
-	run-stat-tuple							|
+	run-stat-tuple $LIMIT_SCHEMA					|
 		sort --key=2 --key=1 --field-separator=$'\t'		|
 		while read PROC STATE					\
 			BOOT_EPOCH BOOT_GREEN BOOT_YELLOW BOOT_RED	\
@@ -78,3 +93,6 @@ END
 	sed 's@	null@	n/a@g'						|
 	column -s '	' -t						|
 	sed 's/ *	//'
+STATUS=${PIPESTATUS[*]}
+test "$STATUS" = '0 0 0 0' || die "run-tuple pipe failed: exit status=$STATUS"
+exit 0

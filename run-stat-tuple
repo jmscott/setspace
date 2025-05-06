@@ -1,8 +1,9 @@
 #
 #  Synopsis:
-#	Tuplize stats for all schemas in directory schema/*/run/flowd.{pid,gyr}
+#	Tuplize stats for schemas in directory schema/*/run/flowd.{pid,gyr}
 #  Usage:
 #	run-stat-tuple
+#	run-stat-tuple .	#  limit stats for schema in current directory
 #
 STALE_AFTER=61
 
@@ -12,12 +13,27 @@ die()
 	exit 1
 }
 
-test $# = 0 || die "wrong number cli arguments: got $#, expected 0"
+case $# in
+0)
+	LIMIT_SCHEMA='*'
+	;;
+1)
+	LIMIT_SCHEMA="./$1"
+	;;
+*)
+	die "wrong number cli args: got $#, need 0 or 1"
+	;;
+esac
 
-test -n "$SETSPACE_ROOT" || die "environment not defined: SETSPACE_ROOT"
+test -n "$SETSPACE_ROOT" || die "env var not defined: SETSPACE_ROOT"
 SCHEMA=$SETSPACE_ROOT/schema
 cd $SCHEMA || die "cd $SCHEMA exit status=$?"
 
-find . -mindepth 1 -maxdepth 1 -type d | while read SCHEMA;  do
+find .									\
+	-mindepth 1							\
+	-maxdepth 1							\
+	-wholename "$LIMIT_SCHEMA"					\
+	-type d								|
+  while read SCHEMA;  do
 	run-stat-flowd-tuple $(basename $SCHEMA)
 done
