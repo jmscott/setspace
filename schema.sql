@@ -6,6 +6,9 @@
  *
  *	psql --file $SETSPACE_ROOT/lib/schema.sql
  *  Note:
+ *	ON_ERROR_STOP=1 does not apply to \! commands, hence the additional
+ *	code \if code.
+ *
  *	Consider adding "CREATE STATISTICS" to all tables.
  */
 \set ON_ERROR_STOP 1
@@ -43,7 +46,27 @@ DROP OPERATOR FAMILY IF EXISTS udig_clan USING btree CASCADE;
 
 \echo getting path to udig.sql using pg_config
 \set udig_sql_path `pg_config --sharedir`/contrib/udig.sql
-\echo udig sql path  :udig_sql_path
+
+\echo checking udig path: :udig_sql_path
+SELECT
+	:'udig_sql_path' = '/contrib/udig.sql' AS no_udig_path 
+;
+\gset
+
+--  Note: check existence of file
+\if :no_udig_path
+\echo ERROR: pg_config can not get udig_sql_path
+\q
+\endif
+
+\echo test if udig sql file is readable: :udig_sql_path
+\if `test ! -r :udig_sql_path && echo true`
+\echo can not read udig sql file: :udig_sql_path
+\q
+\endif
+
+
+\echo udig sql path :udig_sql_path
 \include :udig_sql_path
 
 --  Note: move to udig.sql
@@ -70,6 +93,17 @@ CREATE DOMAIN inception AS timestamptz
 ;
 COMMENT ON TYPE inception IS
   'Timestamp after birthday of blobio'
+;
+
+
+DROP DOMAIN IF EXISTS name63_ascii CASCADE;
+CREATE DOMAIN name63_ascii AS text
+  CHECK (
+        value ~ '^[a-zA-Z][a-zA-Z0-9_]{0,62}$'
+  )
+;
+COMMENT ON DOMAIN name63_ascii IS
+  '63 character names of schema, command queries, etc'
 ;
 
 DROP FUNCTION IF EXISTS interval_terse_english(interval) CASCADE;
