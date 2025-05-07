@@ -11,7 +11,7 @@ BEGIN TRANSACTION;
 DROP SCHEMA IF EXISTS jsonio CASCADE;
 CREATE SCHEMA jsonio;
 COMMENT ON SCHEMA jsonio IS
-  'Routing rules for json blobs'
+  'Routing rules for JSON blobs'
 ;
 
 CREATE VIEW blob AS
