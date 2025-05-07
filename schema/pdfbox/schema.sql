@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Schema of the pdfbox.apache.org version 2 api
+ *	Schema of the pdfbox.apache.org version 2 api.
  *  Usage:
  *	cd $SETSPACE_ROOT
  *	psql -f schema/pdfbox/lib/schema.sql
@@ -141,7 +141,7 @@ ALTER TABLE pddocument_information OWNER TO :db_owner;
  *
  *  Note:
  *	Consider constraint to insure pddocument.page_count matches
- *	extracted pages.
+ *	extracted pages counts are contiguous.
  */
 DROP TABLE IF EXISTS extract_pages_utf8 CASCADE;
 CREATE TABLE extract_pages_utf8
