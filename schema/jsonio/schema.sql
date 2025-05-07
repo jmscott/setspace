@@ -14,14 +14,34 @@ COMMENT ON SCHEMA jsonio IS
   'Routing rules for json blobs'
 ;
 
+CREATE VIEW blob AS
+  SELECT
+  	NULL::udig AS blob
+    WHERE
+    	false
+;
+COMMENT ON VIEW blob IS
+  'Blobs in schema jsonio (always empty)'
+;
+
 CREATE VIEW rummy AS
   SELECT
-  	'btc20:fd7b15dc5dc2039556693555c2b81b36c8deec15'::udig AS blob
+  	NULL::udig AS blob
     WHERE
     	false
 ;
 COMMENT ON VIEW rummy IS
   'Known unknown blobs in schema jsonio (always empty)'
+;
+
+CREATE VIEW fault AS
+  SELECT
+  	NULL::udig AS blob
+    WHERE
+    	false
+;
+COMMENT ON VIEW fault IS
+  'Blobs in fault in schema jsonio (always empty)'
 ;
 
 CREATE VIEW service AS
