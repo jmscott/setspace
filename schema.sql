@@ -4,11 +4,8 @@
  *  Usage:
  *	#  create schema setspace before any schema in dir setspace/schema/.
  *
- *	psql --file $SETSPACE_ROOT/lib/schema.sql
+ *	psql --user=postgres --file $SETSPACE_ROOT/lib/schema.sql
  *  Note:
- *	ON_ERROR_STOP=1 does not apply to \! commands, hence the additional
- *	code \if code.
- *
  *	Consider adding "CREATE STATISTICS" to all tables.
  */
 \set ON_ERROR_STOP 1
@@ -96,14 +93,14 @@ COMMENT ON TYPE inception IS
 ;
 
 
-DROP DOMAIN IF EXISTS name63_ascii CASCADE;
-CREATE DOMAIN name63_ascii AS text
+DROP DOMAIN IF EXISTS name_ascii63 CASCADE;
+CREATE DOMAIN name_ascii63 AS text
   CHECK (
         value ~ '^[a-zA-Z][a-zA-Z0-9_]{0,62}$'
   )
 ;
-COMMENT ON DOMAIN name63_ascii IS
-  '63 character names of schema, command queries, etc'
+COMMENT ON DOMAIN name_ascii63 IS
+  '63 ascii character names of schema, command queries, etc'
 ;
 
 DROP FUNCTION IF EXISTS interval_terse_english(interval) CASCADE;

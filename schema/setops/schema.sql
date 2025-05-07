@@ -20,16 +20,6 @@ COMMENT ON SCHEMA setops IS
 	'Faults generated while processing blobs for any schema'
 ;
 
-DROP DOMAIN IF EXISTS name63 CASCADE;
-CREATE DOMAIN name63 AS text
-  CHECK (
-  	value ~ '^[a-zA-Z][a-zA-Z0-9_]{0,62}$'
-  )
-;
-COMMENT ON DOMAIN name63 IS
-  '63 character names of schema, command queries, etc'
-;
-
 DROP TABLE IF EXISTS blob CASCADE;
 CREATE TABLE blob
 (
@@ -42,7 +32,7 @@ CREATE TABLE blob
 DROP TABLE IF EXISTS flowd_schema CASCADE;
 CREATE TABLE flowd_schema
 (
-	schema_name	name63
+	schema_name	name_ascii63
 				PRIMARY KEY,
 
 	discover_time	inception
@@ -56,8 +46,8 @@ COMMENT ON TABLE flowd_schema IS
 DROP TABLE IF EXISTS flowd_command CASCADE;
 CREATE TABLE flowd_command
 (
-	schema_name	name63,
-	command_name	name63,
+	schema_name	name_ascii63,
+	command_name	name_ascii63,
 
 	PRIMARY KEY	(schema_name, command_name),
 
@@ -73,8 +63,8 @@ COMMENT ON TABLE flowd_command IS
 DROP TABLE IF EXISTS flowd_call_fault CASCADE;
 CREATE TABLE flowd_call_fault
 (
-	schema_name	name63,
-	command_name	name63,
+	schema_name	name_ascii63,
+	command_name	name_ascii63,
 	blob		udig,
 
 	exit_class	text CHECK (
@@ -417,12 +407,19 @@ COMMENT ON VIEW rummy IS
   'Unresolved blobs on schema setops'
 ;
 
+CREATE VIEW fault AS
+  SELECT DISTINCT
+  	blob
+    FROM
+    	flowd_call_fault
+;
+
 CREATE TABLE archive_flowd_call_fault (
 	fault_time	inception NOT NULL,
 	process_class	text CHECK (
 				process_class IN ('+flowd', '-flowd')
 			) NOT NULL,
-	command_name	name63 NOT NULL,
+	command_name	name_ascii63 NOT NULL,
 
 	blob		udig NOT NULL,
 
