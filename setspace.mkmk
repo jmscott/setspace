@@ -49,6 +49,7 @@ LIBs="
 	schema.sql
 	setspace.mkmk
 	ssq-common.bash
+	ssq-schema-status.sql
 	systemd-flowd.service.example
 "
 

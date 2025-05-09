@@ -34,6 +34,8 @@ shift
 test -n "$SETSPACE_ROOT" || die "env not defined: SETSPACE_ROOT"
 cd $SETSPACE_ROOT || die "cd failed: $SETSPACE_ROOT"
 
+source lib/ssq-common.bash
+
 #  list the schemas that support ssq
 
 [ "$ACTION" = ls ] && exec libexec/ssq-ls $@
@@ -50,6 +52,17 @@ if [ "$SCHEMA" = '.' ]; then
 	test -d schema/$SCHEMA || die "current dir not a schema: $SCHEMA"
 else
 	test -d "schema/$SCHEMA" || die "unknown schema: $SCHEMA"
+fi
+
+#  exec "ssq <schema>" status
+if [ $# = 0 ];  then
+	PSQL="$SSQ_COMMON_PSQL_EXPAND --set timing=on"
+	$PSQL								\
+		--file lib/ssq-schema-status.sql			\
+		--var since=yesterday					\
+		--var schema=$SCHEMA					||
+			die "psql schema status failed: exit status=$?"
+	exit 0
 fi
 
 cd schema/$SCHEMA || die "cd schema $SCHEMA failed; exit status=$?"
