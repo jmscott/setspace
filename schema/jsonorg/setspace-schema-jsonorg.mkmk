@@ -101,8 +101,8 @@ SPOOL="
 "
 
 #  Uncomment to create data/ directory
-#DATA="
-#"
+DATA="
+"
 
 #  Uncomment to create run/ directory
 RUN="

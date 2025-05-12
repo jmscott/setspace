@@ -39,6 +39,7 @@ LIBs="
 	schema.sql
 	select-my_title.sql
 	setspace-schema-mycore.mkmk
+	upsert-request_title.sql
 "
 
 #  Uncoment to create bin/ directory
@@ -83,8 +84,8 @@ SPOOL="
 "
 
 #  Uncomment to create data/ directory
-#DATA="
-#"
+DATA="
+"
 
 #  Uncomment to create run/ directory
 RUN="
