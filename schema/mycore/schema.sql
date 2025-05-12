@@ -39,7 +39,7 @@ CREATE TABLE blob
 CREATE INDEX idx_blob_hash ON blob USING hash(blob);
 CREATE INDEX idx_blob_discover_time ON blob(discover_time);
 CLUSTER blob USING idx_blob_discover_time;
-COMMENT ON TABLE blob IS 'All candidate blobs (json) related to mycore';
+COMMENT ON TABLE blob IS 'All candidate blobs related to mycore';
 
 DROP TABLE IF EXISTS title;
 CREATE TABLE title
@@ -76,8 +76,8 @@ COMMENT ON TABLE title_tsv IS
   'Text Search Vector of title of a blob'
 ;
 
-DROP TABLE IF EXISTS request_title_upsert_json;
-CREATE TABLE request_title_upsert_json
+DROP TABLE IF EXISTS request_title;
+CREATE TABLE request_title
 (
 	blob	udig
 				PRIMARY KEY
@@ -89,13 +89,18 @@ CREATE TABLE request_title_upsert_json
 					'do_update'
 				)
 			) DEFAULT  'do_nothing',
-	request_time	inception NOT NULL
+	request_time	inception NOT NULL,
+
+	upsert_time	inception NOT NULL DEFAULT now()
 );
-COMMENT ON TABLE request_title_upsert_json IS
+COMMENT ON TABLE request_title IS
   'JSON Request to upsert or delete titles for a list of blobs'
 ;
-COMMENT ON COLUMN request_title_upsert_json.blob IS
-  'When the request t upsert titles was created'
+COMMENT ON COLUMN request_title.request_time IS
+  'When the request upsert titles was created'
+;
+COMMENT ON COLUMN request_title.upsert_time IS
+  'Oldest time when the request to upsert titles was upserted'
 ;
 
 COMMIT TRANSACTION;
