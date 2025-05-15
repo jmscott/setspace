@@ -51,7 +51,7 @@ static char	usage[] =
 		"<wall_duration>"
 ;
 
-#define MAX_BRR		137
+#define MAX_BRR		419	//  no newline or null
 
 static void
 die2(char *msg1, char *msg2)
@@ -115,7 +115,7 @@ int
 main(int argc, char **argv)
 {
 	// room for brr + newline + null
-	char brr[MAX_BRR + 1 + 1], *b;
+	char brr[MAX_BRR + 1], *b;		//  brr+newline
 	char *path;
 	int fd;
 
