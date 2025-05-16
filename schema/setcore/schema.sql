@@ -190,8 +190,7 @@ CREATE VIEW rummy AS
 DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS 
   SELECT
-	ok.blob,
-	ok.discover_time
+	ok.blob
     FROM
     	blob ok
   	  NATURAL JOIN byte_prefix_32
