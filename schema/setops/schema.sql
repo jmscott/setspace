@@ -381,13 +381,9 @@ INSERT INTO pg_sql_error VALUES
 DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS
   SELECT
-  	blob,
-	min(fault_time) AS discover_time
+  	DISTINCT blob
     FROM
-    	blob
-	  NATURAL JOIN flowd_call_fault
-    GROUP BY
-    	blob
+	flowd_call_fault
 ;
 COMMENT ON VIEW service IS
   'Blobs serviced by setops - probably in fault'
@@ -404,7 +400,7 @@ CREATE VIEW rummy AS
     	cf.blob IS NULL
 ;
 COMMENT ON VIEW rummy IS
-  'Unresolved blobs on schema setops'
+  'Blobs with known unknowns in schema setops'
 ;
 
 CREATE VIEW fault AS
@@ -413,33 +409,5 @@ CREATE VIEW fault AS
     FROM
     	flowd_call_fault
 ;
-
-CREATE TABLE archive_flowd_call_fault (
-	fault_time	inception NOT NULL,
-	process_class	text CHECK (
-				process_class IN ('+flowd', '-flowd')
-			) NOT NULL,
-	command_name	name_ascii63 NOT NULL,
-
-	blob		udig NOT NULL,
-
-	exit_class	text CHECK ( 
-				exit_class IN ('OK', 'ERR', 'SIG', 'NOPS')
-			) NOT NULL,
-	exit_status	smallint CHECK (
-				exit_status >= 0
-				AND
-				exit_status <= 255
-			) NOT NULL,
-	signal		smallint CHECK (
-				signal >= 0
-				AND
-				signal <= 127
-			) NOT NULL,
-	stdout_blob	udig,
-	stderr_blob	udig,
-
-	PRIMARY KEY	(fault_time, process_class, command_name, blob)
-);
 
 COMMIT TRANSACTION;
