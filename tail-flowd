@@ -39,10 +39,11 @@ case $# in
 		LOG=$LOG/flowd-$(date +'%a').log
 		exec tail -F $LOG
 	fi
-
+	;&	#  fall through
+*)
 	#  insure all schema directories exist
 	for D in $@;  do
-		test -d $D || die "schema directory does not exist: $(pwd)/$D"
+		test -d $D || die "no schema dir: $(pwd)/$D"
 	done
 	DIRs=$@
 	DEPTH=0
