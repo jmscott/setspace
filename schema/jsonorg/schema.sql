@@ -212,8 +212,7 @@ COMMENT ON TRIGGER insert_jsonb_255_key_word_set
 DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS
   SELECT
-  	b.blob,
-	b.discover_time
+  	b.blob
     FROM
     	blob b
     	  NATURAL JOIN checker_255 ck
