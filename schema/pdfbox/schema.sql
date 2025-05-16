@@ -338,8 +338,7 @@ ALTER VIEW rummy OWNER TO :db_owner;
 DROP VIEW IF EXISTS service CASCADE;
 CREATE VIEW service AS
   SELECT
-  	b.blob,
-	b.discover_time
+  	b.blob
     FROM
     	blob b
 	  NATURAL JOIN pddocument pd
