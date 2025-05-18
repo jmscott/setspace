@@ -4,6 +4,7 @@
  *  Usage:
  *	#  create schema setspace before any schema in dir setspace/schema/.
  *
+ 	#  must be superuser to install rm/udig extensions in setspace schema. 
  *	psql --user=postgres --file $SETSPACE_ROOT/lib/schema.sql
  *  Note:
  *	Consider adding "CREATE STATISTICS" to all tables.
