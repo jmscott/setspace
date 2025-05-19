@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	query mycore schema for blobs in service
+#
+source $SETSPACE_ROOT/lib/ssq-common.bash
+
+PSQL=$SSQ_COMMON_PSQL_TSV
+SQL=lib/$PROG.sql
+USAGE='[count|help]'
+
+case "$1" in
+'')
+	$PSQL --file $SQL || die "psql service failed: exit status=$?"
+	;;
+help)
+	exec_help
+	;;
+*)
+	exec_action $@
+	;;
+esac
