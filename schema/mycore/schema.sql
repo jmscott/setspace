@@ -49,8 +49,6 @@ DROP TABLE IF EXISTS title;
 CREATE TABLE title
 (
 	blob		udig
-				REFERENCES blob
-				ON DELETE CASCADE
 				PRIMARY KEY,
 	title		title_255
 				NOT NULL
@@ -97,6 +95,7 @@ CREATE TABLE request_title
 
 	upsert_time	inception NOT NULL DEFAULT now()
 );
+CREATE INDEX ON request_title(request_time);
 COMMENT ON TABLE request_title IS
   'JSON Request to upsert or delete titles for a list of blobs'
 ;
