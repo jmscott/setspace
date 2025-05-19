@@ -11,11 +11,16 @@ SELECT
 	interval_terse_english(age(now(), b.discover_time)) || ' ago @ ' ||
 		b.discover_time AS "Discovered",
 	tit.title AS "Title",
-	tsv.tsv AS "Title Vector"
+	tsv.tsv AS "Title Vector",
+	CASE
+	  WHEN req.blob IS NOT NULL THEN 'Yes'
+	  ELSE 'No'
+	END AS "Is Title Request"
   FROM
   	blob b
-	  LEFT OUTER JOIN title tit ON (tit.blob = b.blob)
-	  LEFT OUTER JOIN title_tsv tsv ON (tsv.blob = b.blob)
+	  NATURAL LEFT OUTER JOIN title tit
+	  NATURAL LEFT OUTER JOIN title_tsv tsv
+	  NATURAL LEFT OUTER JOIN request_title req
   WHERE
   	b.blob = :'blob'
 ;
