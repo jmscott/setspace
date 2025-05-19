@@ -6,8 +6,10 @@
 #	title-tsv2request-json <multi-title.csv
 #  Exit Code:
 #	0	no errors
-	#	1	unexpected errors
-	#
+#	1	unexpected errors
+#
+
+my $tsv_config = 'english';
 
 sub json_escape_string
 {
@@ -35,6 +37,7 @@ print <<END;
 {
 	"setspace_schema": "mycore.schema.setspace.com",
 	"request_unix_epoch":1734490442,
+	"tsv_config": "english",
 	"upsert": {
 	"titles": [
 END
@@ -45,6 +48,8 @@ while (<>) {
 	die "row #$row does not have 2 tab separated fields" unless @ROW == 2;
 	my ($blob, $title) = ($ROW[0], $ROW[1]);
 	die "row #$row: not a blob udig: $blob" unless $blob =~ /$UDIG_RE/;
+
+	utf8::upgrade($title);
 
 	#  strip/compress white space
 	$title =~ s/^[[:space:]]*|[[:space:]]*$//g;

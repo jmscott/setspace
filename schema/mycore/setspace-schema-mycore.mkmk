@@ -39,6 +39,8 @@ LIBs="
 	schema.sql
 	select-my_title.sql
 	setspace-schema-mycore.mkmk
+	ssq-mycore-blob.sql
+	ssq-mycore-udig.sql
 	upsert-request_title.sql
 "
 
@@ -100,5 +102,8 @@ LOG="
 #"
 
 #  Uncomment to create directory libexec/
-#LIBEXECs="
-#"
+LIBEXECs="
+	ssq-mycore
+	ssq-mycore-blob
+	ssq-mycore-udig
+"

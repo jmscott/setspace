@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	mycore schema querier backend libexeced by front end script "ssq".
+#  Usage:
+#	ssq mycore service
+#  Exit Status:
+#	0	no fail
+#	1	unknown error
+#
+USAGE="[service | rummy | blob | ls | <udig>... | help]"
+
+source $SETSPACE_ROOT/lib/ssq-common.bash
+
+exec_help $@
+exec_udig $@
+exec_action $@

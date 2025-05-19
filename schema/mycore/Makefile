@@ -16,6 +16,7 @@ _MAKE=$(MAKE) $(MFLAGS)
 MKMK=setspace-schema-mycore.mkmk
 SBINs := $(shell  (. ./$(MKMK) && echo $$SBINs))
 LIBs := $(shell  (. ./$(MKMK) && echo $$LIBs))
+LIBEXECs := $(shell  (. ./$(MKMK) && echo $$LIBEXECs))
 
 install:
 	cd .. && $(_MAKE) install-dirs
@@ -26,6 +27,8 @@ install:
 		-m u=rwx,go= -d $(MYCORE_PREFIX)/etc
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
 		-m u=rwx,g=rx,o= -d $(MYCORE_PREFIX)/lib
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER)			\
+		-m u=rwx,g=rx,o= -d $(MYCORE_PREFIX)/libexec
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
 				-d $(MYCORE_PREFIX)/log
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) 			\
@@ -43,9 +46,13 @@ install:
 	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) -m a=r		\
 		$(LIBs)							\
 		$(MYCORE_PREFIX)/lib
+	install -g $(MYCORE_GROUP) -o $(MYCORE_USER) -m ug=wrx,o=r	\
+		$(LIBEXECs)						\
+		$(MYCORE_PREFIX)/libexec
 
 distclean:
-	rm -rf $(MYCORE_PREFIX)/lib
+		rm -rf $(MYCORE_PREFIX)/lib
+	rm -rf $(MYCORE_PREFIX)/libexec
 	rm -rf $(MYCORE_PREFIX)/sbin
 
 world:

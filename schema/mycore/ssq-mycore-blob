@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	list blobs in table mycore.blob, in no particular order
+#  Usage:
+#	ssq mycore blob
+#
+source $SETSPACE_ROOT/lib/ssq-common.bash
+
+if [ $# = 0 ];  then
+	PSQL=$SSQ_COMMON_PSQL_TSV
+	SQL=lib/$PROG.sql
+
+	$PSQL --field-separator=$'\t' --file $SQL			||
+		die "psql mycore failed: exit status=$?"
+	exit 0
+fi
+
+exec_action $@

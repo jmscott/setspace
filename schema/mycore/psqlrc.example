@@ -1,1 +1,1 @@
-set search_path to mycore,jsonorg,setcore,setspace;
+set search_path to mycore,setspace;

@@ -2,12 +2,13 @@
  *  Synopsis:
  *	My personal metadata about any blob, like title, notes and tags.
  *  Schemas:
- *	setcore,jsonorg
+ *	mycore,jsonorg
  *  PG Extensions:
  *	rum@github/postgrespro
  *  Note:
  *	string diff
- *		https://www.postgresql.org/message-id/4A6A75A5.4070203%40intera.si
+ *		https://www.postgresql.org/
+ *			message-id/4A6A75A5.4070203%40intera.si
  *
  *	thunk deeper about table title_tsv with pk(blob, regconfig) versus
  *	pk(blob).  triggers do not work because of the regconfig.

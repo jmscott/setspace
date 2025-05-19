@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	Human readable details of a mycore blob, may or may not be in service
+#  Usage:
+#	BLOB=btc20:d1a4179e1cd41feeb4a859ce428c7f2bf9f36d9d
+#	ssq mycore $BLOB
+#  Exit Status:
+#	0		no error
+#	1		unexpected error
+#
+source $SETSPACE_ROOT/lib/ssq-common.bash
+
+USAGE='<udig>'
+
+PSQL=$SSQ_COMMON_PSQL_EXPAND
+SQL=lib/$PROG.sql
+
+test $# -ne 1 && die "bad cli arg count: got $#, want 1"
+BLOB="$1"
+frisk_udig "$BLOB"
+
+$PSQL --set blob=$BLOB --file $SQL || die "psql udig failed: exit status=$?"
+
+exit 0

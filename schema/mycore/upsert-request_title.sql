@@ -9,6 +9,7 @@
 
 \echo Loading json from stdin
 \set j `cat`
+\set ts_conf 'english'
 
 SET search_path TO mycore,setspace;
 
@@ -94,7 +95,21 @@ INSERT INTO title(blob, title)
     WHERE
     	title.title != EXCLUDED.title
 ;
-  	
-select has_dup, count(*) from load_title group by 1;
+
+--  trigger can not see ts_conf, so explicitly insert.
+
+INSERT INTO title_tsv(blob, ts_conf, tsv)
+  SELECT DISTINCT
+  	blob,
+	:'ts_conf'::regconfig,
+	to_tsvector(:'ts_conf'::regconfig, title)
+    FROM
+    	title
+  ON CONFLICT (blob, ts_conf) DO UPDATE
+    SET
+	tsv = EXCLUDED.tsv
+    WHERE
+	title_tsv.tsv != EXCLUDED.tsv
+;
 
 END TRANSACTION;
