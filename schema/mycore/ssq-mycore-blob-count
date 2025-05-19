@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#
+#  Synopsis:
+#	count blobs in table mycore.blob.
+#
+source $SETSPACE_ROOT/lib/ssq-common.bash
+PSQL=$SSQ_COMMON_PSQL_TSV
+SQL=lib/$PROG.sql
+
+test $# = 0 || die "wrong number of cli args: got $#, need 0"
+
+$PSQL --file $SQL || die "psql blob count failed: exit status=$?"

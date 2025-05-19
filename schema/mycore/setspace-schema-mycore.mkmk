@@ -40,6 +40,7 @@ LIBs="
 	select-my_title.sql
 	setspace-schema-mycore.mkmk
 	ssq-mycore-blob.sql
+	ssq-mycore-blob-count.sql
 	ssq-mycore-udig.sql
 	upsert-request_title.sql
 "
@@ -105,5 +106,6 @@ LOG="
 LIBEXECs="
 	ssq-mycore
 	ssq-mycore-blob
+	ssq-mycore-blob-count
 	ssq-mycore-udig
 "
