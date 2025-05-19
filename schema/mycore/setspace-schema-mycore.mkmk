@@ -39,8 +39,10 @@ LIBs="
 	schema.sql
 	select-my_title.sql
 	setspace-schema-mycore.mkmk
-	ssq-mycore-blob.sql
 	ssq-mycore-blob-count.sql
+	ssq-mycore-blob.sql
+	ssq-mycore-service-count.sql
+	ssq-mycore-service.sql
 	ssq-mycore-udig.sql
 	upsert-request_title.sql
 "
@@ -107,5 +109,7 @@ LIBEXECs="
 	ssq-mycore
 	ssq-mycore-blob
 	ssq-mycore-blob-count
+	ssq-mycore-service
+	ssq-mycore-service-count
 	ssq-mycore-udig
 "
