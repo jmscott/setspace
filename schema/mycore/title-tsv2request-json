@@ -1,0 +1,71 @@
+#!/usr/bin/env perl
+#
+#  Synopsis:
+#	Convert tab spreadsheet to json request object
+#  Usage:
+#	title-tsv2request-json <multi-title.csv
+#  Exit Code:
+#	0	no errors
+	#	1	unexpected errors
+	#
+
+sub json_escape_string
+{
+	my $s = $_[0];
+
+	$s =~ s/\\/\\\\/g;
+	$s =~ s/\f/\\f/g;
+	$s =~ s/\n/\\n/g;
+	$s =~ s/\r/\\r/g;
+	$s =~ s/\t/\\t/g;
+	$s =~ s/"/\\"/g;
+	$s =~ s/[\b]/\\b/g;
+	$s =~ s/[[:cntrl:]]//g;
+	return $s;
+}
+
+binmode(STDOUT, ":utf8");
+
+my $row = 0;
+my @ROW;
+
+my $UDIG_RE = '^[a-z][a-z0-9_]{0,7}:[[:graph:]]{32,128}$';
+
+print <<END;
+{
+	"setspace_schema": "mycore.schema.setspace.com",
+	"request_unix_epoch":1734490442,
+	"upsert": {
+	"titles": [
+END
+
+while (<>) {
+	$row++;
+	@ROW = split("\t");
+	die "row #$row does not have 2 tab separated fields" unless @ROW == 2;
+	my ($blob, $title) = ($ROW[0], $ROW[1]);
+	die "row #$row: not a blob udig: $blob" unless $blob =~ /$UDIG_RE/;
+
+	#  strip/compress white space
+	$title =~ s/^[[:space:]]*|[[:space:]]*$//g;
+	$title =~ s/([[:space:]]+)/ /g;
+
+	$title = json_escape_string($title);
+
+	die "row #$row: title has no graph char: $title"
+					unless $title =~ m/[[:graph:]]/
+	;
+
+	print <<END;
+		{
+		"blob": "$blob",
+		"title": "$title"
+		},
+END
+}
+
+print <<END
+		{}
+	]}
+}
+END
