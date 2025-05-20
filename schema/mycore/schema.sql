@@ -78,6 +78,7 @@ COMMENT ON TABLE title_tsv IS
   'Text Search Vector of title of a blob'
 ;
 
+
 DROP TABLE IF EXISTS request_title;
 CREATE TABLE request_title
 (
@@ -91,9 +92,8 @@ CREATE TABLE request_title
 					'do_update'
 				)
 			) DEFAULT  'do_nothing',
-	request_time	inception NOT NULL,
+	request_time	inception NOT NULL
 
-	upsert_time	inception NOT NULL DEFAULT now()
 );
 CREATE INDEX ON request_title(request_time);
 COMMENT ON TABLE request_title IS
@@ -102,8 +102,16 @@ COMMENT ON TABLE request_title IS
 COMMENT ON COLUMN request_title.request_time IS
   'When the request upsert titles was created'
 ;
-COMMENT ON COLUMN request_title.upsert_time IS
-  'Oldest time when the request to upsert titles was upserted'
+
+DROP VIEW IF EXISTS service CASCADE;
+CREATE VIEW service AS
+  SELECT
+  	blob
+    FROM
+    	blob
+;
+COMMENT ON VIEW service IS 
+  'Blobs related to requests to add titles, notes'
 ;
 
 COMMIT TRANSACTION;
