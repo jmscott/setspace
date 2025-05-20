@@ -556,6 +556,39 @@ call is_appendable()
 	brr.verb != "wrap"
 	and
 	brr.verb != "roll"
+	and
+	(
+		#  blob already in service
+		in_service.answer == true
+
+		#  for all 4 tables either row preexists or just upserted
+		or
+		(
+			(
+				blob_state.in_byte_prefix_32 == true
+				or
+				upsert_byte_prefix_32.exit_status == 0
+			)
+			and
+			(
+				blob_state.in_byte_count == true
+				or
+				upsert_byte_count.exit_status == 0
+			)
+			and
+			(
+				blob_state.in_byte_bitmap == true
+				or
+				upsert_byte_bitmap.exit_status == 0
+			)
+			and
+			(
+				blob_state.in_byte_suffix_32 == true
+				or
+				upsert_byte_suffix_32.exit_status == 0
+			)
+		)
+	)
 ;
 
 command append_fffile5
