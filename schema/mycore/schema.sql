@@ -114,4 +114,32 @@ COMMENT ON VIEW service IS
   'Blobs related to requests to add titles, notes'
 ;
 
+DROP VIEW IF EXISTS fault CASCADE;
+CREATE VIEW fault AS
+  SELECT DISTINCT
+  	blob
+    FROM
+    	setops.flowd_call_fault
+    WHERE
+    	schema_name = 'mycore'
+;
+COMMENT ON VIEW fault IS
+  'JSON request blobs that failed to update title, notes, etc'
+;
+
+DROP VIEW IF EXISTS rummy CASCADE;
+CREATE VIEW rummy AS
+  SELECT
+  	b.blob
+    FROM
+    	blob b
+	  NATURAL LEFT OUTER JOIN service srv
+	  NATURAL LEFT OUTER JOIN fault flt
+    WHERE
+    	srv.blob IS NULL
+	AND
+	flt.blob IS NULL
+;
+  	
+
 COMMIT TRANSACTION;
