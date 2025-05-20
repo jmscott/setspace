@@ -1,6 +1,6 @@
 /*
  *  Synopsis:
- *	Detail listing of a blob in setcore service
+ *	Detail listing of a blob in table setcore.blob
  *  Usage:
  *	#  see script ssq-setcore-ls
  */
