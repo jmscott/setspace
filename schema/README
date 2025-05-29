@@ -623,4 +623,6 @@ Possible Schemas:
 		https://tika.apache.org/
 			1.25/api/org/apache/tika/detect/AutoDetectReader.html
 	geonames
-			https://www.geonames.org/
+		https://www.geonames.org/
+	earthserver - EarthServer: The Federated Datacube Space
+		https://earthserver.world/
