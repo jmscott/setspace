@@ -629,3 +629,12 @@ Possible Schemas:
 		free to join
 	oagtrav - OAG Travel Data (powers flightview)
 		https://www.oag.com/
+
+	any audio schema:
+		js bookmarklet for speeding up audio playback
+		javascript:void%20function(){document.querySelector(%22video,audio%22).playbackRate=parseFloat(prompt(%22Set%20the%20playback rate%22))}();
+
+		any bookmark for 10x speed with auctioneers voice?
+	ngrams.info
+		commercial ngrams stats.
+		https://www.ngrams.info/
