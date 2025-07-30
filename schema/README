@@ -638,3 +638,6 @@ Possible Schemas:
 	ngrams.info
 		commercial ngrams stats.
 		https://www.ngrams.info/
+
+	fcc - fcc ham license database
+		https://data.fcc.gov/download/pub/uls/complete/
