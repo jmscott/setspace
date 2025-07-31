@@ -641,3 +641,5 @@ Possible Schemas:
 
 	fcc - fcc ham license database
 		https://data.fcc.gov/download/pub/uls/complete/
+	alphadec - semantic uuid
+		https://github.com/firasd/alphadec
