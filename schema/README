@@ -188,6 +188,7 @@ Possible Schemas:
 		https://github.com/JaidedAI/EasyOCR/
 	paddleocr - oss ocr
 		https://github.com/PaddlePaddle/PaddleOCR
+		https://www.paddlepaddle.org.cn/en
 	project naptha - proprietary ocr (maybe rest api)
 		https://projectnaptha.com
 	DiffPDF - compare two pdf file
