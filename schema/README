@@ -653,3 +653,5 @@ Possible Schemas:
 		https://libretexts.org/libreverse
 	magika - ai powered file type detection
 		https://github.com/google/magika
+		300 conten types detected
+		https://github.com/google/magika/blob/main/assets/models/standard_v3_3/README.md
