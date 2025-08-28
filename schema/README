@@ -188,7 +188,6 @@ Possible Schemas:
 		https://github.com/JaidedAI/EasyOCR/
 	paddleocr - oss ocr
 		https://github.com/PaddlePaddle/PaddleOCR
-		https://www.paddlepaddle.org.cn/en
 	project naptha - proprietary ocr (maybe rest api)
 		https://projectnaptha.com
 	DiffPDF - compare two pdf file
@@ -651,7 +650,3 @@ Possible Schemas:
 		https://chem.libretexts.org/
 		https://chem.libretexts.org/
 		https://libretexts.org/libreverse
-	magika - ai powered file type detection
-		https://github.com/google/magika
-		300 conten types detected
-		https://github.com/google/magika/blob/main/assets/models/standard_v3_3/README.md
