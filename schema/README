@@ -654,3 +654,5 @@ Possible Schemas:
 		https://github.com/yoavg/pdf-tab-renamer
 	laion - Large-scale Artificial Intelligence Open Network
 		https://laion.ai/
+	smellnet - ai ingrediant detection via smell.  runs on arduino
+		https://github.com/MIT-MI/SmellNet
