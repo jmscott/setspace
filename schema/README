@@ -656,3 +656,7 @@ Possible Schemas:
 		https://laion.ai/
 	smellnet - ai ingrediant detection via smell.  runs on arduino
 		https://github.com/MIT-MI/SmellNet
+	branchwater - Branchwater Metagenome Query
+		https://branchwater.jgi.doe.gov/
+		https://sourmash.readthedocs.io/en/latest/
+		https://mash.readthedocs.io/en/latest/
