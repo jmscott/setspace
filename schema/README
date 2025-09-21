@@ -662,3 +662,5 @@ Possible Schemas:
 		https://mash.readthedocs.io/en/latest/
 	ogr2ogr: data conversion tool
 		https://gdal.org/en/stable/programs/ogr2ogr.html
+	sj - tiny json paring library in clang
+		https://github.com/rxi/sj.h
