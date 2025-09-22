@@ -664,3 +664,5 @@ Possible Schemas:
 		https://gdal.org/en/stable/programs/ogr2ogr.html
 	sj - tiny json paring library in clang
 		https://github.com/rxi/sj.h
+	poppler - pdf rendering library
+		https://poppler.freedesktop.org/
