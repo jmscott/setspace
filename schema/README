@@ -666,3 +666,6 @@ Possible Schemas:
 		https://github.com/rxi/sj.h
 	poppler - pdf rendering library
 		https://poppler.freedesktop.org/
+	opendataloader - parser pdfs.
+		https://github.com/opendataloader-project/opendataloader-pdf
+		consider contributing other formats?
