@@ -137,6 +137,7 @@ Possible Schemas:
 		https://automeris.io/WebPlotDigitizer/
 	Camelot: PDF Table Extraction for Humans
 		https://camelot-py.readthedocs.io/en/master/
+		https://github.com/camelot-dev/camelot
 	Tesseract OCR (google)
 		https://github.com/tesseract-ocr/tesseract
 	Azure Form Recognizser
