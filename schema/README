@@ -670,3 +670,5 @@ Possible Schemas:
 	opendataloader - parser pdfs.
 		https://github.com/opendataloader-project/opendataloader-pdf
 		consider contributing other formats?
+	cermine - Content ExtRactor and MINEr (pdf)
+		http://cermine.ceon.pl/about.html
