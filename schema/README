@@ -672,3 +672,6 @@ Possible Schemas:
 		consider contributing other formats?
 	cermine - Content ExtRactor and MINEr (pdf) -> xml
 		http://cermine.ceon.pl/about.html
+	docling - ai driven document extraction
+		https://github.com/docling-project/docling
+		https://docling-project.github.io/docling/
