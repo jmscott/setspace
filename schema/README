@@ -675,3 +675,8 @@ Possible Schemas:
 	docling - ai driven document extraction
 		https://github.com/docling-project/docling
 		https://docling-project.github.io/docling/
+
+	mineru2 - MinerU2.5: A Vision-Language Model for Document Parsing
+		https://huggingface.co/opendatalab/MinerU2.5-2509-1.2B
+	pdfly - swiss army knife for pdf files
+		https://chezsoi.org/lucas/blog/spotlight-on-pdfly.html
