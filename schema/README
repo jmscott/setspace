@@ -680,3 +680,14 @@ Possible Schemas:
 		https://huggingface.co/opendatalab/MinerU2.5-2509-1.2B
 	pdfly - swiss army knife for pdf files
 		https://chezsoi.org/lucas/blog/spotlight-on-pdfly.html
+	webrec - sophisticated solution  archiving web data
+		https://webrecorder.net/
+		https://github.com/webrecorder
+		#  gui for replaying web data
+		https://webrecorder.net/
+		   blog/2020-06-11-webrecorder-conifer-and-replayweb-page/
+		   https://replayweb.page/
+	replayweb - Replay GUI, based on webrecorder
+		   https://replayweb.page/
+	wierdlex - syntax highlighter, 42 languages
+		   https://justine.lol/lex/
