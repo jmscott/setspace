@@ -691,3 +691,5 @@ Possible Schemas:
 		   https://replayweb.page/
 	wierdlex - syntax highlighter, 42 languages
 		   https://justine.lol/lex/
+	vulnx - detect security vulnerabilities CMS system
+		https://github.com/anouarbensaad/vulnx
