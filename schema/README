@@ -693,3 +693,5 @@ Possible Schemas:
 		   https://justine.lol/lex/
 	vulnx - detect security vulnerabilities CMS system
 		https://github.com/anouarbensaad/vulnx
+	sbooks - large corpus of open pdfs
+		standardebooks.org
