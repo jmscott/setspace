@@ -695,3 +695,5 @@ Possible Schemas:
 		https://github.com/anouarbensaad/vulnx
 	sbooks - large corpus of open pdfs
 		standardebooks.org
+	pishield - entropy log scanner
+		https://pii-shield.com/
