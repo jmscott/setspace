@@ -704,3 +704,7 @@ Possible Schemas:
 		https://mojibake.zaerl.com/  
 	ipni -  International Plant Names Index
 		https://www.ipni.org/
+	anydoc - various doc files to markdown
+		https://github.com/firecrawl/anydoc
+	lexbor - web browser engine
+		https://lexbor.com/
